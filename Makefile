@@ -44,22 +44,23 @@ clean:
 doc:
 	cd doc && doxygen
 
-${TMPDIR}:
-	mkdir -p ${TMPDIR}
 
-${TMPDIR}/clips_core_source_641.zip: ${TMPDIR}
+${TMPDIR}/clips_core_source_641.zip:
+	mkdir -p ${TMPDIR}
 	wget -P ${TMPDIR} https://sourceforge.net/projects/clipsrules/files/CLIPS/6.4.1/clips_core_source_641.zip
 
-${CLIPSPATHDIRECTORY}: ${TMPDIR}/clips_core_source_641.zip
+CLIPSPATCHFILES=$(find ${CLIPSPATHDIRECTORY}/ -print)
+
+${CLIPSPATHDIRECTORY}: ${TMPDIR}/clips_core_source_641.zip ${CLIPSPATCHFILES}
 	mkdir -p ${CLIPSPATHDIRECTORY}/
 	mkdir -p ${CLIPSPATHDIRECTORY}/
 	unzip $< -d ${CLIPSPATHDIRECTORY}/
-	mv ${CLIPSPATHDIRECTORY}/clips_core_source_641 ${CLIPSPATHDIRECTORY}/new
+	mv ${CLIPSPATHDIRECTORY}/clips_core_source_641 ${CLIPSPATHDIRECTORY}/clips-src
 	unzip $< -d ${CLIPSPATHDIRECTORY}/
 	mv ${CLIPSPATHDIRECTORY}/clips_core_source_641 ${CLIPSPATHDIRECTORY}/original
 
 ${TMPDIR}/clips.patch: ${CLIPSPATHDIRECTORY}
-	-diff -ruN ${CLIPSPATHDIRECTORY}/original/ ${CLIPSPATHDIRECTORY}/new/ > $@
+	-cd ${CLIPSPATHDIRECTORY}/ && diff -ruN original/ clips-src/ > ../clips.patch
 
 .PHONY: opendoc
 opendoc:

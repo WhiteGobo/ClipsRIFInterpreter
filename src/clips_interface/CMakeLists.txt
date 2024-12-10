@@ -22,9 +22,11 @@ target_compile_definitions(ffi_clips_interface PUBLIC DART_SHARED_LIB)
 add_compile_options(-fPIC) #or it fails to link clips
 FetchContent_Declare(
   clips
-  DOWNLOAD_EXTRACT_TIMESTAMP TRUE #May fail if behind URL
+  #DOWNLOAD_EXTRACT_TIMESTAMP TRUE #May fail if behind URL
   URL https://sourceforge.net/projects/clipsrules/files/CLIPS/6.4.1/clips_core_source_641.zip
-  PATCH_COMMAND cp -a ${CMAKE_CURRENT_SOURCE_DIR}/clips_update/. <SOURCE_DIR>/
+  URL_HASH MD5=3c470a99fa25981d802e63c205c27593
+  #PATCH_COMMAND cp -a ${CMAKE_CURRENT_SOURCE_DIR}/clips_update/. <SOURCE_DIR>/
+  PATCH_COMMAND patch -s -p0 -d <SOURCE_DIR>/../ < ${CMAKE_CURRENT_SOURCE_DIR}/clips.patch
 )
 FetchContent_MakeAvailable(clips)
 
