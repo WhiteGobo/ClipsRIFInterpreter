@@ -1,0 +1,43 @@
+#include "own_user_defined_functions.h"
+#include <crifi_objects.h>
+
+#define RETURNFAIL(failure, ret) \
+		Writeln(env, failure);\
+		SetErrorValue(env, &(CreateString(env, failure)->header));\
+		return ret;
+
+
+void clipsudf_equal(Environment *env, UDFContext *udfc, UDFValue *out){
+	CLIPSValue left_val, right_val;
+	UDFValue left, right;
+	IEQ_RET check;
+	if (!UDFFirstArgument(udfc, ANY_TYPE_BITS, &left))return;
+	if (!UDFNextArgument(udfc, ANY_TYPE_BITS, &right))return;
+	if (left.header->type == VOID_TYPE || right.header->type == VOID_TYPE){
+		out->lexemeValue = CreateBoolean(env, false);
+		return;
+	}
+	left_val.value = left.value;
+	right_val.value = right.value;
+	check = internal_equal(env, &left_val, &right_val);
+	switch (check){
+		case IEQ_TRUE:
+			out->lexemeValue = CreateBoolean(env, true);
+			return;
+			break;
+		case IEQ_FALSE:
+			out->lexemeValue = CreateBoolean(env, false);
+			return;
+			break;
+	}
+}
+
+
+void clipsudf_import(Environment *env, UDFContext *udfc, UDFValue *out){
+	char *qq = (char*) udfc->context;
+	printf("qwertz %s\n", qq);
+	SetErrorValue(env, &(CreateString(env, "import isnt implemented")->header));
+	out->lexemeValue = CreateString(env, "");
+}
+
+#undef RETURNFAIL

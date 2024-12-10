@@ -1,0 +1,13 @@
+_:N0020a771231e4d8d80b685caff25e18e <http://www.w3.org/2007/rif#op> _:Nfd95798782eb4ec8978a3b1ed818ca89 .
+_:N833b094f6a9a4c3ca12bcc726e2ed288 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> <http://www.w3.org/1999/02/22-rdf-syntax-ns#nil> .
+_:Nad53b1b07d044817af95ded9b2dbb527 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2007/rif#Const> .
+_:N98a4b595185e4a04bb9bf6dea6b9725f <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> _:N3563b69d81be4f3da30cebfe1a5881c8 .
+_:Nfd95798782eb4ec8978a3b1ed818ca89 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2007/rif#Const> .
+_:N3563b69d81be4f3da30cebfe1a5881c8 <http://www.w3.org/2007/rif#value> "John Doe"^^<http://www.w3.org/2001/XMLSchema#string> .
+_:N833b094f6a9a4c3ca12bcc726e2ed288 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> _:Nad53b1b07d044817af95ded9b2dbb527 .
+_:N3563b69d81be4f3da30cebfe1a5881c8 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2007/rif#Const> .
+_:N0020a771231e4d8d80b685caff25e18e <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2007/rif#Atom> .
+_:Nfd95798782eb4ec8978a3b1ed818ca89 <http://www.w3.org/2007/rif#constIRI> "http://example.org/example#discount"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+_:Nad53b1b07d044817af95ded9b2dbb527 <http://www.w3.org/2007/rif#value> "10"^^<http://www.w3.org/2001/XMLSchema#integer> .
+_:N0020a771231e4d8d80b685caff25e18e <http://www.w3.org/2007/rif#args> _:N98a4b595185e4a04bb9bf6dea6b9725f .
+_:N98a4b595185e4a04bb9bf6dea6b9725f <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> _:N833b094f6a9a4c3ca12bcc726e2ed288 .

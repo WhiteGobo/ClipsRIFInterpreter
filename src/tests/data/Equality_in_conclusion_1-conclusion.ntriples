@@ -1,0 +1,7 @@
+_:Na40cd549e7c449a7af9ae8bfa80e1d5e <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2007/rif#Const> .
+_:Nc060140fec8445c38a535e858fbf32dd <http://www.w3.org/2007/rif#right> _:Na40cd549e7c449a7af9ae8bfa80e1d5e .
+_:Nc060140fec8445c38a535e858fbf32dd <http://www.w3.org/2007/rif#left> _:N061637fe467944fd9b87746cddc506e3 .
+_:N061637fe467944fd9b87746cddc506e3 <http://www.w3.org/2007/rif#constIRI> "http://example.org/example#b"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+_:Nc060140fec8445c38a535e858fbf32dd <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2007/rif#Equal> .
+_:N061637fe467944fd9b87746cddc506e3 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2007/rif#Const> .
+_:Na40cd549e7c449a7af9ae8bfa80e1d5e <http://www.w3.org/2007/rif#constIRI> "http://example.org/example#c"^^<http://www.w3.org/2001/XMLSchema#anyURI> .

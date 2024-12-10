@@ -1,0 +1,2 @@
+#comment 1
+_:n1234 <http://example.com/asdf> 'asdf'^^<qwer> . #comment2

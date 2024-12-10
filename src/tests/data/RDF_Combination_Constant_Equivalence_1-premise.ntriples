@@ -1,0 +1,7 @@
+_:N73db54a2f2f84563b86858eb5a77f153 <http://www.w3.org/2007/rif#location> "http://www.w3.org/2005/rules/test/repository/tc/RDF_Combination_Constant_Equivalence_1/RDF_Combination_Constant_Equivalence_1-import001" .
+_:N810149af96194e2d8e855fc8f5f8f36c <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2007/rif#Document> .
+_:N2985638608ff4914aa943f6021eb7c14 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> _:N73db54a2f2f84563b86858eb5a77f153 .
+_:N810149af96194e2d8e855fc8f5f8f36c <http://www.w3.org/2007/rif#directives> _:N2985638608ff4914aa943f6021eb7c14 .
+_:N73db54a2f2f84563b86858eb5a77f153 <http://www.w3.org/2007/rif#profile> "http://www.w3.org/ns/entailment/Simple" .
+_:N73db54a2f2f84563b86858eb5a77f153 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2007/rif#Import> .
+_:N2985638608ff4914aa943f6021eb7c14 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> <http://www.w3.org/1999/02/22-rdf-syntax-ns#nil> .

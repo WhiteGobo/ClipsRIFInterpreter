@@ -1,0 +1,24 @@
+_:Nbe3b3de9a0fb4b89a95e2aac7905abcf <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> <http://www.w3.org/1999/02/22-rdf-syntax-ns#nil> .
+_:Nb025a67dd8ed4e34b98a9ccbd3cc22ed <http://www.w3.org/2007/rif#args> _:Nbe3b3de9a0fb4b89a95e2aac7905abcf .
+_:N88363ec9ef804cfd9e3692e2fc40185f <http://www.w3.org/2007/rif#op> _:Nbd2fd10dfe22450cbf137dc9e3f311b2 .
+_:Nbd2fd10dfe22450cbf137dc9e3f311b2 <http://www.w3.org/2007/rif#constIRI> "http://example.org/example#p"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+_:Nb025a67dd8ed4e34b98a9ccbd3cc22ed <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2007/rif#Atom> .
+_:N90e37b6387894cb294f71e81046ab354 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> _:N88363ec9ef804cfd9e3692e2fc40185f .
+_:Nbb94c41202824feab7f20441c1a8f2b8 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> _:Nb025a67dd8ed4e34b98a9ccbd3cc22ed .
+_:N90e37b6387894cb294f71e81046ab354 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> _:Nbb94c41202824feab7f20441c1a8f2b8 .
+_:Ne811d8c3c3e94b188a9223c26cea0550 <http://www.w3.org/2007/rif#value> "pass 1"^^<http://www.w3.org/2001/XMLSchema#string> .
+_:Nbe3b3de9a0fb4b89a95e2aac7905abcf <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> _:N96103ce4cac044daa5de91cfb41c6b9f .
+_:N3dce160bdc1d454ba1a1d2d604b46b34 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2007/rif#And> .
+_:N69ae625cd4844e6d94fb4351f6e8ae2f <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> <http://www.w3.org/1999/02/22-rdf-syntax-ns#nil> .
+_:Nb025a67dd8ed4e34b98a9ccbd3cc22ed <http://www.w3.org/2007/rif#op> _:N823a4a9425f84d26b3c2e516e2183849 .
+_:N96103ce4cac044daa5de91cfb41c6b9f <http://www.w3.org/2007/rif#value> "pass 2"^^<http://www.w3.org/2001/XMLSchema#string> .
+_:N3dce160bdc1d454ba1a1d2d604b46b34 <http://www.w3.org/2007/rif#formulas> _:N90e37b6387894cb294f71e81046ab354 .
+_:N96103ce4cac044daa5de91cfb41c6b9f <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2007/rif#Const> .
+_:N88363ec9ef804cfd9e3692e2fc40185f <http://www.w3.org/2007/rif#args> _:N69ae625cd4844e6d94fb4351f6e8ae2f .
+_:N823a4a9425f84d26b3c2e516e2183849 <http://www.w3.org/2007/rif#constIRI> "http://example.org/example#p"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+_:N69ae625cd4844e6d94fb4351f6e8ae2f <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> _:Ne811d8c3c3e94b188a9223c26cea0550 .
+_:Nbb94c41202824feab7f20441c1a8f2b8 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> <http://www.w3.org/1999/02/22-rdf-syntax-ns#nil> .
+_:N88363ec9ef804cfd9e3692e2fc40185f <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2007/rif#Atom> .
+_:Nbd2fd10dfe22450cbf137dc9e3f311b2 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2007/rif#Const> .
+_:Ne811d8c3c3e94b188a9223c26cea0550 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2007/rif#Const> .
+_:N823a4a9425f84d26b3c2e516e2183849 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2007/rif#Const> .

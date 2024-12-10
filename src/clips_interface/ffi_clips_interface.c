@@ -1,0 +1,217 @@
+/** \file ffi_clips_interface.c
+ * 
+ */
+#include "ffi_clips_interface.h"
+#include "graph_engine.h"
+#include "clips_to_interface.h"
+#include <n3parser.h>
+
+
+FFI_PLUGIN_EXPORT struct clips_graph_container init_graph(){
+	struct clips_graph_container graph_container;
+	graph_container.environment = initEnvironment();
+	if (graph_container.environment == NULL){
+		graph_container.inErrorState = 1;
+	} else {
+		graph_container.inErrorState = 0;
+	}
+	graph_container.extensions = NULL;
+	return graph_container;
+}
+
+FFI_PLUGIN_EXPORT RET_LOADCONFIG load_config_mem(
+		struct clips_graph_container graphContainer,
+		const char* configString, size_t lengthString){
+	bool success = load_config_internal_mem(
+			graphContainer.environment,
+			configString,
+			lengthString);
+	if (success) {
+		eval(graphContainer, "(reset)");
+		return CTC_LC_NO_ERROR;
+	}
+	return CTC_LC_PARSING_ERROR;
+}
+
+FFI_PLUGIN_EXPORT RET_LOADCONFIG load_config(struct clips_graph_container graph_container, char *configPath){
+	LoadError lerr = load_config_internal(graph_container.environment, configPath);
+	switch(lerr){
+		case LE_NO_ERROR:
+			eval(graph_container, "(reset)");
+			return CTC_LC_NO_ERROR;
+			break;
+		case LE_OPEN_FILE_ERROR:
+			return CTC_LC_OPEN_FILE_ERROR;
+			break;
+		case LE_PARSING_ERROR:
+			return CTC_LC_PARSING_ERROR;
+			break;
+	}
+	return CTC_LC_UNKNOWN_STATE;
+}
+
+
+FFI_PLUGIN_EXPORT struct TriplesLinkedList *get_facts(struct clips_graph_container graph_container, char *filter_subject, char *filter_predicate, char *filter_object){
+	struct TriplesLinkedList *retFacts = NULL;
+	CLIPSValue factsObj = getFactsFromEnvironment(graph_container.environment);
+	if (factsObj.header == NULL) return NULL;
+	if (factsObj.header->type != MULTIFIELD_TYPE){
+		return NULL;
+	}
+	retFacts = copy_getfacts_to_list(graph_container.environment, factsObj.multifieldValue, filter_subject, filter_predicate, filter_object);
+
+	return retFacts;
+}
+
+
+FFI_PLUGIN_EXPORT int close_graph(struct clips_graph_container graph_container){
+	closeEnvironment(graph_container.environment);
+	free_regex();
+	return 0;
+}
+
+FFI_PLUGIN_EXPORT void free_linked_list(struct TriplesLinkedList *first){
+	struct TriplesLinkedList *current = first;
+	struct TriplesLinkedList *rest;
+	while(current != NULL){
+		free(current->subject);
+		free(current->predicate);
+		free(current->object);
+		rest = current->rest;
+		free(current);
+		current = rest;
+	}
+}
+
+
+FFI_PLUGIN_EXPORT struct TriplesLinkedList *append_triple(struct TriplesLinkedList *first, const Utf8String subject, const Utf8String predicate, const Utf8String object){
+	struct TriplesLinkedList *last;
+	struct TriplesLinkedList *new;
+	char *tmp_s, *tmp_p, *tmp_o;
+	new = (struct TriplesLinkedList *)\
+	      malloc(sizeof(struct TriplesLinkedList));
+
+	tmp_s = (char*) malloc((strlen(subject)+1)*sizeof(char));
+	new->subject = tmp_s;
+	strcpy(tmp_s, subject);
+	tmp_p = (char*) malloc((strlen(predicate)+1)*sizeof(char));
+	strcpy(tmp_p, predicate);
+	new->predicate = tmp_p;
+	tmp_o = (char*) malloc((strlen(object)+1)*sizeof(char));
+	new->object = tmp_o;
+	strcpy(tmp_o, object);
+	new->rest = NULL;
+	if (first != NULL){
+		last = last_triple(first);
+		last->rest = new;
+	}
+	return new;
+}
+
+FFI_PLUGIN_EXPORT int concatenate_triples(struct TriplesLinkedList *first, struct TriplesLinkedList *second){
+	struct TriplesLinkedList *last;
+	if (first == NULL || second == NULL) return 1;
+	last = last_triple(first);
+	last->rest = second;
+	return 0;
+}
+
+FFI_PLUGIN_EXPORT struct TriplesLinkedList *last_triple(struct TriplesLinkedList *first){
+	struct TriplesLinkedList *next;
+	struct TriplesLinkedList *current = first;
+	if (current == NULL) return NULL;
+	next = current->rest;
+	while (next != NULL){
+		current = next;
+		next = current->rest;
+	}
+	return current;
+}
+
+FFI_PLUGIN_EXPORT CRI_RET_BUILDTRIPLE assert_fact(
+		struct clips_graph_container graph,
+		const N3String subject, const N3String predicate,
+		const N3String object, const char* context
+		){
+	CRI_RET_BUILDTRIPLE error = build_triple(graph.environment, subject, predicate, object, context);
+	return error;
+}
+
+
+FFI_PLUGIN_EXPORT long long run_rules(struct clips_graph_container graph, long long limit){
+	return Run(graph.environment, limit);
+}
+
+FFI_PLUGIN_EXPORT int build(struct clips_graph_container graph, Utf8String command){
+	BuildError err = Build(graph.environment, command);
+	switch (err) {
+		case BE_NO_ERROR:
+			return 0;
+		case BE_COULD_NOT_BUILD_ERROR:
+			return 1;
+		case BE_CONSTRUCT_NOT_FOUND_ERROR:
+			return 2;
+		case BE_PARSING_ERROR:
+			return 3;
+	}
+}
+
+FFI_PLUGIN_EXPORT struct DynamicValue eval(struct clips_graph_container graph, Utf8String command){
+	CLIPSValue evalValue;
+	struct DynamicValue ret;
+	EvalError err = Eval(graph.environment, command, &evalValue);
+	switch (err) {
+		case EE_PARSING_ERROR:
+			ret.type = CTC_DYNAMIC_ERROR;
+			ret.val.error = CTC_CTD_PARSING_ERROR;
+			return ret;
+		case EE_PROCESSING_ERROR:
+			ret.type = CTC_DYNAMIC_ERROR;
+			ret.val.error = CTC_CTD_PROCESSING_ERROR;
+			return ret;
+		case EE_NO_ERROR:
+			break;
+	}
+	return clipsToDynamic(&evalValue);
+}
+
+FFI_PLUGIN_EXPORT void free_container(struct DynamicValue value){
+	switch (value.type) {
+		case CTC_DYNAMIC_VOID:
+			free(value.val.content);
+			break;
+		case CTC_DYNAMIC_INT:
+		case CTC_DYNAMIC_ERROR:
+			break;
+		case CTC_DYNAMIC_STRING:
+			free(value.val.string);
+			break;
+	}
+}
+
+FFI_PLUGIN_EXPORT bool load_script(struct clips_graph_container graph, Utf8String script){
+	return LoadFromString(graph.environment, script, strlen(script));
+}
+
+
+FFI_PLUGIN_EXPORT void free_dynamic_value(struct DynamicValue val){
+	switch (val.type) {
+		case CTC_DYNAMIC_STRING:
+			free(val.val.string);
+			break;
+	}
+}
+
+FFI_PLUGIN_EXPORT void add_plugin(struct clips_graph_container *graph){
+	CRIFIExtension *lastext = NULL;
+	CRIFIExtension *newext;
+	for (CRIFIExtension *tmpext = graph->extensions; tmpext != NULL; tmpext = tmpext->nextExtension){
+		lastext = tmpext;
+	}
+	newext = malloc(sizeof(CRIFIExtension));
+	if (lastext==NULL){
+		graph->extensions = newext;
+	} else {
+		lastext->nextExtension = newext;
+	}
+}

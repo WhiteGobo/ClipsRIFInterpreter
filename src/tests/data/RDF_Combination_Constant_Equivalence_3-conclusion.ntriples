@@ -1,0 +1,14 @@
+_:N3612276d61e54b5c8113790f364b8d34 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2007/rif#Const> .
+_:N096740a3d8ad4b439b0c17ff7eebe2fa <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2007/rif#Frame> .
+_:N3612276d61e54b5c8113790f364b8d34 <http://www.w3.org/2007/rif#constIRI> "http://example.org#p"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+_:N7dc1d7be91be4c0ca186b47d8461edde <http://www.w3.org/2007/rif#slotvalue> _:N9334890877c544cbb01b6b7c1ed90cde .
+_:N7dc1d7be91be4c0ca186b47d8461edde <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2007/rif#Slot> .
+_:Nbc6a85f900f948599098b52bbfd850d9 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> <http://www.w3.org/1999/02/22-rdf-syntax-ns#nil> .
+_:Nbc6a85f900f948599098b52bbfd850d9 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> _:N7dc1d7be91be4c0ca186b47d8461edde .
+_:N096740a3d8ad4b439b0c17ff7eebe2fa <http://www.w3.org/2007/rif#object> _:N19abfe5af384410b86b35556f2e0d8dc .
+_:N7dc1d7be91be4c0ca186b47d8461edde <http://www.w3.org/2007/rif#slotkey> _:N3612276d61e54b5c8113790f364b8d34 .
+_:N19abfe5af384410b86b35556f2e0d8dc <http://www.w3.org/2007/rif#constIRI> "http://example.org#a"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+_:N096740a3d8ad4b439b0c17ff7eebe2fa <http://www.w3.org/2007/rif#slots> _:Nbc6a85f900f948599098b52bbfd850d9 .
+_:N9334890877c544cbb01b6b7c1ed90cde <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2007/rif#Const> .
+_:N9334890877c544cbb01b6b7c1ed90cde <http://www.w3.org/2007/rif#value> "with language tag"@en .
+_:N19abfe5af384410b86b35556f2e0d8dc <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2007/rif#Const> .

@@ -1,0 +1,4 @@
+_:N4b70a91511dd453ba7a78c90453cc94d <http://www.w3.org/2007/rif#op> _:Nc2c4b90408124727a03869e727f25dfc .
+_:Nc2c4b90408124727a03869e727f25dfc <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2007/rif#Const> .
+_:Nc2c4b90408124727a03869e727f25dfc <http://www.w3.org/2007/rif#constIRI> "http://example.org/example#ok"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+_:N4b70a91511dd453ba7a78c90453cc94d <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2007/rif#Atom> .

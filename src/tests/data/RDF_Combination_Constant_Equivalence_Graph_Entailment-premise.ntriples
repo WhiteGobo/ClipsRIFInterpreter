@@ -1,0 +1,7 @@
+_:Na7ee4f3531b645cbab9564db5ec476e8 <http://www.w3.org/2007/rif#directives> _:N30e67c76bf6b4e2286a439034380212b .
+_:Ne0aa92139fe24ab9a3772a5d0f38a86f <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2007/rif#Import> .
+_:Na7ee4f3531b645cbab9564db5ec476e8 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2007/rif#Document> .
+_:N30e67c76bf6b4e2286a439034380212b <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> _:Ne0aa92139fe24ab9a3772a5d0f38a86f .
+_:Ne0aa92139fe24ab9a3772a5d0f38a86f <http://www.w3.org/2007/rif#profile> "http://www.w3.org/ns/entailment/Simple" .
+_:Ne0aa92139fe24ab9a3772a5d0f38a86f <http://www.w3.org/2007/rif#location> "http://www.w3.org/2005/rules/test/repository/tc/RDF_Combination_Constant_Equivalence_Graph_Entailment/RDF_Combination_Constant_Equivalence_Graph_Entailment-import001" .
+_:N30e67c76bf6b4e2286a439034380212b <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> <http://www.w3.org/1999/02/22-rdf-syntax-ns#nil> .
