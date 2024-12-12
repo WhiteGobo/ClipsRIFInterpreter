@@ -49,17 +49,20 @@ ${TMPDIR}/clips_core_source_641.zip:
 	mkdir -p ${TMPDIR}
 	wget -P ${TMPDIR} https://sourceforge.net/projects/clipsrules/files/CLIPS/6.4.1/clips_core_source_641.zip
 
-CLIPSPATCHFILES=$(find ${CLIPSPATHDIRECTORY}/ -print)
+CLIPSPATCHFILES=$(shell find ${CLIPSPATHDIRECTORY}/ -type f)
+CURRENTPATCH=src/clips_interface/clips.patch
 
-${CLIPSPATHDIRECTORY}: ${TMPDIR}/clips_core_source_641.zip ${CLIPSPATCHFILES}
-	mkdir -p ${CLIPSPATHDIRECTORY}/
+${CLIPSPATHDIRECTORY}: ${TMPDIR}/clips_core_source_641.zip ${CURRENTPATCH}
 	mkdir -p ${CLIPSPATHDIRECTORY}/
 	unzip $< -d ${CLIPSPATHDIRECTORY}/
+	-rm -rf ${CLIPSPATHDIRECTORY}/clips-src
 	mv ${CLIPSPATHDIRECTORY}/clips_core_source_641 ${CLIPSPATHDIRECTORY}/clips-src
+	patch -s -p0 -d ${CLIPSPATHDIRECTORY}/ < ${CURRENTPATCH}
 	unzip $< -d ${CLIPSPATHDIRECTORY}/
 	mv ${CLIPSPATHDIRECTORY}/clips_core_source_641 ${CLIPSPATHDIRECTORY}/original
 
-${TMPDIR}/clips.patch: ${CLIPSPATHDIRECTORY}
+${TMPDIR}/clips.patch: ${CLIPSPATHDIRECTORY} ${CLIPSPATCHFILES}
+	echo ${CLIPSPATCHFILES}
 	-cd ${CLIPSPATHDIRECTORY}/ && diff -ruN original/ clips-src/ > ../clips.patch
 
 .PHONY: opendoc

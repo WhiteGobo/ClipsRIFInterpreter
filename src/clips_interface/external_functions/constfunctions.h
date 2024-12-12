@@ -31,8 +31,6 @@ static ContextTypecheck CRegular = {false};
 static ContextTypecheck CInvert = {true};
 
 static UDFDescription builtinFunctionList[] = {
-	{"<"_CRIFI_import_">", "s", 2, 2, "s",
-		clipsudf_import, "clipsudf_import", CT_generate, NULL},
 	{"<"_CRIFI_equal_">", "*", 2, 2, "*",
 		clipsudf_equal, "clipsudf_equal", CT_static, NULL},
 	{"<"_CRIFI_percent_encode_">", "s", 1, 1, "s",
@@ -165,7 +163,7 @@ static UDFDescription builtinFunctionList[] = {
 		pred_is_list, "pred_is_list", CT_static, NULL},
 	{"<"_PRED_list_contains_">", "b", 2, 2, "*",
 		pred_list_contains, "pred_list_contains", CT_static, NULL},
-	{"<"_FUNC_make_list_">", "*", 0, -1, "*",
+	{"<"_FUNC_make_list_">", "*", 0, UNBOUNDED, "*",
 		func_make_list, "func_make_list", CT_static, NULL},
 	{"<"_FUNC_count_">", "*", 1, 1, "*",
 		func_count, "func_count", CT_static, NULL},

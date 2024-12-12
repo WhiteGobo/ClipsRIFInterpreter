@@ -1,12 +1,12 @@
 diff -ruN original/CMakeLists.txt clips-src/CMakeLists.txt
 --- original/CMakeLists.txt	1970-01-01 01:00:00.000000000 +0100
-+++ clips-src/CMakeLists.txt	2024-12-10 21:39:17.809200932 +0100
++++ clips-src/CMakeLists.txt	2024-12-12 08:05:05.667443386 +0100
 @@ -0,0 +1,2 @@
 +add_subdirectory(core)
 +target_include_directories(clips PUBLIC core)
 diff -ruN original/core/CMakeLists.txt clips-src/core/CMakeLists.txt
 --- original/core/CMakeLists.txt	1970-01-01 01:00:00.000000000 +0100
-+++ clips-src/core/CMakeLists.txt	2024-12-10 21:39:24.669200706 +0100
++++ clips-src/core/CMakeLists.txt	2024-12-12 08:05:05.667443386 +0100
 @@ -0,0 +1,37 @@
 +add_library(clips STATIC
 +	rulebsc.c
@@ -45,3 +45,123 @@ diff -ruN original/core/CMakeLists.txt clips-src/core/CMakeLists.txt
 +)
 +install(FILES clips.h DESTINATION include)
 +install(TARGETS clips DESTINATION lib)
+diff -ruN original/core/envrnbld.h clips-src/core/envrnbld.h
+--- original/core/envrnbld.h	2022-04-24 20:02:38.000000000 +0200
++++ clips-src/core/envrnbld.h	2024-12-12 08:08:07.124104042 +0100
+@@ -30,11 +30,19 @@
+ #include "envrnmnt.h"
+ #include "extnfunc.h"
+ 
++#ifdef __cplusplus
++extern "C" {
++#endif
++
+    Environment                   *CreateEnvironment(void);
+    Environment                   *CreateRuntimeEnvironment(CLIPSLexeme **,CLIPSFloat **,
+                                                            CLIPSInteger **,CLIPSBitMap **,
+                                                            struct functionDefinition *);
+    bool                           DestroyEnvironment(Environment *);
+ 
++#ifdef __cplusplus
++}
++#endif
++
+ #endif /* _H_envrnbld */
+ 
+diff -ruN original/core/envrnmnt.h clips-src/core/envrnmnt.h
+--- original/core/envrnmnt.h	2022-04-24 20:02:38.000000000 +0200
++++ clips-src/core/envrnmnt.h	2024-12-12 08:07:51.027437909 +0100
+@@ -103,10 +103,18 @@
+ #define GetEnvironmentData(theEnv,position) (((struct environmentData *) theEnv)->theData[position])
+ #define SetEnvironmentData(theEnv,position,value) (((struct environmentData *) theEnv)->theData[position] = value)
+ 
++#ifdef __cplusplus
++extern "C" {
++#endif
++
+    bool                           AllocateEnvironmentData(Environment *,unsigned,size_t,EnvironmentCleanupFunction *);
+    bool                           AddEnvironmentCleanupFunction(Environment *,const char *,EnvironmentCleanupFunction *,int);
+    void                          *GetEnvironmentContext(Environment *);
+    void                          *SetEnvironmentContext(Environment *,void *);
+ 
++#ifdef __cplusplus
++}
++#endif
++
+ #endif /* _H_envrnmnt */
+ 
+diff -ruN original/core/extnfunc.h clips-src/core/extnfunc.h
+--- original/core/extnfunc.h	2022-04-24 20:02:38.000000000 +0200
++++ clips-src/core/extnfunc.h	2024-12-12 08:05:05.667443386 +0100
+@@ -121,6 +121,10 @@
+    struct FunctionHash *next;
+   };
+ 
++#ifdef __cplusplus
++extern "C" {
++#endif
++
+ #define SIZE_FUNCTION_HASH 517
+ 
+    void                           InitializeExternalFunctionData(Environment *);
+@@ -149,6 +153,10 @@
+    void                           UDFThrowError(UDFContext *);
+    void                          *GetUDFContext(Environment *,const char *);
+ 
++#ifdef __cplusplus
++}
++#endif
++
+ #define UDFHasNextArgument(context) (context->lastArg != NULL)
+ 
+ #endif /* _H_extnfunc */
+diff -ruN original/core/router.h clips-src/core/router.h
+--- original/core/router.h	2022-04-24 20:02:38.000000000 +0200
++++ clips-src/core/router.h	2024-12-12 08:06:29.757440593 +0100
+@@ -118,6 +118,10 @@
+ 
+ #define RouterData(theEnv) ((struct routerData *) GetEnvironmentData(theEnv,ROUTER_DATA))
+ 
++#ifdef __cplusplus
++extern "C" {
++#endif
++
+    void                           InitializeDefaultRouters(Environment *);
+    void                           WriteString(Environment *,const char *,const char *);
+    void                           Write(Environment *,const char *);
+@@ -144,4 +148,8 @@
+    Router                        *FindRouter(Environment *,const char *);
+    bool                           PrintRouterExists(Environment *,const char *);
+ 
++#ifdef __cplusplus
++}
++#endif
++
+ #endif /* _H_router */
+diff -ruN original/core/symbol.h clips-src/core/symbol.h
+--- original/core/symbol.h	2022-04-24 20:02:38.000000000 +0200
++++ clips-src/core/symbol.h	2024-12-12 08:05:24.424109431 +0100
+@@ -186,6 +186,11 @@
+ 
+ #define SymbolData(theEnv) ((struct symbolData *) GetEnvironmentData(theEnv,SYMBOL_DATA))
+ 
++#ifdef __cplusplus
++extern "C" {
++#endif
++
++
+    void                           InitializeAtomTables(Environment *,CLIPSLexeme **,CLIPSFloat **,
+                                                               CLIPSInteger **,CLIPSBitMap **,
+                                                               CLIPSExternalAddress **);
+@@ -237,6 +242,11 @@
+    CLIPSLexeme                   *CreateBoolean(Environment *,bool);
+    bool                           BitStringHasBitsSet(void *,unsigned);
+ 
++#ifdef __cplusplus
++}
++#endif
++
++
+ #endif /* _H_symbol */
+ 
+ 

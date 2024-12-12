@@ -9,6 +9,8 @@
 
 #include <cmrc/cmrc.hpp>
 
+#include "additional_user_functions.h"
+
 #define OWLLOGIC "resources/OwlLogic.clp"
 #define RIFLOGIC "resources/RifLogic.clp"
 
@@ -19,6 +21,11 @@ static struct clips_graph_container create_logic_helpergraph(const char* logicpa
 	cmrc::file asfile = fs.open(logicpath);
 	std::string owllogic_data = std::string(asfile.begin(), asfile.end());
 	struct clips_graph_container helper_graph = init_graph();
+	if (!add_needed_user_functions(helper_graph)){
+		throw std::runtime_error("failed adding needed to clips "
+				"environment functions.");
+	}
+	
 	RET_LOADCONFIG err = load_config_mem(helper_graph,
 			owllogic_data.c_str(), owllogic_data.length());
 

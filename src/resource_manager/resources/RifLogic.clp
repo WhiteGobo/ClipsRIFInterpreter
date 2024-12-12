@@ -1200,7 +1200,7 @@
 )
 
 (defmessage-handler RIFImport create-rules ()
-	(return (<http://white.gobo/import> ?self:location ?self:profile))
+	(return (<http://white.gobo/ResourceManager/import> ?self:location ?self:profile))
 )
 
 (defmessage-handler RIFGroup create-rules ()
