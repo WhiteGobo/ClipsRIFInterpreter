@@ -130,6 +130,7 @@ cmrc_add_resource_library(
 	Positional_Arguments-premise.ntriples
 	RDF_Combination_Blank_Node-conclusion.ntriples
 	RDF_Combination_Blank_Node-premise.ntriples
+	RDF_Combination_Blank_Node-import001.ntriples
 	RDF_Combination_Constant_Equivalence_1-conclusion.ntriples
 	RDF_Combination_Constant_Equivalence_1-premise.ntriples
 	RDF_Combination_Constant_Equivalence_2-conclusion.ntriples

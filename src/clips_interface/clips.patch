@@ -1,12 +1,12 @@
 diff -ruN original/CMakeLists.txt clips-src/CMakeLists.txt
 --- original/CMakeLists.txt	1970-01-01 01:00:00.000000000 +0100
-+++ clips-src/CMakeLists.txt	2024-12-12 08:05:05.667443386 +0100
++++ clips-src/CMakeLists.txt	2024-12-12 14:02:15.873398290 +0100
 @@ -0,0 +1,2 @@
 +add_subdirectory(core)
 +target_include_directories(clips PUBLIC core)
 diff -ruN original/core/CMakeLists.txt clips-src/core/CMakeLists.txt
 --- original/core/CMakeLists.txt	1970-01-01 01:00:00.000000000 +0100
-+++ clips-src/core/CMakeLists.txt	2024-12-12 08:05:05.667443386 +0100
++++ clips-src/core/CMakeLists.txt	2024-12-12 14:02:15.873398290 +0100
 @@ -0,0 +1,37 @@
 +add_library(clips STATIC
 +	rulebsc.c
@@ -47,7 +47,7 @@ diff -ruN original/core/CMakeLists.txt clips-src/core/CMakeLists.txt
 +install(TARGETS clips DESTINATION lib)
 diff -ruN original/core/envrnbld.h clips-src/core/envrnbld.h
 --- original/core/envrnbld.h	2022-04-24 20:02:38.000000000 +0200
-+++ clips-src/core/envrnbld.h	2024-12-12 08:08:07.124104042 +0100
++++ clips-src/core/envrnbld.h	2024-12-12 14:02:15.873398290 +0100
 @@ -30,11 +30,19 @@
  #include "envrnmnt.h"
  #include "extnfunc.h"
@@ -70,7 +70,7 @@ diff -ruN original/core/envrnbld.h clips-src/core/envrnbld.h
  
 diff -ruN original/core/envrnmnt.h clips-src/core/envrnmnt.h
 --- original/core/envrnmnt.h	2022-04-24 20:02:38.000000000 +0200
-+++ clips-src/core/envrnmnt.h	2024-12-12 08:07:51.027437909 +0100
++++ clips-src/core/envrnmnt.h	2024-12-12 14:02:15.873398290 +0100
 @@ -103,10 +103,18 @@
  #define GetEnvironmentData(theEnv,position) (((struct environmentData *) theEnv)->theData[position])
  #define SetEnvironmentData(theEnv,position,value) (((struct environmentData *) theEnv)->theData[position] = value)
@@ -92,7 +92,7 @@ diff -ruN original/core/envrnmnt.h clips-src/core/envrnmnt.h
  
 diff -ruN original/core/extnfunc.h clips-src/core/extnfunc.h
 --- original/core/extnfunc.h	2022-04-24 20:02:38.000000000 +0200
-+++ clips-src/core/extnfunc.h	2024-12-12 08:05:05.667443386 +0100
++++ clips-src/core/extnfunc.h	2024-12-12 14:02:15.873398290 +0100
 @@ -121,6 +121,10 @@
     struct FunctionHash *next;
    };
@@ -115,9 +115,34 @@ diff -ruN original/core/extnfunc.h clips-src/core/extnfunc.h
  #define UDFHasNextArgument(context) (context->lastArg != NULL)
  
  #endif /* _H_extnfunc */
+diff -ruN original/core/miscfun.h clips-src/core/miscfun.h
+--- original/core/miscfun.h	2022-04-24 20:02:38.000000000 +0200
++++ clips-src/core/miscfun.h	2024-12-12 14:02:57.810063574 +0100
+@@ -84,6 +84,10 @@
+ 
+ #define _H_miscfun
+ 
++#ifdef __cplusplus
++extern "C" {
++#endif
++
+    void                           MiscFunctionDefinitions(Environment *);
+    void                           ExitCommand(Environment *,UDFContext *,UDFValue *);
+    void                           CreateFunction(Environment *,UDFContext *,UDFValue *);
+@@ -123,6 +127,10 @@
+    void                           SetErrorValue(Environment *,TypeHeader *);
+    void                           VoidFunction(Environment *,UDFContext *,UDFValue *);
+ 
++#ifdef __cplusplus
++}
++#endif
++
+ #endif /* _H_miscfun */
+ 
+ 
 diff -ruN original/core/router.h clips-src/core/router.h
 --- original/core/router.h	2022-04-24 20:02:38.000000000 +0200
-+++ clips-src/core/router.h	2024-12-12 08:06:29.757440593 +0100
++++ clips-src/core/router.h	2024-12-12 14:02:15.873398290 +0100
 @@ -118,6 +118,10 @@
  
  #define RouterData(theEnv) ((struct routerData *) GetEnvironmentData(theEnv,ROUTER_DATA))
@@ -140,7 +165,7 @@ diff -ruN original/core/router.h clips-src/core/router.h
  #endif /* _H_router */
 diff -ruN original/core/symbol.h clips-src/core/symbol.h
 --- original/core/symbol.h	2022-04-24 20:02:38.000000000 +0200
-+++ clips-src/core/symbol.h	2024-12-12 08:05:24.424109431 +0100
++++ clips-src/core/symbol.h	2024-12-12 14:02:15.873398290 +0100
 @@ -186,6 +186,11 @@
  
  #define SymbolData(theEnv) ((struct symbolData *) GetEnvironmentData(theEnv,SYMBOL_DATA))

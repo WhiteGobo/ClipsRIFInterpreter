@@ -423,3 +423,19 @@ void _clipsudf_percent_encoding(
 	out->lexemeValue = CreateString(env, n3representation);
 }
 
+
+char* extract_lexical(Environment *env, CLIPSLexeme *lexeme){
+	if (lexeme == NULL) return NULL;
+	size_t length;
+	char* retString;
+	char* pos = strstr(lexeme->contents, "^^");
+	if (pos == NULL){ pos = strstr(lexeme->contents, "@@"); }
+	if (pos != NULL){
+		length = pos - lexeme->contents;
+	} else {
+		length = strlen(lexeme->contents);
+	}
+	retString = malloc(length + 1);
+	percent_decode(retString, lexeme->contents, length);
+	return retString;
+}

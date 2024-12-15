@@ -718,9 +718,17 @@
 		(subject ?node)
 		(predicate <http://www.w3.org/1999/02/22-rdf-syntax-ns#type>)
 		(object <http://www.w3.org/2007/rif#Import>))
+	(TripleTemplate
+		(subject ?node)
+		(predicate <http://www.w3.org/2007/rif#location>)
+		(object ?nodelocation))
+	(TripleTemplate
+		(subject ?node)
+		(predicate <http://www.w3.org/2007/rif#profile>)
+		(object ?nodeprofile))
 	=>
 	(bind ?x (make-instance of RIFImport (node ?node)
-		))
+		(profile ?nodeprofile) (location ?nodelocation)))
 	(assert (RIFRepresentation (node ?node) (object ?x)))
 )
 

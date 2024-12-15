@@ -38,6 +38,11 @@
 #define TEMPORARYINTERNALREPRESENTATION(varname, value, printed_value_length, value_format, datatype) char varname[printed_value_length + sizeof("^^\0") + sizeof(datatype)]; sprintf(varname, value_format , value); sprintf(1+strstr(varname, "\0"), "^^%s", datatype);
 
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+
 /**
  * tidy up after using regex. Should be used, when closing any graph.
  */
@@ -71,3 +76,13 @@ int percent_decode(char *dst, const char *src, const size_t len);
  */
 void _clipsudf_percent_encoding(
 		Environment *env, UDFContext *udfc, UDFValue *out);
+
+/**
+ *
+ */
+char* extract_lexical(Environment *env, CLIPSLexeme *lexeme);
+
+
+#ifdef __cplusplus
+}
+#endif

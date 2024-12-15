@@ -13,7 +13,6 @@ set_target_properties(n3parser PROPERTIES
   OUTPUT_NAME "n3parser"
 )
 
-target_link_libraries(
-	n3parser
+target_link_libraries(n3parser PRIVATE
 	clips
 )

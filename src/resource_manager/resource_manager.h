@@ -7,6 +7,7 @@
 #define _CLIPSRIFRESOURCEMANAGER_H_
 
 #include <string>
+#include "additional_user_functions.h"
 
 /**
  * Use in eval: `eval(graph, CHECKFUNCTION)`
@@ -34,7 +35,9 @@ std::string *generate_owl_logic(
  * 	cant be asserted
  */
 std::string *generate_rif_logic(
-		struct TriplesLinkedList* RIFLogicFactlist
+		struct TriplesLinkedList* RIFLogicFactlist,
+		LoadingFunction loading_function,
+		const void *loading_function_context
 		);
 
 /**
@@ -48,6 +51,12 @@ std::string *generate_rif_logic(
 std::string *generate_rif_statement(
 		struct TriplesLinkedList* RIFLogicFactlist
 		);
+
+/**
+ *
+ * Uses _RIF_ENTAILMENT_RDF_
+ */
+std::string *generate_rdf_entailment(struct TriplesLinkedList* rdf_triples);
 
 
 /**

@@ -24,23 +24,27 @@ CMRC_DECLARE(crifi_test);
 #define PATH_SEPARATOR "/"
 #endif
 
-/*typedef struct testdata_ {
-	const char* skip;
-	const char* premisepath;
-	const char* conclusionpath;
-} TestdataPET;
-*/
+typedef struct importSource {
+	const char *id;
+	const char *filename;
+} ImportSource;
+
+const ImportSource nullSource = {NULL, NULL};
+
 class TestdataPET {
 	public:
 		const char* skip;
 		std::string premisepath;
 		std::string conclusionpath;
 		std::string name;
+		const ImportSource *import_source;
 		TestdataPET(
 				std::string Name,
 				const char* myskip,
 				std::string premisePath,
-				std::string conclusionPath){
+				std::string conclusionPath,
+				const ImportSource *importSource
+				){
 			if (myskip != NULL){
 				skip = myskip;
 			} else {
@@ -49,224 +53,346 @@ class TestdataPET {
 			premisepath = premisePath;
 			conclusionpath = conclusionPath;
 			name = Name;
+			import_source = importSource;
 		}
 		TestdataPET(
 				std::string Name,
 				std::string premisePath,
-				std::string conclusionPath){
+				std::string conclusionPath,
+				const ImportSource *importSource
+				){
 			skip = NULL;
 			premisepath = premisePath;
 			conclusionpath = conclusionPath;
 			name = Name;
+			import_source = importSource;
 		}
+
 };
+
+
+struct TriplesLinkedList* myLoadingFunction(const void *testdata, const char* location){
+	struct TriplesLinkedList *retFacts;
+	ImportSource *tmpsource;
+	const TestdataPET* cast_testdata = (const TestdataPET*) testdata;
+
+	auto fs = cmrc::crifi_test::get_filesystem();
+	FILE *premise_f;
+	printf("qwertz myloadingfunction1\n");
+	if (cast_testdata->import_source == NULL) return NULL;
+	printf("qwertz myloadingfunction2\n");
+	for (const ImportSource *tmpsource = cast_testdata->import_source; tmpsource->id != NULL; tmpsource++){
+			printf("qwertz usetmpsource\n%s\n%s\n", tmpsource->id, location);
+		if (0==strcmp(tmpsource->id, location)){
+			cmrc::file asfile = fs.open(tmpsource->filename);
+			premise_f = fmemopen((char*) asfile.begin(), asfile.size(), "r");
+			retFacts = ntriples_parse_triples_f(premise_f, 0);
+			return retFacts;
+		}
+	}
+	return NULL;
+}
+
+
 
 std::ostream& operator<<(std::ostream& os, const TestdataPET& td){
 	os << td.name;
 	return os;
 }
 
+
+const ImportSource Import_Core_PET_RDF_Combination_Blank_Node[] = {
+	{
+		"http://www.w3.org/2005/rules/test/repository/tc/RDF_Combination_Blank_Node/RDF_Combination_Blank_Node-import001",
+		"RDF_Combination_Blank_Node-import001.ntriples",
+	},
+	{NULL, NULL}
+};
+
 static auto petTestdata = testing::Values(
 		TestdataPET("Core_PET_Builtin_literal-not-identical",
 			"Builtin_literal-not-identical-premise.ntriples",
-			"Builtin_literal-not-identical-conclusion.ntriples"),
+			"Builtin_literal-not-identical-conclusion.ntriples",
+			NULL),
 		TestdataPET("Core_PET_Builtins_Binary",
 			"not implemented",
 			"Builtins_Binary-premise.ntriples",
-			"PET_Builtins_Binary-conclusion.ntriples"),
+			"PET_Builtins_Binary-conclusion.ntriples",
+			NULL),
 		TestdataPET("Core_PET_Builtins_List",
 			"Builtins_List-premise.ntriples",
-			"Builtins_List-conclusion.ntriples"),
+			"Builtins_List-conclusion.ntriples",
+			NULL),
 		TestdataPET("Core_PET_Builtins_Numeric",
 			"Builtins_Numeric-premise.ntriples",
-			"Builtins_Numeric-conclusion.ntriples"),
+			"Builtins_Numeric-conclusion.ntriples",
+			NULL),
 		TestdataPET("Core_PET_Builtins_PlainLiteral",
 			"not implemented",
 			"Builtins_PlainLiteral-premise.ntriples",
-			"Builtins_PlainLiteral-conclusion.ntriples"),
+			"Builtins_PlainLiteral-conclusion.ntriples",
+			NULL),
 		TestdataPET("Core_PET_Builtins_String",
 			"not implemented",
 			"Builtins_String-premise.ntriples",
-			"Builtins_String-conclusion.ntriples"),
+			"Builtins_String-conclusion.ntriples",
+			NULL),
 		TestdataPET("Core_PET_Builtins_Time",
 			"not implemented",
 			"Builtins_Time-premise.ntriples",
-			"Builtins_Time-conclusion.ntriples"),
+			"Builtins_Time-conclusion.ntriples",
+			NULL),
 		TestdataPET("Core_PET_Builtins_XMLLiteral",
 			"not implemented",
 			"Builtins_XMLLiteral-premise.ntriples",
-			"Builtins_XMLLiteral-conclusion.ntriples"),
+			"Builtins_XMLLiteral-conclusion.ntriples",
+			NULL),
 		TestdataPET("Core_PET_Builtins_anyURI",
 			"not implemented",
 			"Builtins_anyURI-premise.ntriples",
-			"Builtins_anyURI-conclusion.ntriples"),
+			"Builtins_anyURI-conclusion.ntriples",
+			NULL),
 		TestdataPET("Core_PET_Builtins_boolean",
 			"not implemented",
 			"Builtins_boolean-premise.ntriples",
-			"Builtins_boolean-conclusion.ntriples"),
+			"Builtins_boolean-conclusion.ntriples",
+			NULL),
 		TestdataPET("Core_PET_Chaining_strategy_numeric-add_1",
 			"Chaining_strategy_numeric-add_1-premise.ntriples",
-			"Chaining_strategy_numeric-add_1-conclusion.ntriples"),
+			"Chaining_strategy_numeric-add_1-conclusion.ntriples",
+			NULL),
 		TestdataPET("Core_PET_Chaining_strategy_numeric-subtract_2",
 			"Chaining_strategy_numeric-subtract_2-premise.ntriples",
-			"Chaining_strategy_numeric-subtract_2-conclusion.ntriples"),
+			"Chaining_strategy_numeric-subtract_2-conclusion.ntriples",
+			NULL),
 		TestdataPET("Core_PET_EBusiness_Contract",
 			"not implemented",
 			"EBusiness_Contract-premise.ntriples",
-			"EBusiness_Contract-conclusion.ntriples"),
+			"EBusiness_Contract-conclusion.ntriples",
+			NULL),
 		TestdataPET("Core_PET_Factorial_Forward_Chaining",
 			"This needs better automatic rulecreation",
 			"Factorial_Forward_Chaining-premise.ntriples",
-			"Factorial_Forward_Chaining-conclusion.ntriples"),
+			"Factorial_Forward_Chaining-conclusion.ntriples",
+			NULL),
 		TestdataPET("Core_PET_Frame_slots_are_independent",
 			"Frame_slots_are_independent-premise.ntriples",
-			"Frame_slots_are_independent-conclusion.ntriples"),
+			"Frame_slots_are_independent-conclusion.ntriples",
+			NULL),
 		TestdataPET("Core_PET_Frames",
 			"Frames-premise.ntriples",
-			"Frames-conclusion.ntriples"),
+			"Frames-conclusion.ntriples",
+			NULL),
 		TestdataPET("Core_PET_Guards_and_subtypes",
 			"Guards_and_subtypes-premise.ntriples",
-			"Guards_and_subtypes-conclusion.ntriples"),
+			"Guards_and_subtypes-conclusion.ntriples",
+			NULL),
 		TestdataPET("Core_PET_Modeling_Brain_Anatomy",
 			"not implemented",
 			"Modeling_Brain_Anatomy-premise.ntriples",
-			"Modeling_Brain_Anatomy-conclusion.ntriples"),
+			"Modeling_Brain_Anatomy-conclusion.ntriples",
+			NULL),
 		TestdataPET("Core_PET_OWL_Combination_Vocabulary_Separation_Inconsistency_1",
 			"not implemented",
 			"OWL_Combination_Vocabulary_Separation_Inconsistency_1-premise.ntriples",
-			"OWL_Combination_Vocabulary_Separation_Inconsistency_1-conclusion.ntriples"),
+			"OWL_Combination_Vocabulary_Separation_Inconsistency_1-conclusion.ntriples",
+			NULL),
 		TestdataPET("Core_PET_OWL_Combination_Vocabulary_Separation_Inconsistency_2",
 			"not implemented",
-			"OWL_Combination_Vocabulary_Separation_Inconsistency_2-premise.ntriples", "OWL_Combination_Vocabulary_Separation_Inconsistency_2-conclusion.ntriples"),
+			"OWL_Combination_Vocabulary_Separation_Inconsistency_2-premise.ntriples",
+			"OWL_Combination_Vocabulary_Separation_Inconsistency_2-conclusion.ntriples",
+			NULL),
 		TestdataPET("Core_PET_Positional_Arguments",
 			"Positional_Arguments-premise.ntriples",
-			"Positional_Arguments-conclusion.ntriples"),
+			"Positional_Arguments-conclusion.ntriples",
+			NULL),
 		TestdataPET("Core_PET_RDF_Combination_Blank_Node",
+
 			"RDF_Combination_Blank_Node-premise.ntriples",
-			"RDF_Combination_Blank_Node-conclusion.ntriples"),
+			"RDF_Combination_Blank_Node-conclusion.ntriples",
+			Import_Core_PET_RDF_Combination_Blank_Node),
 		TestdataPET("Core_PET_RDF_Combination_Constant_Equivalence_1",
 			"not implemented",
 			"RDF_Combination_Constant_Equivalence_1-premise.ntriples",
-			"RDF_Combination_Constant_Equivalence_1-conclusion.ntriples"),
+			"RDF_Combination_Constant_Equivalence_1-conclusion.ntriples",
+			NULL),
 		TestdataPET("Core_PET_RDF_Combination_Constant_Equivalence_2",
 			"not implemented",
 			"RDF_Combination_Constant_Equivalence_2-premise.ntriples",
-			"RDF_Combination_Constant_Equivalence_2-conclusion.ntriples"),
+			"RDF_Combination_Constant_Equivalence_2-conclusion.ntriples",
+			NULL),
 		TestdataPET("Core_PET_RDF_Combination_Constant_Equivalence_3",
 			"not implemented",
 			"RDF_Combination_Constant_Equivalence_3-premise.ntriples",
-			"RDF_Combination_Constant_Equivalence_3-conclusion.ntriples"),
+			"RDF_Combination_Constant_Equivalence_3-conclusion.ntriples",
+			NULL),
 		TestdataPET("Core_PET_RDF_Combination_Constant_Equivalence_4",
 				"not implemented",
-				"RDF_Combination_Constant_Equivalence_4-premise.ntriples", "RDF_Combination_Constant_Equivalence_4-conclusion.ntriples"),
+				"RDF_Combination_Constant_Equivalence_4-premise.ntriples",
+				"RDF_Combination_Constant_Equivalence_4-conclusion.ntriples",
+			NULL),
 		TestdataPET("Core_PET_RDF_Combination_Constant_Equivalence_Graph_Entailment",
 				"not implemented",
-				"RDF_Combination_Constant_Equivalence_Graph_Entailment-premise.ntriples", "RDF_Combination_Constant_Equivalence_Graph_Entailment-conclusion.ntriples"),
+				"RDF_Combination_Constant_Equivalence_Graph_Entailment-premise.ntriples",
+				"RDF_Combination_Constant_Equivalence_Graph_Entailment-conclusion.ntriples",
+			NULL),
 		TestdataPET("Core_PET_RDF_Combination_SubClass_2",
 				"not implemented",
-				"RDF_Combination_SubClass_2-premise.ntriples", "RDF_Combination_SubClass_2-conclusion.ntriples"),
+				"RDF_Combination_SubClass_2-premise.ntriples",
+				"RDF_Combination_SubClass_2-conclusion.ntriples",
+			NULL),
 		TestdataPET("BLD_PET_Chaining_strategy_numeric-add_2",
 				"not implemented",
-				"Chaining_strategy_numeric-add_2-premise.ntriples", "Chaining_strategy_numeric-add_2-conclusion.ntriples"),
+				"Chaining_strategy_numeric-add_2-premise.ntriples",
+				"Chaining_strategy_numeric-add_2-conclusion.ntriples",
+			NULL),
 		TestdataPET("BLD_PET_Chaining_strategy_numeric-subtract_1",
 				"not implemented",
-				"Chaining_strategy_numeric-subtract_1-premise.ntriples", "Chaining_strategy_numeric-subtract_1-conclusion.ntriples"),
+				"Chaining_strategy_numeric-subtract_1-premise.ntriples",
+				"Chaining_strategy_numeric-subtract_1-conclusion.ntriples",
+			NULL),
 		TestdataPET("BLD_PET_Class_Membership",
 				"not implemented",
-				"Class_Membership-premise.ntriples", "Class_Membership-conclusion.ntriples"),
+				"Class_Membership-premise.ntriples",
+				"Class_Membership-conclusion.ntriples",
+			NULL),
 		TestdataPET("BLD_PET_Classification-inheritance",
 				"not implemented",
-				"Classification-inheritance-premise.ntriples", "Classification-inheritance-conclusion.ntriples"),
+				"Classification-inheritance-premise.ntriples",
+				"Classification-inheritance-conclusion.ntriples",
+			NULL),
 		TestdataPET("BLD_PET_ElementEqualityFromListEquality",
 				"not implemented",
-				"ElementEqualityFromListEquality-premise.ntriples", "ElementEqualityFromListEquality-conclusion.ntriples"),
+				"ElementEqualityFromListEquality-premise.ntriples",
+				"ElementEqualityFromListEquality-conclusion.ntriples",
+			NULL),
 		TestdataPET("BLD_PET_EntailEverything",
 				"not implemented",
-				"EntailEverything-premise.ntriples", "EntailEverything-conclusion.ntriples"),
+				"EntailEverything-premise.ntriples",
+				"EntailEverything-conclusion.ntriples",
+			NULL),
 		TestdataPET("BLD_PET_Equality_in_conclusion_1",
 				"not implemented",
-				"Equality_in_conclusion_1-premise.ntriples", "Equality_in_conclusion_1-conclusion.ntriples"),
+				"Equality_in_conclusion_1-premise.ntriples",
+				"Equality_in_conclusion_1-conclusion.ntriples",
+			NULL),
 		TestdataPET("BLD_PET_Equality_in_conclusion_2",
 				"not implemented",
-				"Equality_in_conclusion_2-premise.ntriples", "Equality_in_conclusion_2-conclusion.ntriples"),
+				"Equality_in_conclusion_2-premise.ntriples",
+				"Equality_in_conclusion_2-conclusion.ntriples",
+			NULL),
 		TestdataPET("BLD_PET_Equality_in_conclusion_3",
 				"not implemented",
-				"Equality_in_conclusion_3-premise.ntriples", "Equality_in_conclusion_3-conclusion.ntriples"),
+				"Equality_in_conclusion_3-premise.ntriples",
+				"Equality_in_conclusion_3-conclusion.ntriples",
+			NULL),
 		TestdataPET("BLD_PET_Equality_in_condition",
 				"not implemented",
-				"Equality_in_condition-premise.ntriples", "Equality_in_condition-conclusion.ntriples"),
+				"Equality_in_condition-premise.ntriples",
+				"Equality_in_condition-conclusion.ntriples",
+			NULL),
 		TestdataPET("BLD_PET_Factorial_Functional",
 				"not implemented",
-				"Factorial_Functional-premise.ntriples", "Factorial_Functional-conclusion.ntriples"),
+				"Factorial_Functional-premise.ntriples",
+				"Factorial_Functional-conclusion.ntriples",
+			NULL),
 		TestdataPET("BLD_PET_Factorial_Relational",
 				"not implemented",
-				"Factorial_Relational-premise.ntriples", "Factorial_Relational-conclusion.ntriples"),
+				"Factorial_Relational-premise.ntriples",
+				"Factorial_Relational-conclusion.ntriples",
+			NULL),
 		TestdataPET("BLD_PET_IRI_from_IRI",
 				"not implemented",
-				"IRI_from_IRI-premise.ntriples", "IRI_from_IRI-conclusion.ntriples"),
+				"IRI_from_IRI-premise.ntriples",
+				"IRI_from_IRI-conclusion.ntriples",
+			NULL),
 		TestdataPET("BLD_PET_Inconsistent_Entailment",
 				"not implemented",
-				"Inconsistent_Entailment-premise.ntriples", "Inconsistent_Entailment-conclusion.ntriples"),
+				"Inconsistent_Entailment-premise.ntriples",
+				"Inconsistent_Entailment-conclusion.ntriples",
+			NULL),
 		TestdataPET("BLD_PET_Individual-Data_Separation_Inconsistency",
 				"not implemented",
-				"Individual-Data_Separation_Inconsistency-premise.ntriples", "Individual-Data_Separation_Inconsistency-conclusion.ntriples"),
+				"Individual-Data_Separation_Inconsistency-premise.ntriples",
+				"Individual-Data_Separation_Inconsistency-conclusion.ntriples",
+			NULL),
 		TestdataPET("BLD_PET_ListConstantEquality",
 				"not implemented",
-				"ListConstantEquality-premise.ntriples", "ListConstantEquality-conclusion.ntriples"),
+				"ListConstantEquality-premise.ntriples",
+				"ListConstantEquality-conclusion.ntriples",
+			NULL),
 		TestdataPET("BLD_PET_ListEqualityFromElementEquality",
 				"not implemented",
-				"ListEqualityFromElementEquality-premise.ntriples", "ListEqualityFromElementEquality-conclusion.ntriples"),
+				"ListEqualityFromElementEquality-premise.ntriples",
+				"ListEqualityFromElementEquality-conclusion.ntriples",
+			NULL),
 		TestdataPET("BLD_PET_ListLiteralEquality",
 				"not implemented",
-				"ListLiteralEquality-premise.ntriples", "ListLiteralEquality-conclusion.ntriples"),
+				"ListLiteralEquality-premise.ntriples",
+				"ListLiteralEquality-conclusion.ntriples",
+			NULL),
 		TestdataPET("BLD_PET_Arbitrary_Entailment",
 				"not implemented",
-				"Arbitrary_Entailment-premise.ntriples", "Arbitrary_Entailment-conclusion.ntriples"),
+				"Arbitrary_Entailment-premise.ntriples",
+				"Arbitrary_Entailment-conclusion.ntriples",
+			NULL),
 		TestdataPET("BLD_PET_Multiple_IRIs_from_String",
 				"not implemented",
 				"Multiple_IRIs_from_String-premise.ntriples",
-				"Multiple_IRIs_from_String-conclusion.ntriples"),
+				"Multiple_IRIs_from_String-conclusion.ntriples",
+			NULL),
 		TestdataPET("BLD_PET_Multiple_Strings_from_IRI",
 				"not implemented",
 				"Multiple_Strings_from_IRI-premise.ntriples",
-				"Multiple_Strings_from_IRI-conclusion.ntriples"),
+				"Multiple_Strings_from_IRI-conclusion.ntriples",
+			NULL),
 		TestdataPET("BLD_PET_Named_Arguments",
 				"not implemented",
 				"Named_Arguments-premise.ntriples",
-				"Named_Arguments-conclusion.ntriples"),
+				"Named_Arguments-conclusion.ntriples",
+			NULL),
 		TestdataPET("BLD_PET_RDF_Combination_Member_1",
 				"not implemented",
 				"RDF_Combination_Member_1-premise.ntriples",
-				"RDF_Combination_Member_1-conclusion.ntriples"),
+				"RDF_Combination_Member_1-conclusion.ntriples",
+			NULL),
 		TestdataPET("BLD_PET_RDF_Combination_SubClass_4",
 				"not implemented",
 				"RDF_Combination_SubClass_4-premise.ntriples",
-				"RDF_Combination_SubClass_4-conclusion.ntriples"),
+				"RDF_Combination_SubClass_4-conclusion.ntriples",
+			NULL),
 		TestdataPET("BLD_PET_RDF_Combination_SubClass_6",
 				"not implemented",
 				"RDF_Combination_SubClass_6-premise.ntriples",
-				"RDF_Combination_SubClass_6-conclusion.ntriples"),
+				"RDF_Combination_SubClass_6-conclusion.ntriples",
+			NULL),
 		TestdataPET("BLD_PET_YoungParentDiscount_1",
 				"not implemented",
 				"YoungParentDiscount_1-premise.ntriples",
-				"YoungParentDiscount_1-conclusion.ntriples"),
+				"YoungParentDiscount_1-conclusion.ntriples",
+			NULL),
 		TestdataPET("PRD_PET_Assert_", //_ makes unique
 				"Assert-premise.ntriples",
-				"Assert-conclusion.ntriples"),
+				"Assert-conclusion.ntriples",
+			NULL),
 		TestdataPET("PRD_PET_AssertRetract",
 				"AssertRetract-premise.ntriples",
-				"AssertRetract-conclusion.ntriples"),
+				"AssertRetract-conclusion.ntriples",
+			NULL),
 		TestdataPET("PRD_PET_AssertRetract2",
 				"not implemented",
 				"AssertRetract2-premise.ntriples",
-				"AssertRetract2-conclusion.ntriples"),
+				"AssertRetract2-conclusion.ntriples",
+			NULL),
 		TestdataPET("PRD_PET_Modify1",
 				"Modify-premise.ntriples",
-				"Modify-conclusion.ntriples"),
+				"Modify-conclusion.ntriples",
+			NULL),
 		TestdataPET("PRD_PET_Modify_loop",
 				"not implemented",
 				"Modify_loop-premise.ntriples",
-				"Modify_loop-conclusion.ntriples")
+				"Modify_loop-conclusion.ntriples",
+			NULL)
 		);
 
 //_CORE_NST=Core_NonSafeness Core_NonSafeness_2
@@ -336,7 +462,7 @@ TEST_P(TestCasesTest, BasicPET) {
 			<< "no information for premise loaded";
 	fclose(premise_f);
 	fprintf(stderr, "generate rif logic\n");
-	logicAsString = generate_rif_logic(retFacts);
+	logicAsString = generate_rif_logic(retFacts, myLoadingFunction, &q);
 	free_linked_list(retFacts);
 	ASSERT_NE(logicAsString, nullptr);
 	fprintf(stderr, "plain output logic:\n%s\n\n", logicAsString->c_str());

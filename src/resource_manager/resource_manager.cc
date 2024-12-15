@@ -13,15 +13,21 @@
 
 #define OWLLOGIC "resources/OwlLogic.clp"
 #define RIFLOGIC "resources/RifLogic.clp"
+#define RDFENTAILMENT "resources/RDFEntailment.clp"
 
 CMRC_DECLARE(clipsrifinterpreter);
 
-static struct clips_graph_container create_logic_helpergraph(const char* logicpath){
+static struct clips_graph_container create_logic_helpergraph(
+		const char* logicpath,
+		LoadingFunction *loading_functions,
+		const void **loading_function_context,
+		unsigned int loading_functions_length
+		){
 	auto fs = cmrc::clipsrifinterpreter::get_filesystem();
 	cmrc::file asfile = fs.open(logicpath);
 	std::string owllogic_data = std::string(asfile.begin(), asfile.end());
 	struct clips_graph_container helper_graph = init_graph();
-	if (!add_needed_user_functions(helper_graph)){
+	if (!add_needed_user_functions(helper_graph, loading_functions, loading_function_context, loading_functions_length)){
 		throw std::runtime_error("failed adding needed to clips "
 				"environment functions.");
 	}
@@ -37,7 +43,7 @@ static struct clips_graph_container create_logic_helpergraph(const char* logicpa
 	return helper_graph;
 }
 
-static std::string *brubru(
+static std::string *create_clipsrifinterpreter_program(
 		const char* create_clips_symbol,
 		struct clips_graph_container helper_graph
 		){
@@ -65,13 +71,16 @@ static std::string *generate_logic(
 		struct TriplesLinkedList* factlist,
 		const char* logicpath,
 		const char* create_clips_symbol,
+		LoadingFunction *loading_functions,
+		const void **loading_function_context,
+		unsigned int loading_functions_length,
 		int debuglevel
 		){
 	int err;
 	std::string *retString;
-	struct clips_graph_container helper_graph = create_logic_helpergraph(logicpath);
+	struct clips_graph_container helper_graph = create_logic_helpergraph(logicpath, loading_functions, loading_function_context, loading_functions_length);
 	if (helper_graph.inErrorState != 0){
-		printf("Couldnt load owllogic\n");
+		fprintf(stderr, "Couldnt load logic\n");
 		close_graph(helper_graph);
 		return nullptr;
 	}
@@ -99,31 +108,55 @@ static std::string *generate_logic(
 	//eval(helper_graph, "(facts)");
 	fprintf(stderr, "rules run: %d\n", qq);
 	//tmpval = eval(helper_graph, "(matches RIFprocess_Group)");
-	retString = brubru(create_clips_symbol, helper_graph);
+	retString = create_clipsrifinterpreter_program(
+			create_clips_symbol, helper_graph);
 
 	close_graph(helper_graph);
 	return retString;
 }
 
+
+std::string *generate_rdf_entailment(struct TriplesLinkedList* rdf_triples){
+	int debuglevel = 0;
+	return generate_logic(rdf_triples, RDFENTAILMENT,
+			"create-clips-script",
+			NULL, NULL, 0,
+			debuglevel);
+}
+
+
 std::string *generate_owl_logic(
 		struct TriplesLinkedList* OWLLogicFactlist
 		){
 	int debuglevel = 0;
-	return generate_logic(OWLLogicFactlist, OWLLOGIC, "create-clips-script", debuglevel);
+	return generate_logic(OWLLogicFactlist, OWLLOGIC,
+			"create-clips-script",
+			NULL, NULL, 0,
+			debuglevel);
 }
 
 std::string *generate_rif_logic(
-		struct TriplesLinkedList* RIFLogicFactlist
+		struct TriplesLinkedList* RIFLogicFactlist,
+		LoadingFunction loading_function,
+		const void *loading_function_context
 		){
 	int debuglevel = 0;
-	return generate_logic(RIFLogicFactlist, RIFLOGIC, "create-script-rif-logic", debuglevel);
+	LoadingFunction wrapper_lf[] = {loading_function, NULL};
+	const void *wrapper_lfc[] = {loading_function_context, NULL};
+	return generate_logic(RIFLogicFactlist, RIFLOGIC,
+			"create-script-rif-logic",
+			wrapper_lf, wrapper_lfc, 1,
+			debuglevel);
 }
 
 std::string *generate_rif_statement(
 		struct TriplesLinkedList* RIFLogicFactlist
 		){
 	int debuglevel = 0;
-	return generate_logic(RIFLogicFactlist, RIFLOGIC, "create-script-rif-statement", debuglevel);
+	return generate_logic(RIFLogicFactlist, RIFLOGIC,
+			"create-script-rif-statement",
+			NULL, NULL, 0,
+			debuglevel);
 }
 
 bool check_statements(struct clips_graph_container graph){
