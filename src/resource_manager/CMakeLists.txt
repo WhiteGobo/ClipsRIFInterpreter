@@ -27,6 +27,7 @@ cmrc_add_resource_library(
 	resources/OwlLogic.clp
 	resources/RifLogic.clp
 	resources/RDFEntailment.clp
+	resources/RDFSEntailment.clp
 )
 
 target_link_libraries(clipsrif_resource_manager PRIVATE

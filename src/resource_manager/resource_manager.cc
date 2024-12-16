@@ -14,6 +14,7 @@
 #define OWLLOGIC "resources/OwlLogic.clp"
 #define RIFLOGIC "resources/RifLogic.clp"
 #define RDFENTAILMENT "resources/RDFEntailment.clp"
+#define RDFSENTAILMENT "resources/RDFSEntailment.clp"
 
 CMRC_DECLARE(clipsrifinterpreter);
 
@@ -119,6 +120,14 @@ static std::string *generate_logic(
 std::string *generate_rdf_entailment(struct TriplesLinkedList* rdf_triples){
 	int debuglevel = 0;
 	return generate_logic(rdf_triples, RDFENTAILMENT,
+			"create-clips-script",
+			NULL, NULL, 0,
+			debuglevel);
+}
+
+std::string *generate_rdfs_entailment(struct TriplesLinkedList* rdf_triples){
+	int debuglevel = 0;
+	return generate_logic(rdf_triples, RDFSENTAILMENT,
 			"create-clips-script",
 			NULL, NULL, 0,
 			debuglevel);

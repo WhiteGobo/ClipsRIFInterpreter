@@ -10,6 +10,7 @@
 
 ///will generate logic via generate_rdf_entailment
 #define _ENTAILMENT_RDF_ "http://www.w3.org/ns/entailment/RDF"
+#define _ENTAILMENT_RDFS_ "http://www.w3.org/ns/entailment/RDFS"
 
 #ifndef CRIFI_RM_INDEX_DATA
 ///id for resourcemanager plugin for clips

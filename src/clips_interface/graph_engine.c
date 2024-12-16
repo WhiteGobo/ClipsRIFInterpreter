@@ -27,7 +27,26 @@ static const char *templates[] = {
 		"	(slot op)\n"
 		"	(multislot args))\n",
 
+	"(deftemplate Subclass\n"
+		"	(slot sub)\n"
+		"	(slot super))\n",
+
+	"(deftemplate Member\n"
+		"	(slot instance)\n"
+		"	(slot class))\n",
+
 	"(defclass AtomList (is-a USER) (multislot items))",
+
+	NULL
+};
+
+static const char *baserules[] = {
+	"(defrule rule1\n"
+		"	(Subclass (sub ?cls) (super ?extracls))\n"
+		"	(Member (instance ?x) (class ?cls))\n"
+		"	=>\n"
+		"	(assert (Member (instance ?x) (class ?extracls)))\n"
+		")",
 
 	NULL
 };
@@ -41,6 +60,20 @@ static bool load_basic_templates(Environment *env) {
 						"Failed loading basic "
 						"templates. happened "
 						"with: '%s'\n", *deftempl);
+				return false;
+				break;
+			case BE_NO_ERROR:
+				break;
+		}
+	}
+	for (const char **defrule = baserules; *defrule != NULL; defrule++){
+		BuildError err = Build(env, *defrule);
+		switch (err) {
+			case BE_PARSING_ERROR:
+				fprintf(stderr, "Critical Internal error. "
+						"Failed loading basic "
+						"templates. happened "
+						"with: '%s'\n", *defrule);
 				return false;
 				break;
 			case BE_NO_ERROR:

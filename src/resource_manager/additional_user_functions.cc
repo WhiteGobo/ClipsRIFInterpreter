@@ -98,15 +98,11 @@ static void import_directive(Environment *env, UDFContext *udfc, UDFValue *out){
 		triples = loading_info->loadingFunction(loading_info->context, location);
 		if (triples != NULL){
 			as_rules_clips = create_rules(triples, profile);
-			printf("qwertz6\n");
 			if (as_rules_clips != nullptr){
-			printf("qwertz7\n");
 				out->value = CreateString(env,
 						as_rules_clips->c_str());
-				printf("import_rules created rules:\n%s\n\n", as_rules_clips->c_str());
 				delete(as_rules_clips);
 			} else {
-			printf("qwertz8\n");
 				set_error_import_directive(env, profile,
 						location);
 				out->value = CreateString(env, "");
@@ -116,6 +112,7 @@ static void import_directive(Environment *env, UDFContext *udfc, UDFValue *out){
 			return;
 		}
 	}
+	set_error_import_directive(env, profile, location);
 	free(location);
 	free(profile);
 	out->value = CreateString(env, "");
@@ -125,6 +122,8 @@ std::string *create_rules(struct TriplesLinkedList* triples, const char* profile
 	std::string *newrules;
 	if (0==strcmp(profile, _ENTAILMENT_RDF_)){
 		return generate_rdf_entailment(triples);
+	} else if (0==strcmp(profile, _ENTAILMENT_RDFS_)){
+		return generate_rdfs_entailment(triples);
 	} else if (profile == NULL){
 		printf("no entailment chosen\n");
 	} else {

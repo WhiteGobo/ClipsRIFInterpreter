@@ -1,0 +1,2 @@
+<http://example.org/example#a> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://example.org/example#C> .
+<http://example.org/example#C> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://example.org/example#D> .

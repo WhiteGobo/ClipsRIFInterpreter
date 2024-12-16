@@ -78,11 +78,8 @@ struct TriplesLinkedList* myLoadingFunction(const void *testdata, const char* lo
 
 	auto fs = cmrc::crifi_test::get_filesystem();
 	FILE *premise_f;
-	printf("qwertz myloadingfunction1\n");
 	if (cast_testdata->import_source == NULL) return NULL;
-	printf("qwertz myloadingfunction2\n");
 	for (const ImportSource *tmpsource = cast_testdata->import_source; tmpsource->id != NULL; tmpsource++){
-			printf("qwertz usetmpsource\n%s\n%s\n", tmpsource->id, location);
 		if (0==strcmp(tmpsource->id, location)){
 			cmrc::file asfile = fs.open(tmpsource->filename);
 			premise_f = fmemopen((char*) asfile.begin(), asfile.size(), "r");
@@ -100,6 +97,13 @@ std::ostream& operator<<(std::ostream& os, const TestdataPET& td){
 	return os;
 }
 
+const ImportSource Import_Core_PET_RDF_Combination_SubClass_2[] = {
+	{
+		"http://www.w3.org/2005/rules/test/repository/tc/RDF_Combination_SubClass_2/RDF_Combination_SubClass_2-import001",
+		"RDF_Combination_SubClass_2-import001.ntriples"
+	},
+	{NULL, NULL}
+};
 
 const ImportSource Import_Core_PET_RDF_Combination_Blank_Node[] = {
 	{
@@ -237,10 +241,9 @@ static auto petTestdata = testing::Values(
 				"RDF_Combination_Constant_Equivalence_Graph_Entailment-conclusion.ntriples",
 			NULL),
 		TestdataPET("Core_PET_RDF_Combination_SubClass_2",
-				"not implemented",
 				"RDF_Combination_SubClass_2-premise.ntriples",
 				"RDF_Combination_SubClass_2-conclusion.ntriples",
-			NULL),
+				Import_Core_PET_RDF_Combination_SubClass_2),
 		TestdataPET("BLD_PET_Chaining_strategy_numeric-add_2",
 				"not implemented",
 				"Chaining_strategy_numeric-add_2-premise.ntriples",
@@ -380,7 +383,6 @@ static auto petTestdata = testing::Values(
 				"AssertRetract-conclusion.ntriples",
 			NULL),
 		TestdataPET("PRD_PET_AssertRetract2",
-				"not implemented",
 				"AssertRetract2-premise.ntriples",
 				"AssertRetract2-conclusion.ntriples",
 			NULL),
@@ -389,7 +391,6 @@ static auto petTestdata = testing::Values(
 				"Modify-conclusion.ntriples",
 			NULL),
 		TestdataPET("PRD_PET_Modify_loop",
-				"not implemented",
 				"Modify_loop-premise.ntriples",
 				"Modify_loop-conclusion.ntriples",
 			NULL)

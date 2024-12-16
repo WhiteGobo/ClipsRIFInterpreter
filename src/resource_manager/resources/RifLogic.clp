@@ -89,6 +89,34 @@
 	))
 (deffunction print-action (?op ?args) (str-cat "("?op" "?args")"))
 
+(deffunction print-membercondition (?instance ?class)
+	(bind ?tmp (str-cat "?" (gensym)))
+	(if (eq ?instance nil) then (bind ?checkinst "")
+	else (bind ?checkinst (str-cat "		(eq " ?tmp ":instance " ?instance ")
+"
+	)))
+	(if (eq ?class nil) then (bind ?checkcls "")
+	else (bind ?checkcls (str-cat "		(eq " ?tmp ":class " ?class ")
+"
+	)))
+	(str-cat 
+"	(neq 0 (length$ (find-fact ((" ?tmp " Member)) (and
+"?checkinst ?checkcls"))))"))
+
+(deffunction print-subclasscondition (?sub ?super)
+	(bind ?tmp (str-cat "?" (gensym)))
+	(if (eq ?sub nil) then (bind ?checksub "")
+	else (bind ?checksub (str-cat "		(eq " ?tmp ":sub " ?sub ")
+"
+	)))
+	(if (eq ?super nil) then (bind ?checksuper "")
+	else (bind ?checksuper (str-cat "		(eq " ?tmp ":super " ?super ")
+"
+	)))
+	(str-cat 
+"	(neq 0 (length$ (find-fact ((" ?tmp " Subclass)) (and
+"?checksub ?checksuper"))))"))
+
 (deffunction print-triplecondition (?subject ?predicate ?object)
 	(bind ?tmp (str-cat "?" (gensym)))
 	(if (eq ?subject nil) then (bind ?checksubj "")
@@ -133,6 +161,18 @@
 		(object " ?object "))"
 	))
 
+(deffunction print-member (?instance ?class) (str-cat 
+"	(Member
+		(instance " ?instance ")
+		(class " ?class "))"
+	))
+
+(deffunction print-subclass (?sub ?super) (str-cat 
+"	(Subclass
+		(sub " ?sub ")
+		(super " ?super "))"
+	))
+
 (deffunction print-assert (?x) (str-cat 
 "	(assert "?x")
 "))
@@ -141,10 +181,17 @@
 )
 
 
+(deffunction print-retracttriples (?factcondition) (str-cat
+"	(do-for-all-facts ((?fct TripleTemplate)) "?factcondition"
+		(retract ?fct))"
+))
+
+
 (deffunction print-retractsubject (?subject) (str-cat
 "	(do-for-all-facts ((?fct TripleTemplate)) (eq ?fct:subject "?subject")
 		(retract ?fct))"
 ))
+
 
 (deffunction print-retractattribute (?subject ?predicate) (str-cat
 "	(do-for-all-facts ((?fct TripleTemplate)) 
@@ -237,6 +284,12 @@
 
 (defclass RIFFrame (is-a AbsRIFSentence AbsRIFAction)
 	(slot object) (slot slots))
+
+(defclass RIFMember (is-a AbsRIFSentence AbsRIFAction)
+	(slot instance) (slot class))
+
+(defclass RIFSubclass (is-a AbsRIFSentence AbsRIFAction)
+	(slot sub) (slot super))
 
 (defclass RIFExternal (is-a AbsRIFAction AbsRIFTermable AbsRIFPattern)
 	(slot content))
@@ -515,6 +568,48 @@
 	(assert (RIFRepresentation (node ?node) (object ?x)))
 )
 
+(defrule RIFprocess_Subclass
+	(TripleTemplate
+		(subject ?node)
+		(predicate <http://www.w3.org/1999/02/22-rdf-syntax-ns#type>)
+		(object <http://www.w3.org/2007/rif#Subclass>))
+	(TripleTemplate
+		(subject ?node)
+		(predicate <http://www.w3.org/2007/rif#sub>)
+		(object ?sub))
+	(TripleTemplate
+		(subject ?node)
+		(predicate <http://www.w3.org/2007/rif#super>)
+		(object ?super))
+	?objsub <- (object (node ?sub) (is-a RIFObj))
+	?objsuper <- (object (node ?super) (is-a RDFObj))
+	=>
+	(bind ?x (make-instance of RIFSubclass (node ?node)
+		(sub ?objsub) (super ?objsuper)))
+	(assert (RIFRepresentation (node ?node) (object ?x)))
+)
+
+(defrule RIFprocess_Member
+	(TripleTemplate
+		(subject ?node)
+		(predicate <http://www.w3.org/1999/02/22-rdf-syntax-ns#type>)
+		(object <http://www.w3.org/2007/rif#Member>))
+	(TripleTemplate
+		(subject ?node)
+		(predicate <http://www.w3.org/2007/rif#instance>)
+		(object ?instance))
+	(TripleTemplate
+		(subject ?node)
+		(predicate <http://www.w3.org/2007/rif#class>)
+		(object ?class))
+	?objinstance <- (object (is-a RIFObj) (node ?instance))
+	?objclass <- (object (is-a RDFObj) (node ?class))
+	=>
+	(bind ?x (make-instance of RIFMember (node ?node)
+		(instance ?objinstance) (class ?objclass)))
+	(assert (RIFRepresentation (node ?node) (object ?x)))
+)
+
 (defrule _default_empty_atom_args
 	(TripleTemplate
 		(subject ?node)
@@ -758,6 +853,27 @@
 		(subject ?node)
 		(predicate <http://www.w3.org/1999/02/22-rdf-syntax-ns#type>)
 		(object <http://www.w3.org/2007/rif#Document>))
+	(not
+		(TripleTemplate
+			(subject ?node)
+			(predicate <http://www.w3.org/2007/rif#payload>))
+	)
+	(TripleTemplate
+		(subject ?node)
+		(predicate <http://www.w3.org/2007/rif#directives>)
+		(object ?nodedirectives))
+	?objdirectives <- (object (is-a RDFList) (node ?nodedirectives))
+	=>
+	(bind ?x (make-instance of RIFDocument (node ?node)
+		(directives ?objdirectives)))
+	(assert (RIFRepresentation (node ?node) (object ?x)))
+)
+
+(defrule RIFprocess_DocumentC
+	(TripleTemplate
+		(subject ?node)
+		(predicate <http://www.w3.org/1999/02/22-rdf-syntax-ns#type>)
+		(object <http://www.w3.org/2007/rif#Document>))
 	(TripleTemplate
 		(subject ?node)
 		(predicate <http://www.w3.org/2007/rif#payload>)
@@ -778,7 +894,7 @@
 ;##methods
 
 
-(defmessage-handler AbsRIFAction create-action ()
+(defmessage-handler RIFObj create-action ()
 	;Create a prd style action
 	;In clips will be multislot of string representing actions
 	(set-error (str-cat 
@@ -787,48 +903,48 @@
 	(return "")
 )
 
-(defmessage-handler AbsRIFPattern create-pattern ()
+(defmessage-handler RIFObj create-pattern ()
 	(set-error (str-cat 
 		"Missing implementation for create-pattern for " (type ?self)
 	))
 	(return ""))
 
-(defmessage-handler AbsRIFPattern create-condition ();move this to condition
+(defmessage-handler RIFObj create-condition ();move this to condition
 	(set-error (str-cat 
 		"Missing implementation for create-condition for " (type ?self)
 	))
 	(return ""))
 
 ;create action that returns bool
-(defmessage-handler AbsRIFCondition create-condition ()
+(defmessage-handler RIFObj create-condition ()
 	(set-error (str-cat 
 		"Missing implementation for create-condition for " (type ?self)
 	))
 	(return ""))
 
-(defmessage-handler AbsRIFSentence create-sentence ()
+(defmessage-handler RIFObj create-sentence ()
 	(bind ?name (send ?self get-rulename))
 	(bind ?lhs (send ?self get-lhs))
 	(if (get-error) then (return ""))
 	(bind ?rhs (send ?self get-rhs))
 	(return (printrule ?name "" ?lhs ?rhs)))
 
-(defmessage-handler AbsRIFSentence get-rulename ()
+(defmessage-handler RIFObj get-rulename ()
 	(return (str-cat "rule-" (gensym)))
 )
-(defmessage-handler AbsRIFSentence get-rhs ()
+(defmessage-handler RIFObj get-rhs ()
 	(set-error (str-cat 
 		"Missing implementation for get-rhs for " (type ?self)
 	))
 	(return ""))
 
-(defmessage-handler AbsRIFSentence get-lhs ()
+(defmessage-handler RIFObj get-lhs ()
 	(set-error (str-cat 
 		"Missing implementation for get-lhs for " (type ?self)
 	))
 	(return ""))
 
-(defmessage-handler AbsRIFTermable as_term ()
+(defmessage-handler RIFObj as_term ()
 	(set-error (str-cat 
 		"Missing implementation for as_term for " (type ?self)
 	))
@@ -983,13 +1099,38 @@
 	(str-cat "" (expand$ ?ret))
 )
 
+
+(defmessage-handler RIFRetract create-action-frame ()
+	;(eq (type ?self:target) RIFFrame)
+	(bind ?frm ?self:target)
+	
+	(bind ?s (send (send ?self:target get-object) as_term))
+
+	(bind ?predcondition (create$))
+	(foreach ?slt (send (send ?self:target get-slots) get-items)
+		(bind ?p (send (send ?slt get-slotkey) as_term))
+		(bind ?o (send (send ?slt get-slotvalue) as_term))
+		(bind ?predcondition (append$ ?predcondition
+			(str-cat "(and (eq ?fct:predicate "?p")"
+					"(eq ?fct:object "?o"))")))
+	)
+	(if (eq 1 (length$ ?predcondition))
+		then (bind ?predcondition (expand$ ?predcondition))
+		else (bind ?predcondition (str-cat "(or "(expand$ ?predcondition)")"))
+	)
+	(bind ?factcondition (str-cat "(and (eq ?fct:subject "?s") "?predcondition")"))
+	(return (print-retracttriples ?factcondition))
+
+)
+
 (defmessage-handler RIFRetract create-action ()
 	(bind ?t (type ?self:target))
-	(if (eq ?t RIFVar) then (return (print-retractsubject (send ?self:target as_term))))
+	(if (or (eq ?t RIFVar) (eq ?t RIFConst)) then
+		(return (print-retractsubject (send ?self:target as_term))))
+	(if (eq ?t RIFFrame) then
+		(return (send ?self create-action-frame)))
 	(set-error "create action not complete implementedin RIFRetract.")
 	(return "")
-	(bind ?ret (create$))
-	(str-cat "" (expand$ ?ret))
 )
 
 (defmessage-handler RIFModify create-action ()
@@ -1033,6 +1174,19 @@
 		then (str-cat "(and " (expand$ ?ret) ")")
 		else (str-cat "" (expand$ ?ret)))
 )
+
+(defmessage-handler RIFMember create-condition ()
+	(bind ?inst (send ?self:instance as_term))
+	(bind ?cls (send ?self:class as_term))
+	(return (print-membercondition ?inst ?cls))
+)
+
+(defmessage-handler RIFSubclass create-condition ()
+	(bind ?sub (send ?self:sub as_term))
+	(bind ?super (send ?self:super as_term))
+	(return (print-subclasscondition ?sub ?super))
+)
+
 
 ;return multiple multislots with 3 entries
 (defmessage-handler RIFFrame as_triples ()
@@ -1087,6 +1241,28 @@
 
 		(bind ?ret (append$ ?ret (print-triple ?s ?p ?o)))
 	)
+	(str-cat "" (expand$ ?ret) (expand$ ?checks))
+)
+
+(defmessage-handler RIFMember create-pattern ()
+	(bind ?ret (create$))
+
+	(bind ?checks (create$))
+	(bind ?tmp (send ?self:instance as_term_on_lhs))
+	(if (get-error) then (return ""))
+	(bind ?inst (send ?tmp get-term))
+	(bind ?checks (append$ ?checks (send ?tmp get-checks)))
+	(unmake-instance ?tmp)
+
+	(bind ?checks (create$))
+	(bind ?tmp (send ?self:class as_term_on_lhs))
+	(if (get-error) then (return ""))
+	(bind ?cls (send ?tmp get-term))
+	(bind ?checks (append$ ?checks (send ?tmp get-checks)))
+	(unmake-instance ?tmp)
+
+	(bind ?ret (append$ ?ret (print-member ?inst ?cls)))
+
 	(str-cat "" (expand$ ?ret) (expand$ ?checks))
 )
 
@@ -1232,7 +1408,12 @@
 		))
 		(if (get-error) then (return ""))
 	))
-	(return (str-cat (expand$ ?additionalrules) (send ?self:payload create-rules)))
+	(if (neq ?self:payload nil) then
+		then (return (str-cat
+			(expand$ ?additionalrules)
+			(send ?self:payload create-rules)))
+		else (return (str-cat (expand$ ?additionalrules)))
+	)
 )
 
 

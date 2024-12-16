@@ -150,6 +150,7 @@ cmrc_add_resource_library(
 	RDF_Combination_SubClass-premise.ntriples
 	RDF_Combination_SubClass_2-conclusion.ntriples
 	RDF_Combination_SubClass_2-premise.ntriples
+	RDF_Combination_SubClass_2-import001.ntriples
 	RDF_Combination_SubClass_3-nonconclusion.ntriples
 	RDF_Combination_SubClass_3-premise.ntriples
 	RDF_Combination_SubClass_4-conclusion.ntriples
