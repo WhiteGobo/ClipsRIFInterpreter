@@ -26,30 +26,38 @@ bool retrieve_items_udf(Environment *env, UDFValue arglist, CLIPSValue *items){
 	return retrieve_items(env, cpy_arglist, items);
 }
 
+Fact *clipsvalue_to_list(CLIPSValue val){
+	Deftemplate *factClass;
+	Fact *list;
+	if(val.header->type != FACT_ADDRESS_TYPE) return NULL;
+	factClass = FactDeftemplate(list);
+	if(0 != strcmp("AtomList", DeftemplateName(factClass))){
+		return NULL;
+	}
+	return list;
+}
+
 bool retrieve_items(Environment *env, CLIPSValue arglist, CLIPSValue *items){
-	Defclass *atomListClass;
-	Instance *superlist;
+	Deftemplate *factClass;
+	Fact *superlist;
 	switch (arglist.header->type) {
-		case INSTANCE_NAME_TYPE:
-			//eval(env, "(send %s get-items)", items);
-			//return true;
-			superlist = FindInstance(env, NULL,
-					arglist.lexemeValue->contents, true);
-			break;
-		case INSTANCE_ADDRESS_TYPE:
-			superlist = arglist.instanceValue;
+		case FACT_ADDRESS_TYPE:
+			superlist = arglist.factValue;
 			break;
 		default:
 			return false;
 	}
 
-	atomListClass = FindDefclass(env, "AtomList");
-	if (atomListClass == NULL) return false;
-	if (InstanceClass(superlist) != atomListClass) return false;
-	if (GSE_NO_ERROR != DirectGetSlot(superlist, "items", items)) {
+	factClass = FactDeftemplate(superlist);
+	if(0 != strcmp("AtomList", DeftemplateName(factClass))){
 		return false;
 	}
-	return true;
+	switch (GetFactSlot(superlist, "items", items)) {
+		case GSE_NO_ERROR:
+			return true; break;
+		default:
+			return false;
+	}
 }
 
 
@@ -67,12 +75,12 @@ CLIPSValue crifi_list_get(Environment *env, CLIPSValue list, long long index){
 	return ret;
 }
 
-Instance *crifi_list_concatenate(Environment *env, CLIPSValue *listlist, size_t listlist_length){
+Fact *crifi_list_concatenate(Environment *env, CLIPSValue *listlist, size_t listlist_length){
 	CLIPSValue ret;
 	size_t newlist_length = 0;
 	CLIPSValue items[listlist_length];
 	CLIPSValue *newvalues, *tmpptr;
-	Instance *newlist;
+	Fact *newlist;
 	Multifield *tmp_mf;
 	for (int i=0; i<listlist_length; i++){
 		if (!retrieve_items(env, listlist[i], items+i)){
@@ -93,12 +101,12 @@ Instance *crifi_list_concatenate(Environment *env, CLIPSValue *listlist, size_t 
 }
 
 
-Instance *crifi_list_distinct_values(Environment *env, CLIPSValue list){
+Fact *crifi_list_distinct_values(Environment *env, CLIPSValue list){
 	IEQ_RET check;
 	size_t newlist_length = 0;
 	CLIPSValue mf_items, *items;
 	CLIPSValue *newitems, *tmpptr;
-	Instance *ret;
+	Fact *ret;
 
 	if (!retrieve_items(env, list, &mf_items)){
 		return NULL;
@@ -170,18 +178,50 @@ static size_t get_argsize(CLIPSValue val){
 	}
 }
 
-Instance* crifi_list_new(Environment *env, CLIPSValue *values, size_t values_length){
-	Instance* ret;
-	MakeInstanceError err;
+Fact* crifi_list_new(Environment *env, CLIPSValue *values, size_t values_length){
+	Fact* ret;
+
+	//printf("asdf %d\n", values[0].header->type);
+	Multifield *items;
+	MultifieldBuilder *mb;
+	mb = CreateMultifieldBuilder(env, values_length);
+	for (int i=0; i<values_length; i++){
+		MBAppend(mb, values + i);
+	}
+	items = MBCreate(mb);
+	MBDispose(mb);
+
+	FactBuilder *fb;
+	FactBuilderError err;
+	fb = CreateFactBuilder(env, "AtomList");
+	switch(FBPutSlotMultifield(fb, "items", items)){
+		case PSE_NO_ERROR:
+			break;
+		default:
+			FBDispose(fb); return NULL;
+	}
+	ret = FBAssert(fb);
+	switch (FBError(env)){
+		case FBE_NO_ERROR:
+			break;
+		default:
+			FBDispose(fb); return NULL;
+	}
+	FBDispose(fb);
+	return ret;
+	/*
+
+	AssertStringError err;
 	char *command, *cptr;
 	size_t argsize, delta;
 	argsize=1;
 	for (int i=0; i<values_length; i++){
 		argsize += 1 + get_argsize(values[i]);
 	}
-	command = malloc(sizeof("(of AtomList (items))")+ argsize);
+	//command = malloc(sizeof("(of AtomList (items))")+ argsize);
+	command = malloc(sizeof("(AtomList (items))")+ argsize);
 	cptr = command;
- 	delta = sprintf(cptr, "(of AtomList (items");
+ 	delta = sprintf(cptr, "(AtomList (items");
 	cptr += delta;
 	for (int i=0; i<values_length; i++){
 		delta = sprintf_arg(cptr, " %s", values[i]);
@@ -190,26 +230,27 @@ Instance* crifi_list_new(Environment *env, CLIPSValue *values, size_t values_len
 	}
 	sprintf(cptr, "))");
 
-	ret = MakeInstance(env, command);
-	printf("failed to create list with command: %s\n", command);
+	//ret = MakeInstance(env, command);
+	ret = AssertString(env, command);
 	//alternativly use IBMake
-	err = GetMakeInstanceError(env);
+	err = GetAssertStringError(env);
 
 	switch (err){
-		case MIE_NO_ERROR:
+		case ASE_NO_ERROR:
 			break;
-		case MIE_NULL_POINTER_ERROR:
-		case MIE_PARSING_ERROR:
-		case MIE_COULD_NOT_CREATE_ERROR:
+		default:
 			fprintf(stderr, "failed to create list with command: %s\n", command);
-			break;
+
+			free(command);
+			return NULL;
 	}
 	free(command);
 	return ret;
+	*/
 }
 
 
-Instance *crifi_list_intersect(Environment *env, CLIPSValue leftlist, CLIPSValue rightlist){
+Fact *crifi_list_intersect(Environment *env, CLIPSValue leftlist, CLIPSValue rightlist){
 	IEQ_RET check;
 	size_t newlist_length = 0;
 	size_t left_items_length, right_items_length;
@@ -217,7 +258,7 @@ Instance *crifi_list_intersect(Environment *env, CLIPSValue leftlist, CLIPSValue
 	CLIPSValue left_mf_items, *left_items;
 
 	CLIPSValue *newitems, *tmpptr;
-	Instance *ret;
+	Fact *ret;
 
 	if (!retrieve_items(env, leftlist, &left_mf_items)) return NULL;
 	if (!retrieve_items(env, rightlist, &right_mf_items)) return NULL;
@@ -249,7 +290,7 @@ Instance *crifi_list_intersect(Environment *env, CLIPSValue leftlist, CLIPSValue
 	return ret;
 }
 
-Instance *crifi_list_except(Environment *env, CLIPSValue list, CLIPSValue exceptions){
+Fact *crifi_list_except(Environment *env, CLIPSValue list, CLIPSValue exceptions){
 	IEQ_RET check;
 	size_t newlist_length = 0;
 	size_t left_items_length, right_items_length;
@@ -257,7 +298,7 @@ Instance *crifi_list_except(Environment *env, CLIPSValue list, CLIPSValue except
 	CLIPSValue left_mf_items, *left_items;
 
 	CLIPSValue *newitems, *tmpptr;
-	Instance *ret;
+	Fact *ret;
 
 	if (!retrieve_items(env, list, &left_mf_items)) return NULL;
 	if (!retrieve_items(env, exceptions, &right_mf_items)) return NULL;

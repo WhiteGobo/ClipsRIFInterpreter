@@ -12,6 +12,7 @@
 #include "additional_user_functions.h"
 
 #define OWLLOGIC "resources/OwlLogic.clp"
+#define OWLDIRECT "resources/OwlDirect.clp"
 #define RIFLOGIC "resources/RifLogic.clp"
 #define RDFENTAILMENT "resources/RDFEntailment.clp"
 #define RDFSENTAILMENT "resources/RDFSEntailment.clp"
@@ -109,8 +110,17 @@ static std::string *generate_logic(
 	//eval(helper_graph, "(facts)");
 	fprintf(stderr, "rules run: %d\n", qq);
 	//tmpval = eval(helper_graph, "(matches RIFprocess_Group)");
+	if (graph_in_errorstate(helper_graph)){
+		throw std::runtime_error("Rulecreation ended in errorstate. "
+				"Happend during run.");
+	}
 	retString = create_clipsrifinterpreter_program(
 			create_clips_symbol, helper_graph);
+
+	if (graph_in_errorstate(helper_graph)){
+		throw std::runtime_error("Rulecreation ended in errorstate. "
+				"Happend during retrieval of clips program.");
+	}
 
 	close_graph(helper_graph);
 	return retString;
@@ -124,6 +134,7 @@ std::string *generate_rdf_entailment(struct TriplesLinkedList* rdf_triples){
 			NULL, NULL, 0,
 			debuglevel);
 }
+
 
 std::string *generate_rdfs_entailment(struct TriplesLinkedList* rdf_triples){
 	int debuglevel = 0;
@@ -164,6 +175,16 @@ std::string *generate_rif_statement(
 	int debuglevel = 0;
 	return generate_logic(RIFLogicFactlist, RIFLOGIC,
 			"create-script-rif-statement",
+			NULL, NULL, 0,
+			debuglevel);
+}
+
+
+std::string *generate_owldirect_entailment(
+		struct TriplesLinkedList* owl_triples){
+	int debuglevel = 0;
+	return generate_logic(owl_triples, OWLDIRECT,
+			"create-clips-script",
 			NULL, NULL, 0,
 			debuglevel);
 }

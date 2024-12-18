@@ -3,6 +3,7 @@ add_library(external_functions SHARED
 	math_user_defined_functions.c
 	pred_user_defined_functions.c
 	list_user_defined_functions.c
+	binary_user_defined_functions.c
 	own_user_defined_functions.c
 	external_functions.h
 )

@@ -176,6 +176,7 @@
 (deffunction print-assert (?x) (str-cat 
 "	(assert "?x")
 "))
+
 (deffunction print-assertTriple (?subject ?predicate ?object) 
 	(print-assert (print-triple ?subject ?predicate ?object))
 )
@@ -1327,7 +1328,7 @@
 	(str-cat "(test "(print-action ?op (str-cat ""(expand$ ?args)))")"))
 
 (defmessage-handler RIFEqual create-pattern ()
-	(bind ?op "<http://white.gobo/equal>")
+	(bind ?op "eq")
 	(bind ?left (send ?self:left as_term))
 	(bind ?right (send ?self:right as_term))
 	(bind ?args (create$ ?left ?right))

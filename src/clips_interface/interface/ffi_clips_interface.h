@@ -289,6 +289,12 @@ FFI_PLUGIN_EXPORT void free_dynamic_value(struct DynamicValue val);
  */
 FFI_PLUGIN_EXPORT void add_plugin(struct clips_graph_container *graph);
 
+
+/**
+ * check if unhandled error occured
+ */
+FFI_PLUGIN_EXPORT bool graph_in_errorstate(struct clips_graph_container graph);
+
 #ifdef __cplusplus
 }
 #endif

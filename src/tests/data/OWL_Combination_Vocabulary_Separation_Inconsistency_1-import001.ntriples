@@ -1,0 +1,2 @@
+_:n870fee4a8a2b447cb6911910f58775c8b1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#Ontology> .
+<http://example.org/example#myiri> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://example.org/example#A> .

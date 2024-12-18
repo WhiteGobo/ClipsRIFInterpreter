@@ -34,6 +34,21 @@ static IEQ_RET compare_instances(Environment *env, Instance *linstance, Instance
 
 
 IEQ_RET internal_equal(Environment *env, CLIPSValue *left, CLIPSValue *right){
+	CLIPSValue retval;
+	FunctionCallBuilder *fcb = CreateFunctionCallBuilder(env, 2);
+	FCBAppend(fcb, left);
+	FCBAppend(fcb, right);
+	FCBCall(fcb, "eq", &retval);
+	FCBDispose(fcb);
+	if (retval.lexemeValue == FalseSymbol(env)){
+		return IEQ_FALSE;
+	} else if (retval.lexemeValue == TrueSymbol(env)){
+		return IEQ_TRUE;
+	} else {
+		return IEQ_ERROR;
+	}
+
+	/*
 	bool check;
 	IEQ_RET checka;
 	size_t length;
@@ -92,5 +107,6 @@ IEQ_RET internal_equal(Environment *env, CLIPSValue *left, CLIPSValue *right){
 			break;
 	}
 	return IEQ_ERROR;
+	*/
 }
 

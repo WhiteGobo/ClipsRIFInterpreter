@@ -7,6 +7,7 @@
 #include <n3parser.h>
 
 
+
 FFI_PLUGIN_EXPORT struct clips_graph_container init_graph(){
 	struct clips_graph_container graph_container;
 	graph_container.environment = initEnvironment();
@@ -22,10 +23,17 @@ FFI_PLUGIN_EXPORT struct clips_graph_container init_graph(){
 FFI_PLUGIN_EXPORT RET_LOADCONFIG load_config_mem(
 		struct clips_graph_container graphContainer,
 		const char* configString, size_t lengthString){
+	if (graph_in_errorstate(graphContainer)){
+		return CTC_LC_UNKNOWN_STATE;
+	}
 	bool success = load_config_internal_mem(
 			graphContainer.environment,
 			configString,
 			lengthString);
+
+	if (graph_in_errorstate(graphContainer)){
+		return CTC_LC_PARSING_ERROR;
+	}
 	if (success) {
 		eval(graphContainer, "(reset)");
 		return CTC_LC_NO_ERROR;
@@ -35,6 +43,9 @@ FFI_PLUGIN_EXPORT RET_LOADCONFIG load_config_mem(
 
 FFI_PLUGIN_EXPORT RET_LOADCONFIG load_config(struct clips_graph_container graph_container, char *configPath){
 	LoadError lerr = load_config_internal(graph_container.environment, configPath);
+	if (graph_in_errorstate(graph_container)){
+		return CTC_LC_PARSING_ERROR;
+	}
 	switch(lerr){
 		case LE_NO_ERROR:
 			eval(graph_container, "(reset)");
@@ -153,6 +164,27 @@ FFI_PLUGIN_EXPORT int build(struct clips_graph_container graph, Utf8String comma
 			return 2;
 		case BE_PARSING_ERROR:
 			return 3;
+	}
+}
+
+FFI_PLUGIN_EXPORT bool graph_in_errorstate(struct clips_graph_container graph){
+	struct DynamicValue retval = eval(graph, "(get-error)");
+	switch (retval.type){
+		case CTC_DYNAMIC_ERROR:
+			fprintf(stderr, "dynamic error\n");
+			return true;
+			break;
+		case CTC_DYNAMIC_BOOL:
+			return retval.val.boolean;
+			break;
+		case CTC_DYNAMIC_STRING:
+			fprintf(stderr, "graph in errorstate: %s\n",
+					retval.val.string);
+		case CTC_DYNAMIC_VOID:
+		case CTC_DYNAMIC_INT:
+		default:
+			fprintf(stderr, "errorstate type %d\n", retval.type);
+			return true;
 	}
 }
 

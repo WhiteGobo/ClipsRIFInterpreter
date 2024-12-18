@@ -4,6 +4,7 @@
 #include "math_user_defined_functions.h"
 #include "pred_user_defined_functions.h"
 #include "list_user_defined_functions.h"
+#include "binary_user_defined_functions.h"
 #include "own_user_defined_functions.h"
 
 #include "external_functions.h"
@@ -144,7 +145,10 @@ static UDFDescription builtinFunctionList[] = {
 	{"<"_XS_float_">", "s", 1, 1, "s",
 		rif_cast_as, "rif_cast_as", CT_static, _XS_float_},
 	{"<"_XS_decimal_">", "s", 1, 1, "s", rif_cast_as, "rif_cast_as", CT_static, _XS_decimal_},
-	{"<"_XS_hexBinary_">", "s", 1, 1, "s", rif_cast_as, "rif_cast_as", CT_static, _XS_hexBinary_},
+	{"<"_XS_hexBinary_">", "s", 1, 1, "s",
+		rif_cast_as, "rif_cast_as", CT_static, _XS_hexBinary_},
+	{"<"_XS_base64Binary_">", "s", 1, 1, "s",
+		rif_cast_as, "rif_cast_as", CT_static, _XS_base64Binary_},
 	{"<"_XS_integer_">", "s", 1, 1, "s", rif_cast_as, "rif_cast_as", CT_static, _XS_integer_},
 	{"<"_XS_long_">", "s", 1, 1, "s", rif_cast_as, "rif_cast_as", CT_static, _XS_long_},
 	{"<"_XS_int_">", "s", 1, 1, "s", rif_cast_as, "rif_cast_as", CT_static, _XS_int_},
@@ -191,6 +195,13 @@ static UDFDescription builtinFunctionList[] = {
 		func_intersect, "func_intersect", CT_static, NULL},
 	{"<"_FUNC_except_">", "*", 2, 2, "*",
 		func_except, "func_except", CT_static, NULL},
+
+	{"<"_PRED_is_literal_base64Binary_">", "b", 1, 1, "s",
+		rif_is_literal_base64Binary, "rif_is_literal_base64Binary",
+		CT_static, &CRegular},
+	{"<"_PRED_is_literal_not_base64Binary_">", "b", 1, 1, "s",
+		rif_is_literal_base64Binary, "rif_is_literal_base64Binary",
+		CT_static, &CInvert},
 
 
 	{NULL, NULL, 0,0, NULL, NULL, NULL, CT_static, NULL}

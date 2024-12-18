@@ -16,6 +16,9 @@ CLIPSValue getFactsFromEnvironment(Environment *env){
 	//return retList.multifieldValue->length;
 }
 
+/**
+ * See also 'https://www.w3.org/TR/2013/REC-rif-bld-20130205/#Terms'_
+ */
 static const char *templates[] = {
 	"(deftemplate TripleTemplate\n"
 		"	(slot subject)\n"
@@ -35,7 +38,11 @@ static const char *templates[] = {
 		"	(slot instance)\n"
 		"	(slot class))\n",
 
-	"(defclass AtomList (is-a USER) (multislot items))",
+	"(deftemplate Equal\n"
+		"	(slot left)\n"
+		"	(slot right))\n",
+
+	"(deftemplate AtomList (multislot items))",
 
 	NULL
 };
@@ -47,6 +54,8 @@ static const char *baserules[] = {
 		"	=>\n"
 		"	(assert (Member (instance ?x) (class ?extracls)))\n"
 		")",
+	
+	//"(defrule remove-unneeded atomlists)"
 
 	NULL
 };

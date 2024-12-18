@@ -93,4 +93,6 @@ Need an educated way to use test in rules with this in mind.
 
 
 
+# notes
 
+add time date library maybe? `https://github.com/TimSC/iso8601lib/tree/master`_

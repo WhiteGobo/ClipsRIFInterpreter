@@ -32,6 +32,7 @@ void pred_is_list(Environment *env, UDFContext *udfc, UDFValue *out){
 void pred_list_contains(Environment *env, UDFContext *udfc, UDFValue *out){
 	IEQ_RET check;
 	UDFValue arglist, entry;
+	CLIPSValue c_arglist;
 	CLIPSValue entry_dupl, items;
 	if (!UDFFirstArgument(udfc, ANY_TYPE_BITS, &arglist)){
 		RETURNARGERROR("list_contains");
@@ -39,8 +40,10 @@ void pred_list_contains(Environment *env, UDFContext *udfc, UDFValue *out){
 	if(!UDFNextArgument(udfc, ANY_TYPE_BITS, &entry)){
 		RETURNARGERROR("list_contains");
 	}
-	if (!retrieve_items_udf(env, arglist, &items)){
-		RETURNARGERROR("Cant handle given list.");
+	c_arglist.value = arglist.value;
+	if (!retrieve_items(env, c_arglist, &items)){
+		RETURNFAIL("Cant handle given list."
+				"(retrieve_items_udf failed)");
 	}
 	entry_dupl.header = entry.header;
 	for(int i = 0; i < items.multifieldValue->length; i++){
@@ -50,7 +53,7 @@ void pred_list_contains(Environment *env, UDFContext *udfc, UDFValue *out){
 			out->lexemeValue = CreateBoolean(env, true);
 			return;
 		} else if (check == IEQ_ERROR){
-			RETURNARGERROR("brubru");
+			RETURNARGERROR("pred_list_contains");
 		}
 	}
 	out->lexemeValue = CreateBoolean(env, false);
@@ -94,45 +97,9 @@ static size_t sprintf_arg(char *cptr, const char* format, CLIPSValue val){
 }
 
 
-static Instance* intern_make_list(Environment *env, CLIPSValue *values, size_t values_length){
-	Instance* ret;
-	MakeInstanceError err;
-	char *command, *cptr;
-	size_t argsize, delta;
-	argsize=1;
-	for (int i=0; i<values_length; i++){
-		argsize += 1 + get_argsize(values[i]);
-	}
-	command = malloc(sizeof("(of AtomList (items))")+ argsize);
-	cptr = command;
- 	delta = sprintf(cptr, "(of AtomList (items");
-	cptr += delta;
-	for (int i=0; i<values_length; i++){
-		delta = sprintf_arg(cptr, " %s", values[i]);
-		//if(delta == 0) return NULL;
-		cptr += delta;
-	}
-	sprintf(cptr, "))");
-
-	ret = MakeInstance(env, command);
-	//alternativly use IBMake
-	err = GetMakeInstanceError(env);
-
-	switch (err){
-		case MIE_NO_ERROR:
-			break;
-		case MIE_NULL_POINTER_ERROR:
-		case MIE_PARSING_ERROR:
-		case MIE_COULD_NOT_CREATE_ERROR:
-			fprintf(stderr, "failed to create list with command: %s\n", command);
-			break;
-	}
-	free(command);
-	return ret;
-}
 
 void func_make_list(Environment *env, UDFContext *udfc, UDFValue *out){
-	Instance* retinstance;
+	Fact* ret;
 	unsigned int l = UDFArgumentCount(udfc);
 	UDFValue tmpval;
 	CLIPSValue myval[l+1];
@@ -146,45 +113,34 @@ void func_make_list(Environment *env, UDFContext *udfc, UDFValue *out){
 		}
 		myval[i].value = tmpval.value;
 	}
-	retinstance = intern_make_list(env, myval, l);
-	if (retinstance != NULL){
-		out->instanceValue = retinstance;
+	ret = crifi_list_new(env, myval, l);
+	if (ret != NULL){
+		out->factValue = ret;
+	} else {
+		out->voidValue = VoidConstant(env);
 	}
 	//out->lexemeValue = CreateInstanceName(env, InstanceName(retinstance));
 }
 
 
 void func_count(Environment *env, UDFContext *udfc, UDFValue *out){
-	const char *list_name;
 	size_t length;
 	GetSlotError err;
 	CLIPSValue items;
-	UDFValue list;
-	Instance *list_inst;
+	UDFValue list_udfvalue;
+	CLIPSValue list_clipsvalue;
 	Defclass *argclass, *atomListClass;
 
-	if (!UDFFirstArgument(udfc, ANY_TYPE_BITS, &list)){
+	if (!UDFFirstArgument(udfc, ANY_TYPE_BITS, &list_udfvalue)){
 		RETURNFAIL("func_count requires instance of type AtomList");
 	}
-	if (list.header->type == VOID_TYPE) {
-		return;
-	} else if (list.header->type == INSTANCE_NAME_TYPE) {
-		list_name = list.lexemeValue->contents;
-		list_inst = FindInstance(env, NULL, list_name, true);
-	} else if (list.header->type == INSTANCE_ADDRESS_TYPE) {
-		list_inst = list.instanceValue;
-	} else {RETURNFAIL("AtomList not defined");}
-	atomListClass = FindDefclass(env, "AtomList");
-	if (atomListClass == NULL){RETURNFAIL("AtomList not defined");}
-	argclass = InstanceClass(list_inst);
-	if (argclass != atomListClass){
+	list_clipsvalue.value = list_udfvalue.value;
+
+	if (!retrieve_items(env, list_clipsvalue, &items)){
 		RETURNFAIL("Argument error. func_count requires AtomList");
 	}
-	err = DirectGetSlot(list_inst, "items", &items);
-	if (err != GSE_NO_ERROR || items.header->type != MULTIFIELD_TYPE) {
-		RETURNFAIL("compare_lists: couldnt get items of left");
-	}
 	length = items.multifieldValue->length;
+
 	TEMPORARYINTERNALREPRESENTATION(tmpi, length, 11, "%d", _XS_integer_);
 	out->lexemeValue = CreateString(env, tmpi);
 }
@@ -216,11 +172,13 @@ void func_get(Environment *env, UDFContext *udfc, UDFValue *out){
 	val_arglist.value = arglist.value;
 	if (!udfvalue_as_integer(entry, &i)) return;
 	out->value = crifi_list_get(env, val_arglist, i).value;
+	if(out->value == NULL) out->voidValue = VoidConstant(env);
 }
 
 void func_sublist(Environment *env, UDFContext *udfc, UDFValue *out){
 	long long start, end;
 	size_t length;
+	Fact *ret;
 	IEQ_RET check;
 	UDFValue arglist, start_val, end_val;
 	CLIPSValue entry_dupl, items;
@@ -235,7 +193,8 @@ void func_sublist(Environment *env, UDFContext *udfc, UDFValue *out){
 	}
 	if (true){//if number args == 3
 		if (!retrieve_items_udf(env, arglist, &items)){
-			RETURNARGERROR("Cant handle given list.");
+			RETURNARGERROR("Cant handle given list."
+					"(retrieve_items_udf failed)");
 		}
 	} else {
 		end_val.value = NULL;
@@ -250,9 +209,14 @@ void func_sublist(Environment *env, UDFContext *udfc, UDFValue *out){
 	if (!normalize_index(length, &start)) return;
 	if (end != length && !normalize_index(length, &end)) return;
 	if (start >= end) return;
-	out->instanceValue = intern_make_list(env,
+	ret = crifi_list_new(env,
 			items.multifieldValue->contents + start,
 			end - start);
+	if (ret != NULL){
+		out->factValue = ret;
+	} else {
+		out->voidValue = VoidConstant(env);
+	}
 }
 
 void func_append(Environment *env, UDFContext *udfc, UDFValue *out){
@@ -265,7 +229,8 @@ void func_append(Environment *env, UDFContext *udfc, UDFValue *out){
 		RETURNARGERROR("func_append");
 	}
 	if (!retrieve_items_udf(env, firstarg, &list)){
-		RETURNARGERROR("Cant handle given list.");
+		RETURNARGERROR("Cant handle given list."
+				"(retrieve_items_udf failed)");
 	}
 	arglength = UDFArgumentCount(udfc);
 	listlength = list.multifieldValue->length;
@@ -283,8 +248,13 @@ void func_append(Environment *env, UDFContext *udfc, UDFValue *out){
 		tmpptr->value = tmparg.value;
 		tmpptr++;
 	}
-	out->instanceValue = intern_make_list(env, newvalues,
+	Fact *ret = crifi_list_new(env, newvalues,
 						listlength+arglength -1);
+	if (ret != NULL){
+		out->factValue = ret;
+	} else {
+		out->voidValue = VoidConstant(env);
+	}
 	free(newvalues);
 }
 
@@ -292,7 +262,7 @@ void func_concatenate(Environment *env, UDFContext *udfc, UDFValue *out){
 	long long start, end;
 	unsigned argcount = UDFArgumentCount(udfc);
 	IEQ_RET check;
-	Instance *newlist;
+	Fact *newlist;
 	UDFValue tmparg;
 	CLIPSValue firstlist, secondlist;
 	CLIPSValue listlist[argcount];
@@ -308,7 +278,11 @@ void func_concatenate(Environment *env, UDFContext *udfc, UDFValue *out){
 		listlist[i].value = tmparg.value;
 	}
 	newlist = crifi_list_concatenate(env, listlist, argcount);
-	if (newlist != NULL) out->instanceValue = newlist;
+	if (newlist != NULL){
+		out->factValue = newlist;
+	} else {
+		out->voidValue = VoidConstant(env);
+	}
 }
 
 
@@ -330,10 +304,12 @@ void func_insert_before(Environment *env, UDFContext *udfc, UDFValue *out){
 		RETURNARGERROR("func_insert_before");
 	}
 	if (!retrieve_items_udf(env, firstarg, &list)){
-		RETURNFAIL("Cant handle given list.");
+		RETURNFAIL("Cant handle given list."
+				"(retrieve_items_udf failed)");
 	}
 	listlength = list.multifieldValue->length;
 	if (!normalize_index(listlength, &position)){
+		printf("qwertz qq %d\n", listlength);
 		RETURNFAIL("cant insert at given position");
 	}
 	newvalues = calloc(listlength + 1, sizeof(CLIPSValue));
@@ -348,8 +324,13 @@ void func_insert_before(Environment *env, UDFContext *udfc, UDFValue *out){
 		tmpptr->value = list.multifieldValue->contents[i].value;
 		tmpptr++;
 	}
-	out->instanceValue = intern_make_list(env, newvalues,
+	Fact *ret = crifi_list_new(env, newvalues,
 						listlength+1);
+	if (ret != NULL){
+		out->factValue = ret;
+	} else {
+		out->voidValue = VoidConstant(env);
+	}
 	free(newvalues);
 }
 
@@ -368,7 +349,8 @@ void func_remove(Environment *env, UDFContext *udfc, UDFValue *out){
 	}
 	if (!udfvalue_as_integer(positionarg, &position)) return;
 	if (!retrieve_items_udf(env, firstarg, &list)){
-		RETURNFAIL("Cant handle given list.");
+		RETURNFAIL("Cant handle given list."
+				"(retrieve_items_udf failed)");
 	}
 	listlength = list.multifieldValue->length;
 	if (!normalize_index(listlength, &position)){
@@ -384,7 +366,12 @@ void func_remove(Environment *env, UDFContext *udfc, UDFValue *out){
 		tmpptr->value = list.multifieldValue->contents[i].value;
 		tmpptr++;
 	}
-	out->instanceValue = intern_make_list(env, newvalues, listlength-1);
+	Fact *ret = crifi_list_new(env, newvalues, listlength-1);
+	if (ret != NULL){
+		out->factValue = ret;
+	} else {
+		out->voidValue = VoidConstant(env);
+	}
 	free(newvalues);
 }
 
@@ -398,7 +385,8 @@ void func_reverse(Environment *env, UDFContext *udfc, UDFValue *out){
 		RETURNARGERROR("func_insert_before");
 	}
 	if (!retrieve_items_udf(env, firstarg, &list)){
-		RETURNFAIL("Cant handle given list.");
+		RETURNFAIL("Cant handle given list."
+				"(retrieve_items_udf failed)");
 	}
 	listlength = list.multifieldValue->length;
 	newvalues = calloc(listlength, sizeof(CLIPSValue));
@@ -407,7 +395,12 @@ void func_reverse(Environment *env, UDFContext *udfc, UDFValue *out){
 		tmpptr->value = list.multifieldValue->contents[i].value;
 		tmpptr++;
 	}
-	out->instanceValue = intern_make_list(env, newvalues, listlength);
+	Fact *ret = crifi_list_new(env, newvalues, listlength);
+	if (ret != NULL){
+		out->factValue = ret;
+	} else {
+		out->voidValue = VoidConstant(env);
+	}
 	free(newvalues);
 }
 
@@ -424,7 +417,8 @@ void func_index_of(Environment *env, UDFContext *udfc, UDFValue *out){
 		RETURNARGERROR("func_insert_before");
 	}
 	if (!retrieve_items_udf(env, firstarg, &list)){
-		RETURNFAIL("Cant handle given list.");
+		RETURNFAIL("Cant handle given list."
+				"(retrieve_items_udf failed)");
 	}
 	listlength = list.multifieldValue->length;
 
@@ -449,7 +443,12 @@ void func_index_of(Environment *env, UDFContext *udfc, UDFValue *out){
 			return;
 		}
 	}
-	out->instanceValue = intern_make_list(env, newvalues, newvalues_length);
+	Fact *ret = crifi_list_new(env, newvalues, newvalues_length);
+	if (ret != NULL){
+		out->factValue = ret;
+	} else {
+		out->voidValue = VoidConstant(env);
+	}
 	free(newvalues);
 }
 
@@ -458,7 +457,7 @@ void func_union(Environment *env, UDFContext *udfc, UDFValue *out){
 	long long start, end;
 	unsigned argcount = UDFArgumentCount(udfc);
 	IEQ_RET check;
-	Instance *newlist;
+	Fact *newlist;
 	UDFValue tmparg;
 	CLIPSValue tmpval;
 	CLIPSValue firstlist, secondlist;
@@ -476,15 +475,19 @@ void func_union(Environment *env, UDFContext *udfc, UDFValue *out){
 	}
 	newlist = crifi_list_concatenate(env, listlist, argcount);
 	if (newlist == NULL) return;
-	tmpval.instanceValue = newlist;
+	tmpval.factValue = newlist;
 	newlist = crifi_list_distinct_values(env, tmpval);
-	if (newlist != NULL) out->instanceValue = newlist;
+	if (newlist != NULL) {
+		out->factValue = newlist;
+	} else {
+		out->voidValue = VoidConstant(env);
+	}
 }
 
 void func_distinct_values(Environment *env, UDFContext *udfc, UDFValue *out){
 	size_t listlength;
 	IEQ_RET check;
-	Instance *newlist;
+	Fact *newlist;
 	UDFValue firstarg, secondarg;
 	CLIPSValue firstval;
 	CLIPSValue firstlist, secondlist;
@@ -495,11 +498,15 @@ void func_distinct_values(Environment *env, UDFContext *udfc, UDFValue *out){
 	}
 	firstval.value = firstarg.value;
 	newlist = crifi_list_distinct_values(env, firstval);
-	if (newlist != NULL) out->instanceValue = newlist;
+	if (newlist != NULL) {
+		out->factValue = newlist;
+	} else {
+		out->voidValue = VoidConstant(env);
+	}
 }
 
 void func_intersect(Environment *env, UDFContext *udfc, UDFValue *out){
-	Instance *newlist;
+	Fact *newlist;
 	UDFValue leftarg, rightarg;
 	CLIPSValue leftlist, rightlist;
 	if (!UDFFirstArgument(udfc, ANY_TYPE_BITS, &leftarg)){
@@ -512,11 +519,15 @@ void func_intersect(Environment *env, UDFContext *udfc, UDFValue *out){
 	rightlist.value = rightarg.value;
 
 	newlist = crifi_list_intersect(env, leftlist, rightlist);
-	if (newlist != NULL) out->instanceValue = newlist;
+	if (newlist != NULL) {
+		out->factValue = newlist;
+	} else {
+		out->voidValue = VoidConstant(env);
+	}
 }
 
 void func_except(Environment *env, UDFContext *udfc, UDFValue *out){
-	Instance *newlist;
+	Fact *newlist;
 	UDFValue leftarg, rightarg;
 	CLIPSValue leftlist, rightlist;
 	if (!UDFFirstArgument(udfc, ANY_TYPE_BITS, &leftarg)){
@@ -529,7 +540,11 @@ void func_except(Environment *env, UDFContext *udfc, UDFValue *out){
 	rightlist.value = rightarg.value;
 
 	newlist = crifi_list_except(env, leftlist, rightlist);
-	if (newlist != NULL) out->instanceValue = newlist;
+	if (newlist != NULL) {
+		out->factValue = newlist;
+	} else {
+		out->voidValue = VoidConstant(env);
+	}
 }
 
 

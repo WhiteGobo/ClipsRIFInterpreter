@@ -124,6 +124,9 @@ std::string *create_rules(struct TriplesLinkedList* triples, const char* profile
 		return generate_rdf_entailment(triples);
 	} else if (0==strcmp(profile, _ENTAILMENT_RDFS_)){
 		return generate_rdfs_entailment(triples);
+	} else if (0==strcmp(profile, _ENTAILMENT_OWLDIRECT_)){
+		printf("qwertz create_ulres owldirect\n");
+		return generate_owldirect_entailment(triples);
 	} else if (profile == NULL){
 		printf("no entailment chosen\n");
 	} else {

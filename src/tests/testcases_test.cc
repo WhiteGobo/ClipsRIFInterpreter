@@ -113,15 +113,22 @@ const ImportSource Import_Core_PET_RDF_Combination_Blank_Node[] = {
 	{NULL, NULL}
 };
 
+const ImportSource Import_Core_PET_OWL_Combination_Vocabulary_Separation_Inconsistency_1[] = {
+	{
+		"http://www.w3.org/2005/rules/test/repository/tc/OWL_Combination_Vocabulary_Separation_Inconsistency_1/OWL_Combination_Vocabulary_Separation_Inconsistency_1-import001",
+		"OWL_Combination_Vocabulary_Separation_Inconsistency_1-import001.ntriples"
+	},
+	{NULL, NULL}
+};
+
 static auto petTestdata = testing::Values(
 		TestdataPET("Core_PET_Builtin_literal-not-identical",
 			"Builtin_literal-not-identical-premise.ntriples",
 			"Builtin_literal-not-identical-conclusion.ntriples",
 			NULL),
 		TestdataPET("Core_PET_Builtins_Binary",
-			"not implemented",
 			"Builtins_Binary-premise.ntriples",
-			"PET_Builtins_Binary-conclusion.ntriples",
+			"Builtins_Binary-conclusion.ntriples",
 			NULL),
 		TestdataPET("Core_PET_Builtins_List",
 			"Builtins_List-premise.ntriples",
@@ -200,7 +207,7 @@ static auto petTestdata = testing::Values(
 			"not implemented",
 			"OWL_Combination_Vocabulary_Separation_Inconsistency_1-premise.ntriples",
 			"OWL_Combination_Vocabulary_Separation_Inconsistency_1-conclusion.ntriples",
-			NULL),
+			Import_Core_PET_OWL_Combination_Vocabulary_Separation_Inconsistency_1),
 		TestdataPET("Core_PET_OWL_Combination_Vocabulary_Separation_Inconsistency_2",
 			"not implemented",
 			"OWL_Combination_Vocabulary_Separation_Inconsistency_2-premise.ntriples",
@@ -487,12 +494,14 @@ TEST_P(TestCasesTest, BasicPET) {
 					statementVerifierAsString->c_str());
 	script_err = load_config_mem(graph, logicAsString->c_str(),
 					logicAsString->length());
-	EXPECT_NE(script_err, CTC_LC_PARSING_ERROR)
-		<< "Failed parsing of produced logic";
+	ASSERT_NE(script_err, CTC_LC_PARSING_ERROR)
+		<< "Parsing error from produced logic";
+	ASSERT_EQ(script_err, CTC_LC_NO_ERROR)
+		<< "Unknown error during parsing of produced logic";
 	EXPECT_EQ(script_err, 0) << "failed to load produced logic into clips";
 	script_err = load_config_mem(graph, statementVerifierAsString->c_str(),
 					statementVerifierAsString->length());
-	EXPECT_NE(script_err, CTC_LC_PARSING_ERROR)
+	ASSERT_NE(script_err, CTC_LC_PARSING_ERROR)
 		<< "Failed parsing of statement";
 	EXPECT_EQ(script_err, 0)
 		<< "failed to load produced statement into clips";
