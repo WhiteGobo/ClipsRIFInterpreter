@@ -71,17 +71,27 @@ char *clipslexeme_to_value(CLIPSLexeme *value);
 int percent_decode(char *dst, const char *src, const size_t len);
 
 
+size_t percent_encode(char* dst, const char *src, const size_t len);
+
 /**
  * clips userdefined function for percent encoding.
  */
 void _clipsudf_percent_encoding(
 		Environment *env, UDFContext *udfc, UDFValue *out);
 
+
+int value_and_lang_to_slotstring(char* result, const char* value, size_t value_length, const char* lang, size_t lang_length);
+
+int value_and_datatype_to_slotstring(char* result, const char* value, size_t value_length, const char* datatype, size_t datatype_length);
+
 /**
  *
  */
 char* extract_lexical(Environment *env, CLIPSLexeme *lexeme);
 
+char* extract_datatype(Environment *env, CLIPSLexeme *lexeme);
+
+char* extract_lang(Environment *env, CLIPSLexeme *lexeme);
 
 #ifdef __cplusplus
 }

@@ -34,6 +34,7 @@ add_subdirectory(external_functions)
 add_subdirectory(n3parser)
 add_subdirectory(lists)
 add_subdirectory(objects)
+add_subdirectory(time)
 
 target_link_libraries(ffi_clips_interface
 	clips

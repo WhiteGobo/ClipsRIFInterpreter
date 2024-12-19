@@ -4,6 +4,11 @@ add_library(external_functions SHARED
 	pred_user_defined_functions.c
 	list_user_defined_functions.c
 	binary_user_defined_functions.c
+	boolean_user_defined_functions.c
+	time_user_defined_functions.c
+	xmlliteral_user_defined_functions.c
+	string_user_defined_functions.c
+	plainliteral_user_defined_functions.c
 	own_user_defined_functions.c
 	external_functions.h
 )

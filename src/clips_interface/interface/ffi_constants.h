@@ -4,6 +4,8 @@
 #define _RDF_langString_ "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString"
 #define _RDF_PlainLiteral_ "http://www.w3.org/1999/02/22-rdf-syntax-ns#PlainLiteral"
 
+#define _PRED_ "http://www.w3.org/2007/rif-builtin-predicate#"
+
 //here defined urls
 #define _CRIFI_equal_ "http://white.gobo/equal"
 #define _CRIFI_success_ "http://white.gobo/success"
@@ -36,12 +38,16 @@
 #define _XS_string_ "http://www.w3.org/2001/XMLSchema#string"
 #define _XS_token_ "http://www.w3.org/2001/XMLSchema#token"
 #define _XS_language_ "http://www.w3.org/2001/XMLSchema#language"
+#define _XS_lang_ "http://www.w3.org/2001/XMLSchema#lang"
 #define _XS_Name_ "http://www.w3.org/2001/XMLSchema#Name"
 #define _XS_NCName_ "http://www.w3.org/2001/XMLSchema#NCName"
-#define _XS_NMToken_ "http://www.w3.org/2001/XMLSchema#NMToken"
+#define _XS_NMTOKEN_ "http://www.w3.org/2001/XMLSchema#NMTOKEN"
 #define _XS_time_ "http://www.w3.org/2001/XMLSchema#time"
 #define _XS_dayTimeDuration_ "http://www.w3.org/2001/XMLSchema#dayTimeDuration"
 #define _XS_yearMonthDuration_ "http://www.w3.org/2001/XMLSchema#yearMonthDuration"
+#define _XS_normalizedString_ "http://www.w3.org/2001/XMLSchema#normalizedString"
+
+#define _RDF_PlainLiteral_ "http://www.w3.org/1999/02/22-rdf-syntax-ns#PlainLiteral"
 
 #define _PRED_literal_not_identical_ "http://www.w3.org/2007/rif-builtin-predicate#literal-not-identical"
 
@@ -97,6 +103,25 @@
 #define _PRED_is_literal_not_nonPositiveInteger_ "http://www.w3.org/2007/rif-builtin-predicate#is-literal-not-nonPositiveInteger"
 #define _PRED_is_literal_not_negativeInteger_ "http://www.w3.org/2007/rif-builtin-predicate#is-literal-not-negativeInteger"
 
+#define _PRED_is_literal_PlainLiteral_ "http://www.w3.org/2007/rif-builtin-predicate#is-literal-PlainLiteral"
+#define _PRED_is_literal_not_PlainLiteral_ "http://www.w3.org/2007/rif-builtin-predicate#is-literal-not-PlainLiteral"
+
+
+#define _PRED_is_literal_string_ "http://www.w3.org/2007/rif-builtin-predicate#is-literal-string"
+#define _PRED_is_literal_not_string_ "http://www.w3.org/2007/rif-builtin-predicate#is-literal-not-string"
+#define _PRED_is_literal_normalizedString_ "http://www.w3.org/2007/rif-builtin-predicate#is-literal-normalizedString"
+#define _PRED_is_literal_not_normalizedString_ "http://www.w3.org/2007/rif-builtin-predicate#is-literal-not-normalizedString"
+#define _PRED_is_literal_token_ "http://www.w3.org/2007/rif-builtin-predicate#is-literal-token"
+#define _PRED_is_literal_not_token_ "http://www.w3.org/2007/rif-builtin-predicate#is-literal-not-token"
+#define _PRED_is_literal_language_ "http://www.w3.org/2007/rif-builtin-predicate#is-literal-language"
+#define _PRED_is_literal_not_language_ "http://www.w3.org/2007/rif-builtin-predicate#is-literal-not-language"
+#define _PRED_is_literal_Name_ "http://www.w3.org/2007/rif-builtin-predicate#is-literal-Name"
+#define _PRED_is_literal_not_Name_ "http://www.w3.org/2007/rif-builtin-predicate#is-literal-not-Name"
+#define _PRED_is_literal_NCName_ "http://www.w3.org/2007/rif-builtin-predicate#is-literal-NCName"
+#define _PRED_is_literal_not_NCName_ "http://www.w3.org/2007/rif-builtin-predicate#is-literal-not-NCName"
+#define _PRED_is_literal_NMTOKEN_ "http://www.w3.org/2007/rif-builtin-predicate#is-literal-NMTOKEN"
+#define _PRED_is_literal_not_NMTOKEN_ "http://www.w3.org/2007/rif-builtin-predicate#is-literal-not-NMTOKEN"
+
 
 #define _PRED_is_list_ "http://www.w3.org/2007/rif-builtin-predicate#is-list"
 #define _PRED_list_contains_ "http://www.w3.org/2007/rif-builtin-predicate#list-contains"
@@ -115,6 +140,31 @@
 #define _FUNC_intersect_ "http://www.w3.org/2007/rif-builtin-function#intersect"
 #define _FUNC_except_ "http://www.w3.org/2007/rif-builtin-function#except"
 
+#define _FUNC_PlainLiteral_from_string_lang_ "http://www.w3.org/2007/rif-builtin-function#PlainLiteral-from-string-lang"
+#define _FUNC_string_from_PlainLiteral_ "http://www.w3.org/2007/rif-builtin-function#string-from-PlainLiteral"
+#define _FUNC_lang_from_PlainLiteral_ "http://www.w3.org/2007/rif-builtin-function#lang-from-PlainLiteral"
+#define _FUNC_PlainLiteral_compare_ "http://www.w3.org/2007/rif-builtin-function#PlainLiteral-compare"
+#define _PRED_matches_language_range_ "http://www.w3.org/2007/rif-builtin-predicate#matches-language-range"
+
+
+#define _PRED_iri_string_ "http://www.w3.org/2007/rif-builtin-predicate#iri-string"
+#define _FUNC_compare_ "http://www.w3.org/2007/rif-builtin-function#compare"
+#define _FUNC_concat_ "http://www.w3.org/2007/rif-builtin-function#concat"
+#define _FUNC_string_join_ "http://www.w3.org/2007/rif-builtin-function#string-join"
+#define _FUNC_substring_ "http://www.w3.org/2007/rif-builtin-function#substring"
+#define _FUNC_string_length_ "http://www.w3.org/2007/rif-builtin-function#string-length"
+#define _FUNC_upper_case_ "http://www.w3.org/2007/rif-builtin-function#upper-case"
+#define _FUNC_lower_case_ "http://www.w3.org/2007/rif-builtin-function#lower-case"
+#define _FUNC_encode_for_uri_ "http://www.w3.org/2007/rif-builtin-function#encode-for-uri"
+#define _FUNC_iri_to_uri_ "http://www.w3.org/2007/rif-builtin-function#iri-to-uri"
+#define _FUNC_escape_html_uri_ "http://www.w3.org/2007/rif-builtin-function#escape-html-uri"
+#define _FUNC_substring_before_ "http://www.w3.org/2007/rif-builtin-function#substring-before"
+#define _FUNC_substring_after_ "http://www.w3.org/2007/rif-builtin-function#substring-after"
+#define _FUNC_replace_ "http://www.w3.org/2007/rif-builtin-function#replace"
+#define _PRED_contains_ _PRED_ "contains"
+#define _PRED_starts_with_ _PRED_ "starts-with"
+#define _PRED_ends_with_ _PRED_ "ends-with"
+#define _PRED_matches_ _PRED_ "matches"
 
 #define _RIF_ "http://www.w3.org/2007/rif#"
 #define _XML_ "http://www.w3.org/2001/XMLSchema#"

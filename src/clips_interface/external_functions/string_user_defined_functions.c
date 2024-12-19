@@ -1,0 +1,93 @@
+#include "string_user_defined_functions.h"
+
+#define RETURNFAIL(failure) \
+		Writeln(env, failure);\
+		SetErrorValue(env, &(CreateString(env, failure)->header));\
+		out->voidValue = VoidConstant(env);\
+		return;
+
+void rif_is_literal_string(Environment *env, UDFContext *udfc, UDFValue *out){
+	RETURNFAIL("rif_is_literal_string not implemented");
+}
+
+void rif_is_literal_normalizedString(Environment *env, UDFContext *udfc, UDFValue *out){
+	RETURNFAIL("rif_is_literal_normalizedString not implemented");
+}
+
+void rif_is_literal_token(Environment *env, UDFContext *udfc, UDFValue *out){
+	RETURNFAIL("rif_is_literal_token not implemented");
+}
+
+void rif_is_literal_language(Environment *env, UDFContext *udfc, UDFValue *out){
+	RETURNFAIL("rif_is_literal_language not implemented");
+}
+
+void rif_is_literal_Name(Environment *env, UDFContext *udfc, UDFValue *out){
+	RETURNFAIL("rif_is_literal_Name not implemented");
+}
+
+void rif_is_literal_NCName(Environment *env, UDFContext *udfc, UDFValue *out){
+	RETURNFAIL("rif_is_literal_NCName not implemented");
+}
+
+void rif_is_literal_NMTOKEN(Environment *env, UDFContext *udfc, UDFValue *out){
+	RETURNFAIL("rif_is_literal_NMTOKEN not implemented");
+}
+
+void rif_iri_string(Environment *env, UDFContext *udfc, UDFValue *out){
+	RETURNFAIL("rif_iri_string not implemented");
+}
+
+void rif_concat(Environment *env, UDFContext *udfc, UDFValue *out){
+	RETURNFAIL("rif_ not implemented");
+}
+void rif_string_join(Environment *env, UDFContext *udfc, UDFValue *out){
+	RETURNFAIL("rif_ not implemented");
+}
+void rif_substring(Environment *env, UDFContext *udfc, UDFValue *out){
+	RETURNFAIL("rif_ not implemented");
+}
+void rif_string_length(Environment *env, UDFContext *udfc, UDFValue *out){
+	RETURNFAIL("rif_ not implemented");
+}
+void rif_upper_case(Environment *env, UDFContext *udfc, UDFValue *out){
+	RETURNFAIL("rif_ not implemented");
+}
+void rif_lower_case(Environment *env, UDFContext *udfc, UDFValue *out){
+	RETURNFAIL("rif_ not implemented");
+}
+void rif_encode_for_uri(Environment *env, UDFContext *udfc, UDFValue *out){
+	RETURNFAIL("rif_ not implemented");
+}
+void rif_iri_to_uri(Environment *env, UDFContext *udfc, UDFValue *out){
+	RETURNFAIL("rif_ not implemented");
+}
+void rif_escape_html_uri(Environment *env, UDFContext *udfc, UDFValue *out){
+	RETURNFAIL("rif_ not implemented");
+}
+void rif_substring_before(Environment *env, UDFContext *udfc, UDFValue *out){
+	RETURNFAIL("rif_ not implemented");
+}
+void rif_substring_after(Environment *env, UDFContext *udfc, UDFValue *out){
+	RETURNFAIL("rif_ not implemented");
+}
+void rif_replace(Environment *env, UDFContext *udfc, UDFValue *out){
+	RETURNFAIL("rif_ not implemented");
+}
+void rif_contains(Environment *env, UDFContext *udfc, UDFValue *out){
+	RETURNFAIL("rif_ not implemented");
+}
+void rif_starts_with(Environment *env, UDFContext *udfc, UDFValue *out){
+	RETURNFAIL("rif_ not implemented");
+}
+void rif_ends_with(Environment *env, UDFContext *udfc, UDFValue *out){
+	RETURNFAIL("rif_ not implemented");
+}
+void rif_matches(Environment *env, UDFContext *udfc, UDFValue *out){
+	RETURNFAIL("rif_ not implemented");
+}
+void rif_compare(Environment *env, UDFContext *udfc, UDFValue *out){
+	RETURNFAIL("rif_ not implemented");
+}
+
+#undef RETURNFAIL(failure)

@@ -18,7 +18,7 @@ static bool isLiteral(Utf8String node){
  * Transforms percent encoding to utf8
  * To safely use this, dst should have size 3*len
  */
-static size_t percent_encode(char* dst, const char *src, const size_t len)
+size_t percent_encode(char* dst, const char *src, const size_t len)
 {
 	size_t i = 0, j = 0;
 	while (i < len)
@@ -84,7 +84,6 @@ regex_t reg_clipsvalue_literal;
 
 void free_regex(){
 	if (regex_initialized){
-		printf("freeing stuff\n");
 		regex_initialized = false;
 		regfree(&reg_datatype);
 		regfree(&reg_datatype_single);
@@ -111,10 +110,12 @@ static int init_regex(){
 				REGOPTION);
 		if (err != 0) return err;
 		err = regcomp(&reg_lang,
-				"^\"(.*)\"@([a-zA-Z]*)$", 0);
+				"^\"(([^\"]|(\\\"))*)\"@([a-zA-Z\-]*)$",
+				REG_EXTENDED);
 		if (err != 0) return err;
-		err = regcomp(&reg_lang_single,
-				"^\'(.*)\'@([a-zA-Z]*)$", 0);
+		err = regcomp(&reg_lang_single, 
+				"^\'(([^\']|(\\\'))*)\'@([a-zA-Z\-]*)$",
+				REG_EXTENDED);
 		if (err != 0) return err;
 		err = regcomp(&reg_simple_single,
 				"^\'(.*)\'$", 0);
@@ -138,13 +139,14 @@ static int init_regex(){
 }
 #undef REGOPTION
 
-static int value_and_lang_to_slotstring(char* result, const char* value, size_t value_length, const char* lang, size_t lang_length){
+int value_and_lang_to_slotstring(char* result, const char* value, size_t value_length, const char* lang, size_t lang_length){
 	char* result_tmp;
 	//char* result = malloc( 3*value_length + lang_length + 3);
 	size_t offset = percent_encode(result, value, value_length);
 	result_tmp = result + offset;
 	result_tmp[0] = '@';
-	result_tmp += 1;
+	result_tmp[1] = '@';
+	result_tmp += 2;
 	memcpy(result_tmp, lang, lang_length);
 	result_tmp += lang_length;
 	result_tmp[0] = '\0';
@@ -155,9 +157,10 @@ static int value_and_lang_to_slotstring(char* result, const char* value, size_t 
 /**
  *
  * result has to be 3*value_length + datatype_length + sizeof("^^\0")
+ * defaults to _RDF_string_ if NULL is given as datatype
  */
-static int value_and_datatype_to_slotstring(char* result, const char* value, size_t value_length, const char* datatype, size_t datatype_length){
-	if (ISURI(datatype, datatype_length, _RDF_langString_)){
+int value_and_datatype_to_slotstring(char* result, const char* value, size_t value_length, const char* datatype, size_t datatype_length){
+	if (datatype != NULL && ISURI(datatype, datatype_length, _RDF_langString_)){
 		return value_and_lang_to_slotstring(result, value, value_length, "", 0);
 	}
 	char* result_tmp;
@@ -168,6 +171,10 @@ static int value_and_datatype_to_slotstring(char* result, const char* value, siz
 		return 0;
 	}
 	result_tmp = result + offset;
+	if (datatype == NULL || ISURI(datatype, datatype_length, _RDF_string_)){
+		result_tmp[0] = '\0';
+		return 0;
+	}
 	result_tmp[0] = '^';
 	result_tmp[1] = '^';
 	result_tmp += 2;
@@ -228,7 +235,7 @@ static int value_and_datatype_to_n3(char* result, const char* value, size_t valu
 static int builtin_to_n3(char* n3representation, const char* builtinliteral){
 	int err;
 	const size_t max_matches = 3; //1 + #groups 
-	regmatch_t matches[max_matches];
+	regmatch_t matches[5];
 	const char *value, *datatype, *lang, *tmpold;
 	size_t value_length, datatype_length, lang_length;
 
@@ -267,7 +274,7 @@ static int builtin_to_n3(char* n3representation, const char* builtinliteral){
 static int literal_to_builtin(char *builtinEncoded, N3String node){
 	int err;
 	const size_t max_matches = 3; //1 + #groups 
-	regmatch_t matches[max_matches];
+	regmatch_t matches[5];
 	char *newnode, *tmpnew;
 	const char *value, *datatype, *lang, *tmpold;
 	size_t value_length, datatype_length, lang_length;
@@ -299,23 +306,23 @@ static int literal_to_builtin(char *builtinEncoded, N3String node){
 		return 2;
 	}
 
-	err = regexec(&reg_lang, node, max_matches, matches, 0);
+	err = regexec(&reg_lang, node, 1+4, matches, 0);
 	if (err == 0) {
 		value_length = matches[1].rm_eo - matches[1].rm_so;
 		value = node + matches[1].rm_so;
-		lang_length = matches[2].rm_eo - matches[2].rm_so;
-		lang = node + matches[2].rm_so;
+		lang_length = matches[4].rm_eo - matches[4].rm_so;
+		lang = node + matches[4].rm_so;
 		return value_and_lang_to_slotstring(builtinEncoded, value, value_length, lang, lang_length);
 	} else if (err != REG_NOMATCH){
 		printf("Regex expression produced error.1\n");
 		return 2;
 	}
-	err = regexec(&reg_lang_single, node, max_matches, matches, 0);
+	err = regexec(&reg_lang_single, node, 1+4, matches, 0);
 	if (err == 0) {
 		value_length = matches[1].rm_eo - matches[1].rm_so;
 		value = node + matches[1].rm_so;
-		lang_length = matches[2].rm_eo - matches[2].rm_so;
-		lang = node + matches[2].rm_so;
+		lang_length = matches[4].rm_eo - matches[4].rm_so;
+		lang = node + matches[4].rm_so;
 		return value_and_lang_to_slotstring(builtinEncoded, value, value_length, lang, lang_length);
 	} else if (err != REG_NOMATCH){
 		printf("Regex expression produced error.1\n");
@@ -437,5 +444,47 @@ char* extract_lexical(Environment *env, CLIPSLexeme *lexeme){
 	}
 	retString = malloc(length + 1);
 	percent_decode(retString, lexeme->contents, length);
+	return retString;
+}
+
+
+char* extract_datatype(Environment *env, CLIPSLexeme *lexeme){
+	if (lexeme == NULL) return NULL;
+	size_t length;
+	char* retString;
+	char* pos = strstr(lexeme->contents, "^^");
+	if (pos != NULL){
+		pos += 2;
+		length = strlen(pos);
+		retString = malloc(length+1);
+		strcpy(retString, pos);
+		return retString;
+	}
+	pos = strstr(lexeme->contents, "@@");
+	if (pos != NULL){
+		retString = malloc(sizeof(_RDF_langString_));
+		strcpy(retString, _RDF_langString_);
+		return retString;
+	}
+
+	retString = malloc(sizeof(_XS_string_));
+	strcpy(retString, _XS_string_);
+	return retString;
+}
+
+char* extract_lang(Environment *env, CLIPSLexeme *lexeme){
+	if (lexeme == NULL) return NULL;
+	size_t length;
+	char* retString;
+	char* pos = strstr(lexeme->contents, "@@");
+	if (pos == NULL){
+		retString = malloc(1);
+		retString[0] = '\0';
+		return retString;
+	}
+	pos += 2;
+	length = strlen(pos);
+	retString = malloc(length+1);
+	strcpy(retString, pos);
 	return retString;
 }
