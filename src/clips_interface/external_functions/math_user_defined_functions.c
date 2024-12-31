@@ -126,6 +126,9 @@ static numeric_value toNumeric_cant_transform_plainliteral = {
 static const char default_err_toNumeric[]\
 		     = "default error for UDFValueToNumericValue";
 
+/**
+ * duplicate of clipsvalue_as_numeric_value from numeric
+ */
 static numeric_value UDFValueToNumericValue(UDFValue val) {
 	char *valueString, *endptr;
 	numeric_value q;
@@ -1026,7 +1029,7 @@ void rif_is_literal_negativeInteger(Environment *env, UDFContext *udfc, UDFValue
 
 /**
  *
- * TODO: move this maybe to a basic type library.
+ * TODO: Replicate of clipsvalue_as_integer
  */
 bool udfvalue_as_integer(UDFValue val, long long *out){
 	bool check;

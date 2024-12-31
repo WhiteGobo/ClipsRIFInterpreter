@@ -4,6 +4,44 @@
 #include "ffi_constants.h"
 #include "ffi_clips_interface.h"
 
+#include <regex.h>
+
+/** CRIFI_TIME_DATA_INDEX
+ * index in which clips Environment stores data needed for crifi_time.
+ * Can be overwritten if there is an index conflict.
+ * Otherwise will be internally handled.
+ */
+#ifndef CRIFI_N3PARSER_DATA_INDEX
+#define CRIFI_N3PARSER_DATA_INDEX USER_ENVIRONMENT_DATA + 2
+#endif
+
+typedef struct crifiN3ParserData{
+	regex_t reg_uriref;
+	regex_t reg_blanknode;
+	regex_t reg_datatype;
+	regex_t reg_datatype_single;
+	regex_t reg_lang;
+	regex_t reg_lang_single;
+	regex_t reg_simple;
+	regex_t reg_simple_single;
+	regex_t reg_clipsvalue_langString;
+	regex_t reg_clipsvalue_literal;
+} CRIFIN3ParserData;
+
+/** LoadingCRIFIN3ParserData
+ */
+#define LoadingCRIFIN3ParserData(theEnv) \
+	((struct crifiN3ParserData *) GetEnvironmentData(theEnv, CRIFI_N3PARSER_DATA_INDEX))
+
+
+bool crifi_n3parserdata_register_data(Environment *env);
+bool initialize_crifi_n3parserdata(CRIFIN3ParserData *data);
+void free_crifi_n3parserdata(CRIFIN3ParserData *data);
+
+
+
+
+
 ///needed size for N3 representation of given clips lexeme, translated via
 ///percent_decode
 #define NEEDEDSIZEN3( lexeme ) strlen( lexeme ) + sizeof("\"\"\0")
@@ -92,6 +130,12 @@ char* extract_lexical(Environment *env, CLIPSLexeme *lexeme);
 char* extract_datatype(Environment *env, CLIPSLexeme *lexeme);
 
 char* extract_lang(Environment *env, CLIPSLexeme *lexeme);
+
+int n3_as_clipsvalue(Environment *env, N3String node, CLIPSValue *target);
+
+int value_and_lang_to_clipsvalue(Environment *env, const char* value, size_t value_length, const char* lang, size_t lang_length, CLIPSValue *result);
+
+int value_and_datatype_to_clipsvalue(Environment *env, const char* value, size_t value_length, const char* datatype, size_t datatype_length, CLIPSValue *result);
 
 #ifdef __cplusplus
 }

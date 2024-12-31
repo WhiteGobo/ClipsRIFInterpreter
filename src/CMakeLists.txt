@@ -7,6 +7,7 @@ include(FetchContent)
 add_subdirectory(ntriples_parser)
 add_subdirectory(clips_interface)
 add_subdirectory(resource_manager)
+add_subdirectory(generate_crifi_script)
 
 enable_testing()
 add_subdirectory(tests)

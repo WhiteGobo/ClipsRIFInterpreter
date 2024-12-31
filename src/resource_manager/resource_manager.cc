@@ -161,11 +161,20 @@ std::string *generate_rif_logic(
 		const void *loading_function_context
 		){
 	int debuglevel = 0;
-	LoadingFunction wrapper_lf[] = {loading_function, NULL};
-	const void *wrapper_lfc[] = {loading_function_context, NULL};
+	int wrapper_lf_length = 0;
+	LoadingFunction wrapper_lf[2] = {NULL, NULL};
+	const void *wrapper_lfc[2] = {NULL, NULL};
+	if (loading_function != NULL && loading_function_context != NULL){
+		wrapper_lf_length = 1;
+		wrapper_lf[0] = loading_function;
+		wrapper_lfc[0] = loading_function_context;
+	} else if (loading_function != NULL || loading_function_context != NULL){
+		fprintf(stderr, "generate_rif_logic couldnt use given "
+				"loading function\n");
+	}
 	return generate_logic(RIFLogicFactlist, RIFLOGIC,
 			"create-script-rif-logic",
-			wrapper_lf, wrapper_lfc, 1,
+			wrapper_lf, wrapper_lfc, wrapper_lf_length,
 			debuglevel);
 }
 

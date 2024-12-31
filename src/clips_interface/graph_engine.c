@@ -4,6 +4,7 @@
 #include "dataspace_constants.h"
 #include <n3parser.h>
 #include <external_functions.h>
+#include <crifi_timedata.h>
 
 CLIPSValue getFactsFromEnvironment(Environment *env){
 	CLIPSValue retList;
@@ -100,6 +101,20 @@ Environment *initEnvironment(){
 		DestroyEnvironment(env);
 		return NULL;
 	}
+
+	if(!crifi_n3parserdata_register_data(env)){
+		fprintf(stderr, "initEnvironment failed cause n3parser "
+				"couldnt initialize data.");
+		DestroyEnvironment(env);
+		return NULL;
+	}
+
+	if(!crifi_timedata_register_data(env)){
+		fprintf(stderr, "initEnvironment failed cause crifi_time "
+				"couldnt initialize data.");
+		DestroyEnvironment(env);
+		return NULL;
+	}
 	return env;
 }
 
@@ -122,16 +137,29 @@ CRI_RET_BUILDTRIPLE build_triple(Environment* env, Utf8String subject, Utf8Strin
 	FactBuilderError error;
 	Fact *factaddress;
         FactBuilder *theFB;
+	CLIPSValue tmpval;
         theFB = CreateFactBuilder(env, TRIPLETEMPLATE);
-	//FBPutSlotSymbol(theFB, TRIPLESLOTSUBJECT, subject);
-	err = add_n3_as_expression_at_slot(theFB, subject, TRIPLESLOTSUBJECT);
-	if (err != 0) return err + 10;
-	//FBPutSlotSymbol(theFB, TRIPLESLOTPREDICATE, predicate);
-	err = add_n3_as_expression_at_slot(theFB, predicate, TRIPLESLOTPREDICATE);
-	if (err != 0) return err + 20;
-	//FBPutSlotSymbol(theFB, TRIPLESLOTOBJECT, object);
-	err = add_n3_as_expression_at_slot(theFB, object, TRIPLESLOTOBJECT);
-	if (err != 0) return err + 30;
+	err = n3_as_clipsvalue(env, subject, &tmpval);
+	if (err == 1){
+		return CRI_RET_PARSING_ERROR_SUBJECT;
+	} else if (err != 0){
+		return CRI_RET_INTERNAL_ERROR;
+	}
+	FBPutSlot(theFB, TRIPLESLOTSUBJECT, &tmpval);
+	err = n3_as_clipsvalue(env, predicate, &tmpval);
+	if (err == 1){
+		return CRI_RET_PARSING_ERROR_PREDICATE;
+	} else if (err != 0){
+		return CRI_RET_INTERNAL_ERROR;
+	}
+	FBPutSlot(theFB, TRIPLESLOTPREDICATE, &tmpval);
+	err = n3_as_clipsvalue(env, object, &tmpval);
+	if (err == 1){
+		return CRI_RET_PARSING_ERROR_OBJECT;
+	} else if (err != 0){
+		return CRI_RET_INTERNAL_ERROR;
+	}
+	FBPutSlot(theFB, TRIPLESLOTOBJECT, &tmpval);
 	FBPutSlotSymbol(theFB, TRIPLESLOTCONTEXT, context);
 
         factaddress = FBAssert(theFB);
@@ -142,87 +170,19 @@ CRI_RET_BUILDTRIPLE build_triple(Environment* env, Utf8String subject, Utf8Strin
 			case FBE_NO_ERROR:
 				break;
 			case FBE_NULL_POINTER_ERROR:
-				return 1;
-				break;
-			case FBE_DEFTEMPLATE_NOT_FOUND_ERROR:
-				return 2;
-				break;
 			case FBE_IMPLIED_DEFTEMPLATE_ERROR:
-				return 3;
+			case FBE_DEFTEMPLATE_NOT_FOUND_ERROR:
+				return CRI_RET_MISSING_TRIPLE_TEMPLATE;
 				break;
 			case FBE_COULD_NOT_ASSERT_ERROR:
-				return 4;
+				return CRI_RET_NOT_ASSERT_ERROR;
 				break;
 			case FBE_RULE_NETWORK_ERROR:
-				return 5;
+				return CRI_RET_BROKEN_RULE_NETWORK;
 				break;
+			default:
+				return CRI_RET_INTERNAL_ERROR;
 		}
 	}
 	return CRI_RET_BUILDTRIPLE_NOERROR;
 }
-
-/* Just a prototype
-void buildFact(Environment* env, void *myPointer, Fact *fact){
-        FactBuilder *theFB;
-        CLIPSValue cv;
-        CLIPSExternalAddress *extAddr;
-        theFB = CreateFactBuilder(env,"person");
-
-        FBPutSlotString(theFB,"name","Mary Sue Smith");
-        FBPutSlotSymbol(theFB,"gender","female");
-        FBPutSlotInteger(theFB,"age",25);
-        FBPutSlotFact(theFB,"randomfact", fact);
-        extAddr = CreateCExternalAddress(env, myPointer);
-        FBPutSlotCLIPSExternalAddress(theFB, "age", extAddr);
-        FBAssert(theFB);
-        FBDispose(theFB);
-}
-*/
-
-
-/*
- *
- * blueprint for how to handle CLIPSValue
-        switch (retList.header->type) {
-                case EXTERNAL_ADDRESS_TYPE:
-			return 0;
-                        //printf("is external address %d\n", cv->externalAddressValue->contents);
-                        break;
-                case FACT_ADDRESS_TYPE:
-			return 12;
-                        //printf("is a fact address\n");
-                        break;
-                case FLOAT_TYPE:
-                        //printf("is a float %f\n", retList->floatValue->contents);
-			return 2;
-                        break;
-                case INSTANCE_ADDRESS_TYPE:
-                        printf("is ainstance address\n");
-			return 3;
-                        break;
-		case INSTANCE_NAME_TYPE:
-                        printf("is an instance name\n");
-			return 4;
-                        break;
-                case INTEGER_TYPE:
-                        printf("is an integer\n");
-			return 5;
-                        break;
-                case MULTIFIELD_TYPE:
-                        printf("is a multifield\n");
-			return 6;
-                        break;
-                case STRING_TYPE:
-                        printf("is a string\n");
-			return 7;
-                        break;
-                case SYMBOL_TYPE:
-                        printf("is a symbol\n");
-			return 8;
-                        break;
-                case VOID_TYPE:
-                        printf("is nothing\n");
-			return 9;
-                        break;
-        }
-	*/

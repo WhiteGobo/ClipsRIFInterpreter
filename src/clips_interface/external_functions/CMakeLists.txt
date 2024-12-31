@@ -28,4 +28,6 @@ target_link_libraries(
 	clips
 	crifi_lists
 	crifi_objects
+	crifi_time
+	crifi_numeric
 )

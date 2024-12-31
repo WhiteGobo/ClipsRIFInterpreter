@@ -96,41 +96,61 @@ void free_regex(){
 	}
 }
 
+#define REGEXURIREF "^<("URLSYMBOLS"*)>$"
+#define REGEXBLANKNODE "^_:("URLSYMBOLS"+)$"
+#define REGEXDATATYPESINGLE "^\'(.*)\'[°^][°^]<("URLSYMBOLS"*)>$"
+#define REGEXDATATYPE "^\"(.*)\"[°^][°^]<("URLSYMBOLS"*)>$"
+#define REGEXLANG "^\"(([^\"]|(\\\"))*)\"@([a-zA-Z\-]*)$"
+#define REGEXLANGSINGLE "^\'(([^\']|(\\\'))*)\'@([a-zA-Z\-]*)$"
+#define REGEXSIMPLESINGLE "^\'(.*)\'$"
+#define REGEXSIMPLE "^\"(.*)\"$"
+#define REGEXCLIPSVALUELANGSTRING "^(.*)@@(.*)$"
+#define REGEXCLIPSVALUELITERAL "^(.*)[°^][°^](.*)$"
+
 static int init_regex(){
 	int err;
 	if (regex_initialized){
 		return 0;
 	} else {
 		err = regcomp(&reg_datatype_single,
-				"^\'(.*)\'[°^][°^]<("URLSYMBOLS"*)>$",
+				REGEXDATATYPESINGLE,
+				//"^\'(.*)\'[°^][°^]<("URLSYMBOLS"*)>$",
 				REGOPTION);
 		if (err != 0) return err;
 		err = regcomp(&reg_datatype,
-				"^\"(.*)\"[°^][°^]<("URLSYMBOLS"*)>$",
+				REGEXDATATYPE,
+				//"^\"(.*)\"[°^][°^]<("URLSYMBOLS"*)>$",
 				REGOPTION);
 		if (err != 0) return err;
 		err = regcomp(&reg_lang,
-				"^\"(([^\"]|(\\\"))*)\"@([a-zA-Z\-]*)$",
+				REGEXLANG,
+				//"^\"(([^\"]|(\\\"))*)\"@([a-zA-Z\-]*)$",
 				REG_EXTENDED);
 		if (err != 0) return err;
 		err = regcomp(&reg_lang_single, 
-				"^\'(([^\']|(\\\'))*)\'@([a-zA-Z\-]*)$",
+				REGEXLANGSINGLE,
+				//"^\'(([^\']|(\\\'))*)\'@([a-zA-Z\-]*)$",
 				REG_EXTENDED);
 		if (err != 0) return err;
 		err = regcomp(&reg_simple_single,
-				"^\'(.*)\'$", 0);
+				REGEXSIMPLESINGLE,
+				//"^\'(.*)\'$",
+				REG_EXTENDED);
 		if (err != 0) return err;
 		err = regcomp(&reg_simple,
-				"^\"(.*)\"$",
+				REGEXSIMPLE,
+				//"^\"(.*)\"$",
 				REGOPTION);
 		if (err != 0) return err;
 
 		err = regcomp(&reg_clipsvalue_langString,
-				"^(.*)@@(.*)$",
+				REGEXCLIPSVALUELANGSTRING,
+				//"^(.*)@@(.*)$",
 				REGOPTION);
 		if (err != 0) return err;
 		err = regcomp(&reg_clipsvalue_literal,
-				"^(.*)[°^][°^](.*)$",
+				REGEXCLIPSVALUELITERAL,
+				//"^(.*)[°^][°^](.*)$",
 				REGOPTION);
 		if (err != 0) return err;
 		regex_initialized = true;
@@ -349,9 +369,125 @@ static int literal_to_builtin(char *builtinEncoded, N3String node){
 	return 1;
 }
 
+static int blanknode_as_clipsvalue(Environment *env, N3String node, CLIPSValue *target){
+	target->lexemeValue = CreateSymbol(env, node);
+	return 0;
+}
+
+static int literal_to_clipsvalue(Environment *env, N3String node, CLIPSValue *result){
+	int err;
+	const size_t max_matches = 3; //1 + #groups 
+	regmatch_t matches[5];
+	char *newnode, *tmpnew;
+	const char *value, *datatype, *lang, *tmpold;
+	size_t value_length, datatype_length, lang_length;
+
+	if (0 != init_regex()){
+		printf("Failed to compile regex_datatype\n");
+		return 3;
+	}
+	err = regexec(&reg_datatype, node, max_matches, matches, 0);
+	if (err == 0) {
+		value_length = matches[1].rm_eo - matches[1].rm_so;
+		value = node + matches[1].rm_so;
+		datatype_length = matches[2].rm_eo - matches[2].rm_so;
+		datatype = node + matches[2].rm_so;
+		return value_and_datatype_to_clipsvalue(env, value, value_length, datatype, datatype_length, result);
+	} else if (err != REG_NOMATCH){
+		printf("Regex expression produced error.0\n");
+		return 2;
+	}
+	err = regexec(&reg_datatype_single, node, max_matches, matches, 0);
+	if (err == 0) {
+		value_length = matches[1].rm_eo - matches[1].rm_so;
+		value = node + matches[1].rm_so;
+		datatype_length = matches[2].rm_eo - matches[2].rm_so;
+		datatype = node + matches[2].rm_so;
+		return value_and_datatype_to_clipsvalue(env, value, value_length, datatype, datatype_length, result);
+	} else if (err != REG_NOMATCH){
+		printf("Regex expression produced error.1\n");
+		return 2;
+	}
+
+	err = regexec(&reg_lang, node, 1+4, matches, 0);
+	if (err == 0) {
+		value_length = matches[1].rm_eo - matches[1].rm_so;
+		value = node + matches[1].rm_so;
+		lang_length = matches[4].rm_eo - matches[4].rm_so;
+		lang = node + matches[4].rm_so;
+		return value_and_lang_to_clipsvalue(env, value, value_length, lang, lang_length, result);
+	} else if (err != REG_NOMATCH){
+		printf("Regex expression produced error.1\n");
+		return 2;
+	}
+	err = regexec(&reg_lang_single, node, 1+4, matches, 0);
+	if (err == 0) {
+		value_length = matches[1].rm_eo - matches[1].rm_so;
+		value = node + matches[1].rm_so;
+		lang_length = matches[4].rm_eo - matches[4].rm_so;
+		lang = node + matches[4].rm_so;
+		return value_and_lang_to_clipsvalue(env, value, value_length, lang, lang_length, result);
+	} else if (err != REG_NOMATCH){
+		printf("Regex expression produced error.1\n");
+		return 2;
+	}
+	err = regexec(&reg_simple, node, max_matches, matches, 0);
+	if (err == 0) {
+		value_length = matches[1].rm_eo - matches[1].rm_so;
+		value = node + matches[1].rm_so;
+		return value_and_datatype_to_clipsvalue(env, value, value_length, _RDF_string_, sizeof(_RDF_string_), result);
+	} else if (err != REG_NOMATCH){
+		printf("Regex expression produced error.1\n");
+		return 2;
+	}
+	err = regexec(&reg_simple_single, node, max_matches, NULL, 0);
+	if (err == 0) {
+		value_length = matches[1].rm_eo - matches[1].rm_so;
+		value = node + matches[1].rm_so;
+		return value_and_datatype_to_clipsvalue(env, value, value_length, _RDF_string_, sizeof(_RDF_string_), result);
+	} else if (err != REG_NOMATCH){
+		printf("Regex expression produced error.1\n");
+		return 2;
+	}
+	return 1;
+}
+
+int n3_as_clipsvalue(Environment *env, N3String node, CLIPSValue *target){
+	int err;
+	CLIPSValue ret;
+	regmatch_t matches[5];
+	CRIFIN3ParserData *data = LoadingCRIFIN3ParserData(env);
+
+	err = regexec(&(data->reg_uriref), node, 5, matches, 0);
+	if (err == 0) {
+		target->lexemeValue = CreateSymbol(env, node);
+		return 0;
+	} else if (err != REG_NOMATCH){
+		printf("Regex expression produced error.0\n");
+		return 2;
+	}
+
+	err = regexec(&(data->reg_blanknode), node, 5, matches, 0);
+	if (err == 0) {
+		return blanknode_as_clipsvalue(env, node, target);
+	} else if (err != REG_NOMATCH){
+		printf("Regex expression produced error.0\n");
+		return 2;
+	}
+
+	err = literal_to_clipsvalue(env, node, target);
+	if (err == 0){
+		return 0;
+	} else if (err != 1){
+		return err;
+	}
+	return 1;
+}
+
 int add_n3_as_expression_at_slot(
 		FactBuilder *theFB, N3String node, const char* slot_name)
 {
+	//FBPutSlot(theFB, slot_name, n3_to_clipsvalue(node))
 	int err;
 	//char* builtinEncoded;
 	if (theFB == NULL) return 5;
@@ -487,4 +623,159 @@ char* extract_lang(Environment *env, CLIPSLexeme *lexeme){
 	retString = malloc(length+1);
 	strcpy(retString, pos);
 	return retString;
+}
+
+
+
+/**
+ * method given at registration for tidying up timedata after Environment is
+ * freed
+ */
+static void release_crifi_n3parserdata(Environment *env){
+	free_crifi_n3parserdata(LoadingCRIFIN3ParserData(env));
+}
+
+bool crifi_n3parserdata_register_data(Environment *env){
+	if (! AllocateEnvironmentData(env, CRIFI_N3PARSER_DATA_INDEX,
+						sizeof(CRIFIN3ParserData),
+						release_crifi_n3parserdata))
+	{
+		Writeln(env, "Internal error 0. "
+				"Cant load plugin for n3 parsing..");
+		ExitRouter(env, EXIT_FAILURE);
+		return false;
+	}
+	if(!initialize_crifi_n3parserdata(LoadingCRIFIN3ParserData(env))){
+		return false;
+	}
+	return true;
+}
+
+bool initialize_crifi_n3parserdata(CRIFIN3ParserData *data){
+	int err;
+	err = regcomp(&(data->reg_uriref),
+			REGEXURIREF,
+			REG_EXTENDED);
+	if (err != 0){
+		free_crifi_n3parserdata(data);
+		return false;
+	}
+	err = regcomp(&(data->reg_blanknode),
+			REGEXBLANKNODE,
+			REG_EXTENDED);
+	if (err != 0){
+		free_crifi_n3parserdata(data);
+		return false;
+	}
+	err = regcomp(&(data->reg_datatype),
+			REGEXDATATYPE,
+			REG_EXTENDED);
+	if (err != 0){
+		free_crifi_n3parserdata(data);
+		return false;
+	}
+	err = regcomp(&(data->reg_datatype_single),
+			REGEXDATATYPESINGLE,
+			REG_EXTENDED);
+	if (err != 0){
+		free_crifi_n3parserdata(data);
+		return false;
+	}
+	err = regcomp(&(data->reg_lang),
+			REGEXLANG,
+			REG_EXTENDED);
+	if (err != 0){
+		free_crifi_n3parserdata(data);
+		return false;
+	}
+	err = regcomp(&(data->reg_lang_single),
+			REGEXLANGSINGLE,
+			REG_EXTENDED);
+	if (err != 0){
+		free_crifi_n3parserdata(data);
+		return false;
+	}
+	err = regcomp(&(data->reg_simple),
+			REGEXSIMPLE,
+			REG_EXTENDED);
+	if (err != 0){
+		free_crifi_n3parserdata(data);
+		return false;
+	}
+	err = regcomp(&(data->reg_simple_single),
+			REGEXSIMPLESINGLE,
+			REG_EXTENDED);
+	if (err != 0){
+		free_crifi_n3parserdata(data);
+		return false;
+	}
+	err = regcomp(&(data->reg_clipsvalue_langString),
+			REGEXCLIPSVALUELANGSTRING,
+			REG_EXTENDED);
+	if (err != 0){
+		free_crifi_n3parserdata(data);
+		return false;
+	}
+	err = regcomp(&(data->reg_clipsvalue_literal),
+			REGEXCLIPSVALUELITERAL,
+			REG_EXTENDED);
+	if (err != 0){
+		free_crifi_n3parserdata(data);
+		return false;
+	}
+	return true;
+}
+
+void free_crifi_n3parserdata(CRIFIN3ParserData *data){
+	regfree(&(data->reg_datatype_single));
+	regfree(&(data->reg_uriref));
+	regfree(&(data->reg_datatype));
+	regfree(&(data->reg_datatype_single));
+	regfree(&(data->reg_lang));
+	regfree(&(data->reg_lang_single));
+	regfree(&(data->reg_simple));
+	regfree(&(data->reg_simple_single));
+	regfree(&(data->reg_clipsvalue_langString));
+	regfree(&(data->reg_clipsvalue_literal));
+}
+
+
+
+int value_and_datatype_to_clipsvalue(Environment *env, const char* value, size_t value_length, const char* datatype, size_t datatype_length, CLIPSValue *result){
+	size_t offset;
+	char *result_tmp, *result_safe;
+	if (datatype != NULL && ISURI(datatype, datatype_length, _RDF_langString_)){
+		return value_and_lang_to_clipsvalue(env, value, value_length, "", 0, result);
+	}
+	result_safe = malloc( 3*value_length + datatype_length + 3);
+	offset = percent_encode(result_safe, value, value_length);
+	result_tmp = result_safe + offset;
+	if (datatype == NULL || ISURI(datatype, datatype_length, _RDF_string_)){
+		result_tmp[0] = '\0';
+	} else {
+		result_tmp[0] = '^';
+		result_tmp[1] = '^';
+		result_tmp += 2;
+		memcpy(result_tmp, datatype, datatype_length);
+		result_tmp[datatype_length] = '\0';
+	}
+	result->lexemeValue = CreateString(env, result_safe);
+	free(result_safe);
+	return 0;
+}
+
+int value_and_lang_to_clipsvalue(Environment *env, const char* value, size_t value_length, const char* lang, size_t lang_length, CLIPSValue *result){
+	char* result_tmp;
+	char* result_safe = malloc( 3*value_length + lang_length + 3);
+	size_t offset = percent_encode(result_safe, value, value_length);
+	result_tmp = result_safe + offset;
+	result_tmp[0] = '@';
+	result_tmp[1] = '@';
+	result_tmp += 2;
+	memcpy(result_tmp, lang, lang_length);
+	result_tmp += lang_length;
+	result_tmp[0] = '\0';
+	result->lexemeValue = CreateString(env, result_safe);
+	free(result_safe);
+	return 0;
 }

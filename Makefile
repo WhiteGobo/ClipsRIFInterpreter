@@ -6,6 +6,9 @@ ASSETPATH ?=brubrubru
 TMPDIR = tmp
 CLIPSPATHDIRECTORY=${TMPDIR}/clipspatch
 
+CRIFI_SCRIPT_GENERATOR_PATH=${BUILD}/generate_crifi_script/
+ENV_GENERATOR=env PATH=${CRIFI_SCRIPT_GENERATOR_PATH}:$$PATH
+
 #eg more logging: (env CMAKE_CONFIGURE_OPT="--log-level=DEBUG" make)
 CMAKE_CONFIGURE_OPT ?=
 CMAKE_CONFIGURE_OPT += -D REL_ASSETPATH_CLIPSSCRIPTS=${ASSETPATH}
@@ -49,7 +52,8 @@ ${TMPDIR}/clips_core_source_641.zip:
 	mkdir -p ${TMPDIR}
 	wget -P ${TMPDIR} https://sourceforge.net/projects/clipsrules/files/CLIPS/6.4.1/clips_core_source_641.zip
 
-CLIPSPATCHFILES=$(shell find ${CLIPSPATHDIRECTORY}/ -type f)
+#CLIPSPATCHFILES=$(shell find ${CLIPSPATHDIRECTORY}/ -type f)
+CLIPSPATCHFILES=$(wildcard ${CLIPSPATHDIRECTORY}/original/*) $(wildcard ${CLIPSPATHDIRECTORY}/clips-src/*)
 CURRENTPATCH=src/clips_interface/clips.patch
 
 ${CLIPSPATHDIRECTORY}: ${TMPDIR}/clips_core_source_641.zip ${CURRENTPATCH}
@@ -64,6 +68,15 @@ ${CLIPSPATHDIRECTORY}: ${TMPDIR}/clips_core_source_641.zip ${CURRENTPATCH}
 ${TMPDIR}/clips.patch: ${CLIPSPATHDIRECTORY} ${CLIPSPATCHFILES}
 	echo ${CLIPSPATCHFILES}
 	-cd ${CLIPSPATHDIRECTORY}/ && diff -ruN original/ clips-src/ > ../clips.patch
+
+
+${TMPDIR}/OwlDirect.ntriples: resources/script_resource_manager/OwlDirect.rifps
+	mkdir -p ${TMPDIR}
+	rdfpipe -i rifps -o ntriples $< > $@
+
+${TMPDIR}/OwlDirect.clp: ${TMPDIR}/OwlDirect.ntriples
+	${ENV_GENERATOR} generate_crifi_script -i $@ -o $<
+	touch $@
 
 .PHONY: opendoc
 opendoc:

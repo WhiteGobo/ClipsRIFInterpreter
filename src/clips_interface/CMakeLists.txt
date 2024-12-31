@@ -30,11 +30,12 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(clips)
 
-add_subdirectory(external_functions)
 add_subdirectory(n3parser)
+add_subdirectory(numeric)
 add_subdirectory(lists)
 add_subdirectory(objects)
-add_subdirectory(time)
+add_subdirectory(crifi_time)
+add_subdirectory(external_functions)
 
 target_link_libraries(ffi_clips_interface
 	clips

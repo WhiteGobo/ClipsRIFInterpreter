@@ -179,6 +179,26 @@ struct TriplesLinkedList
  */
 typedef enum {
 	CRI_RET_BUILDTRIPLE_NOERROR = 0,
+	CRI_RET_PARSING_ERROR_SUBJECT,
+	CRI_RET_PARSING_ERROR_PREDICATE,
+	CRI_RET_PARSING_ERROR_OBJECT,
+	/**
+	 * Returned when an internal error occured, which shouldnt be possible.
+	 */
+	CRI_RET_INTERNAL_ERROR,
+	/**
+	 * Raised when fbassert returns FBE_DEFTEMPLATE_NOT_FOUND_ERROR,
+	 * FBE_IMPLIED_DEFTEMPLATE_ERROR or FBE_NULL_POINTER_ERROR
+	 */
+	CRI_RET_MISSING_TRIPLE_TEMPLATE,
+	/**
+	 * Raised when fbassert returns FBE_RULE_NETWORK_ERROR
+	 */
+	CRI_RET_BROKEN_RULE_NETWORK,
+	/**
+	 * Raised when fbassert returns FBE_COULD_NOT_ASSERT_ERROR
+	 */
+	CRI_RET_NOT_ASSERT_ERROR,
 } CRI_RET_BUILDTRIPLE;
 
 #define ASSERT_NOERROR(assert_return_value) (assert_return_value.parsing_error == CRI_RET_BUILDTRIPLE_NOERROR.parsing_error) && (assert_return_value.slotnumber == CRI_RET_BUILDTRIPLE_NOERROR.slotnumber)

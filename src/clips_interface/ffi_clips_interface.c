@@ -81,13 +81,26 @@ FFI_PLUGIN_EXPORT int close_graph(struct clips_graph_container graph_container){
 	return 0;
 }
 
+static void qq1(struct TriplesLinkedList *current){
+		free(current->subject);
+}
+static void qq2(struct TriplesLinkedList *current){
+		free(current->predicate);
+}
+static void qq3(struct TriplesLinkedList *current){
+		free(current->object);
+}
+
 FFI_PLUGIN_EXPORT void free_linked_list(struct TriplesLinkedList *first){
 	struct TriplesLinkedList *current = first;
 	struct TriplesLinkedList *rest;
 	while(current != NULL){
-		free(current->subject);
-		free(current->predicate);
-		free(current->object);
+		qq1(current);
+		qq2(current);
+		qq3(current);
+		//free(current->subject);
+		//free(current->predicate);
+		//free(current->object);
 		rest = current->rest;
 		free(current);
 		current = rest;
