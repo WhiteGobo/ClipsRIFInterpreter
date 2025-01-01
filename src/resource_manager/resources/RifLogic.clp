@@ -236,6 +236,7 @@
 (defclass AbsRIFPattern (is-a RIFObj))
 (defclass AbsRIFCondition (is-a RIFObj))
 (defclass AbsRIFTermable (is-a RIFObj));can be used as term
+(defclass AbsRIFAtomicFormula (is-a RIFObj));See https://www.w3.org/TR/2013/REC-rif-prd-20130205/#Atomic_formulas
 
 (deftemplate RIFRepresentation
 	(slot node)
@@ -277,22 +278,22 @@
 (defclass RIFModify (is-a AbsRIFAction)
 	(slot target))
 
-(defclass RIFAtom (is-a AbsRIFSentence AbsRIFAction AbsRIFPattern)
+(defclass RIFAtom (is-a AbsRIFSentence AbsRIFAction AbsRIFPattern AbsRIFAtomicFormula)
 	(slot op) (slot args))
 
 (defclass RIFExpr (is-a RIFAtom)
 	(slot op) (slot args))
 
-(defclass RIFFrame (is-a AbsRIFSentence AbsRIFAction)
+(defclass RIFFrame (is-a AbsRIFSentence AbsRIFAction AbsRIFAtomicFormula)
 	(slot object) (slot slots))
 
-(defclass RIFMember (is-a AbsRIFSentence AbsRIFAction)
+(defclass RIFMember (is-a AbsRIFSentence AbsRIFAction AbsRIFAtomicFormula)
 	(slot instance) (slot class))
 
-(defclass RIFSubclass (is-a AbsRIFSentence AbsRIFAction)
+(defclass RIFSubclass (is-a AbsRIFSentence AbsRIFAction AbsRIFAtomicFormula)
 	(slot sub) (slot super))
 
-(defclass RIFExternal (is-a AbsRIFAction AbsRIFTermable AbsRIFPattern)
+(defclass RIFExternal (is-a AbsRIFAction AbsRIFTermable AbsRIFPattern AbsRIFAtomicFormula)
 	(slot content))
 
 (defclass RIFEqual (is-a AbsRIFAction AbsRIFPattern)
@@ -904,6 +905,13 @@
 	(return "")
 )
 
+(defmessage-handler AbsRIFAtomicFormula assert-atom-formula ()
+	(set-error (str-cat 
+		"Missing implementation for assert-atom-formula for " (type ?self)
+	))
+	(return "")
+)
+
 (defmessage-handler RIFObj create-pattern ()
 	(set-error (str-cat 
 		"Missing implementation for create-pattern for " (type ?self)
@@ -1029,8 +1037,14 @@
 	(send ?self:formula create-action))
 
 (defmessage-handler RIFImplies create-action ()
+	(if (member$ assert-atom-formula (get-defmessage-handler-list
+				(type ?self:then) inherit))
+		then
+		(bind ?action (send ?self:then assert-atom-formula))
+		else
+		(bind ?action (send ?self:then create-action))
+	)
 	(bind ?condition (send ?self:if_ create-condition))
-	(bind ?action (send ?self:then create-action))
 	(print-ifthen ?condition ?action)
 )
 
@@ -1048,7 +1062,14 @@
 )
 
 (defmessage-handler RIFImplies get-rhs ()
-	(send ?self:then create-action))
+	(if (member$ assert-atom-formula (get-defmessage-handler-list
+				(type ?self:then) inherit))
+		then
+		(return (send ?self:then assert-atom-formula))
+		else
+		(return (send ?self:then create-action))
+	)
+)
 
 (defmessage-handler RIFAnd create-condition ()
 	(bind ?ret (create$))
@@ -1218,6 +1239,17 @@
 	(str-cat "" (expand$ ?ret))
 )
 
+(defmessage-handler RIFFrame assert-atom-formula ()
+	(bind ?ret (create$))
+	(bind ?s (send ?self:object as_term))
+	(foreach ?slt (send ?self:slots get-items)
+		(bind ?p (send (send ?slt get-slotkey) as_term))
+		(bind ?o (send (send ?slt get-slotvalue) as_term))
+		(bind ?ret (append$ ?ret (print-assertTriple ?s ?p ?o)))
+	)
+	(str-cat "" (expand$ ?ret))
+)
+
 (defmessage-handler RIFFrame create-pattern ()
 	(bind ?ret (create$))
 	(bind ?checks (create$))
@@ -1267,6 +1299,11 @@
 	(str-cat "" (expand$ ?ret) (expand$ ?checks))
 )
 
+(defmessage-handler RIFMember assert-atom-formula ()
+	(bind ?inst (send ?self:instance as_term))
+	(bind ?cls (send ?self:class as_term))
+	(print-assert (print-member ?inst ?cls)))
+
 (defmessage-handler RIFAtom create-sentence ()
 	(bind ?name (send ?self get-rulename))
 	(bind ?op (send ?self:op as_term))
@@ -1278,6 +1315,13 @@
 	(return (print-deffacts ?name ?atoms)))
 
 (defmessage-handler RIFAtom create-action ()
+	(bind ?op (send ?self:op as_term))
+	(bind ?args (create$))
+	(foreach ?x (send ?self:args get-items)
+		(bind ?args (append$ ?args (create$ (send ?x as_term) " "))))
+	(print-assert (print-atom ?op (str-cat "" (expand$ ?args)))))
+
+(defmessage-handler RIFAtom assert-atom-formula ()
 	(bind ?op (send ?self:op as_term))
 	(bind ?args (create$))
 	(foreach ?x (send ?self:args get-items)
