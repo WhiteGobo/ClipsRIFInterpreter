@@ -18,6 +18,11 @@ CLIPSValue getFactsFromEnvironment(Environment *env){
 }
 
 /**
+ * All Atomic formulas except externally defined atomic formulas
+ * should be representable by a deftemplate.
+ * See `https://www.w3.org/TR/2013/REC-rif-prd-20130205/#Atomic_formulas`_ for
+ * more information about Atomic Formulas.
+ *
  * See also 'https://www.w3.org/TR/2013/REC-rif-bld-20130205/#Terms'_
  */
 static const char *templates[] = {

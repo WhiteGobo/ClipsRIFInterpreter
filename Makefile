@@ -75,7 +75,8 @@ ${TMPDIR}/OwlDirect.ntriples: resources/script_resource_manager/OwlDirect.rifps
 	rdfpipe -i rifps -o ntriples $< > $@
 
 ${TMPDIR}/OwlDirect.clp: ${TMPDIR}/OwlDirect.ntriples
-	${ENV_GENERATOR} generate_crifi_script -i $@ -o $<
+	${ENV_GENERATOR} generate_crifi_script -i $<
+	${ENV_GENERATOR} generate_crifi_script -i $< > $@
 	touch $@
 
 .PHONY: opendoc

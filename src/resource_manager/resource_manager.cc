@@ -91,7 +91,7 @@ static std::string *generate_logic(
 		err = assert_fact(helper_graph, tmpTriple->subject,
 				tmpTriple->predicate, tmpTriple->object, "");
 		if (err != 0){
-			fprintf(stderr, "Failed to assert %s, %s, %s, with %d\n",
+			fprintf(stderr, "Failed to assert (%s %s %s) with %d\n",
 					tmpTriple->subject,
 					tmpTriple->predicate,
 					tmpTriple->object, err);

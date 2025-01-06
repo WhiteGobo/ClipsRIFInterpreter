@@ -1,0 +1,24 @@
+Document( 
+ Prefix(func <http://www.w3.org/2007/rif-builtin-function#>) 
+ Prefix(pred <http://www.w3.org/2007/rif-builtin-predicate#>) 
+ Prefix(owl <http://www.w3.org/2002/07/owl#>)
+ Prefix(deffact <http://white.gobo/crifi/resource-manager/deffacts#>)
+ Prefix(rema <http://white.gobo/crifi/resource-manager#>)
+
+ Group ( 
+  Group (
+   Forall ?X ?Y (
+    deffact:member(?X ?Y) :- ?X[rdf:type -> ?Y]
+   )
+   Forall ?X ?Y (
+    deffact:subclass(?X ?Y) :- ?X[rdfs:subclassOf -> ?Y]
+   )
+   Forall ?X ?Y (
+    deffact:equal(?X ?Y) :- ?X[owl:sameAs -> ?Y]
+   )
+  )
+  Group -100 (
+   Do (Execute (rema:create_script ()))
+  )
+ )
+)

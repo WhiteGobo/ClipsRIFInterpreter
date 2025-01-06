@@ -17,10 +17,10 @@ static int parse(int argc, char* argv[]){
 	output = NULL;
 	while ((opt = getopt(argc, argv, "i:o:")) != -1){
 		switch (opt){
-			case 'o':
+			case 'i':
 				input = optarg;
 				break;
-			case 'i':
+			case 'o':
 				output = optarg;
 				break;
 			default:
@@ -32,9 +32,10 @@ static int parse(int argc, char* argv[]){
 		fprintf(stderr, _USAGE, argv[0]);
 		return EXIT_FAILURE;
 	} else if (input == NULL) {
-		fprintf(stderr, "-i required", argv[0]);
+		fprintf(stderr, "-i required\n", argv[0]);
+		return EXIT_FAILURE;
 	} else if (output == NULL) {
-		fprintf(stderr, "-o required", argv[0]);
+		//fprintf(stderr, "-o required\n", argv[0]);
 	}
 	return 0;
 }
@@ -45,7 +46,6 @@ int main(int argc, char* argv[]){
 	if (0 != parse(argc, argv)) {
 		exit(EXIT_FAILURE);
 	}
-	printf("parsing worked. i: %s o: %s\n", input, output);
 	FILE *q = fopen(input, "r");
 	if (q==NULL){
 		fprintf(stderr, "failed opening input: %s\n", input);
@@ -59,13 +59,14 @@ int main(int argc, char* argv[]){
 	try {
 		logicAsString = generate_rif_logic(retFacts, NULL, NULL);
 	} catch (const std::runtime_error& err){
-		std::cout << "generate rif logic failed: " << err.what();
-		std::cout << std::endl;
+		std::cerr << "generate rif logic failed: " << err.what();
+		std::cerr << std::endl;
 		exit(EXIT_FAILURE);
 	}
 	if (logicAsString == nullptr){
 		fprintf(stderr, "generate rif logic failed.\n");
 	} else {
+		printf("%s", logicAsString->c_str());
 		delete(logicAsString);
 	}
 	free_linked_list(retFacts);
