@@ -30,6 +30,9 @@ void pred_literal_not_identical(Environment *env, UDFContext *udfc, UDFValue *ou
 
 
 void rif_cast_as(Environment *env, UDFContext *udfc, UDFValue *out){
+	int err;
+	CLIPSValue newclipsval;
+	char *lexical;
 	const char *uri = (const char*) udfc->context;
 	UDFValue myval;
 	if (!UDFFirstArgument(udfc, STRING_BIT, &myval)){
@@ -37,12 +40,22 @@ void rif_cast_as(Environment *env, UDFContext *udfc, UDFValue *out){
 		UDFThrowError(udfc);
 		return;
 	}
-	//if myval.header != lexeme thingie
-	FINDVALUE(value_pos, value_length, myval.lexemeValue);
-	char newstring[value_length + strlen(uri) + sizeof("^^\0")];
-	memcpy(newstring, value_pos, value_length);
-	sprintf(newstring + value_length, "^^%s", uri);
-	out->lexemeValue = CreateString(env, newstring);
+	lexical = extract_lexical(env, myval.lexemeValue);
+	if (lexical == NULL){
+		Writeln(env, "Argument Error for rif_cast_as");
+		UDFThrowError(udfc);
+		return;
+	}
+
+	err = value_and_datatype_to_clipsvalue(env, lexical, strlen(lexical), uri, strlen(uri), &newclipsval);
+	free(lexical);
+	if (err == 0){
+		out->value = newclipsval.value;
+	} else {
+		Writeln(env, "rif_cast_as failed");
+		UDFThrowError(udfc);
+		return;
+	}
 }
 
 
