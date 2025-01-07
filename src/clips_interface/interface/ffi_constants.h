@@ -257,6 +257,8 @@
 #define _XML_ "http://www.w3.org/2001/XMLSchema#"
 #define _RIFBUILTIN_ "http://www.w3.org/2007/rif-builtin-function#"
 
+#define _XS_string_ _XML_ "string"
+
 
 ///uri has to be macro constant uri
 #define ISURI(cmp, cmp_size, uri) ((cmp_size == (sizeof(uri) - 1)) && (0 == memcmp(cmp, uri, sizeof(uri) - 1)))

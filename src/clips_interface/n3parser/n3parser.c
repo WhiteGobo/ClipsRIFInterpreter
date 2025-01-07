@@ -186,12 +186,12 @@ int value_and_datatype_to_slotstring(char* result, const char* value, size_t val
 	char* result_tmp;
 	//char* result = malloc( 3*value_length + datatype_length + 3);
 	size_t offset = percent_encode(result, value, value_length);
-	if (COMPARE_RDF_STRING(datatype, datatype_length)) {
-		result[offset] = '\0';
-		return 0;
-	}
 	result_tmp = result + offset;
-	if (datatype == NULL || ISURI(datatype, datatype_length, _RDF_string_)){
+	if (
+			datatype == NULL 
+			|| ISURI(datatype, datatype_length, _RDF_string_)
+			|| ISURI(datatype, datatype_length, _XS_string_)
+	   ){
 		result_tmp[0] = '\0';
 		return 0;
 	}
@@ -383,7 +383,7 @@ static int literal_to_clipsvalue(Environment *env, N3String node, CLIPSValue *re
 	size_t value_length, datatype_length, lang_length;
 
 	if (0 != init_regex()){
-		printf("Failed to compile regex_datatype\n");
+		fprintf(stderr, "Failed to compile regex_datatype\n");
 		return 3;
 	}
 	err = regexec(&reg_datatype, node, max_matches, matches, 0);
@@ -394,7 +394,7 @@ static int literal_to_clipsvalue(Environment *env, N3String node, CLIPSValue *re
 		datatype = node + matches[2].rm_so;
 		return value_and_datatype_to_clipsvalue(env, value, value_length, datatype, datatype_length, result);
 	} else if (err != REG_NOMATCH){
-		printf("Regex expression produced error.0\n");
+		fprintf(stderr, "Regex expression produced error.0\n");
 		return 2;
 	}
 	err = regexec(&reg_datatype_single, node, max_matches, matches, 0);
@@ -405,7 +405,7 @@ static int literal_to_clipsvalue(Environment *env, N3String node, CLIPSValue *re
 		datatype = node + matches[2].rm_so;
 		return value_and_datatype_to_clipsvalue(env, value, value_length, datatype, datatype_length, result);
 	} else if (err != REG_NOMATCH){
-		printf("Regex expression produced error.1\n");
+		fprintf(stderr, "Regex expression produced error.1\n");
 		return 2;
 	}
 
@@ -417,7 +417,7 @@ static int literal_to_clipsvalue(Environment *env, N3String node, CLIPSValue *re
 		lang = node + matches[4].rm_so;
 		return value_and_lang_to_clipsvalue(env, value, value_length, lang, lang_length, result);
 	} else if (err != REG_NOMATCH){
-		printf("Regex expression produced error.1\n");
+		fprintf(stderr, "Regex expression produced error.1\n");
 		return 2;
 	}
 	err = regexec(&reg_lang_single, node, 1+4, matches, 0);
@@ -428,25 +428,25 @@ static int literal_to_clipsvalue(Environment *env, N3String node, CLIPSValue *re
 		lang = node + matches[4].rm_so;
 		return value_and_lang_to_clipsvalue(env, value, value_length, lang, lang_length, result);
 	} else if (err != REG_NOMATCH){
-		printf("Regex expression produced error.1\n");
+		fprintf(stderr, "Regex expression produced error.1\n");
 		return 2;
 	}
 	err = regexec(&reg_simple, node, max_matches, matches, 0);
 	if (err == 0) {
 		value_length = matches[1].rm_eo - matches[1].rm_so;
 		value = node + matches[1].rm_so;
-		return value_and_datatype_to_clipsvalue(env, value, value_length, _RDF_string_, sizeof(_RDF_string_), result);
+		return value_and_datatype_to_clipsvalue(env, value, value_length, NULL, 0, result);
 	} else if (err != REG_NOMATCH){
-		printf("Regex expression produced error.1\n");
+		fprintf(stderr, "Regex expression produced error.1\n");
 		return 2;
 	}
 	err = regexec(&reg_simple_single, node, max_matches, NULL, 0);
 	if (err == 0) {
 		value_length = matches[1].rm_eo - matches[1].rm_so;
 		value = node + matches[1].rm_so;
-		return value_and_datatype_to_clipsvalue(env, value, value_length, _RDF_string_, sizeof(_RDF_string_), result);
+		return value_and_datatype_to_clipsvalue(env, value, value_length, NULL, 0, result);
 	} else if (err != REG_NOMATCH){
-		printf("Regex expression produced error.1\n");
+		fprintf(stderr, "Regex expression produced error.1\n");
 		return 2;
 	}
 	return 1;
@@ -750,7 +750,11 @@ int value_and_datatype_to_clipsvalue(Environment *env, const char* value, size_t
 	result_safe = malloc( 3*value_length + datatype_length + 3);
 	offset = percent_encode(result_safe, value, value_length);
 	result_tmp = result_safe + offset;
-	if (datatype == NULL || ISURI(datatype, datatype_length, _RDF_string_)){
+	if (
+			(datatype == NULL)
+			|| (ISURI(datatype, datatype_length, _RDF_string_))
+			|| (ISURI(datatype, datatype_length, _XS_string_))
+	   ){
 		result_tmp[0] = '\0';
 	} else {
 		result_tmp[0] = '^';

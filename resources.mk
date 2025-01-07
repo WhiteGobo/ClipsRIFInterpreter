@@ -9,6 +9,7 @@ ${TMPDIR}/%.clp: ${TMPDIR}/%.ntriples
 	${ENV_GENERATOR} generate_crifi_script -i $< > $@
 	touch $@
 
+${TMPDIR}/RDF_Combination_Constant_Equivalence_1-import001.ntriples ${TMPDIR}/RDF_Combination_Constant_Equivalence_2-import001.ntriples ${TMPDIR}/RDF_Combination_Constant_Equivalence_3-import001.ntriples ${TMPDIR}/RDF_Combination_Constant_Equivalence_4-import001.ntriples::
 
 ${TMPDIR}/%.ntriples: resources/official_tests/%.ttl
 	rdfpipe -i ttl -o ntriples $< > $@

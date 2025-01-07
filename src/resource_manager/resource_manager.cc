@@ -95,6 +95,10 @@ static std::string *generate_logic(
 	}
 
 	FOREACH_TRIPLE(factlist, tmpTriple){
+		fprintf(stderr, "start to assert (%s %s %s)\n",
+				tmpTriple->subject,
+				tmpTriple->predicate,
+				tmpTriple->object);
 		err = assert_fact(helper_graph, tmpTriple->subject,
 				tmpTriple->predicate, tmpTriple->object, "");
 		if (err != 0){
@@ -141,6 +145,7 @@ static std::string *generate_logic(
 
 std::string *generate_simple_entailment(struct TriplesLinkedList* rdf_triples){
 	int debuglevel = 0;
+	fprintf(stderr, "starting simple entailment\n");
 	return generate_logic(rdf_triples, SIMPLEENTAILMENT,
 			"create-clips-script",
 			NULL, NULL, 0,

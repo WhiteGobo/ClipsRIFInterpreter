@@ -105,6 +105,30 @@ const ImportSource Import_Core_PET_RDF_Combination_Constant_Equivalence_1[] = {
 	{NULL, NULL}
 };
 
+const ImportSource Import_Core_PET_RDF_Combination_Constant_Equivalence_2[] = {
+	{
+		"http://www.w3.org/2005/rules/test/repository/tc/RDF_Combination_Constant_Equivalence_2/RDF_Combination_Constant_Equivalence_2-import001",
+		"RDF_Combination_Constant_Equivalence_2-import001.ntriples"
+	},
+	{NULL, NULL}
+};
+
+const ImportSource Import_Core_PET_RDF_Combination_Constant_Equivalence_3[] = {
+	{
+		"http://www.w3.org/2005/rules/test/repository/tc/RDF_Combination_Constant_Equivalence_3/RDF_Combination_Constant_Equivalence_3-import001",
+		"RDF_Combination_Constant_Equivalence_3-import001.ntriples"
+	},
+	{NULL, NULL}
+};
+
+const ImportSource Import_Core_PET_RDF_Combination_Constant_Equivalence_4[] = {
+	{
+		"http://www.w3.org/2005/rules/test/repository/tc/RDF_Combination_Constant_Equivalence_4/RDF_Combination_Constant_Equivalence_4-import001",
+		"RDF_Combination_Constant_Equivalence_4-import001.ntriples"
+	},
+	{NULL, NULL}
+};
+
 const ImportSource Import_Core_PET_RDF_Combination_SubClass_2[] = {
 	{
 		"http://www.w3.org/2005/rules/test/repository/tc/RDF_Combination_SubClass_2/RDF_Combination_SubClass_2-import001",
@@ -233,20 +257,17 @@ static auto petTestdata = testing::Values(
 			"RDF_Combination_Constant_Equivalence_1-conclusion.ntriples",
 			Import_Core_PET_RDF_Combination_Constant_Equivalence_1),
 		TestdataPET("Core_PET_RDF_Combination_Constant_Equivalence_2",
-			"not implemented",
 			"RDF_Combination_Constant_Equivalence_2-premise.ntriples",
 			"RDF_Combination_Constant_Equivalence_2-conclusion.ntriples",
-			NULL),
+			Import_Core_PET_RDF_Combination_Constant_Equivalence_2),
 		TestdataPET("Core_PET_RDF_Combination_Constant_Equivalence_3",
-			"not implemented",
 			"RDF_Combination_Constant_Equivalence_3-premise.ntriples",
 			"RDF_Combination_Constant_Equivalence_3-conclusion.ntriples",
-			NULL),
+			Import_Core_PET_RDF_Combination_Constant_Equivalence_3),
 		TestdataPET("Core_PET_RDF_Combination_Constant_Equivalence_4",
-				"not implemented",
-				"RDF_Combination_Constant_Equivalence_4-premise.ntriples",
-				"RDF_Combination_Constant_Equivalence_4-conclusion.ntriples",
-			NULL),
+			"RDF_Combination_Constant_Equivalence_4-premise.ntriples",
+			"RDF_Combination_Constant_Equivalence_4-conclusion.ntriples",
+			Import_Core_PET_RDF_Combination_Constant_Equivalence_4),
 		TestdataPET("Core_PET_RDF_Combination_Constant_Equivalence_Graph_Entailment",
 				"not implemented",
 				"RDF_Combination_Constant_Equivalence_Graph_Entailment-premise.ntriples",

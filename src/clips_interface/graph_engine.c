@@ -164,6 +164,9 @@ CRI_RET_BUILDTRIPLE build_triple(Environment* env, Utf8String subject, Utf8Strin
 	} else if (err != 0){
 		return CRI_RET_INTERNAL_ERROR;
 	}
+	if (tmpval.header->type == STRING_TYPE){
+		fprintf(stderr, "asdf %s\n", tmpval.lexemeValue->contents);
+	}
 	FBPutSlot(theFB, TRIPLESLOTOBJECT, &tmpval);
 	FBPutSlotSymbol(theFB, TRIPLESLOTCONTEXT, context);
 
