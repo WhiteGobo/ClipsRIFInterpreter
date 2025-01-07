@@ -95,10 +95,6 @@ static std::string *generate_logic(
 	}
 
 	FOREACH_TRIPLE(factlist, tmpTriple){
-		fprintf(stderr, "start to assert (%s %s %s)\n",
-				tmpTriple->subject,
-				tmpTriple->predicate,
-				tmpTriple->object);
 		err = assert_fact(helper_graph, tmpTriple->subject,
 				tmpTriple->predicate, tmpTriple->object, "");
 		if (err != 0){

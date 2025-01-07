@@ -1,4 +1,4 @@
-${TMPDIR}/OwlDirect.clp ${TMPDIR}/SimpleEntailment.clp::
+${TMPDIR}/OwlDirect.clp ${TMPDIR}/SimpleEntailment.clp ${TMPDIR}/RifLogic.clp::
 
 ${TMPDIR}/%.ntriples: resources/script_resource_manager/%.rifps
 	mkdir -p ${TMPDIR}
