@@ -3,6 +3,11 @@
 #include <n3parser.h>
 #include "resource_manager.h"
 
+#include <cmrc/cmrc.hpp>
+
+#define BUILTINFUNCTIONS "resources/extra_functions.clp"
+
+CMRC_DECLARE(clipsrifinterpreter);
 
 typedef struct UDFDescription_ {
 	const char *clipsName;
@@ -125,8 +130,9 @@ std::string *create_rules(struct TriplesLinkedList* triples, const char* profile
 	} else if (0==strcmp(profile, _ENTAILMENT_RDFS_)){
 		return generate_rdfs_entailment(triples);
 	} else if (0==strcmp(profile, _ENTAILMENT_OWLDIRECT_)){
-		printf("qwertz create_ulres owldirect\n");
 		return generate_owldirect_entailment(triples);
+	} else if (0==strcmp(profile, _ENTAILMENT_SIMPLE_)){
+		return generate_simple_entailment(triples);
 	} else if (profile == NULL){
 		printf("no entailment chosen\n");
 	} else {
@@ -142,11 +148,41 @@ static UDFDescription resourceManagerClipsFunctions[] = {
 	{NULL, NULL, 0,0, NULL, NULL, NULL}
 };
 
+
+static void script_output_write_command(Environment *env,
+		const char *logicalName,
+		const char *str,
+		void *context){
+	std::string *output = (std::string *)context;
+	*output += str;
+}
+
+static bool script_oputput_queryTraceCallback(
+		Environment *environment,
+		const char *logicalName,
+		void *context)
+{
+	if (strcmp(logicalName, "<http://white.gobo/crifi/resource-manager#outputrouter>") == 0){
+		return true;
+	}
+	return false;
+}
+
+static void initialize_script_output(Environment *env, std::string *output){
+	AddRouter(env, "<http://white.gobo/crifi/resource-manager#outputrouter>",
+			40,
+			&script_oputput_queryTraceCallback, &script_output_write_command, NULL, NULL, NULL,
+			output);
+}
+
 bool add_needed_user_functions(struct clips_graph_container graph,
 		LoadingFunction* loading_functions,
 		const void **loading_function_context,
-		unsigned int loading_functions_length){
+		unsigned int loading_functions_length,
+		std::string *output){
 	Environment *env = graph.environment;
+
+	initialize_script_output(env, output);
 
 	if (! AllocateEnvironmentData(env, CRIFI_RM_INDEX_DATA,
 						sizeof(struct indexData),
@@ -177,6 +213,16 @@ bool add_needed_user_functions(struct clips_graph_container graph,
 			return false;
 		}
 	}
+
+	auto fs = cmrc::clipsrifinterpreter::get_filesystem();
+	cmrc::file asfile = fs.open(BUILTINFUNCTIONS);
+	std::string clipsscript = std::string(asfile.begin(), asfile.end());
+	RET_LOADCONFIG err = load_config_mem(graph,
+			clipsscript.c_str(), clipsscript.length());
+	if (err == CTC_LC_PARSING_ERROR){
+		return false;
+	}
+
 	return true;
 }
 

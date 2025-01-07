@@ -1,0 +1,139 @@
+Document( 
+ Prefix(xs <http://www.w3.org/2001/XMLSchema#>)
+ Prefix(ex <http://example.org/example#>) 
+ Prefix(func <http://www.w3.org/2007/rif-builtin-function#>) 
+ Prefix(pred <http://www.w3.org/2007/rif-builtin-predicate#>) 
+
+ Group ( 
+  ex:ok(0) :- 
+    External( pred:is-literal-double( "1.2E34"^^xs:double ) )
+  ex:ok(1) :- 
+    External( pred:is-literal-float( "-INF"^^xs:float ) )
+  ex:ok(2) :- 
+    External( pred:is-literal-decimal( "1"^^xs:integer ) )
+  ex:ok(3) :- 
+    External( pred:is-literal-integer( "1"^^xs:integer ) )
+  ex:ok(4) :- 
+    External( pred:is-literal-long( "1"^^xs:integer ) )
+  ex:ok(5) :- 
+    External( pred:is-literal-int( "1"^^xs:integer ) )
+  ex:ok(6) :- 
+    External( pred:is-literal-short( "1"^^xs:integer ) )
+  ex:ok(7) :- 
+    External( pred:is-literal-byte( "1"^^xs:integer ) )
+  ex:ok(8) :- 
+    External( pred:is-literal-nonNegativeInteger( "1"^^xs:integer ) )
+  ex:ok(9) :- 
+    External( pred:is-literal-positiveInteger( "1"^^xs:integer ) )
+  ex:ok(10) :- 
+    External( pred:is-literal-unsignedLong( "1"^^xs:integer ) )
+  ex:ok(11) :- 
+    External( pred:is-literal-unsignedInt( "1"^^xs:integer ) )
+  ex:ok(12) :- 
+    External( pred:is-literal-unsignedShort( "1"^^xs:integer ) )
+  ex:ok(13) :- 
+    External( pred:is-literal-unsignedByte( "1"^^xs:integer ) )
+  ex:ok(14) :- 
+    External( pred:is-literal-nonPositiveInteger( "-1"^^xs:integer ) )
+  ex:ok(15) :- 
+    External( pred:is-literal-negativeInteger( "-1"^^xs:integer ) )
+  ex:ok(16) :- 
+    External( pred:is-literal-not-double( "foo"^^xs:string ) )
+  ex:ok(17) :- 
+    External( pred:is-literal-not-float( "foo"^^xs:string ) )
+  ex:ok(18) :- 
+    External( pred:is-literal-not-hexBinary( "foo"^^xs:string ) )
+  ex:ok(19) :- 
+    External( pred:is-literal-not-decimal( "foo"^^xs:string ) )
+  ex:ok(20) :- 
+    External( pred:is-literal-not-integer( "foo"^^xs:string ) )
+  ex:ok(21) :- 
+    External( pred:is-literal-not-long( "foo"^^xs:string ) )
+  ex:ok(22) :- 
+    External( pred:is-literal-not-int( "foo"^^xs:string ) )
+  ex:ok(23) :- 
+    External( pred:is-literal-not-short( "foo"^^xs:string ) )
+  ex:ok(24) :- 
+    External( pred:is-literal-not-byte( "foo"^^xs:string ) )
+  ex:ok(25) :- 
+    External( pred:is-literal-not-nonNegativeInteger( "foo"^^xs:string ) )
+  ex:ok(26) :- 
+    External( pred:is-literal-not-positiveInteger( "foo"^^xs:string ) )
+  ex:ok(27) :- 
+    External( pred:is-literal-not-unsignedLong( "foo"^^xs:string ) )
+  ex:ok(28) :- 
+    External( pred:is-literal-not-unsignedInt( "foo"^^xs:string ) )
+  ex:ok(29) :- 
+    External( pred:is-literal-not-unsignedShort( "foo"^^xs:string ) )
+  ex:ok(30) :- 
+    External( pred:is-literal-not-unsignedByte( "foo"^^xs:string ) )
+  ex:ok(31) :- 
+    External( pred:is-literal-not-nonPositiveInteger( "foo"^^xs:string ) )
+  ex:ok(32) :- 
+    External( pred:is-literal-not-negativeInteger( "foo"^^xs:string ) )
+  ex:ok(33) :- 
+    External( pred:is-literal-double( External ( xs:double ("1.2E34"^^xs:string ) ) ) )
+  ex:ok(34) :- 
+    External( pred:is-literal-float( External ( xs:float ( "-1"^^xs:string ) ) ) )
+  ex:ok(35) :- 
+    External( pred:is-literal-hexBinary( External ( xs:hexBinary (  "aabb"^^xs:string ) ) ) )
+  ex:ok(36) :- 
+    External( pred:is-literal-decimal( External( xs:decimal ( "1"^^xs:string ) ) ) )
+  ex:ok(37) :- 
+    External( pred:is-literal-integer(  External( xs:integer ( "1"^^xs:string ) ) ) )
+  ex:ok(38) :- 
+    External( pred:is-literal-long( External( xs:long ( "1"^^xs:string ) ) ) )
+  ex:ok(39) :- 
+    External( pred:is-literal-int(  External( xs:int ( "1"^^xs:string ) ) ) )
+  ex:ok(40) :- 
+    External( pred:is-literal-short(  External( xs:short ( "1"^^xs:string ) ) ) )
+  ex:ok(41) :- 
+    External( pred:is-literal-byte(  External( xs:byte ( "1"^^xs:string ) ) ) )
+  ex:ok(42) :- 
+    External( pred:is-literal-nonNegativeInteger(  External( xs:nonNegativeInteger ( "1"^^xs:string ) ) ) )
+  ex:ok(43) :- 
+    External( pred:is-literal-positiveInteger(  External( xs:positiveInteger ( "1"^^xs:string ) ) ) )
+  ex:ok(44) :- 
+    External( pred:is-literal-unsignedLong(  External( xs:unsignedLong ( "1"^^xs:string ) ) ) )
+  ex:ok(45) :- 
+    External( pred:is-literal-unsignedInt(  External( xs:unsignedInt ( "1"^^xs:string ) ) ) )
+  ex:ok(46) :- 
+    External( pred:is-literal-unsignedShort(  External( xs:unsignedShort ( "1"^^xs:string ) ) ) )
+  ex:ok(47) :- 
+    External( pred:is-literal-unsignedByte(  External( xs:unsignedByte ( "1"^^xs:string ) ) ) )
+  ex:ok(48) :- 
+    External( pred:is-literal-nonPositiveInteger( External( xs:nonPositiveInteger ("-1"^^xs:string ) ) ) )
+  ex:ok(49) :- 
+    External( pred:is-literal-negativeInteger( External( xs:negativeInteger ("-1"^^xs:string ) ) ) )
+  ex:ok(50) :- 
+    2 = External ( func:numeric-add( 1 1 ) )
+  ex:ok(51) :- 
+    1 = External ( func:numeric-subtract( 2 1 ) )
+  ex:ok(52) :- 
+    6 = External ( func:numeric-multiply( 2 3 ) )
+  ex:ok(53) :- 
+    2 = External ( func:numeric-divide( 6 3 ) )
+  ex:ok(54) :- 
+    1 = External ( func:numeric-integer-divide( 5 3 ) )
+  ex:ok(55) :- 
+    2 = External ( func:numeric-integer-mod( 5 3 ) )
+  ex:ok(56) :- 
+    External ( pred:numeric-equal( "0.0E0"^^xs:double External ( func:numeric-subtract( 1 1 ) ) ) )
+  ex:ok(57) :- 
+    External ( pred:numeric-not-equal( 0 1 ) )
+  ex:ok(58) :- 
+    External ( pred:numeric-less-than ( 1 2 ) )
+  ex:ok(59) :- 
+    External ( pred:numeric-less-than-or-equal ( 1 2 ) )
+  ex:ok(60) :- 
+    External ( pred:numeric-less-than-or-equal ( 1 1 ) )
+  ex:ok(61) :- 
+    External ( pred:numeric-greater-than ( 2 -1 ) )
+  ex:ok(62) :- 
+    External ( pred:numeric-greater-than-or-equal ( 2 -1 ) )
+  ex:ok(63) :- 
+    External ( pred:numeric-greater-than-or-equal ( 2  2 ) )
+  ex:ok(64) :- 
+    External ( pred:numeric-not-equal( 0 1  ) )
+  )
+)

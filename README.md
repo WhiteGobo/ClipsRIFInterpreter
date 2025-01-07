@@ -2,7 +2,8 @@
 
 ## TODO
 
-There is no test for memory leaks yet.
+* Check memory leaks
+* generate_crifi_script does strange things if empty input is provided.
 
 ## Basic usage.
 

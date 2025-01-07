@@ -6,7 +6,12 @@ Document(
  Prefix(rema <http://white.gobo/crifi/resource-manager#>)
 
  Group ( 
-  Group (
+  Group 20 (
+   Forall ?X (
+    If ?X[rdf:type -> owl:Ontology] Then Do( Execute(rema:set_name(?X)) Retract(?X[rdf:type -> owl:Ontology]))
+   )
+  )
+  Group 10 (
    Forall ?X ?Y (
     deffact:member(?X ?Y) :- ?X[rdf:type -> ?Y]
    )
@@ -18,7 +23,9 @@ Document(
    )
   )
   Group -100 (
-   Do (Execute (rema:create_script ()))
+   Do (
+    Execute (rema:create_script ())
+   )
   )
  )
 )

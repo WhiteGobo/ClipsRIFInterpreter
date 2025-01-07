@@ -97,6 +97,14 @@ std::ostream& operator<<(std::ostream& os, const TestdataPET& td){
 	return os;
 }
 
+const ImportSource Import_Core_PET_RDF_Combination_Constant_Equivalence_1[] = {
+	{
+		"http://www.w3.org/2005/rules/test/repository/tc/RDF_Combination_Constant_Equivalence_1/RDF_Combination_Constant_Equivalence_1-import001",
+		"RDF_Combination_Constant_Equivalence_1-import001.ntriples"
+	},
+	{NULL, NULL}
+};
+
 const ImportSource Import_Core_PET_RDF_Combination_SubClass_2[] = {
 	{
 		"http://www.w3.org/2005/rules/test/repository/tc/RDF_Combination_SubClass_2/RDF_Combination_SubClass_2-import001",
@@ -202,7 +210,7 @@ static auto petTestdata = testing::Values(
 			"Modeling_Brain_Anatomy-conclusion.ntriples",
 			NULL),
 		TestdataPET("Core_PET_OWL_Combination_Vocabulary_Separation_Inconsistency_1",
-			"not implemented",
+			"Missing inconsistency handling.",
 			"OWL_Combination_Vocabulary_Separation_Inconsistency_1-premise.ntriples",
 			"OWL_Combination_Vocabulary_Separation_Inconsistency_1-conclusion.ntriples",
 			Import_Core_PET_OWL_Combination_Vocabulary_Separation_Inconsistency_1),
@@ -221,10 +229,9 @@ static auto petTestdata = testing::Values(
 			"RDF_Combination_Blank_Node-conclusion.ntriples",
 			Import_Core_PET_RDF_Combination_Blank_Node),
 		TestdataPET("Core_PET_RDF_Combination_Constant_Equivalence_1",
-			"not implemented",
 			"RDF_Combination_Constant_Equivalence_1-premise.ntriples",
 			"RDF_Combination_Constant_Equivalence_1-conclusion.ntriples",
-			NULL),
+			Import_Core_PET_RDF_Combination_Constant_Equivalence_1),
 		TestdataPET("Core_PET_RDF_Combination_Constant_Equivalence_2",
 			"not implemented",
 			"RDF_Combination_Constant_Equivalence_2-premise.ntriples",

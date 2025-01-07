@@ -19,6 +19,8 @@ endif
 
 default: configure build test
 
+include resources.mk
+
 .PHONY: configure
 configure:
 	${CMAKE} -S ${SRC} -B ${BUILD} ${CMAKE_CONFIGURE_OPT}
@@ -69,15 +71,6 @@ ${TMPDIR}/clips.patch: ${CLIPSPATHDIRECTORY} ${CLIPSPATCHFILES}
 	echo ${CLIPSPATCHFILES}
 	-cd ${CLIPSPATHDIRECTORY}/ && diff -ruN original/ clips-src/ > ../clips.patch
 
-
-${TMPDIR}/OwlDirect.ntriples: resources/script_resource_manager/OwlDirect.rifps
-	mkdir -p ${TMPDIR}
-	rdfpipe -i rifps -o ntriples $< > $@
-
-${TMPDIR}/OwlDirect.clp: ${TMPDIR}/OwlDirect.ntriples
-	${ENV_GENERATOR} generate_crifi_script -i $<
-	${ENV_GENERATOR} generate_crifi_script -i $< > $@
-	touch $@
 
 .PHONY: opendoc
 opendoc:

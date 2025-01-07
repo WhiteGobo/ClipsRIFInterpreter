@@ -61,6 +61,12 @@ std::string *generate_rdf_entailment(struct TriplesLinkedList* rdf_triples);
 
 /**
  *
+ * Uses _ENTAILMENT_SIMPLE_
+ */
+std::string *generate_simple_entailment(struct TriplesLinkedList* rdf_triples);
+
+/**
+ *
  * Uses _RIF_ENTAILMENT_RDFS_
  */
 std::string *generate_rdfs_entailment(struct TriplesLinkedList* rdf_triples);

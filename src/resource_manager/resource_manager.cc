@@ -16,6 +16,7 @@
 #define RIFLOGIC "resources/RifLogic.clp"
 #define RDFENTAILMENT "resources/RDFEntailment.clp"
 #define RDFSENTAILMENT "resources/RDFSEntailment.clp"
+#define SIMPLEENTAILMENT "resources/SimpleEntailment.clp"
 
 CMRC_DECLARE(clipsrifinterpreter);
 
@@ -23,13 +24,14 @@ static struct clips_graph_container create_logic_helpergraph(
 		const char* logicpath,
 		LoadingFunction *loading_functions,
 		const void **loading_function_context,
-		unsigned int loading_functions_length
+		unsigned int loading_functions_length,
+		std::string *retString
 		){
 	auto fs = cmrc::clipsrifinterpreter::get_filesystem();
 	cmrc::file asfile = fs.open(logicpath);
 	std::string owllogic_data = std::string(asfile.begin(), asfile.end());
 	struct clips_graph_container helper_graph = init_graph();
-	if (!add_needed_user_functions(helper_graph, loading_functions, loading_function_context, loading_functions_length)){
+	if (!add_needed_user_functions(helper_graph, loading_functions, loading_function_context, loading_functions_length, retString)){
 		throw std::runtime_error("failed adding needed to clips "
 				"environment functions.");
 	}
@@ -79,8 +81,13 @@ static std::string *generate_logic(
 		int debuglevel
 		){
 	int err;
-	std::string *retString;
-	struct clips_graph_container helper_graph = create_logic_helpergraph(logicpath, loading_functions, loading_function_context, loading_functions_length);
+	std::string *retString = new std::string("");
+	struct clips_graph_container helper_graph
+		= create_logic_helpergraph(logicpath,
+						loading_functions,
+						loading_function_context,
+						loading_functions_length,
+						retString);
 	if (helper_graph.inErrorState != 0){
 		fprintf(stderr, "Couldnt load logic\n");
 		close_graph(helper_graph);
@@ -106,6 +113,7 @@ static std::string *generate_logic(
 		//eval(helper_graph, "(watch facts RIFRepresentation)");
 	}
 	auto qq = run_rules(helper_graph, -1);
+	fprintf(stderr, "return string:%s\n", retString->c_str());
 	//eval(helper_graph, "(matches RIFprocess_Atom)");
 	//eval(helper_graph, "(facts)");
 	fprintf(stderr, "rules run: %d\n", qq);
@@ -114,18 +122,30 @@ static std::string *generate_logic(
 		throw std::runtime_error("Rulecreation ended in errorstate. "
 				"Happend during run.");
 	}
-	retString = create_clipsrifinterpreter_program(
-			create_clips_symbol, helper_graph);
+	if (retString->length() == 0) {
+		delete(retString);
+		retString = create_clipsrifinterpreter_program(
+				create_clips_symbol, helper_graph);
 
-	if (graph_in_errorstate(helper_graph)){
-		throw std::runtime_error("Rulecreation ended in errorstate. "
-				"Happend during retrieval of clips program.");
+		if (graph_in_errorstate(helper_graph)){
+			throw std::runtime_error("Rulecreation ended in "
+					"errorstate. Happend during "
+					"retrieval of clips program.");
+		}
 	}
 
 	close_graph(helper_graph);
 	return retString;
 }
 
+
+std::string *generate_simple_entailment(struct TriplesLinkedList* rdf_triples){
+	int debuglevel = 0;
+	return generate_logic(rdf_triples, SIMPLEENTAILMENT,
+			"create-clips-script",
+			NULL, NULL, 0,
+			debuglevel);
+}
 
 std::string *generate_rdf_entailment(struct TriplesLinkedList* rdf_triples){
 	int debuglevel = 0;

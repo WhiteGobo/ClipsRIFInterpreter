@@ -134,6 +134,7 @@ cmrc_add_resource_library(
 	RDF_Combination_Blank_Node-import001.ntriples
 	RDF_Combination_Constant_Equivalence_1-conclusion.ntriples
 	RDF_Combination_Constant_Equivalence_1-premise.ntriples
+	RDF_Combination_Constant_Equivalence_1-import001.ntriples
 	RDF_Combination_Constant_Equivalence_2-conclusion.ntriples
 	RDF_Combination_Constant_Equivalence_2-premise.ntriples
 	RDF_Combination_Constant_Equivalence_3-conclusion.ntriples
