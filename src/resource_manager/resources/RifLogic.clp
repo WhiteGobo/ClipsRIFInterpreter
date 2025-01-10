@@ -53,6 +53,10 @@
 	" ?action " )
 "))
 
+(deffunction print-bind-new (?varname)
+	(str-cat "(bind "?varname" (strcat \"_:tmpvar\" (gensym)))")
+)
+
 (deffunction print-and (?conditions)
 	(bind ?l (length$ ?conditions))
 	(if (= ?l 0) then
@@ -289,6 +293,8 @@
 (defclass RIFFrame (is-a AbsRIFSentence AbsRIFAction AbsRIFAtomicFormula)
 	(slot object) (slot slots))
 
+(defclass RIFNew (is-a RIFObj))
+
 (defclass RIFMember (is-a AbsRIFSentence AbsRIFAction AbsRIFAtomicFormula)
 	(slot instance) (slot class))
 
@@ -309,6 +315,7 @@
 
 (defclass RIFDo (is-a AbsRIFAction)
 	(slot varinit (default FALSE))
+	(multislot actionVars)
 	(slot actions)); (type RDFList)
 
 (defclass RIFINeg (is-a AbsRIFCondition AbsRIFPattern)
@@ -366,6 +373,16 @@
 	(bind ?newlist (create$ ?firstObj (send ?restlist get-items)))
 	(bind ?x (make-instance of RDFList (node ?rdflist) (items ?newlist)))
 	(assert (RIFRepresentation (node ?rdflist) (object ?x)))
+)
+
+(defrule RIFprocess_New
+        (TripleTemplate
+                (subject ?node)
+		(predicate <http://www.w3.org/1999/02/22-rdf-syntax-ns#type>)
+                (object <http://www.w3.org/2007/rif#New>))
+	=>
+	(bind ?x (make-instance of RIFNew (node ?node)))
+	(assert (RIFRepresentation (node ?node) (object ?x)))
 )
 
 (defrule RIFprocess_ConstIRI
@@ -711,7 +728,7 @@
 	(assert (RIFRepresentation (node ?node) (object ?x)))
 )
 
-
+	
 (defrule RIFprocess_Do
 	(TripleTemplate
 		(subject ?node)
@@ -726,6 +743,17 @@
 	(bind ?x (make-instance of RIFDo (node ?node)
 		(actions ?objectactions)))
 	(assert (RIFRepresentation (node ?node) (object ?x)))
+)
+
+(defrule RIFDo_add_actionVar
+	?obj <- (object (is-a RIFDo) (node ?node))
+	(TripleTemplate
+		(subject ?node)
+		(predicate <http://www.w3.org/2007/rif#actionVar>)
+		(object ?varnode))
+	?varlist <- (object (is-a RDFList) (node ?varnode))
+	=>
+	(slot-insert$ ?obj actionVars 1 ?varlist)
 )
 
 (defrule RIFprocess_Forall
@@ -1146,10 +1174,20 @@
 ;	(send))
 
 (defmessage-handler RIFDo create-action ()
-	(if ?self:varinit then
-		(set-error "varinit not implemented yet")
-		(return ""))
 	(bind ?actions (create$))
+	(foreach ?vr ?self:actionVars
+		(bind ?x (send ?vr get-items))
+		(bind ?varname (send (expand$ (first$ ?x)) as_term))
+		(bind ?binder (expand$ (rest$ ?x)))
+		(if (eq (type ?binder) RIFNew)
+			then
+				(bind ?tmpact (print-bind-new ?varname))
+			else
+				(set-error "frames are not supportin actionVar")
+				(return "")
+		)
+		(bind ?actions (append$ ?actions ?tmpact))
+	)
 	(foreach ?act (send ?self:actions get-items)
 		(bind ?nextact (send ?act create-action))
 		(bind ?actions (append$ ?actions ?nextact))
@@ -1161,14 +1199,7 @@
 (defmessage-handler RIFDo get-rhs () (send ?self create-action))
 
 (defmessage-handler RIFAssert create-action ()
-	(bind ?ret (create$))
-	(foreach ?triple (send ?self:target as_triples)
-		(bind ?ret (append$ ?ret (print-assertTriple 
-			(send ?triple get-s)
-			(send ?triple get-p)
-			(send ?triple get-o))))
-	)
-	(str-cat "" (expand$ ?ret))
+	(send ?self:target create-action)
 )
 
 
@@ -1362,6 +1393,7 @@
 	(bind ?inst (send ?self:instance as_term))
 	(bind ?cls (send ?self:class as_term))
 	(print-assert (print-member ?inst ?cls)))
+(defmessage-handler RIFMember create-action () (send ?self assert-atom-formula))
 
 (defmessage-handler RIFAtom create-sentence (?salience)
 	(bind ?name (send ?self get-rulename))

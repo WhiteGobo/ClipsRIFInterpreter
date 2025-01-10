@@ -4,6 +4,162 @@ Document(
  Prefix(owl <http://www.w3.org/2002/07/owl#>)
  Prefix(deffact <http://white.gobo/crifi/resource-manager/deffacts#>)
  Prefix(rema <http://white.gobo/crifi/resource-manager#>)
+ Prefix(rl <http://white.gobo/crifi/resource-manager/RifLogic#>)
+ Prefix(rif <http://www.w3.org/2007/rif#>)
+
  Group (
+  Group -10 (
+   Forall ?rule ?impl ?pattern ?action(
+    If And(
+     ?rule[rdf:type -> rif:Forall]
+     ?rule[rif:formula -> ?impl]
+     ?impl[rdf:type -> rif:Implies]
+     ?impl[rif:if -> ?pattern]
+     ?impl[rif:then -> ?action]
+    ) Then Do (
+     Assert (?rule[rif:pattern -> ?pattern])
+     Modify (?rule[rif:formula -> ?action])
+     Retract (?impl)
+    )
+   )
+   Forall ?outerrule ?innerrule ?pattern (
+    If And(
+     ?innerrule[rdf:type -> rif:Forall]
+     ?outerrule[rif:formula -> ?innerrule]
+     ?outerrule[rdf:type -> rif:Forall]
+     ?outerrule[rif:pattern -> ?pattern]
+    ) Then Do (
+     Retract (?outerrule[rif:pattern -> ?pattern])
+     Assert (?innerrule[rif:pattern -> ?pattern])
+    )
+   )
+  )
+  Group -15 (
+   Forall ?rule ?frame ?slot ?slotlist ?obj ?slotkey ?slotvalue( If And(
+     ?rule[rdf:type -> rif:Forall]
+     ?rule[rif:pattern -> ?frame]
+     ?frame[rdf:type -> rif:Frame]
+     ?slot[rdf:type -> rif:Slot]
+     ?frame[rif:slots -> ?slotlist]
+     External(pred:list-contains(?slotlist ?slot))
+     ?frame[rif:obj -> ?obj]
+     ?slot[rif:slotkey -> ?slotkey]
+     ?slot[rif:slotvalue -> ?slotvalue]
+    ) Then Do (
+     Assert (rema:PatternSkel(?frame rema:frame ?obj ?slotkey ?slotvalue))
+   ))
+  )
+
+
+  (* rl:convert-rules *) Group -20 (
+   (* rl:init-rule *)
+   Forall ?group ?rule ?sentences (If And(
+     ?group[rif:sentences -> ?sentences]
+     ?rule[rdf:type -> rif:Forall]
+     External ( pred:list-contains(?list ?item) )
+    ) Then Do (
+     Assert ( ?rule # rema:rule )
+     Assert ( ?rule[rema:patterns -> List()] )
+     Assert ( ?rule[rema:actions -> List()] )
+   ))
+   
+   (* rl:init-pattern *)
+   Forall ?rule ?pattern (If And(
+     ?rule # rema:rule
+     ?pattern[rif:pattern -> ?pattern]
+    ) Then Do (
+     Assert (?pattern # rema:Pattern )
+     Assert (?rule[rema:combine-pattern -> ?pattern])
+   ))
+
+   (* rl:init-action-forallaction *)
+   Forall ?rule ?formula (If And(
+     ?rule # rema:rule
+     ?rule[rif:formula -> ?formula]
+    ) Then Do (
+     Assert ( ?formula # rema:action )
+     Assert ( ?rule[rema:activates -> ?formula] )
+   ))
+
+   (* rl:frame-to-pattern-0 *)
+   Forall ?pattern ?object ?slots(If And(
+     ?pattern # rema:Pattern
+     ?pattern[rdf:type -> rif:Frame]
+     ?pattern[rif:object -> ?object]
+     ?pattern[rif:slots -> ?slots]
+    ) Then Do (
+     Assert( rl:frame-to-pattern-iter(?pattern ?object ?slots))
+   ))
+
+   (* rl:frame-to-pattern1 *)
+   Forall ?pattern ?slot ?slotlist ?object (If And(
+     rl:frame-to-pattern-iter(?pattern ?object ?slotlist)
+     ?slot[rdf:type -> rif:Slot]
+     External(pred:list-contains(?slotlist ?slot))
+     ?slot[rif:slotkey -> ?slotkey]
+     ?slot[rif:slotvalue -> ?slotvalue]
+    ) Then Do (( ?remaTriple New() )
+     Assert(?pattern[rema:combine-pattern -> ?remaTriple])
+     Assert(?remaTriple[rema:triple-subject -> ?object])
+     Assert(?remaTriple[rema:triple-predicate -> ?slotkey])
+     Assert(?remaTriple[rema:triple-object -> ?slotvalue])
+     Assert(?object # rema:PatternAction)
+     Assert(?predicate # rema:PatternAction)
+     Assert(?subject # rema:PatternAction)
+   ))
+   
+   (* rl:frame-to-pattern2 *)
+   Forall ?remaTriple ?subj ?pred ?obj ?subjGenerator ?predGenerator ?objGenerator(If And(
+     ?remaTriple[rema:triple-subject -> ?subj]
+     ?remaTriple[rema:triple-predicate -> ?pred]
+     ?remaTriple[rema:triple-object -> ?obj]
+     ?subj[rema:actionGeneratesPatternTerm -> ?subjGenerator]
+     ?pred[rema:actionGeneratesPatternTerm -> ?predGenerator]
+     ?obj[rema:actionGeneratesPatternTerm -> ?objGenerator]
+    ) Then Do (
+     Assert(rema:generate-frame-pattern(?remaTriple ?subjGenerator ?predGenerator ?objGenerator))
+     Assert(?remaTriple[rema:combine-pattern -> ?subjGenerator])
+     Assert(?remaTriple[rema:combine-pattern -> ?predGenerator])
+     Assert(?remaTriple[rema:combine-pattern -> ?objGenerator])
+   ))
+
+   (* rl:const_as_patternGenerator *)
+   Forall ?const ?iristring (If And(
+     ?const # rema:PatternAction
+     ?const[rdf:type -> rif:Const]
+     ?const[rif:constIRI -> ?iristring]
+    ) Then Do ((?patternGenerator New())
+     ?const[rema:actionGeneratesPatternTerm -> ?patternGenerator]
+     ?patternGenerator[rema:constValue -> External(xs:string(?iristring))]
+   ))
+
+   (* rl:add-pattern-to-rule *)
+   Forall ?rule ?patterns ?rifpattern ?remapattern( If And(
+     rema:forall(?rule)
+     ?rule[rema:patterns -> ?patterns]
+     ?rule[rif:pattern -> ?rifpattern]
+     ?rifpattern[rema:as_pattern -> ?remapattern]
+    ) Then Do (
+     Modify( ?rule[rema:patterns
+                   -> External ( func:append(?patterns ?remapattern))] )
+   ))
+
+   Forall ?rule ?actions ?rifaction(If And(
+     rema:forall(?rule)
+     ?rule[rema:actions -> ?actions]
+     ?rule[rif:formula -> ?rifaction]
+     ?rifaction[rema:as_action -> ?remaaction]
+    ) Then Do (
+     Modify( ?rule[rema:actions
+                   -> External( func:extend(?actions ?rifaction))])
+   ))
+  )
+
+
+  Group -100 (
+   Do (
+    Execute (rema:create_script ())
+   )
+  )
  )
 )
