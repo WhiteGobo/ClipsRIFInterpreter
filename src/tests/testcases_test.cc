@@ -175,7 +175,6 @@ static auto petTestdata = testing::Values(
 			"Builtins_PlainLiteral-conclusion.ntriples",
 			NULL),
 		TestdataPET("Core_PET_Builtins_String",
-			"not implemented",
 			"Builtins_String-premise.ntriples",
 			"Builtins_String-conclusion.ntriples",
 			NULL),

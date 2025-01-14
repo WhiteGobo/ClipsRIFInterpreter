@@ -7,6 +7,8 @@
 #define _PRED_ "http://www.w3.org/2007/rif-builtin-predicate#"
 #define _FUNC_ "http://www.w3.org/2007/rif-builtin-function#"
 
+#define _XML_ "http://www.w3.org/2001/XMLSchema#"
+
 //here defined urls
 #define _CRIFI_equal_ "http://white.gobo/equal"
 #define _CRIFI_success_ "http://white.gobo/success"
@@ -36,7 +38,7 @@
 #define _XS_unsignedByte_ "http://www.w3.org/2001/XMLSchema#unsignedByte"
 #define _XS_nonPositiveInteger_ "http://www.w3.org/2001/XMLSchema#nonPositiveInteger"
 #define _XS_negativeInteger_ "http://www.w3.org/2001/XMLSchema#negativeInteger"
-#define _XS_string_ "http://www.w3.org/2001/XMLSchema#string"
+#define _XS_string_ _XML_ "string"
 #define _XS_token_ "http://www.w3.org/2001/XMLSchema#token"
 #define _XS_language_ "http://www.w3.org/2001/XMLSchema#language"
 #define _XS_lang_ "http://www.w3.org/2001/XMLSchema#lang"
@@ -254,10 +256,8 @@
 
 
 #define _RIF_ "http://www.w3.org/2007/rif#"
-#define _XML_ "http://www.w3.org/2001/XMLSchema#"
 #define _RIFBUILTIN_ "http://www.w3.org/2007/rif-builtin-function#"
 
-#define _XS_string_ _XML_ "string"
 
 
 ///uri has to be macro constant uri

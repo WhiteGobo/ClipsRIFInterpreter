@@ -32,3 +32,5 @@ CLIPSValue crifi_numeric_to_clipsvalue(Environment *env, NumericValue val);
 
 bool clipsvalue_as_numeric_value(Environment *env, CLIPSValue val, NumericValue *out);
 double nv_as_float(NumericValue val);
+
+bool clipsvalue_as_integer(Environment *env, CLIPSValue val, long long *value);

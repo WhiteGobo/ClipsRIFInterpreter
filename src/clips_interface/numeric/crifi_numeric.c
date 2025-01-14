@@ -244,3 +244,20 @@ CLIPSValue crifi_numeric_to_clipsvalue(Environment *env, NumericValue val){
 			break;
 	}
 }
+
+
+bool clipsvalue_as_integer(Environment *env, CLIPSValue val, long long *value){
+	NumericValue numval;
+	if (!clipsvalue_as_numeric_value(env, val, &numval)){
+		return false;
+	}
+	if (numval.t == NT_RATIONAL){
+		if (numval.dividend % numval.divisor != 0){
+			return false;
+		} else {
+			*value = numval.dividend / numval.divisor;
+			return true;
+		}
+	}
+	return false;
+}

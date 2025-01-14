@@ -4,6 +4,7 @@
 
 * Check memory leaks
 * generate_crifi_script does strange things if empty input is provided.
+* Rework is_literal_PRED. See also `https://www.w3.org/TR/2013/REC-rif-dtb-20130205/#Datatypes`_ 
 
 ## Basic usage.
 

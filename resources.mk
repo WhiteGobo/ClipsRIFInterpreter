@@ -10,8 +10,15 @@ ${TMPDIR}/%.clp: ${TMPDIR}/%.ntriples
 	${ENV_GENERATOR} generate_crifi_script -i $< > $@
 	touch $@
 
-${TMPDIR}/RDF_Combination_Constant_Equivalence_1-import001.ntriples ${TMPDIR}/RDF_Combination_Constant_Equivalence_2-import001.ntriples ${TMPDIR}/RDF_Combination_Constant_Equivalence_3-import001.ntriples ${TMPDIR}/RDF_Combination_Constant_Equivalence_4-import001.ntriples ${TMPDIR}/Builtins_String-premise.rifps ${TMPDIR}/Builtins_String-conclusion.rifps::
+TARGET_OT_RIFPS = ${TMPDIR}/official_tests_from_rifps
+
+${TMPDIR}/RDF_Combination_Constant_Equivalence_1-import001.ntriples ${TMPDIR}/RDF_Combination_Constant_Equivalence_2-import001.ntriples ${TMPDIR}/RDF_Combination_Constant_Equivalence_3-import001.ntriples ${TMPDIR}/RDF_Combination_Constant_Equivalence_4-import001.ntriples ${TARGET_OT_RIFPS}/Builtins_String-premise.ntriples ${TARGET_OT_RIFPS}/Builtins_String-conclusion.ntriples::
 
 ${TMPDIR}/%.ntriples: resources/official_tests/%.ttl
 	rdfpipe -i ttl -o ntriples $< > $@
+	printf "to update test:\n\ncp %s src/tests/data/\n\n" $@
+
+${TARGET_OT_RIFPS}/%.ntriples: resources/official_tests/%.rifps
+	mkdir -p ${TARGET_OT_RIFPS}
+	rdfpipe -i rifps -o ntriples $< > $@
 	printf "to update test:\n\ncp %s src/tests/data/\n\n" $@

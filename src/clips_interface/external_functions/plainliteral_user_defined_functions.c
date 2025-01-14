@@ -45,10 +45,10 @@ void rif_string_from_PlainLiteral(Environment *env, UDFContext *udfc, UDFValue *
 	bool truth;
 	UDFValue udfval;
 	if (!UDFFirstArgument(udfc, STRING_BIT, &udfval)){
-		RETURNFAIL("Argument error for is_literal_PlainLiteral.");
+		RETURNFAIL("Argument error for rif_string_from_plainliteral.");
 	}
 	if (udfval.header->type != STRING_TYPE){
-		RETURNFAIL("is_literal_plainliteral expected lexeme.");
+		RETURNFAIL("rif_string_from_plainliteral expected lexeme.");
 	}
 	datatype = extract_datatype(env, udfval.lexemeValue);
 	if (datatype == NULL){
@@ -100,10 +100,10 @@ void rif_lang_from_PlainLiteral(Environment *env, UDFContext *udfc, UDFValue *ou
 	bool truth;
 	UDFValue udfval;
 	if (!UDFFirstArgument(udfc, STRING_BIT, &udfval)){
-		RETURNFAIL("Argument error for is_literal_PlainLiteral.");
+		RETURNFAIL("Argument error for rif_lang_from_plainliteral.");
 	}
 	if (udfval.header->type != STRING_TYPE){
-		RETURNFAIL("is_literal_plainliteral expected lexeme.");
+		RETURNFAIL("rif_lang_from_plainliteral expected lexeme.");
 	}
 	datatype = extract_datatype(env, udfval.lexemeValue);
 	if (datatype == NULL){

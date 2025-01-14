@@ -36,6 +36,7 @@ add_subdirectory(lists)
 add_subdirectory(objects)
 add_subdirectory(crifi_time)
 add_subdirectory(external_functions)
+add_subdirectory(tools)
 
 target_link_libraries(ffi_clips_interface
 	clips

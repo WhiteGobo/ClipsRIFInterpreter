@@ -11,6 +11,7 @@ add_library(external_functions SHARED
 	plainliteral_user_defined_functions.c
 	own_user_defined_functions.c
 	external_functions.h
+	clipsvalue_check_datatype.c
 )
 
 target_include_directories(external_functions PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
@@ -30,4 +31,5 @@ target_link_libraries(
 	crifi_objects
 	crifi_time
 	crifi_numeric
+	crifi_tools
 )
