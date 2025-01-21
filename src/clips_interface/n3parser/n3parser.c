@@ -727,8 +727,8 @@ bool initialize_crifi_n3parserdata(CRIFIN3ParserData *data){
 }
 
 void free_crifi_n3parserdata(CRIFIN3ParserData *data){
-	regfree(&(data->reg_datatype_single));
 	regfree(&(data->reg_uriref));
+	regfree(&(data->reg_blanknode));
 	regfree(&(data->reg_datatype));
 	regfree(&(data->reg_datatype_single));
 	regfree(&(data->reg_lang));
