@@ -16,6 +16,8 @@
 #define MONTH28L(dts) ((dts->month == 3) && !LEAPYEAR(dts))
 #define MONTH30L(dts) ((dts->month == 5) || (dts->month == 7) || (dts->month == 10) || (dts->month == 12))
 
+#define MATCHESSIZETIME 12
+
 static void normalize_dateTimeStamp(DateTimeStamp *result){
 	bool repeat = true;
 	while (repeat){
@@ -191,6 +193,13 @@ static void transform_date_match(char *lexical, regmatch_t matches[14], DateTime
 	}
 }
 
+/**
+ */
+static size_t get_match_length(regmatch_t match){
+	return match.rm_eo - match.rm_so;
+}
+
+
 bool check_is_date(Environment *env, CLIPSValue val, DateTimeStamp *result){
 	int err;
 	char *datatype, *lexical;
@@ -339,10 +348,12 @@ bool check_is_dateTimeStamp(Environment *env, CLIPSValue val, DateTimeStamp *res
 	return true;
 }
 
-
-static void transform_time_match(char *lexical, regmatch_t matches[12],
+static void transform_time_match(char *lexical,
+		regmatch_t matches[MATCHESSIZETIME],
 		DateTimeStamp* result){
-	char tmp[5];
+	size_t l;
+	char tmp[5] = {'\0', '\0', '\0', '\0', '\0'};
+	if (lexical == NULL){return;}
 	result->year=0;
 	result->month=0;
 	result->day=0;
@@ -370,13 +381,15 @@ static void transform_time_match(char *lexical, regmatch_t matches[12],
 	if (matches[7].rm_so >= 0){
 		//this is the Z. im not sure for what z means
 		result->timezone_minute = 0;
-	} else if (matches[8].rm_so){
+	} else if (matches[8].rm_so >= 0){
 		result->timezone_minute = 0;
-		memcpy(tmp, lexical+matches[9].rm_so, 2); //hours
-		tmp[2] = '\0';
+		l = get_match_length(matches[9]);
+		memcpy(tmp, lexical+matches[9].rm_so, l); //hours
+		tmp[l] = '\0';
 		result->timezone_minute = 60*atoi(tmp);
-		memcpy(tmp, lexical+matches[10].rm_so, 2); //minutes
-		tmp[2] = '\0';
+		l = get_match_length(matches[10]);
+		memcpy(tmp, lexical+matches[10].rm_so, l); //minutes
+		tmp[l] = '\0';
 		result->timezone_minute += atoi(tmp);
 		if (lexical[matches[8].rm_so] == '-') {
 			result->timezone_minute = - result->timezone_minute;
@@ -392,7 +405,7 @@ bool check_is_time(Environment *env, CLIPSValue val, DateTimeStamp *result){
 	int err;
 	char *datatype, *lexical;
 	CRIFITimeData *data = LoadingCRIFITimeData(env);
-	regmatch_t matches[12];
+	regmatch_t matches[MATCHESSIZETIME];
 
 	if (val.header->type != STRING_TYPE){
 		return false;
@@ -405,7 +418,7 @@ bool check_is_time(Environment *env, CLIPSValue val, DateTimeStamp *result){
 	free(datatype);
 	lexical = extract_lexical(env, val.lexemeValue);
 
-	err = regexec(&(data->reg_time), lexical, 12, matches, 0);
+	err = regexec(&(data->reg_time), lexical, MATCHESSIZETIME, matches, 0);
 	if (err!=0){
 		free(lexical);
 		return false;
