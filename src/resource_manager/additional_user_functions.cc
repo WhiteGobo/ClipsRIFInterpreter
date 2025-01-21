@@ -2,6 +2,7 @@
 #include "additional_user_functions.h"
 #include <n3parser.h>
 #include "resource_manager.h"
+#include "rema_functions.h"
 
 #include <cmrc/cmrc.hpp>
 
@@ -145,6 +146,9 @@ std::string *create_rules(struct TriplesLinkedList* triples, const char* profile
 static UDFDescription resourceManagerClipsFunctions[] = {
 	{"<" _CRIFI_RM_import_ ">", "*", 1, 2, "syv",
 		import_directive, "import_directive"},
+	{"<http://white.gobo/crifi/resource-manager#printBuiltinLiteral>",
+		"*", 1, 1, "*",
+		print_builtin_literal, "print_builtin_literal"},
 	{NULL, NULL, 0,0, NULL, NULL, NULL}
 };
 

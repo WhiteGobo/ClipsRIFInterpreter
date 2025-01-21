@@ -1,7 +1,9 @@
 add_library(clipsrif_resource_manager SHARED
 	resource_manager.cc
 	resource_manager.h
+	rema_functions.cc
 	additional_user_functions.cc
+	rema_functions.h
 )
 
 add_compile_options(-fPIC) #or it fails to link clips

@@ -22,15 +22,20 @@ Document(
      Retract (?impl)
     )
    )
-   Forall ?outerrule ?innerrule ?pattern (
+
+   Forall ?outerrule ?innerrule ?innerpattern ?outerpattern ?innerformula(
     If And(
      ?innerrule[rdf:type -> rif:Forall]
      ?outerrule[rif:formula -> ?innerrule]
      ?outerrule[rdf:type -> rif:Forall]
-     ?outerrule[rif:pattern -> ?pattern]
-    ) Then Do (
-     Retract (?outerrule[rif:pattern -> ?pattern])
-     Assert (?innerrule[rif:pattern -> ?pattern])
+     ?outerrule[rif:pattern -> ?outerpattern]
+     ?innerrule[rif:pattern -> ?innerpattern]
+     ?innerrule[rif:formula -> ?innerformula]
+    ) Then Do ((?andpattern New())
+     Modify (?outerrule[rif:pattern -> ?andpattern])
+     Modify (?outerrule[rif:formula -> ?innerformula])
+     Assert (?andpattern[rdf:type -> rif:And])
+     Assert (?andpattern[rif:formula -> External(func:make-list(?outerpattern ?innerpattern))])
     )
    )
   )
@@ -123,14 +128,46 @@ Document(
      Assert(?remaTriple[rema:combine-pattern -> ?objGenerator])
    ))
 
-   (* rl:const_as_patternGenerator *)
+   (* rl:constIri_as_patternGenerator *)
    Forall ?const ?iristring (If And(
      ?const # rema:PatternAction
      ?const[rdf:type -> rif:Const]
      ?const[rif:constIRI -> ?iristring]
     ) Then Do ((?patternGenerator New())
-     ?const[rema:actionGeneratesPatternTerm -> ?patternGenerator]
-     ?patternGenerator[rema:constValue -> External(xs:string(?iristring))]
+     Assert(?const[rema:actionGeneratesPatternTerm -> ?patternGenerator])
+     Assert(?patternGenerator[
+           rema:constValue
+           ->
+           External(func:concat("<" External(xs:string(?iristring)) ">"))
+     ])
+   ))
+
+   (* rl:var_as_patternGenerator *)
+   Forall ?const ?varname (If And(
+     ?const # rema:PatternAction
+     ?const[rdf:type -> rif:Var]
+     ?const[rif:varname -> ?varname]
+    ) Then Do ((?patternGenerator New())
+     Assert(?const[rema:actionGeneratesPatternTerm -> ?patternGenerator])
+     Assert(?patternGenerator[
+           rema:constValue
+           ->
+           External(func:concat("?" External(xs:string(?varname))))
+     ])
+   ))
+
+   (* rl:constValue_as_patternGenerator *)
+   Forall ?const ?value (If And(
+     ?const # rema:PatternAction
+     ?const[rdf:type -> rif:Const]
+     ?const[rif:value -> ?value]
+    ) Then Do ((?patternGenerator New())
+     Assert(?const[rema:actionGeneratesPatternTerm -> ?patternGenerator])
+     Assert(?patternGenerator[
+           rema:constValue
+           ->
+           External(func:concat(External(rema:printBuiltinLiteral(?varname))))
+     ])
    ))
 
    (* rl:add-pattern-to-rule *)

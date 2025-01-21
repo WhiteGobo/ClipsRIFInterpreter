@@ -1,0 +1,68 @@
+Document(
+	Prefix(func <http://www.w3.org/2007/rif-builtin-function#>) 
+	Prefix(pred <http://www.w3.org/2007/rif-builtin-predicate#>) 
+	Prefix(owl <http://www.w3.org/2002/07/owl#>)
+	Prefix(deffact <http://white.gobo/crifi/resource-manager/deffacts#>)
+	Prefix(rema <http://white.gobo/crifi/resource-manager#>)
+	Prefix(proc <http://white.gobo/crifi/resource-manager/regex-processor#>)
+	Prefix(crifi_parse: <http://white.gobo/crifi/clips_parsing#> )
+	Prefix(regex <http://white.gobo/regex#> )
+	Group (
+		(* proc:generate-as-const-for-list *)
+		Group (
+		)
+
+		(* proc:generate-as-const-for-frame *)
+		Group (
+		)
+
+		Group (
+			Forall ?basenode ?newanchor ?list ?has_as_const ?represented_by ?composit_list ( If And (
+					?basenode[rdf:type -> ?represented_by]
+					?represented_by[regex:composite -> ?composit_list]
+					proc:prepare-combine-as-const(
+							?basenode
+							?oldanchor
+							External(func:append(?list ?has_as_const))
+					)
+				) Then Do (
+					Assert( proc:prepare-combine-as-const(
+							?basenode
+							?newanchor
+							External(func:append(?list ?has_as_const))
+					))
+			))
+
+			Forall ?basenode ?oldanchor ?newanchor ?list ?has_as_const ( If And (
+					proc:prepare-combine-as-const(
+						?basenode ?oldanchor External(?list ?has_as_const)
+					)
+				) Then Do (
+					Assert( proc:combine-as-const(?basenode "" ?list) )
+			))
+		)
+
+		(* proc:process-combine-as-const *)
+		Group (
+			Forall ?X ?const ?List ?child ( If And (
+					?child[regex:const -> ?next]
+					proc:combine-as-const(?X ?old ?List)
+					External(func:get(?List 0)) = ?child
+					External(func:greater-than( External(func:count(?List)) 0))
+				) Then Do (
+					Assert(proc:combine-as-const(
+							?X
+							External(func:concat(?old " " ?next))
+							External(func:remove(?List 0))
+					))
+			))
+
+			Forall ?X ?const ?List ( If And (
+					proc:combine-as-const(?X ?const ?List)
+					External(func:count(?List)) = 0
+				) Then Do (
+					Assert ?X[regex:const -> ?const]
+			))
+		)
+	)
+)

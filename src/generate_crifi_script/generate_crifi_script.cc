@@ -54,6 +54,7 @@ int main(int argc, char* argv[]){
 	retFacts = ntriples_parse_triples_f(q, 0);
 	if (retFacts == NULL){
 		fprintf(stderr, "couldnt load facts from input: %s\n", input);
+		exit(EXIT_FAILURE);
 	}
 	fclose(q);
 	try {
@@ -64,7 +65,8 @@ int main(int argc, char* argv[]){
 		exit(EXIT_FAILURE);
 	}
 	if (logicAsString == nullptr){
-		fprintf(stderr, "generate rif logic failed.\n");
+		fprintf(stderr, "generate_rif_logic didnt return "
+				"logic as string.\n");
 	} else {
 		printf("%s", logicAsString->c_str());
 		delete(logicAsString);

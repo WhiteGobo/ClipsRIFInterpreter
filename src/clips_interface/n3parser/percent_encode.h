@@ -3,7 +3,8 @@
 #include <stdlib.h>
 #include <inttypes.h>
 
-#define URLSYMBOLS "[0-9a-zA-Z\.\:\#\%-?/]"
+//#define URLSYMBOLS "[0-9a-zA-Z\.\:\#\%-?/]"
+#define URLSYMBOLS "[^<>\n\t\r\ ]"
 
 #define _______ "\0\0\0\0"
 static const char uri_encode_tbl[ sizeof(int32_t) * 0x100 ] = {

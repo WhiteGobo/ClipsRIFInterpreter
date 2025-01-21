@@ -1,0 +1,130 @@
+@prefix crifi_parse: <http://white.gobo/crifi/clips_parsing#> .
+@prefix regex: <http://white.gobo/regex#> .
+
+crifi_parse:defrule
+	a regex:nonterminal;
+	regex:composite (
+		[regex:const "(defrule"]
+		crifi_parse:rule-name
+		[regex:optional crifi_parse:comment]
+		[regex:zero-or-more crifi_parse:conditional-element]
+		[regex:const "=>"]
+		[regex:zero-or-more crifi_parse:action]
+		[regex:const ")"]
+	).
+
+crifi_parse:action regex:composite (crifi_parse:expression).
+
+crifi_parse:conditional-element regex:one-of (
+	crifi_parse:pattern-CE
+	crifi_parse:assigned-pattern-CE
+	crifi_parse:not-CE
+	crifi_parse:and-CE
+	crifi_parse:or-CE
+	crifi_parse:logical-CE
+	crifi_parse:test-CE
+	crifi_parse:exists-CE
+	crifi_parse:forall-CE
+).
+
+crifi_parse:pattern-CE regex:one-of (
+	crifi_parse:ordered-pattern-CE
+	crifi_parse:template-pattern-CE
+	crifi_parse:object-pattern-CE
+).
+
+crifi_parse:assigned-pattern-CE regex:composite (
+	crifi_parse:single-field-variable
+	[regex:const "<-"]
+	crifi_parse:pattern-CE
+).
+
+crifi_parse:not-CE regex:composite (
+	[regex:const "(not"]
+	crifi_parse:conditional-element
+	[regex:const ")"]
+).
+
+crifi_parse:and-CE regex:composite (
+	[regex:const "(and"]
+	[regex:one-or-more crifi_parse:conditional-element]
+	[regex:const ")"]
+).
+
+
+crifi_parse:or-CE regex:composite (
+	[regex:const "(or"]
+	[regex:one-or-more crifi_parse:conditional-element]
+	[regex:const ")"]
+).
+
+crifi_parse:logical-CE regex:composite (
+	[regex:const "(logical"]
+	[regex:one-or-more crifi_parse:conditional-element]
+	[regex:const ")"]
+).
+
+crifi_parse:test-CE regex:composite (
+	[regex:const "(test"]
+	crifi_parse:function-call
+	[regex:const ")"]
+).
+
+crifi_parse:exists-CE regex:composite (
+	[regex:const "(exists"]
+	[regex:one-or-more crifi_parse:conditional-element]
+	[regex:const ")"]
+).
+
+crifi_parse:forall-CE regex:composite (
+	[regex:const "(forall"]
+	crifi_parse:conditional-element
+	[regex:one-or-more crifi_parse:conditional-element]
+	[regex:const ")"]
+).
+
+crifi_parse:ordered-pattern-CE regex:composite (
+	[regex:const "("]
+	crifi_parse:symbol
+	[regex:zero-or-more crifi_parse:constraint]
+	[regex:const ")"]
+).
+
+crifi_parse:template-pattern-CE regex:composite (
+	[regex:const "("]
+	crifi_parse:deftemplate-name
+	[regex:zero-or-more crifi_parse:LHS-slot]
+	[regex:const ")"]
+).
+
+crifi_parse:object-pattern-CE regex:composite (
+	[regex:const "(object"]
+	[regex:zero-or-more crifi_parse:attribute-constraint]
+	[regex:const ")"]
+).
+
+crifi_parse:attribute-constraint regex:composite (
+	[regex:composite (
+		[regex:const "(is-a"]
+		crifi_parse:constraint
+		[regex:const ")"]
+	)]
+	[regex:composite (
+		[regex:const "(name"]
+		crifi_parse:constraint
+		[regex:const ")"]
+	)]
+	[regex:composite (
+		[regex:const "("]
+		crifi_parse:slot-name
+		[regex:zero-or-more crifi_parse:constraint]
+		[regex:const ")"]
+	)]
+).
+
+crifi_parse:LHS-slot regex:one-of (
+	crifi_parse:single-field-LHS-slot
+	crifi_parse:multi-field-LHS-slot
+).
+
+crifi_parse:slot-name regex:as-regex "[a-zA-Z][a-zA-Z0-9]*".

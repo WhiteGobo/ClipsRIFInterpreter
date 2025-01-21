@@ -57,13 +57,21 @@ static std::string *create_clipsrifinterpreter_program(
 			+ sizeof("(%s \"description\")") + 1 + 30];
 	sprintf(command, "(%s \"description\")", create_clips_symbol);
 	tmpval = eval(helper_graph, command);
+	if (graph_in_errorstate(helper_graph)){
+		throw std::runtime_error("Rulecreation ended in errorstate. "
+				"Happend during clipsscript retrieval.");
+	}
 	if (tmpval.type != CTC_DYNAMIC_STRING){
-		printf("something went wrong during clips script creation.");
-		return nullptr;
+		throw std::runtime_error("Clipsscript didnt return "
+				"string value");
+		//printf("something went wrong during clips script creation.");
+		//return nullptr;
 	}
 	if (0 == strcmp(tmpval.val.string, "")) {
-		printf("failed to create clips script");
-		return nullptr;
+		throw std::runtime_error("Clips script creation returned "
+				"empty sciprt");
+		//printf("failed to create clips script");
+		//return nullptr;
 	}
 	retString = new std::string(tmpval.val.string);
 	free_dynamic_value(tmpval);
@@ -91,7 +99,7 @@ static std::string *generate_logic(
 	if (helper_graph.inErrorState != 0){
 		fprintf(stderr, "Couldnt load logic\n");
 		close_graph(helper_graph);
-		return nullptr;
+		throw std::runtime_error("Graph in error state.");
 	}
 
 	FOREACH_TRIPLE(factlist, tmpTriple){

@@ -3,7 +3,7 @@
 #include "ntriples.yacc.h"
 %}
 %%
-_:[a-zA-Z][a-zA-Z0-9]* {
+_:[a-zA-Z0-9_][a-zA-Z0-9_\x{00B7}\x{0300}\x{036F}\x{203F}\x{2040}.]*[a-zA-Z0-9_\x{00B7}\x{0300}\x{036F}\x{203F}\x{2040}] {
 		yylval.string=malloc(yyleng+1);
 		sprintf(yylval.string,"%s",yytext);
 		return BNODE;
@@ -18,17 +18,17 @@ _:[a-zA-Z][a-zA-Z0-9]* {
 		sprintf(yylval.string,"%s",yytext);
 		return LITERAL;
 		}
-\"[^"]*\"@[a-zA-Z-]+    {
+\"([^\\"]|(\\.))*\"@[a-zA-Z\-]+    {
 		yylval.string=malloc(yyleng+1); 
 		sprintf(yylval.string,"%s",yytext);
 		return LITERAL;
 		}
-\'[^'"]*\'@[a-zA-Z-]+   {
+\'([^\\"']|(\\.))*\'@[a-zA-Z\-]+   {
 		yylval.string=malloc(yyleng+1);
 		sprintf(yylval.string,"%s",yytext);
 		return LITERAL;
 		}
-\<[a-zA-Z0-9:\/.#\-]+\> {
+\<[^<>\n\t\r\ ]+\> {
 		yylval.string=malloc(yyleng+1);
 		sprintf(yylval.string,"%s",yytext);
 		return URIREF;

@@ -15,6 +15,7 @@ TARGET_OT_RIFPS = ${TMPDIR}/official_tests_from_rifps
 ${TMPDIR}/RDF_Combination_Constant_Equivalence_1-import001.ntriples ${TMPDIR}/RDF_Combination_Constant_Equivalence_2-import001.ntriples ${TMPDIR}/RDF_Combination_Constant_Equivalence_3-import001.ntriples ${TMPDIR}/RDF_Combination_Constant_Equivalence_4-import001.ntriples ${TARGET_OT_RIFPS}/Builtins_String-premise.ntriples ${TARGET_OT_RIFPS}/Builtins_String-conclusion.ntriples::
 
 ${TMPDIR}/%.ntriples: resources/official_tests/%.ttl
+	mkdir -p ${TMPDIR}
 	rdfpipe -i ttl -o ntriples $< > $@
 	printf "to update test:\n\ncp %s src/tests/data/\n\n" $@
 

@@ -12,6 +12,11 @@ bool _parse_error;
 
 %}
 
+%locations
+%define parse.trace
+%define parse.error detailed
+%define parse.lac full
+
 %parse-param {struct TriplesLinkedList **mylist}
 
 %union{
@@ -76,7 +81,7 @@ node:
 void yyerror(struct TriplesLinkedList **myerror, const char *str)
 {
 	_parse_error = true;
-        fprintf(stderr,"error: %s\n",str);
+        fprintf(stderr,"error during ntriples parsing: %s\n",str);
 }
  
 int yywrap()
