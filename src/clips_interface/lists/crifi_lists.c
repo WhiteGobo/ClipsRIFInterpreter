@@ -76,7 +76,7 @@ CLIPSValue crifi_list_get(Environment *env, CLIPSValue list, long long index){
 }
 
 Fact *crifi_list_concatenate(Environment *env, CLIPSValue *listlist, size_t listlist_length){
-	CLIPSValue ret;
+	Fact *ret;
 	size_t newlist_length = 0;
 	CLIPSValue items[listlist_length];
 	CLIPSValue *newvalues, *tmpptr;
@@ -97,7 +97,9 @@ Fact *crifi_list_concatenate(Environment *env, CLIPSValue *listlist, size_t list
 			tmpptr++;
 		}
 	}
-	return crifi_list_new(env, newvalues, newlist_length);
+	ret = crifi_list_new(env, newvalues, newlist_length);
+	free(newvalues);
+	return ret;
 }
 
 
