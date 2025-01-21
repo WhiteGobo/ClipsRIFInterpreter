@@ -4,6 +4,10 @@
 #include <regex.h>
 #include <string.h>
 
+static size_t get_match_length(regmatch_t match){
+	return match.rm_eo - match.rm_so;
+}
+
 /**
  * TODO: Missing interpretation of given flags
  */
@@ -93,17 +97,23 @@ static void free_er_helper(struct er_helper *first){
 static char *replace_single_find(char *tmploc, regmatch_t *matches, int max_var_num, int *printed_var_numbers, pr_helper *replacement){
 	char *ret, *x, *varPos;
 	int tmps, l;
-	tmps = 1 + matches[0].rm_eo - matches[0].rm_so;
+	tmps = 1 + get_match_length(matches[0]);
 	for (int i=0; i < max_var_num; i++){
 		if (matches[i+1].rm_so >= 0){
-			tmps += printed_var_numbers[i]
-				* (matches[i+1].rm_eo - matches[i+1].rm_so);
+			tmps += printed_var_numbers[i]\
+				* get_match_length(matches[i+1]);
 		}
 	}
+	for (pr_helper *prefixVar = replacement;
+			prefixVar != NULL;
+			prefixVar = prefixVar->next)
+	{
+		tmps += prefixVar->prefix_size;
+	}
+
 	ret = malloc(tmps);
-	x = ret;
-	memcpy(x, tmploc, matches[0].rm_so );
-	x += matches[0].rm_so;
+	memcpy(ret, tmploc, matches[0].rm_so);
+	x = ret + matches[0].rm_so;
 	for (pr_helper *prefixVar = replacement;
 			prefixVar != NULL;
 			prefixVar = prefixVar->next)

@@ -27,6 +27,7 @@ void rif_PlainLiteral_from_string_lang(Environment *env, UDFContext *udfc, UDFVa
 	}
 	lang = extract_lexical(env, udflang.lexemeValue);
 	if (lang == NULL){
+		free(value);
 		RETURNFAIL("Invalid String as Argument. "
 				"error for plainliteral from string lang.");
 	}
@@ -36,6 +37,8 @@ void rif_PlainLiteral_from_string_lang(Environment *env, UDFContext *udfc, UDFVa
 	value_and_lang_to_slotstring(retval, value, value_length,
 			lang, lang_length);
 	out->lexemeValue = CreateString(env, retval);
+	free(value);
+	free(lang);
 	free(retval);
 }
 
@@ -160,9 +163,11 @@ void rif_cast_as_PlainLiteral(Environment *env, UDFContext *udfc, UDFValue *out)
 	if ((0 == strcmp(datatype, _RDF_string_))
 			|| (0 == strcmp(datatype, _RDF_langString_)))
 	{
+		free(datatype);
 		out->value = udfval.value;
 		return;
 	}
+	free(datatype);
 
 	lexical = extract_lexical(env, udfval.lexemeValue);
 	tmplang = strstr(lexical, "@");
@@ -177,11 +182,13 @@ void rif_cast_as_PlainLiteral(Environment *env, UDFContext *udfc, UDFValue *out)
 		free(retval);
 	} else {
 		value_length = strlen(lexical);
-		retval = malloc(3*strlen(lexical)+1);
-		percent_encode(retval, lexical, value_length);
+		retval = malloc(3*strlen(lexical)+3);
+		value_and_lang_to_slotstring(retval, lexical, value_length,
+				"", 0);
 		out->lexemeValue = CreateString(env, retval);
 		free(retval);
 	}
+	free(lexical);
 }
 
 void rif_is_literal_PlainLiteral(Environment *env, UDFContext *udfc, UDFValue *out){
@@ -292,6 +299,7 @@ void rif_matches_language_range(Environment *env, UDFContext *udfc, UDFValue *ou
 		i++;
 	}
 	truth = (lexical[i] == '*') || (lang[i] == lexical[i]);
+	free(lexical);
 	out->value = CreateBoolean(env, truth);
 }
 

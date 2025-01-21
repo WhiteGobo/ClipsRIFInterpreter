@@ -303,6 +303,7 @@ void rif_string_join(Environment *env, UDFContext *udfc, UDFValue *out){
 	if (err==0){
 		out->value = outclipsval.value;
 	}
+	free(delimiter);
 }
 
 void rif_substring(Environment *env, UDFContext *udfc, UDFValue *out){
