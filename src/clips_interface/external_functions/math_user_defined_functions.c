@@ -683,7 +683,6 @@ void rif_numeric_multiply(Environment *env, UDFContext *udfc, UDFValue *out){
 
 void rif_numeric_divide(Environment *env, UDFContext *udfc, UDFValue *out){
 	NUMERICLISTCALCULATOR(numeric_divide, "numeric_divide");
-	printf("qwertz %s\n", out->lexemeValue->contents);\
 }
 
 void rif_numeric_integer_divide(Environment *env, UDFContext *udfc, UDFValue *out){

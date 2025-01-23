@@ -260,7 +260,7 @@ static int builtin_to_n3(char* n3representation, const char* builtinliteral){
 	size_t value_length, datatype_length, lang_length;
 
 	if (0 != init_regex()){
-		printf("Failed to compile regex_datatype\n");
+		//printf("Failed to compile regex_datatype\n");
 		return 3;
 	}
 	err = regexec(&reg_clipsvalue_langString, builtinliteral, max_matches, matches, 0);
@@ -271,7 +271,7 @@ static int builtin_to_n3(char* n3representation, const char* builtinliteral){
 		lang = builtinliteral + matches[2].rm_so;
 		return value_and_lang_to_n3(n3representation, value, value_length, datatype, datatype_length);
 	} else if (err != REG_NOMATCH){
-		printf("Regex expression produced error.0\n");
+		//printf("Regex expression produced error.0\n");
 		return 2;
 	}
 	err = regexec(&reg_clipsvalue_literal, builtinliteral, max_matches, matches, 0);
@@ -282,7 +282,7 @@ static int builtin_to_n3(char* n3representation, const char* builtinliteral){
 		datatype = builtinliteral + matches[2].rm_so;
 		return value_and_datatype_to_n3(n3representation, value, value_length, datatype, datatype_length);
 	} else if (err != REG_NOMATCH){
-		printf("Regex expression produced error.0\n");
+		//printf("Regex expression produced error.0\n");
 		return 2;
 	}
 	return 1;
@@ -300,7 +300,7 @@ static int literal_to_builtin(char *builtinEncoded, N3String node){
 	size_t value_length, datatype_length, lang_length;
 
 	if (0 != init_regex()){
-		printf("Failed to compile regex_datatype\n");
+		//printf("Failed to compile regex_datatype\n");
 		return 3;
 	}
 	err = regexec(&reg_datatype, node, max_matches, matches, 0);
@@ -311,7 +311,7 @@ static int literal_to_builtin(char *builtinEncoded, N3String node){
 		datatype = node + matches[2].rm_so;
 		return value_and_datatype_to_slotstring(builtinEncoded, value, value_length, datatype, datatype_length);
 	} else if (err != REG_NOMATCH){
-		printf("Regex expression produced error.0\n");
+		//printf("Regex expression produced error.0\n");
 		return 2;
 	}
 	err = regexec(&reg_datatype_single, node, max_matches, matches, 0);
@@ -322,7 +322,7 @@ static int literal_to_builtin(char *builtinEncoded, N3String node){
 		datatype = node + matches[2].rm_so;
 		return value_and_datatype_to_slotstring(builtinEncoded, value, value_length, datatype, datatype_length);
 	} else if (err != REG_NOMATCH){
-		printf("Regex expression produced error.1\n");
+		//printf("Regex expression produced error.1\n");
 		return 2;
 	}
 
@@ -334,7 +334,7 @@ static int literal_to_builtin(char *builtinEncoded, N3String node){
 		lang = node + matches[4].rm_so;
 		return value_and_lang_to_slotstring(builtinEncoded, value, value_length, lang, lang_length);
 	} else if (err != REG_NOMATCH){
-		printf("Regex expression produced error.1\n");
+		//printf("Regex expression produced error.1\n");
 		return 2;
 	}
 	err = regexec(&reg_lang_single, node, 1+4, matches, 0);
@@ -345,7 +345,7 @@ static int literal_to_builtin(char *builtinEncoded, N3String node){
 		lang = node + matches[4].rm_so;
 		return value_and_lang_to_slotstring(builtinEncoded, value, value_length, lang, lang_length);
 	} else if (err != REG_NOMATCH){
-		printf("Regex expression produced error.1\n");
+		//printf("Regex expression produced error.1\n");
 		return 2;
 	}
 	err = regexec(&reg_simple, node, max_matches, matches, 0);
@@ -354,7 +354,7 @@ static int literal_to_builtin(char *builtinEncoded, N3String node){
 		value = node + matches[1].rm_so;
 		return value_and_datatype_to_slotstring(builtinEncoded, value, value_length, _RDF_string_, sizeof(_RDF_string_));
 	} else if (err != REG_NOMATCH){
-		printf("Regex expression produced error.1\n");
+		//printf("Regex expression produced error.1\n");
 		return 2;
 	}
 	err = regexec(&reg_simple_single, node, max_matches, NULL, 0);
@@ -363,7 +363,7 @@ static int literal_to_builtin(char *builtinEncoded, N3String node){
 		value = node + matches[1].rm_so;
 		return value_and_datatype_to_slotstring(builtinEncoded, value, value_length, _RDF_string_, sizeof(_RDF_string_));
 	} else if (err != REG_NOMATCH){
-		printf("Regex expression produced error.1\n");
+		//printf("Regex expression produced error.1\n");
 		return 2;
 	}
 	return 1;
@@ -463,7 +463,7 @@ int n3_as_clipsvalue(Environment *env, N3String node, CLIPSValue *target){
 		target->lexemeValue = CreateSymbol(env, node);
 		return 0;
 	} else if (err != REG_NOMATCH){
-		printf("Regex expression produced error.0\n");
+		//printf("Regex expression produced error.0\n");
 		return 2;
 	}
 
@@ -471,7 +471,7 @@ int n3_as_clipsvalue(Environment *env, N3String node, CLIPSValue *target){
 	if (err == 0) {
 		return blanknode_as_clipsvalue(env, node, target);
 	} else if (err != REG_NOMATCH){
-		printf("Regex expression produced error.0\n");
+		//printf("Regex expression produced error.0\n");
 		return 2;
 	}
 

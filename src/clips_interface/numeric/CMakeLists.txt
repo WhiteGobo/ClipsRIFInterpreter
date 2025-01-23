@@ -1,5 +1,6 @@
-add_library(crifi_numeric SHARED
+add_library(crifi_numeric STATIC
 	crifi_numeric.c
+	crifi_numeric.h
 )
 
 target_include_directories(crifi_numeric PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
@@ -11,8 +12,7 @@ set_target_properties(crifi_numeric PROPERTIES
   OUTPUT_NAME "crifi_numeric"
 )
 
-target_link_libraries(
-	crifi_numeric PRIVATE
+target_link_libraries(crifi_numeric PRIVATE
 	clips
 	n3parser
 )

@@ -29,9 +29,11 @@ add_library(clips STATIC
 	cstrnutl.c  factbld.c   globlcom.c  msgpass.c   rulecmp.c   watch.c
 	default.c   factcmp.c   globldef.c  msgpsr.c    rulecom.c
 )
-target_link_libraries(clips m)
-set_target_properties(clips PROPERTIES
-  PUBLIC_HEADER clips.h
-)
-install(FILES clips.h DESTINATION include)
-install(TARGETS clips DESTINATION lib)
+
+#target_link_libraries(clips m)
+#set_target_properties(clips PROPERTIES
+#	PUBLIC_HEADER clips.h
+#)
+
+#install(FILES clips.h DESTINATION include)
+#install(TARGETS clips DESTINATION lib)

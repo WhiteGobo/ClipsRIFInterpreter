@@ -4,7 +4,7 @@
 #include "dataspace_constants.h"
 #include <n3parser.h>
 #include <external_functions.h>
-#include <crifi_timedata.h>
+#include <crifi_time.h>
 
 CLIPSValue getFactsFromEnvironment(Environment *env){
 	CLIPSValue retList;
@@ -71,10 +71,10 @@ static bool load_basic_templates(Environment *env) {
 		BuildError err = Build(env, *deftempl);
 		switch (err) {
 			case BE_PARSING_ERROR:
-				fprintf(stderr, "Critical Internal error. "
-						"Failed loading basic "
-						"templates. happened "
-						"with: '%s'\n", *deftempl);
+				//fprintf(stderr, "Critical Internal error. "
+				//		"Failed loading basic "
+				//		"templates. happened "
+				//		"with: '%s'\n", *deftempl);
 				return false;
 				break;
 			case BE_NO_ERROR:
@@ -85,10 +85,10 @@ static bool load_basic_templates(Environment *env) {
 		BuildError err = Build(env, *defrule);
 		switch (err) {
 			case BE_PARSING_ERROR:
-				fprintf(stderr, "Critical Internal error. "
-						"Failed loading basic "
-						"templates. happened "
-						"with: '%s'\n", *defrule);
+				//fprintf(stderr, "Critical Internal error. "
+				//		"Failed loading basic "
+				//		"templates. happened "
+				//		"with: '%s'\n", *defrule);
 				return false;
 				break;
 			case BE_NO_ERROR:
@@ -102,21 +102,21 @@ Environment *initEnvironment(){
 	Environment *env = CreateEnvironment();
 	load_basic_templates(env);
 	if(!add_literal_user_functions(env)) {
-		fprintf(stderr, "initEnvironment failed cause userfunctions.");
+		//fprintf(stderr, "initEnvironment failed cause userfunctions.");
 		DestroyEnvironment(env);
 		return NULL;
 	}
 
 	if(!crifi_n3parserdata_register_data(env)){
-		fprintf(stderr, "initEnvironment failed cause n3parser "
-				"couldnt initialize data.");
+		//fprintf(stderr, "initEnvironment failed cause n3parser "
+		//		"couldnt initialize data.");
 		DestroyEnvironment(env);
 		return NULL;
 	}
 
 	if(!crifi_timedata_register_data(env)){
-		fprintf(stderr, "initEnvironment failed cause crifi_time "
-				"couldnt initialize data.");
+		//fprintf(stderr, "initEnvironment failed cause crifi_time "
+		//		"couldnt initialize data.");
 		DestroyEnvironment(env);
 		return NULL;
 	}

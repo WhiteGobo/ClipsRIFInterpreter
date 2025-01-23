@@ -24,7 +24,14 @@
 
 //#if defined(__has_include)
 //#if __has_include("myinclude.h")
-# include <clips.h>
+#ifdef __cplusplus
+extern "C" {
+#endif
+#include <clips.h>
+#ifdef __cplusplus
+}
+#endif
+
 //#endif
 //#endif
 

@@ -6,6 +6,10 @@
 * generate_crifi_script does strange things if empty input is provided.
 * Rework is_literal_PRED. See also `https://www.w3.org/TR/2013/REC-rif-dtb-20130205/#Datatypes`_ 
 * Replace ntriples parser with external library
+* because clips.h is included over ffi_clips_interface dont need to patch 
+    clips headers anymore.
+* rename ffi_clips_interface
+* remove  `add_compile_options(-fPIC)` from CMakeLists.txt
 
 ## Basic usage.
 

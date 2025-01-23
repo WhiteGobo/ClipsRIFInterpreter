@@ -35,8 +35,17 @@ cmrc_add_resource_library(
 	resources/SimpleEntailment.clp
 )
 
-target_link_libraries(clipsrif_resource_manager PRIVATE
+target_link_libraries(clipsrif_resource_manager
 	clipsrifinterpreter::rc
 	ffi_clips_interface
 	n3parser
 )
+
+install(TARGETS clipsrif_resource_manager
+	PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+)
+if(BUILD_SHARED_LIBS)
+	install(TARGETS clipsrif_resource_manager
+		LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+	)
+endif()

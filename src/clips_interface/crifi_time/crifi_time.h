@@ -6,6 +6,7 @@
 #include <time.h>
 #include <clips.h>
 #include <crifi_numeric.h>
+#include <crifi_timedata.h>
 
 typedef struct crifi_datetimestamp {
 	int year;

@@ -155,7 +155,7 @@ static size_t sprintf_arg(char *cptr, const char* format, CLIPSValue val){
 			return sprintf(cptr, " [%s]", InstanceName(val.instanceValue));
 			break;
 		default:
-			fprintf(stderr, "something went wrong in getargsize\n");
+			//fprintf(stderr, "something went wrong in getargsize\n");
 			return 0;
 	}
 }
@@ -176,7 +176,7 @@ static size_t get_argsize(CLIPSValue val){
 			return 3+strlen(InstanceName(val.instanceValue));
 			break;
 		default:
-			fprintf(stderr, "something went wrong in getargsize\n");
+			//fprintf(stderr, "something went wrong in getargsize\n");
 	}
 }
 
@@ -211,44 +211,6 @@ Fact* crifi_list_new(Environment *env, CLIPSValue *values, size_t values_length)
 	}
 	FBDispose(fb);
 	return ret;
-	/*
-
-	AssertStringError err;
-	char *command, *cptr;
-	size_t argsize, delta;
-	argsize=1;
-	for (int i=0; i<values_length; i++){
-		argsize += 1 + get_argsize(values[i]);
-	}
-	//command = malloc(sizeof("(of AtomList (items))")+ argsize);
-	command = malloc(sizeof("(AtomList (items))")+ argsize);
-	cptr = command;
- 	delta = sprintf(cptr, "(AtomList (items");
-	cptr += delta;
-	for (int i=0; i<values_length; i++){
-		delta = sprintf_arg(cptr, " %s", values[i]);
-		//if(delta == 0) return NULL;
-		cptr += delta;
-	}
-	sprintf(cptr, "))");
-
-	//ret = MakeInstance(env, command);
-	ret = AssertString(env, command);
-	//alternativly use IBMake
-	err = GetAssertStringError(env);
-
-	switch (err){
-		case ASE_NO_ERROR:
-			break;
-		default:
-			fprintf(stderr, "failed to create list with command: %s\n", command);
-
-			free(command);
-			return NULL;
-	}
-	free(command);
-	return ret;
-	*/
 }
 
 

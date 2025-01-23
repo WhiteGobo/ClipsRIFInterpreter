@@ -1,4 +1,4 @@
-add_library(crifi_tools SHARED
+add_library(crifi_tools STATIC
 	uriencode.c
 	uriencode.h
 	xpath_replace.c

@@ -1,7 +1,9 @@
-add_library(ffi_clips_interface SHARED
-  ffi_clips_interface.c
-  graph_engine.c
-  clips_to_interface.c
+project(ffi_clips_interface VERSION 0.1.0 LANGUAGES C)
+
+add_library(ffi_clips_interface
+	ffi_clips_interface.c
+	graph_engine.c
+	clips_to_interface.c
 )
 
 set_target_properties(ffi_clips_interface PROPERTIES
@@ -15,20 +17,7 @@ target_include_directories(ffi_clips_interface
 target_include_directories(ffi_clips_interface
 	PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
 
-target_compile_definitions(ffi_clips_interface PUBLIC DART_SHARED_LIB)
-
-
-#Patch adds CMakeLists.txt to clips
-add_compile_options(-fPIC) #or it fails to link clips
-FetchContent_Declare(
-  clips
-  #DOWNLOAD_EXTRACT_TIMESTAMP TRUE #May fail if behind URL
-  URL https://sourceforge.net/projects/clipsrules/files/CLIPS/6.4.1/clips_core_source_641.zip
-  URL_HASH MD5=3c470a99fa25981d802e63c205c27593
-  #PATCH_COMMAND cp -a ${CMAKE_CURRENT_SOURCE_DIR}/clips_update/. <SOURCE_DIR>/
-  PATCH_COMMAND patch -s -p0 -d <SOURCE_DIR>/../ < ${CMAKE_CURRENT_SOURCE_DIR}/clips.patch
-)
-FetchContent_MakeAvailable(clips)
+add_compile_options(-fPIC)
 
 add_subdirectory(n3parser)
 add_subdirectory(numeric)
@@ -38,8 +27,22 @@ add_subdirectory(crifi_time)
 add_subdirectory(external_functions)
 add_subdirectory(tools)
 
-target_link_libraries(ffi_clips_interface
+target_link_libraries(ffi_clips_interface INTERFACE
+	clips
+)
+
+target_link_libraries(ffi_clips_interface PRIVATE
 	clips
 	external_functions
 	n3parser
+	crifi_time
 )
+
+install(TARGETS ffi_clips_interface
+	PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+)
+if(BUILD_SHARED_LIBS)
+	install(TARGETS ffi_clips_interface
+		LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+	)
+endif()

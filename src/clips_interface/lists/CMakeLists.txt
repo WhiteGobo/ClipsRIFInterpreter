@@ -1,4 +1,4 @@
-add_library(crifi_lists SHARED
+add_library(crifi_lists
 	crifi_lists.c
 	crifi_lists.h
 )

@@ -67,8 +67,8 @@ static bool check_regex(const char* lexical, DatatypeInfo *target_datatype){
 	regex_t reg;
 	err = regcomp(&reg, target_datatype->regex, 0);
 	if (0 != err){
-		fprintf(stderr, "internal regex for datatypes seems broken:"
-				"\n%s\n", target_datatype->regex);
+		//fprintf(stderr, "internal regex for datatypes seems broken:"
+		//		"\n%s\n", target_datatype->regex);
 		return false;
 	};
 	err = regexec(&reg, lexical, 0, NULL, 0);

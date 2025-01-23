@@ -184,19 +184,19 @@ FFI_PLUGIN_EXPORT bool graph_in_errorstate(struct clips_graph_container graph){
 	struct DynamicValue retval = eval(graph, "(get-error)");
 	switch (retval.type){
 		case CTC_DYNAMIC_ERROR:
-			fprintf(stderr, "dynamic error\n");
+			//fprintf(stderr, "dynamic error\n");
 			return true;
 			break;
 		case CTC_DYNAMIC_BOOL:
 			return retval.val.boolean;
 			break;
 		case CTC_DYNAMIC_STRING:
-			fprintf(stderr, "graph in errorstate: %s\n",
-					retval.val.string);
+			//fprintf(stderr, "graph in errorstate: %s\n",
+			//		retval.val.string);
 		case CTC_DYNAMIC_VOID:
 		case CTC_DYNAMIC_INT:
 		default:
-			fprintf(stderr, "errorstate type %d\n", retval.type);
+			//fprintf(stderr, "errorstate type %d\n", retval.type);
 			return true;
 	}
 }

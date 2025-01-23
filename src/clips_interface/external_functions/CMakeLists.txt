@@ -1,4 +1,4 @@
-add_library(external_functions SHARED
+add_library(external_functions STATIC
 	external_functions.c
 	math_user_defined_functions.c
 	pred_user_defined_functions.c
@@ -14,17 +14,18 @@ add_library(external_functions SHARED
 	clipsvalue_check_datatype.c
 )
 
+add_compile_options(-fPIC)
+
 target_include_directories(external_functions PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
 
 target_include_directories(external_functions PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../interface/")
 
-set_target_properties(external_functions PROPERTIES
-  PUBLIC_HEADER external_functions.h
-  OUTPUT_NAME "external_functions"
-)
+#set_target_properties(external_functions PROPERTIES
+#	PUBLIC_HEADER external_functions.h
+#	OUTPUT_NAME "external_functions"
+#)
 
-target_link_libraries(
-	external_functions
+target_link_libraries(external_functions PRIVATE
 	n3parser
 	clips
 	crifi_lists

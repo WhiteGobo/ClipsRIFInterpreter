@@ -72,7 +72,7 @@ static size_t get_argsize(CLIPSValue val){
 			return 3+strlen(InstanceName(val.instanceValue));
 			break;
 		default:
-			fprintf(stderr, "something went wrong in getargsize\n");
+			//fprintf(stderr, "something went wrong in getargsize\n");
 	}
 }
 
@@ -91,7 +91,7 @@ static size_t sprintf_arg(char *cptr, const char* format, CLIPSValue val){
 			return sprintf(cptr, " [%s]", InstanceName(val.instanceValue));
 			break;
 		default:
-			fprintf(stderr, "something went wrong in getargsize\n");
+			//fprintf(stderr, "something went wrong in getargsize\n");
 			return 0;
 	}
 }
@@ -309,24 +309,22 @@ void func_insert_before(Environment *env, UDFContext *udfc, UDFValue *out){
 	}
 	listlength = list.multifieldValue->length;
 	if (!normalize_index(listlength, &position)){
-		printf("qwertz qq %d\n", listlength);
 		RETURNFAIL("cant insert at given position");
 	}
 	newvalues = calloc(listlength + 1, sizeof(CLIPSValue));
 	tmpptr = newvalues;
-	for (int i=0; i<position; i++){
+	for (int i=0; i<position; i++) {
 		tmpptr->value = list.multifieldValue->contents[i].value;
 		tmpptr++;
 	}
 	tmpptr->value = newvalarg.value;
 	tmpptr++;
-	for (int i=position; i<listlength; i++){
+	for (int i=position; i<listlength; i++) {
 		tmpptr->value = list.multifieldValue->contents[i].value;
 		tmpptr++;
 	}
-	Fact *ret = crifi_list_new(env, newvalues,
-						listlength+1);
-	if (ret != NULL){
+	Fact *ret = crifi_list_new(env, newvalues, listlength+1);
+	if (ret != NULL) {
 		out->factValue = ret;
 	} else {
 		out->voidValue = VoidConstant(env);

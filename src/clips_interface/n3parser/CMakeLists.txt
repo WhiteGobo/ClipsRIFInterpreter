@@ -1,4 +1,4 @@
-add_library(n3parser SHARED
+add_library(n3parser STATIC
 	n3parser.c
 	n3parser.h
 )

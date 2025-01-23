@@ -2,6 +2,7 @@ SRC=src
 BUILD ?= build
 CMAKE=cmake
 ASSETPATH ?=brubrubru
+DESTDIR ?=
 
 TMPDIR = tmp
 CLIPSPATHDIRECTORY=${TMPDIR}/clipspatch
@@ -12,22 +13,50 @@ ENV_GENERATOR=env PATH=$$PATH:${CRIFI_SCRIPT_GENERATOR_PATH}
 #eg more logging: (env CMAKE_CONFIGURE_OPT="--log-level=DEBUG" make)
 CMAKE_CONFIGURE_OPT ?=
 CMAKE_CONFIGURE_OPT += -D REL_ASSETPATH_CLIPSSCRIPTS=${ASSETPATH}
-TESTFILTER ?=
+CMAKE_CONFIGURE_OPT += -DBUILD_SHARED_LIBS=ON
+ifdef CLIPS_HEADER
+	CMAKE_CONFIGURE_OPT += -DCLIPS_HEADER=${CLIPS_HEADER} 
+endif
+ifdef CLIPS_LIBRARY
+	CMAKE_CONFIGURE_OPT += -DCLIPS_LIBRARY=${CLIPS_LIBRARY} 
+endif
+ifdef LINKED_CLIPS_LIB
+	CMAKE_CONFIGURE_OPT += -DLINKED_CLIPS_LIB=${LINKED_CLIPS_LIB}
+endif
+
+
+CTEST_OPT =
 ifdef TESTFILTER
-CTEST_OPT = -R ${TESTFILTER}
+CTEST_OPT += -R ${TESTFILTER}
+endif
+
+MAKE_INSTALL_OPT ?= 
+ifdef DESTDIR
+#MAKE_INSTALL_OPT += --prefix $(realpath ${DESTDIR})
 endif
 
 default: configure build test
 
+QQTEST = qqtestinstall
+tt:
+	-rm -rf ${QQTEST}
+	mkdir -p ${QQTEST}
+	env DESTDIR=${QQTEST} ${CMAKE} --install ${BUILD}
+
+install:
+	${CMAKE} --install ${BUILD} ${MAKE_INSTALL_OPT}
+	#${CMAKE} DESTDIR=${DESTDIR} --build ${BUILD} --target install --config debug
+.PHONY: install
+
 include resources.mk
 
-.PHONY: configure
 configure:
-	${CMAKE} -S ${SRC} -B ${BUILD} ${CMAKE_CONFIGURE_OPT}
+	${CMAKE}  -S ${SRC} -B ${BUILD} ${CMAKE_CONFIGURE_OPT}
+.PHONY: configure
 
-.PHONY: build
 build:
-	${CMAKE} --build ${BUILD}
+	${CMAKE} --build ${BUILD} -v
+.PHONY: build
 
 .PHONY: test
 test: configure build ${BUILD}/${ASSETPATH}

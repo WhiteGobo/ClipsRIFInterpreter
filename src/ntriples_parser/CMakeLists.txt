@@ -31,18 +31,32 @@ add_custom_command(OUTPUT  ${YACC_C_SOURCE} ${YACC_H}
 	COMMAND sed ARGS -i -re ${SED_STRIP_LINE_DECLS} ${YACC_C_SOURCE}
 )
 
-add_library(ntriplesParser SHARED
+add_library(ntriplesParser
 	${LEX_C_SOURCE}
 	${YACC_C_SOURCE}
 	include/ntriplesParser.h
 )
 
-target_link_libraries(
-	ntriplesParser
+set_target_properties(ntriplesParser PROPERTIES
+	PUBLIC_HEADER include/ntriplesParser.h
+	#OUTPUT_NAME "ffi_clips_interface"
+)
+
+target_link_libraries(ntriplesParser PRIVATE
 	ffi_clips_interface
 )
+
 
 target_include_directories(ntriplesParser PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_INCLUDE_DIRECTORY})
 target_include_directories(ntriplesParser PUBLIC "${PUBLIC_INCLUDE}")
 
 target_compile_options(ntriplesParser PRIVATE "-Wall" "-Werror" "-Wno-unused-function") # input and yyunput are unused
+
+install(TARGETS ntriplesParser
+	PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+)
+if(BUILD_SHARED_LIBS)
+	install(TARGETS ntriplesParser
+		LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+	)
+endif()

@@ -20,16 +20,16 @@ static bool AddUDF_witherrorprint(
 			return true;
 			break;
 		case AUE_MIN_EXCEEDS_MAX_ERROR:
-			fprintf(stderr, "2 %s\n", qq.clipsName);
+			//fprintf(stderr, "2 %s\n", qq.clipsName);
 			break;
 		case AUE_FUNCTION_NAME_IN_USE_ERROR:
-			fprintf(stderr, "3 %s\n", qq.clipsName);
+			//fprintf(stderr, "3 %s\n", qq.clipsName);
 			break;
 		case AUE_INVALID_ARGUMENT_TYPE_ERROR:
-			fprintf(stderr, "4 %s\n", qq.clipsName);
+			//fprintf(stderr, "4 %s\n", qq.clipsName);
 			break;
 		case AUE_INVALID_RETURN_TYPE_ERROR:
-			fprintf(stderr, "5 %s\n", qq.clipsName);
+			//fprintf(stderr, "5 %s\n", qq.clipsName);
 			break;
 	}
 	return err == AUE_NO_ERROR;
