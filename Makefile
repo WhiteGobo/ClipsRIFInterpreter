@@ -10,10 +10,17 @@ CLIPSPATHDIRECTORY=${TMPDIR}/clipspatch
 CRIFI_SCRIPT_GENERATOR_PATH ?= ${BUILD}/generate_crifi_script/
 ENV_GENERATOR=env PATH=$$PATH:${CRIFI_SCRIPT_GENERATOR_PATH}
 
-#eg more logging: (env CMAKE_CONFIGURE_OPT="--log-level=DEBUG" make)
+CMAKE_BUILD_OPT ?=
 CMAKE_CONFIGURE_OPT ?=
+ifdef V
+	CMAKE_BUILD_OPT += -v
+	#CMAKE_CONFIGURE_OPT += --log-level=DEBUG
+endif
 CMAKE_CONFIGURE_OPT += -D REL_ASSETPATH_CLIPSSCRIPTS=${ASSETPATH}
 CMAKE_CONFIGURE_OPT += -DBUILD_SHARED_LIBS=ON
+ifdef prefix
+	CMAKE_CONFIGURE_OPT += --install-prefix ${prefix}
+endif
 ifdef CLIPS_HEADER
 	CMAKE_CONFIGURE_OPT += -DCLIPS_HEADER=${CLIPS_HEADER} 
 endif
@@ -55,7 +62,7 @@ configure:
 .PHONY: configure
 
 build:
-	${CMAKE} --build ${BUILD} -v
+	${CMAKE} --build ${BUILD} ${CMAKE_BUILD_OPT}
 .PHONY: build
 
 .PHONY: test
