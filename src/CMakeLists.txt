@@ -47,9 +47,11 @@ add_subdirectory(clips_interface)
 add_subdirectory(resource_manager)
 add_subdirectory(generate_crifi_script)
 
-enable_testing()
-set(INSTALL_GTEST OFF)
-add_subdirectory(tests)
+if(BUILD_TESTING)
+	enable_testing()
+	set(INSTALL_GTEST OFF)
+	add_subdirectory(tests)
+endif()
 
 #Copying assets
 set(REL_ASSETPATH_CLIPSSCRIPTS ./
