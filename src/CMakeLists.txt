@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.14)
 project(clips_rif_interpreter_library VERSION 0.1.0 LANGUAGES C CXX)
 
 option(LINKED_CLIPS_LIB "Build with linked clips library" ON)
+option(BUILD_TESTING "default testing" ON)
 set(CLIPS_LIBRARY OFF CACHE FILEPATH
 	"Location of clips library. can be autolocated")
 set(CLIPS_HEADER /usr/include/clips CACHE PATH "\
@@ -10,24 +11,20 @@ Location of clips rules header files, used when building with clips \
 as linked library"
 )
 
+set(CMAKE_INSTALL_CONFIG lib/cmake/clips_rif_interpreter CACHE STRING "\
+Location where Findclips_rif_interpreter.cmake will be installed. \
+See also CMAKE_MODULE_PATH."
+)
+set(installable_libs )
+
 include(FetchContent)
 
 #Patch adds CMakeLists.txt to clips
 if(LINKED_CLIPS_LIB)
-	if(CLIPS_LIBRARY)
-		set(clips_library_path ${CLIPS_LIBRARY})
-	else()
-		find_library(clips_library_path clips REQUIRED)
-	endif()
-	add_library(clips SHARED IMPORTED)
-	set_property(TARGET clips
-		PROPERTY IMPORTED_LOCATION ${clips_library_path})
-	#include_directories(/usr/include/clips)
-	target_include_directories(clips INTERFACE
-		$<BUILD_INTERFACE:${CLIPS_HEADER}>
-	#	#$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/mylib>
-	)
+	set(INSTALL_CLIPS_FINDER ON)
+	include(locate_clips.cmake)
 else()
+	set(INSTALL_CLIPS_FINDER OFF)
 	add_compile_options(-fPIC) #or it fails to link clips
 	FetchContent_Declare(
 		clips
@@ -67,3 +64,6 @@ file(COPY assets DESTINATION ${ASSETPATH_CLIPSSCRIPTS})
 #		   ${CMAKE_CURRENT_SOURCE_DIR}/assets/ ${ASSETPATH_CLIPSSCRIPTS})
 
 #option(BUILD_SHARED_LIBS "Build using shared libraries" ON)
+
+#include(generate_cmake_module.cmake)
+include(install_helper.cmake)

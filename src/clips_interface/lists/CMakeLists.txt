@@ -1,4 +1,4 @@
-add_library(crifi_lists
+add_library(crifi_lists STATIC
 	crifi_lists.c
 	crifi_lists.h
 )

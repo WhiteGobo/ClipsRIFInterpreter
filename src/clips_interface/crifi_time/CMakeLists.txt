@@ -1,4 +1,4 @@
-add_library(crifi_time
+add_library(crifi_time STATIC
 	crifi_time.c
 	crifi_timedata.c
 	crifi_time.h

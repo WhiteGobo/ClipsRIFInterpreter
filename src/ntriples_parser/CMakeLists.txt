@@ -6,6 +6,7 @@ set(YACC_FILE      ${CMAKE_CURRENT_SOURCE_DIR}/ntriples.yacc)
 set(YACC_C_SOURCE  ntriples.yacc.c)
 set(YACC_H         ${PROJECT_INCLUDE_DIRECTORY}/ntriples.yacc.h)
 set(PUBLIC_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+#set(PUBLIC_INCLUDE ${PROJECT_BINARY_DIR}/include)
 
 
 # Don't include line numbers from the .lex and .yacc files in the final binaries
@@ -38,8 +39,8 @@ add_library(ntriplesParser
 )
 
 set_target_properties(ntriplesParser PROPERTIES
-	PUBLIC_HEADER include/ntriplesParser.h
-	#OUTPUT_NAME "ffi_clips_interface"
+	PUBLIC_HEADER ${CMAKE_CURRENT_SOURCE_DIR}/include/ntriplesParser.h
+	OUTPUT_NAME "ntriplesParser"
 )
 
 target_link_libraries(ntriplesParser PRIVATE
@@ -48,15 +49,19 @@ target_link_libraries(ntriplesParser PRIVATE
 
 
 target_include_directories(ntriplesParser PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_INCLUDE_DIRECTORY})
-target_include_directories(ntriplesParser PUBLIC "${PUBLIC_INCLUDE}")
+target_include_directories(ntriplesParser PUBLIC
+	$<BUILD_INTERFACE:${PUBLIC_INCLUDE}>)
 
 target_compile_options(ntriplesParser PRIVATE "-Wall" "-Werror" "-Wno-unused-function") # input and yyunput are unused
 
-install(TARGETS ntriplesParser
-	PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-)
-if(BUILD_SHARED_LIBS)
-	install(TARGETS ntriplesParser
-		LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-	)
-endif()
+
+set(installable_libs ${installable_libs} ntriplesParser PARENT_SCOPE)
+
+#install(TARGETS ntriplesParser
+#	PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+#)
+#if(BUILD_SHARED_LIBS)
+#	install(TARGETS ntriplesParser
+#		LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+#	)
+#endif()

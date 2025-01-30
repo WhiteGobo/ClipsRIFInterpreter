@@ -22,8 +22,6 @@
 #include <stdlib.h>
 //#include <stdbool.h>//needed for extern working boolean
 
-//#if defined(__has_include)
-//#if __has_include("myinclude.h")
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -31,9 +29,6 @@ extern "C" {
 #ifdef __cplusplus
 }
 #endif
-
-//#endif
-//#endif
 
 //#if _WIN32
 //#include <windows.h>
@@ -56,7 +51,6 @@ extern "C" {
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 /**
  * Return value of \ref load_config.

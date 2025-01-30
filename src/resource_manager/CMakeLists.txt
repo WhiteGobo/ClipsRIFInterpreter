@@ -9,10 +9,11 @@ add_library(clipsrif_resource_manager SHARED
 add_compile_options(-fPIC) #or it fails to link clips
 
 target_include_directories(clipsrif_resource_manager PUBLIC
-	${CMAKE_CURRENT_SOURCE_DIR})
+	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)
+#${PROJECT_BINARY_DIR})
 
 set_target_properties(clipsrif_resource_manager PROPERTIES
-	PUBLIC_HEADER resource_manager.h
+	PUBLIC_HEADER ${CMAKE_CURRENT_SOURCE_DIR}/resource_manager.h
 	OUTPUT_NAME "clipsrif_resource_manager"
 )
 
@@ -35,17 +36,23 @@ cmrc_add_resource_library(
 	resources/SimpleEntailment.clp
 )
 
-target_link_libraries(clipsrif_resource_manager
-	clipsrifinterpreter::rc
+target_link_libraries(clipsrif_resource_manager PUBLIC
 	ffi_clips_interface
+)
+
+target_link_libraries(clipsrif_resource_manager PRIVATE
+	clipsrifinterpreter::rc
 	n3parser
 )
 
-install(TARGETS clipsrif_resource_manager
-	PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-)
-if(BUILD_SHARED_LIBS)
-	install(TARGETS clipsrif_resource_manager
-		LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-	)
-endif()
+
+set(installable_libs ${installable_libs} clipsrif_resource_manager PARENT_SCOPE)
+
+#install(TARGETS clipsrif_resource_manager
+#	PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+#)
+#if(BUILD_SHARED_LIBS)
+#	install(TARGETS clipsrif_resource_manager
+#		LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+#	)
+#endif()

@@ -46,6 +46,9 @@ endif
 ifdef BUILD_TESTING
 	CMAKE_CONFIGURE_OPT += -DBUILD_TESTING=${BUILD_TESTING}
 endif
+ifdef CMAKE_INSTALL_CONFIG
+	CMAKE_CONFIGURE_OPT += -DCMAKE_INSTALL_CONFIG=${CMAKE_INSTALL_CONFIG}
+endif
 
 
 
@@ -61,7 +64,7 @@ endif
 
 default: configure build test
 
-QQTEST = qqtestinstall
+QQTEST = ${TMPDIR}/testinstall
 tt:
 	-rm -rf ${QQTEST}
 	mkdir -p ${QQTEST}
@@ -75,7 +78,7 @@ install:
 include resources.mk
 
 configure:
-	${CMAKE}  -S ${SRC} -B ${BUILD} ${CMAKE_CONFIGURE_OPT}
+	${CMAKE} -S ${SRC} -B ${BUILD} ${CMAKE_CONFIGURE_OPT}
 .PHONY: configure
 
 build:

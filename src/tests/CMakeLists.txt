@@ -27,17 +27,5 @@ target_link_libraries(hello_test PRIVATE
   crifi_test::rc
 )
 
-#deprecated and replaced by cmakrerc:
-foreach(TESTASSET
-		"data/Frames-conclusion.ntriples"
-		"data/Frames-premise.ntriples"
-		"data/Assert-conclusion.ntriples"
-		"data/Assert-premise.ntriples"
-		"data/AssertRetract-conclusion.ntriples"
-		"data/AssertRetract-premise.ntriples"
-	)
-	configure_file(${TESTASSET} ${TESTASSET})
-endforeach()
-
 include(GoogleTest)
 gtest_discover_tests(hello_test)
