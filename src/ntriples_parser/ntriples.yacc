@@ -90,7 +90,7 @@ int yywrap()
 } 
 
 NTRIPLESPARSER_INTERFACE RET_NTRIPLESPARSE ntriples_parse_f(
-		struct clips_graph_container *graph,
+		crifi_graph graph,
 		FILE *input, int debug){
 	if (input == NULL) return NTP_INPUT_ERROR;
 	CRI_RET_BUILDTRIPLE assert_err;
@@ -101,7 +101,7 @@ NTRIPLESPARSER_INTERFACE RET_NTRIPLESPARSE ntriples_parse_f(
 	yyparse(&retFacts);
 	yylex_destroy(); //?
 	FOREACH_TRIPLE(retFacts, current){
-		assert_err = assert_fact(*graph, current->subject, current->predicate, current->object, "");
+		assert_err = assert_fact(graph, current->subject, current->predicate, current->object, "");
 		if (assert_err != CRI_RET_BUILDTRIPLE_NOERROR){
 			free_linked_list(retFacts);
 			return NTP_INTERNAL_ERROR;
@@ -116,7 +116,7 @@ NTRIPLESPARSER_INTERFACE RET_NTRIPLESPARSE ntriples_parse_f(
 }
 
 NTRIPLESPARSER_INTERFACE RET_NTRIPLESPARSE ntriples_parse(
-		struct clips_graph_container *graph,
+		crifi_graph graph,
 		const char *input, size_t length, int debug){
 	if (input == NULL) return NTP_INPUT_ERROR;
 	FILE *in = fmemopen((void*) input, length, "r");

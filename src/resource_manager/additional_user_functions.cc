@@ -179,12 +179,12 @@ static void initialize_script_output(Environment *env, std::string *output){
 			output);
 }
 
-bool add_needed_user_functions(struct clips_graph_container graph,
+bool add_needed_user_functions(crifi_graph graph,
 		LoadingFunction* loading_functions,
 		const void **loading_function_context,
 		unsigned int loading_functions_length,
 		std::string *output){
-	Environment *env = graph.environment;
+	Environment *env = graph;
 
 	initialize_script_output(env, output);
 
@@ -213,7 +213,7 @@ bool add_needed_user_functions(struct clips_graph_container graph,
 	}
 
 	for (UDFDescription *x = resourceManagerClipsFunctions; x->clipsName != NULL; x++){
-		if (!add_udf_witherrorprint(graph.environment, *x)) {
+		if (!add_udf_witherrorprint(graph, *x)) {
 			return false;
 		}
 	}
@@ -230,7 +230,7 @@ bool add_needed_user_functions(struct clips_graph_container graph,
 	return true;
 }
 
-bool append_loading_function(struct clips_graph_container graph,
+bool append_loading_function(crifi_graph graph,
 		LoadingFunction loading_function,
 		const void *context){
 	RdfResourceLoadingData *env_data;
@@ -241,7 +241,7 @@ bool append_loading_function(struct clips_graph_container graph,
 	newinfo->loadingFunction = loading_function;
 	newinfo->context = context;
 	newinfo->nextinfo = NULL;
-	env_data = LoadingData(graph.environment);
+	env_data = LoadingData(graph);
 	if (env_data->nextinfo != NULL) {
 		while (tmpinfo->nextinfo != NULL){
 			tmpinfo = tmpinfo->nextinfo;

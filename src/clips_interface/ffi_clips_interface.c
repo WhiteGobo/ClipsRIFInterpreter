@@ -8,41 +8,41 @@
 
 
 
-FFI_PLUGIN_EXPORT struct clips_graph_container init_graph(){
-	struct clips_graph_container graph_container;
-	graph_container.environment = initEnvironment();
-	if (graph_container.environment == NULL){
+FFI_PLUGIN_EXPORT crifi_graph init_graph(){
+	crifi_graph graph_container = initEnvironment();
+	/*if (graph_container.environment == NULL){
 		graph_container.inErrorState = 1;
 	} else {
 		graph_container.inErrorState = 0;
 	}
 	graph_container.extensions = NULL;
+	*/
 	return graph_container;
 }
 
 FFI_PLUGIN_EXPORT RET_LOADCONFIG load_config_mem(
-		struct clips_graph_container graphContainer,
+		crifi_graph graph,
 		const char* configString, size_t lengthString){
-	if (graph_in_errorstate(graphContainer)){
+	if (graph_in_errorstate(graph)){
 		return CTC_LC_UNKNOWN_STATE;
 	}
 	bool success = load_config_internal_mem(
-			graphContainer.environment,
+			graph,
 			configString,
 			lengthString);
 
-	if (graph_in_errorstate(graphContainer)){
+	if (graph_in_errorstate(graph)){
 		return CTC_LC_PARSING_ERROR;
 	}
 	if (success) {
-		eval(graphContainer, "(reset)");
+		eval(graph, "(reset)");
 		return CTC_LC_NO_ERROR;
 	}
 	return CTC_LC_PARSING_ERROR;
 }
 
-FFI_PLUGIN_EXPORT RET_LOADCONFIG load_config(struct clips_graph_container graph_container, char *configPath){
-	LoadError lerr = load_config_internal(graph_container.environment, configPath);
+FFI_PLUGIN_EXPORT RET_LOADCONFIG load_config(crifi_graph graph_container, char *configPath){
+	LoadError lerr = load_config_internal(graph_container, configPath);
 	if (graph_in_errorstate(graph_container)){
 		return CTC_LC_PARSING_ERROR;
 	}
@@ -62,21 +62,21 @@ FFI_PLUGIN_EXPORT RET_LOADCONFIG load_config(struct clips_graph_container graph_
 }
 
 
-FFI_PLUGIN_EXPORT struct TriplesLinkedList *get_facts(struct clips_graph_container graph_container, char *filter_subject, char *filter_predicate, char *filter_object){
+FFI_PLUGIN_EXPORT struct TriplesLinkedList *get_facts(crifi_graph graph_container, char *filter_subject, char *filter_predicate, char *filter_object){
 	struct TriplesLinkedList *retFacts = NULL;
-	CLIPSValue factsObj = getFactsFromEnvironment(graph_container.environment);
+	CLIPSValue factsObj = getFactsFromEnvironment(graph_container);
 	if (factsObj.header == NULL) return NULL;
 	if (factsObj.header->type != MULTIFIELD_TYPE){
 		return NULL;
 	}
-	retFacts = copy_getfacts_to_list(graph_container.environment, factsObj.multifieldValue, filter_subject, filter_predicate, filter_object);
+	retFacts = copy_getfacts_to_list(graph_container, factsObj.multifieldValue, filter_subject, filter_predicate, filter_object);
 
 	return retFacts;
 }
 
 
-FFI_PLUGIN_EXPORT int close_graph(struct clips_graph_container graph_container){
-	closeEnvironment(graph_container.environment);
+FFI_PLUGIN_EXPORT int close_graph(crifi_graph graph_container){
+	closeEnvironment(graph_container);
 	free_regex();
 	return 0;
 }
@@ -153,21 +153,21 @@ FFI_PLUGIN_EXPORT struct TriplesLinkedList *last_triple(struct TriplesLinkedList
 }
 
 FFI_PLUGIN_EXPORT CRI_RET_BUILDTRIPLE assert_fact(
-		struct clips_graph_container graph,
+		crifi_graph graph,
 		const N3String subject, const N3String predicate,
 		const N3String object, const char* context
 		){
-	CRI_RET_BUILDTRIPLE error = build_triple(graph.environment, subject, predicate, object, context);
+	CRI_RET_BUILDTRIPLE error = build_triple(graph, subject, predicate, object, context);
 	return error;
 }
 
 
-FFI_PLUGIN_EXPORT long long run_rules(struct clips_graph_container graph, long long limit){
-	return Run(graph.environment, limit);
+FFI_PLUGIN_EXPORT long long run_rules(crifi_graph graph, long long limit){
+	return Run(graph, limit);
 }
 
-FFI_PLUGIN_EXPORT int build(struct clips_graph_container graph, Utf8String command){
-	BuildError err = Build(graph.environment, command);
+FFI_PLUGIN_EXPORT int build(crifi_graph graph, Utf8String command){
+	BuildError err = Build(graph, command);
 	switch (err) {
 		case BE_NO_ERROR:
 			return 0;
@@ -180,7 +180,7 @@ FFI_PLUGIN_EXPORT int build(struct clips_graph_container graph, Utf8String comma
 	}
 }
 
-FFI_PLUGIN_EXPORT bool graph_in_errorstate(struct clips_graph_container graph){
+FFI_PLUGIN_EXPORT bool graph_in_errorstate(crifi_graph graph){
 	struct DynamicValue retval = eval(graph, "(get-error)");
 	switch (retval.type){
 		case CTC_DYNAMIC_ERROR:
@@ -201,10 +201,10 @@ FFI_PLUGIN_EXPORT bool graph_in_errorstate(struct clips_graph_container graph){
 	}
 }
 
-FFI_PLUGIN_EXPORT struct DynamicValue eval(struct clips_graph_container graph, Utf8String command){
+FFI_PLUGIN_EXPORT struct DynamicValue eval(crifi_graph graph, Utf8String command){
 	CLIPSValue evalValue;
 	struct DynamicValue ret;
-	EvalError err = Eval(graph.environment, command, &evalValue);
+	EvalError err = Eval(graph, command, &evalValue);
 	switch (err) {
 		case EE_PARSING_ERROR:
 			ret.type = CTC_DYNAMIC_ERROR;
@@ -234,8 +234,8 @@ FFI_PLUGIN_EXPORT void free_container(struct DynamicValue value){
 	}
 }
 
-FFI_PLUGIN_EXPORT bool load_script(struct clips_graph_container graph, Utf8String script){
-	return LoadFromString(graph.environment, script, strlen(script));
+FFI_PLUGIN_EXPORT bool load_script(crifi_graph graph, Utf8String script){
+	return LoadFromString(graph, script, strlen(script));
 }
 
 
@@ -247,6 +247,7 @@ FFI_PLUGIN_EXPORT void free_dynamic_value(struct DynamicValue val){
 	}
 }
 
+/*
 FFI_PLUGIN_EXPORT void add_plugin(struct clips_graph_container *graph){
 	CRIFIExtension *lastext = NULL;
 	CRIFIExtension *newext;
@@ -260,3 +261,4 @@ FFI_PLUGIN_EXPORT void add_plugin(struct clips_graph_container *graph){
 		lastext->nextExtension = newext;
 	}
 }
+*/

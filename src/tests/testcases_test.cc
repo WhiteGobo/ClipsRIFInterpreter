@@ -470,8 +470,8 @@ class TestCasesTest : public testing::TestWithParam<TestdataPET> {
 };
 
 TEST_P(TestCasesTest, BasicPET) {
-	struct clips_graph_container graph;
-	graph = init_graph();
+	crifi_graph graph = init_graph();
+	ASSERT_NE(graph, nullptr) << "Failed to initialize graph";
 	std::string *logicAsString = nullptr;
 	std::string *statementVerifierAsString = nullptr;
 	RET_NTRIPLESPARSE parse_err;
@@ -559,7 +559,7 @@ TEST_P(TestCasesTest, BasicPET) {
 	delete(statementVerifierAsString);
 	delete(logicAsString);
 
-	//struct clips_graph_container graph = init_graph();
+	//crifi_graph graph = init_graph();
 	//RET_NTRIPLESPARSE err = ntriples_parse_f(&graph, inputptr);
 }
 

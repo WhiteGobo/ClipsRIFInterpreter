@@ -47,7 +47,8 @@ TEST(BasicFactTest, BasicAssert){
 	const char pred[] = "<http://example.com/asdf#qwer>";
 	const char obj[] = "\"asdf\"^^<qwer>";
 	struct TriplesLinkedList *retFacts;
-	struct clips_graph_container graph = init_graph();
+	crifi_graph graph = init_graph();
+	ASSERT_NE(graph, nullptr) << "Failed to initialize graph";
 	CRI_RET_BUILDTRIPLE assert_fact_failed = assert_fact(graph, subj, pred, obj, "");
 	EXPECT_EQ(assert_fact_failed, CRI_RET_BUILDTRIPLE_NOERROR) << "Couldnt assert fact.";
 	retFacts = get_facts(graph, NULL, NULL, NULL);
@@ -68,8 +69,9 @@ TEST(BasicFactTest, ParseTriplesMemory){
 
 	size_t l = sizeof(input);
 	struct TriplesLinkedList *retFacts;
-	struct clips_graph_container graph = init_graph();
-	RET_NTRIPLESPARSE err = ntriples_parse(&graph, input, l, 0);
+	crifi_graph graph = init_graph();
+	ASSERT_NE(graph, nullptr) << "Failed to initialize graph";
+	RET_NTRIPLESPARSE err = ntriples_parse(graph, input, l, 0);
 	ASSERT_NE(err, NTP_PARSE_ERROR) << "parsing ofinput file failed";
 	ASSERT_NE(err, NTP_INTERNAL_ERROR) << "internal error";
 	ASSERT_EQ(err, NTP_NO_ERROR) << "couldnt parse input triples.";
@@ -87,13 +89,14 @@ TEST(BasicFactTest, ParseNTriplesFile){
 	FILE *inputptr;
 	char inputPath[PATH_MAX];
 	struct TriplesLinkedList *retFacts;
-	struct clips_graph_container graph = init_graph();
+	crifi_graph graph = init_graph();
+	ASSERT_NE(graph, nullptr) << "Failed to initialize graph";
 	char input[] = "#comment1\n"
 		"_:n1234 <http://example.com/asdf#qwer> 'äsdf'^^<qwer> ." ;
 	inputptr = fmemopen(input, sizeof(input), "r");
 
 	//ASSERT_NE(inputptr, nullptr) << "couldnt open assets for test";
-	RET_NTRIPLESPARSE err = ntriples_parse_f(&graph, inputptr, 0);
+	RET_NTRIPLESPARSE err = ntriples_parse_f(graph, inputptr, 0);
 	fclose(inputptr);
 	ASSERT_NE(err, NTP_PARSE_ERROR) << "parsing ofinput file failed";
 	ASSERT_NE(err, NTP_INTERNAL_ERROR) << "internal error";
