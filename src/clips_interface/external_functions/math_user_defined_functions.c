@@ -639,7 +639,7 @@ static bool numeric_value_to_n3(Environment *env, numeric_value val, UDFValue *o
 	}\
 	val1 = UDFValueToNumericValue(myval);\
 	if (val1.t == NT_ERROR){\
-		WriteUDFValue(env, STDOUT, &myval);\
+		/*WriteUDFValue(env, STDOUT, &myval);*/\
 		Write(env, " cant be transformed to numeric value. ");\
 		Writeln(env, val1.error_description);\
 		UDFThrowError(udfc);\
@@ -708,7 +708,7 @@ void rif_numeric_integer_mod(Environment *env, UDFContext *udfc, UDFValue *out){
 	}\
 	val1 = UDFValueToNumericValue(myval);\
 	if (val1.t == NT_ERROR){\
-		WriteUDFValue(env, STDOUT, &myval);\
+		/*WriteUDFValue(env, STDOUT, &myval);*/\
 		Write(env, " cant be transformed to numeric value. ");\
 		Writeln(env, val1.error_description);\
 		UDFThrowError(udfc);\

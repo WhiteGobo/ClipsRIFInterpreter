@@ -17,8 +17,6 @@ target_include_directories(ffi_clips_interface PUBLIC
 target_include_directories(ffi_clips_interface
 	PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
 
-add_compile_options(-fPIC)
-
 add_subdirectory(n3parser)
 add_subdirectory(numeric)
 add_subdirectory(lists)
