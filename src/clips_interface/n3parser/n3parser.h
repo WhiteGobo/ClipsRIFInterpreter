@@ -82,17 +82,6 @@ extern "C" {
 
 
 /**
- * tidy up after using regex. Should be used, when closing any graph.
- */
-void free_regex();
-
-/**
- * method to add node to fact.
- */
-int add_n3_as_expression_at_slot(
-		FactBuilder *theFB, N3String node, const char* slot_name);
-
-/**
  * asdf
  */
 char *clipsvalue_to_n3(Environment *env, CLIPSValue value);

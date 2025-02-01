@@ -77,7 +77,6 @@ FFI_PLUGIN_EXPORT struct TriplesLinkedList *get_facts(crifi_graph graph_containe
 
 FFI_PLUGIN_EXPORT int close_graph(crifi_graph graph_container){
 	closeEnvironment(graph_container);
-	free_regex();
 	return 0;
 }
 

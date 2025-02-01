@@ -72,32 +72,6 @@ int percent_decode(char *dst, const char *src, const size_t len)
 	return j;
 }
 
-bool regex_initialized = false;
-regex_t reg_datatype;
-regex_t reg_datatype_single;
-regex_t reg_lang;
-regex_t reg_lang_single;
-regex_t reg_simple;
-regex_t reg_simple_single;
-regex_t reg_clipsvalue_langString;
-regex_t reg_clipsvalue_literal;
-
-#define REGOPTION REG_EXTENDED
-
-void free_regex(){
-	if (regex_initialized){
-		regex_initialized = false;
-		regfree(&reg_datatype);
-		regfree(&reg_datatype_single);
-		regfree(&reg_lang);
-		regfree(&reg_lang_single);
-		regfree(&reg_simple);
-		regfree(&reg_simple_single);
-		regfree(&reg_clipsvalue_langString);
-		regfree(&reg_clipsvalue_literal);
-	}
-}
-
 #define REGEXURIREF "^<("URLSYMBOLS"*)>$"
 #define REGEXBLANKNODE "^_:("URLSYMBOLS"+)$"
 #define REGEXDATATYPESINGLE "^\'(.*)\'[°^][°^]<("URLSYMBOLS"*)>$"
@@ -108,50 +82,6 @@ void free_regex(){
 #define REGEXSIMPLE "^\"(.*)\"$"
 #define REGEXCLIPSVALUELANGSTRING "^(.*)@@(.*)$"
 #define REGEXCLIPSVALUELITERAL "^(.*)[°^][°^](.*)$"
-
-static int init_regex(){
-	int err;
-	if (regex_initialized){
-		return 0;
-	} else {
-		err = regcomp(&reg_datatype_single,
-				REGEXDATATYPESINGLE,
-				REGOPTION);
-		if (err != 0) return err;
-		err = regcomp(&reg_datatype,
-				REGEXDATATYPE,
-				REGOPTION);
-		if (err != 0) return err;
-		err = regcomp(&reg_lang,
-				REGEXLANG,
-				REG_EXTENDED);
-		if (err != 0) return err;
-		err = regcomp(&reg_lang_single, 
-				REGEXLANGSINGLE,
-				REG_EXTENDED);
-		if (err != 0) return err;
-		err = regcomp(&reg_simple_single,
-				REGEXSIMPLESINGLE,
-				REG_EXTENDED);
-		if (err != 0) return err;
-		err = regcomp(&reg_simple,
-				REGEXSIMPLE,
-				REGOPTION);
-		if (err != 0) return err;
-
-		err = regcomp(&reg_clipsvalue_langString,
-				REGEXCLIPSVALUELANGSTRING,
-				REGOPTION);
-		if (err != 0) return err;
-		err = regcomp(&reg_clipsvalue_literal,
-				REGEXCLIPSVALUELITERAL,
-				REGOPTION);
-		if (err != 0) return err;
-		regex_initialized = true;
-		return 0;
-	}
-}
-#undef REGOPTION
 
 int value_and_lang_to_slotstring(char* result, const char* value, size_t value_length, const char* lang, size_t lang_length){
 	char* result_tmp;
@@ -245,87 +175,6 @@ static char* value_and_datatype_to_n3(const char* value, const char* datatype){
 }
 
 
-/**
- * Percent-encoding
- */
-static int literal_to_builtin(char *builtinEncoded, N3String node){
-	int err;
-	const size_t max_matches = 3; //1 + #groups 
-	regmatch_t matches[5];
-	char *newnode, *tmpnew;
-	const char *value, *datatype, *lang, *tmpold;
-	size_t value_length, datatype_length, lang_length;
-
-	if (0 != init_regex()){
-		//printf("Failed to compile regex_datatype\n");
-		return 3;
-	}
-	err = regexec(&reg_datatype, node, max_matches, matches, 0);
-	if (err == 0) {
-		value_length = matches[1].rm_eo - matches[1].rm_so;
-		value = node + matches[1].rm_so;
-		datatype_length = matches[2].rm_eo - matches[2].rm_so;
-		datatype = node + matches[2].rm_so;
-		return value_and_datatype_to_slotstring(builtinEncoded, value, value_length, datatype, datatype_length);
-	} else if (err != REG_NOMATCH){
-		//printf("Regex expression produced error.0\n");
-		return 2;
-	}
-	err = regexec(&reg_datatype_single, node, max_matches, matches, 0);
-	if (err == 0) {
-		value_length = matches[1].rm_eo - matches[1].rm_so;
-		value = node + matches[1].rm_so;
-		datatype_length = matches[2].rm_eo - matches[2].rm_so;
-		datatype = node + matches[2].rm_so;
-		return value_and_datatype_to_slotstring(builtinEncoded, value, value_length, datatype, datatype_length);
-	} else if (err != REG_NOMATCH){
-		//printf("Regex expression produced error.1\n");
-		return 2;
-	}
-
-	err = regexec(&reg_lang, node, 1+4, matches, 0);
-	if (err == 0) {
-		value_length = matches[1].rm_eo - matches[1].rm_so;
-		value = node + matches[1].rm_so;
-		lang_length = matches[4].rm_eo - matches[4].rm_so;
-		lang = node + matches[4].rm_so;
-		return value_and_lang_to_slotstring(builtinEncoded, value, value_length, lang, lang_length);
-	} else if (err != REG_NOMATCH){
-		//printf("Regex expression produced error.1\n");
-		return 2;
-	}
-	err = regexec(&reg_lang_single, node, 1+4, matches, 0);
-	if (err == 0) {
-		value_length = matches[1].rm_eo - matches[1].rm_so;
-		value = node + matches[1].rm_so;
-		lang_length = matches[4].rm_eo - matches[4].rm_so;
-		lang = node + matches[4].rm_so;
-		return value_and_lang_to_slotstring(builtinEncoded, value, value_length, lang, lang_length);
-	} else if (err != REG_NOMATCH){
-		//printf("Regex expression produced error.1\n");
-		return 2;
-	}
-	err = regexec(&reg_simple, node, max_matches, matches, 0);
-	if (err == 0) {
-		value_length = matches[1].rm_eo - matches[1].rm_so;
-		value = node + matches[1].rm_so;
-		return value_and_datatype_to_slotstring(builtinEncoded, value, value_length, _RDF_string_, sizeof(_RDF_string_));
-	} else if (err != REG_NOMATCH){
-		//printf("Regex expression produced error.1\n");
-		return 2;
-	}
-	err = regexec(&reg_simple_single, node, max_matches, NULL, 0);
-	if (err == 0) {
-		value_length = matches[1].rm_eo - matches[1].rm_so;
-		value = node + matches[1].rm_so;
-		return value_and_datatype_to_slotstring(builtinEncoded, value, value_length, _RDF_string_, sizeof(_RDF_string_));
-	} else if (err != REG_NOMATCH){
-		//printf("Regex expression produced error.1\n");
-		return 2;
-	}
-	return 1;
-}
-
 static int blanknode_as_clipsvalue(Environment *env, N3String node, CLIPSValue *target){
 	target->lexemeValue = CreateSymbol(env, node);
 	return 0;
@@ -339,11 +188,15 @@ static int literal_to_clipsvalue(Environment *env, N3String node, CLIPSValue *re
 	const char *value, *datatype, *lang, *tmpold;
 	size_t value_length, datatype_length, lang_length;
 
+	CRIFIN3ParserData* rgx = LoadingCRIFIN3ParserData(env);
+
+	/*
 	if (0 != init_regex()){
 		//fprintf(stderr, "Failed to compile regex_datatype\n");
 		return 3;
-	}
-	err = regexec(&reg_datatype, node, max_matches, matches, 0);
+	}*/
+	//err = regexec(&reg_datatype, node, max_matches, matches, 0);
+	err = regexec(&(rgx->reg_datatype), node, max_matches, matches, 0);
 	if (err == 0) {
 		value_length = matches[1].rm_eo - matches[1].rm_so;
 		value = node + matches[1].rm_so;
@@ -354,7 +207,8 @@ static int literal_to_clipsvalue(Environment *env, N3String node, CLIPSValue *re
 		//fprintf(stderr, "Regex expression produced error.0\n");
 		return 2;
 	}
-	err = regexec(&reg_datatype_single, node, max_matches, matches, 0);
+	//err = regexec(&reg_datatype_single, node, max_matches, matches, 0);
+	err = regexec(&(rgx->reg_datatype_single), node, max_matches, matches, 0);
 	if (err == 0) {
 		value_length = matches[1].rm_eo - matches[1].rm_so;
 		value = node + matches[1].rm_so;
@@ -366,7 +220,8 @@ static int literal_to_clipsvalue(Environment *env, N3String node, CLIPSValue *re
 		return 2;
 	}
 
-	err = regexec(&reg_lang, node, 1+4, matches, 0);
+	//err = regexec(&reg_lang, node, 1+4, matches, 0);
+	err = regexec(&(rgx->reg_lang), node, 1+4, matches, 0);
 	if (err == 0) {
 		value_length = matches[1].rm_eo - matches[1].rm_so;
 		value = node + matches[1].rm_so;
@@ -377,7 +232,8 @@ static int literal_to_clipsvalue(Environment *env, N3String node, CLIPSValue *re
 		//fprintf(stderr, "Regex expression produced error.1\n");
 		return 2;
 	}
-	err = regexec(&reg_lang_single, node, 1+4, matches, 0);
+	//err = regexec(&reg_lang_single, node, 1+4, matches, 0);
+	err = regexec(&(rgx->reg_lang_single), node, 1+4, matches, 0);
 	if (err == 0) {
 		value_length = matches[1].rm_eo - matches[1].rm_so;
 		value = node + matches[1].rm_so;
@@ -388,7 +244,7 @@ static int literal_to_clipsvalue(Environment *env, N3String node, CLIPSValue *re
 		//fprintf(stderr, "Regex expression produced error.1\n");
 		return 2;
 	}
-	err = regexec(&reg_simple, node, max_matches, matches, 0);
+	err = regexec(&(rgx->reg_simple), node, max_matches, matches, 0);
 	if (err == 0) {
 		value_length = matches[1].rm_eo - matches[1].rm_so;
 		value = node + matches[1].rm_so;
@@ -397,7 +253,7 @@ static int literal_to_clipsvalue(Environment *env, N3String node, CLIPSValue *re
 		//fprintf(stderr, "Regex expression produced error.1\n");
 		return 2;
 	}
-	err = regexec(&reg_simple_single, node, max_matches, NULL, 0);
+	err = regexec(&(rgx->reg_simple_single), node, max_matches, NULL, 0);
 	if (err == 0) {
 		value_length = matches[1].rm_eo - matches[1].rm_so;
 		value = node + matches[1].rm_so;
@@ -441,32 +297,6 @@ int n3_as_clipsvalue(Environment *env, N3String node, CLIPSValue *target){
 	return 1;
 }
 
-int add_n3_as_expression_at_slot(
-		FactBuilder *theFB, N3String node, const char* slot_name)
-{
-	//FBPutSlot(theFB, slot_name, n3_to_clipsvalue(node))
-	int err;
-	//char* builtinEncoded;
-	if (theFB == NULL) return 5;
-	if (slot_name == NULL) return 4;
-	if (node == NULL) return 6;
-	if (isURIRef(node)){
-		FBPutSlotSymbol(theFB, slot_name, node);
-		return 0;
-	} else if (isBlankNode(node)) {
-		FBPutSlotSymbol(theFB, slot_name, node);
-		return 0;
-	} else if (isLiteral(node)) {
-		char builtinEncoded[5 + 3*strlen(node)+ sizeof(_RDF_string_)];
-		err = literal_to_builtin(builtinEncoded, node);
-		if (err != 0) return err;
-		//if (builtinEncoded == NULL) return 3;
-		FBPutSlotString(theFB, slot_name, builtinEncoded);
-		//free(builtinEncoded);
-		return 0;
-	}
-	return 2;
-}
 
 char *clipsvalue_to_n3(Environment *env, CLIPSValue value){
 	char *lexical, *lang, *datatype, *retval;
