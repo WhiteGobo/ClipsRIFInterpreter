@@ -43,6 +43,7 @@ static int get_asset_path(char *buffer, size_t size, const char* filename) {
 
 
 TEST(BasicFactTest, BasicAssert){
+	struct DynamicValue errval;
 	const char subj[] = "_:n1234";
 	const char pred[] = "<http://example.com/asdf#qwer>";
 	const char obj[] = "\"asdf\"^^<qwer>";
@@ -52,6 +53,12 @@ TEST(BasicFactTest, BasicAssert){
 	CRI_RET_BUILDTRIPLE assert_fact_failed = assert_fact(graph, subj, pred, obj, "");
 	EXPECT_EQ(assert_fact_failed, CRI_RET_BUILDTRIPLE_NOERROR) << "Couldnt assert fact.";
 	retFacts = get_facts(graph, NULL, NULL, NULL);
+	EXPECT_EQ(false, graph_in_errorstate(graph));
+	if(graph_in_errorstate(graph)){
+		eval(graph, "(println \"graph in errorstate: \" (get-error))");
+		return;
+	}
+
 	ASSERT_NE(retFacts, nullptr) << "No fact returned.";
 	EXPECT_STREQ(retFacts->subject, subj) << "wrong subject";
 	EXPECT_STREQ(retFacts->predicate, pred) << "wrong predicate";

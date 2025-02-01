@@ -14,7 +14,7 @@ add_library(external_functions STATIC
 	clipsvalue_check_datatype.c
 )
 
-add_compile_options(-fPIC)
+#add_compile_options(-fPIC)
 
 target_include_directories(external_functions PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
 

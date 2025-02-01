@@ -47,11 +47,11 @@ struct TriplesLinkedList *copy_getfacts_to_list(Environment *env, Multifield *fa
 				rest = (struct TriplesLinkedList *)
 					malloc(sizeof(struct TriplesLinkedList));
 				GetFactSlot(currentFact, TRIPLESLOTSUBJECT, &tmpValue);
-				rest->subject = clipsvalue_to_n3(tmpValue);
+				rest->subject = clipsvalue_to_n3(env, tmpValue);
 				GetFactSlot(currentFact, TRIPLESLOTPREDICATE, &tmpValue);
-				rest->predicate = clipsvalue_to_n3(tmpValue);
+				rest->predicate = clipsvalue_to_n3(env, tmpValue);
 				GetFactSlot(currentFact, TRIPLESLOTOBJECT, &tmpValue);
-				rest->object = clipsvalue_to_n3(tmpValue);
+				rest->object = clipsvalue_to_n3(env, tmpValue);
 				rest->rest = NULL;
 				if (filter_triples(filter_subject, filter_predicate, filter_object, rest->subject, rest->predicate, rest->object)){
 					*nextPointerPosition = rest;

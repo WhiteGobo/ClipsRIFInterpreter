@@ -66,4 +66,5 @@ file(COPY assets DESTINATION ${ASSETPATH_CLIPSSCRIPTS})
 #option(BUILD_SHARED_LIBS "Build using shared libraries" ON)
 
 #include(generate_cmake_module.cmake)
-include(install_helper.cmake)
+
+#include(install_helper.cmake)

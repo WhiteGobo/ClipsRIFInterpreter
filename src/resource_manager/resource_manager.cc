@@ -97,7 +97,7 @@ static std::string *generate_logic(
 						loading_functions_length,
 						retString);
 	if (graph_in_errorstate(helper_graph)){
-		fprintf(stderr, "Couldnt load logic\n");
+		//fprintf(stderr, "Couldnt load logic\n");
 		close_graph(helper_graph);
 		throw std::runtime_error("Graph in error state.");
 	}
@@ -106,10 +106,11 @@ static std::string *generate_logic(
 		err = assert_fact(helper_graph, tmpTriple->subject,
 				tmpTriple->predicate, tmpTriple->object, "");
 		if (err != 0){
-			fprintf(stderr, "Failed to assert (%s %s %s) with %d\n",
+			/*fprintf(stderr, "Failed to assert (%s %s %s) with %d\n",
 					tmpTriple->subject,
 					tmpTriple->predicate,
 					tmpTriple->object, err);
+					*/
 			throw std::runtime_error("During generate_logic, "
 					"couldnt assert triples in factlist");
 		}
@@ -121,10 +122,10 @@ static std::string *generate_logic(
 		//eval(helper_graph, "(watch facts RIFRepresentation)");
 	}
 	auto qq = run_rules(helper_graph, -1);
-	fprintf(stderr, "return string:%s\n", retString->c_str());
+	//fprintf(stderr, "return string:%s\n", retString->c_str());
 	//eval(helper_graph, "(matches RIFprocess_Atom)");
 	//eval(helper_graph, "(facts)");
-	fprintf(stderr, "rules run: %d\n", qq);
+	//fprintf(stderr, "rules run: %d\n", qq);
 	//tmpval = eval(helper_graph, "(matches RIFprocess_Group)");
 	if (graph_in_errorstate(helper_graph)){
 		throw std::runtime_error("Rulecreation ended in errorstate. "
@@ -149,7 +150,7 @@ static std::string *generate_logic(
 
 std::string *generate_simple_entailment(struct TriplesLinkedList* rdf_triples){
 	int debuglevel = 0;
-	fprintf(stderr, "starting simple entailment\n");
+	//fprintf(stderr, "starting simple entailment\n");
 	return generate_logic(rdf_triples, SIMPLEENTAILMENT,
 			"create-clips-script",
 			NULL, NULL, 0,
@@ -198,8 +199,8 @@ std::string *generate_rif_logic(
 		wrapper_lf[0] = loading_function;
 		wrapper_lfc[0] = loading_function_context;
 	} else if (loading_function != NULL || loading_function_context != NULL){
-		fprintf(stderr, "generate_rif_logic couldnt use given "
-				"loading function\n");
+		//fprintf(stderr, "generate_rif_logic couldnt use given "
+		//		"loading function\n");
 	}
 	return generate_logic(RIFLogicFactlist, RIFLOGIC,
 			"create-script-rif-logic",

@@ -35,7 +35,6 @@ void clipsudf_equal(Environment *env, UDFContext *udfc, UDFValue *out){
 
 void clipsudf_import(Environment *env, UDFContext *udfc, UDFValue *out){
 	char *qq = (char*) udfc->context;
-	printf("qwertz %s\n", qq);
 	SetErrorValue(env, &(CreateString(env, "import isnt implemented")->header));
 	out->lexemeValue = CreateString(env, "");
 }

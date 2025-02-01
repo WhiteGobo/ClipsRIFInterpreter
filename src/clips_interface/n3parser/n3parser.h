@@ -95,7 +95,7 @@ int add_n3_as_expression_at_slot(
 /**
  * asdf
  */
-char *clipsvalue_to_n3(CLIPSValue value);
+char *clipsvalue_to_n3(Environment *env, CLIPSValue value);
 
 /**
  * Only returns value of Literal
