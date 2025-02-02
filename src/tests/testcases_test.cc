@@ -84,6 +84,7 @@ struct TriplesLinkedList* myLoadingFunction(const void *testdata, const char* lo
 			cmrc::file asfile = fs.open(tmpsource->filename);
 			premise_f = fmemopen((char*) asfile.begin(), asfile.size(), "r");
 			retFacts = ntriples_parse_triples_f(premise_f, 0);
+			fclose(premise_f);
 			return retFacts;
 		}
 	}

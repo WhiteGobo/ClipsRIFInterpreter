@@ -113,6 +113,7 @@ static void import_directive(Environment *env, UDFContext *udfc, UDFValue *out){
 						location);
 				out->value = CreateString(env, "");
 			}
+			free_linked_list(triples);
 			free(location);
 			free(profile);
 			return;
