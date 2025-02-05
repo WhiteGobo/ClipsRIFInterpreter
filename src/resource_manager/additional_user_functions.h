@@ -1,5 +1,6 @@
 #pragma once
 
+#include "resource_manager.h"
 #include <ffi_clips_interface.h>
 #include <string>
 
@@ -20,15 +21,6 @@
 #endif
 
 
-typedef struct TriplesLinkedList* (*LoadingFunction)(
-		const void *context, const char *location);
-
-typedef struct loadingInfo
-{
-	LoadingFunction loadingFunction;
-	const void *context;
-	struct loadingInfo* nextinfo;
-} LoadingInfo;
 
 typedef struct indexData
 {

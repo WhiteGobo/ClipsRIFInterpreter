@@ -67,4 +67,4 @@ file(COPY assets DESTINATION ${ASSETPATH_CLIPSSCRIPTS})
 
 #include(generate_cmake_module.cmake)
 
-#include(install_helper.cmake)
+include(install_helper.cmake)

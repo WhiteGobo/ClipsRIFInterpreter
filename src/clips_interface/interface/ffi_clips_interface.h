@@ -27,7 +27,7 @@ extern "C" {
 #endif
 #include <clips.h>
 #ifdef __cplusplus
-}
+} //extern "C"
 #endif
 
 //#if _WIN32

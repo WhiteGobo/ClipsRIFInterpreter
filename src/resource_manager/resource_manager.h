@@ -7,12 +7,24 @@
 #define _CLIPSRIFRESOURCEMANAGER_H_
 
 #include <string>
-#include "additional_user_functions.h"
+#include <ffi_clips_interface.h>
 
 /**
  * Use in eval: `eval(graph, CHECKFUNCTION)`
  */
 #define CHECKFUNCTION "(check-statements)"
+
+
+typedef struct TriplesLinkedList* (*LoadingFunction)(
+		const void *context, const char *location);
+
+typedef struct loadingInfo
+{
+	LoadingFunction loadingFunction;
+	const void *context;
+	struct loadingInfo* nextinfo;
+} LoadingInfo;
+
 
 /**
  * Helper function to create clips rules logic from OWL.
@@ -83,5 +95,6 @@ std::string *generate_owldirect_entailment(struct TriplesLinkedList* owl_triples
  * is true.
  */
 bool check_statements(crifi_graph graph);
+
 
 #endif //_CLIPSRIFRESOURCEMANAGER_H_
