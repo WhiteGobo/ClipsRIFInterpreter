@@ -25,7 +25,7 @@ typedef struct exampleTermInfo_ {
 	};
 } TermInfo;
 
-static TermInfo print_valuetype(crifi_graph graph, CLIPSValue val){
+static TermInfo print_valuetype(crifi_graph* graph, CLIPSValue val){
 	TermInfo retval = {
 		.type = ErrorType,
 		.q = NULL,
@@ -57,7 +57,7 @@ static TermInfo print_valuetype(crifi_graph graph, CLIPSValue val){
 	return retval;
 }
 
-int example_info_query(crifi_graph graph){
+int example_info_query(crifi_graph* graph){
 	CLIPSValue tmpValue;
 	TermInfo term;
 	int found_triples = 0;

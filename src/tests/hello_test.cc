@@ -48,7 +48,7 @@ TEST(BasicFactTest, BasicAssert){
 	const char pred[] = "<http://example.com/asdf#qwer>";
 	const char obj[] = "\"asdf\"^^<qwer>";
 	struct TriplesLinkedList *retFacts;
-	crifi_graph graph = init_graph();
+	crifi_graph* graph = init_graph();
 	ASSERT_NE(graph, nullptr) << "Failed to initialize graph";
 	CRI_RET_BUILDTRIPLE assert_fact_failed = assert_fact(graph, subj, pred, obj, "");
 	EXPECT_EQ(assert_fact_failed, CRI_RET_BUILDTRIPLE_NOERROR) << "Couldnt assert fact.";
@@ -76,7 +76,7 @@ TEST(BasicFactTest, ParseTriplesMemory){
 
 	size_t l = sizeof(input);
 	struct TriplesLinkedList *retFacts;
-	crifi_graph graph = init_graph();
+	crifi_graph* graph = init_graph();
 	ASSERT_NE(graph, nullptr) << "Failed to initialize graph";
 	RET_NTRIPLESPARSE err = ntriples_parse(graph, input, l, 0);
 	ASSERT_NE(err, NTP_PARSE_ERROR) << "parsing ofinput file failed";
@@ -96,7 +96,7 @@ TEST(BasicFactTest, ParseNTriplesFile){
 	FILE *inputptr;
 	char inputPath[PATH_MAX];
 	struct TriplesLinkedList *retFacts;
-	crifi_graph graph = init_graph();
+	crifi_graph* graph = init_graph();
 	ASSERT_NE(graph, nullptr) << "Failed to initialize graph";
 	char input[] = "#comment1\n"
 		"_:n1234 <http://example.com/asdf#qwer> 'äsdf'^^<qwer> ." ;

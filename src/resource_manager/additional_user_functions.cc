@@ -181,7 +181,7 @@ static void initialize_script_output(Environment *env, std::string *output){
 			output);
 }
 
-bool add_needed_user_functions(crifi_graph graph,
+bool add_needed_user_functions(crifi_graph* graph,
 		LoadingFunction* loading_functions,
 		const void **loading_function_context,
 		unsigned int loading_functions_length,
@@ -232,7 +232,7 @@ bool add_needed_user_functions(crifi_graph graph,
 	return true;
 }
 
-bool append_loading_function(crifi_graph graph,
+bool append_loading_function(crifi_graph* graph,
 		LoadingFunction loading_function,
 		const void *context){
 	RdfResourceLoadingData *env_data;

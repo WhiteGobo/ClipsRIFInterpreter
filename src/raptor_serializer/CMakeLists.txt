@@ -16,4 +16,8 @@ target_link_libraries(raptor_serializer PUBLIC
 	raptor
 )
 
+target_link_libraries(raptor_serializer PRIVATE
+	info_query
+)
+
 include(include_raptor.cmake)

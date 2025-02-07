@@ -34,14 +34,14 @@ typedef enum {
  * Use free_linked_list after usage.
  */
 NTRIPLESPARSER_INTERFACE RET_NTRIPLESPARSE ntriples_parse(
-		crifi_graph graph,
+		crifi_graph* graph,
 		const char *input, size_t length, int debug);
 
 /**
  * parse ntriples from file and directly assert facts.
  */
 NTRIPLESPARSER_INTERFACE RET_NTRIPLESPARSE ntriples_parse_f(
-		crifi_graph graph,
+		crifi_graph* graph,
 		FILE *input, int debug);
 
 /**

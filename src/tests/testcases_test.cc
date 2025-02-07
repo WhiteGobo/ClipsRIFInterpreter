@@ -471,7 +471,7 @@ class TestCasesTest : public testing::TestWithParam<TestdataPET> {
 };
 
 TEST_P(TestCasesTest, BasicPET) {
-	crifi_graph graph = init_graph();
+	crifi_graph* graph = init_graph();
 	ASSERT_NE(graph, nullptr) << "Failed to initialize graph";
 	std::string *logicAsString = nullptr;
 	std::string *statementVerifierAsString = nullptr;
@@ -560,7 +560,7 @@ TEST_P(TestCasesTest, BasicPET) {
 	delete(statementVerifierAsString);
 	delete(logicAsString);
 
-	//crifi_graph graph = init_graph();
+	//crifi_graph* graph = init_graph();
 	//RET_NTRIPLESPARSE err = ntriples_parse_f(&graph, inputptr);
 }
 

@@ -90,7 +90,7 @@ int yywrap()
 } 
 
 NTRIPLESPARSER_INTERFACE RET_NTRIPLESPARSE ntriples_parse_f(
-		crifi_graph graph,
+		crifi_graph* graph,
 		FILE *input, int debug){
 	if (input == NULL) return NTP_INPUT_ERROR;
 	CRI_RET_BUILDTRIPLE assert_err;
@@ -116,7 +116,7 @@ NTRIPLESPARSER_INTERFACE RET_NTRIPLESPARSE ntriples_parse_f(
 }
 
 NTRIPLESPARSER_INTERFACE RET_NTRIPLESPARSE ntriples_parse(
-		crifi_graph graph,
+		crifi_graph* graph,
 		const char *input, size_t length, int debug){
 	if (input == NULL) return NTP_INPUT_ERROR;
 	FILE *in = fmemopen((void*) input, length, "r");

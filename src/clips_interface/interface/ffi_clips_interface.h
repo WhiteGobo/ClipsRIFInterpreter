@@ -118,7 +118,7 @@ typedef struct crifiExtension {
  * data for c framework as a single struct.
  * Use init_graph to create a new one.
  */
-typedef Environment* crifi_graph;
+typedef Environment crifi_graph;
 /*struct clips_graph_container
 {
 	/// inErrorState != 0 if some irreperaible problem occured
@@ -231,39 +231,39 @@ FFI_PLUGIN_EXPORT int concatenate_triples(struct TriplesLinkedList *first, struc
  * Start for everything this framework does.
  * Creates a new graph clips_graph_container. Counterpart to close_graph
  */
-FFI_PLUGIN_EXPORT crifi_graph init_graph(); 
+FFI_PLUGIN_EXPORT crifi_graph *init_graph(); 
 
 /**
  * load configuration from filesystem and reset.
  *
  * example:
  * ```C
- * crifi_graph graph = init_graph();
+ * crifi_graph* graph = init_graph();
  * RET_LOADCONFIG err = load_config(graph, "path/to/config.clp");
  * if (err == CTC_LC_NO_ERROR){...}
  * close_graph(graph)
  * ```
  */
-FFI_PLUGIN_EXPORT RET_LOADCONFIG load_config(crifi_graph graph_container, char *configPath);
+FFI_PLUGIN_EXPORT RET_LOADCONFIG load_config(crifi_graph* graph_container, char *configPath);
 
 /**
  * load configuration from memory and reset.
  */
 FFI_PLUGIN_EXPORT RET_LOADCONFIG load_config_mem(
-		crifi_graph graphContainer,
+		crifi_graph* graphContainer,
 		const char* configString, size_t lengthString);
 
 /**
  * End for everything this framework does.
  * Deletes a clips_graph_container. Counterpart to init_graph 
  */
-FFI_PLUGIN_EXPORT int close_graph(crifi_graph);
+FFI_PLUGIN_EXPORT int close_graph(crifi_graph*);
 
 /**
  * Returns list of all facts in graph.
  * Filter removes all facts, that havent the exact subject, predicate or object.
  */
-FFI_PLUGIN_EXPORT struct TriplesLinkedList *get_facts(crifi_graph graph_container, char *filter_subject, char *filter_predicate, char *filter_object);
+FFI_PLUGIN_EXPORT struct TriplesLinkedList *get_facts(crifi_graph* graph_container, char *filter_subject, char *filter_predicate, char *filter_object);
 
 /**
  * Asserts fact and returns success. Expects values in builtin format.
@@ -274,7 +274,7 @@ FFI_PLUGIN_EXPORT struct TriplesLinkedList *get_facts(crifi_graph graph_containe
  * @param[context] cant be NULL
  */
 FFI_PLUGIN_EXPORT CRI_RET_BUILDTRIPLE assert_fact(
-		crifi_graph graph,
+		crifi_graph* graph,
 		const N3String subject, const N3String predicate,
 		const N3String object, const char* context
 		);
@@ -282,24 +282,24 @@ FFI_PLUGIN_EXPORT CRI_RET_BUILDTRIPLE assert_fact(
 /**
  * Run logic. Returns number of rules executed.
  */
-FFI_PLUGIN_EXPORT long long run_rules(crifi_graph graph, long long limit);
+FFI_PLUGIN_EXPORT long long run_rules(crifi_graph* graph, long long limit);
 
 /**
  * Evaluate given clips command. Return value has to be freed after use with 
  * \ref free_dynamic_value.
  */
-FFI_PLUGIN_EXPORT struct DynamicValue eval(crifi_graph, Utf8String command);
+FFI_PLUGIN_EXPORT struct DynamicValue eval(crifi_graph*, Utf8String command);
 
 
 /**
  * Build given clips prompt
  */
-FFI_PLUGIN_EXPORT int build(crifi_graph graph, Utf8String command);
+FFI_PLUGIN_EXPORT int build(crifi_graph* graph, Utf8String command);
 
 /**
  * load clips rules script and reset.
  */
-FFI_PLUGIN_EXPORT bool load_script(crifi_graph graph, Utf8String script);
+FFI_PLUGIN_EXPORT bool load_script(crifi_graph* graph, Utf8String script);
 
 /**
  * free dynamic value.
@@ -315,7 +315,7 @@ FFI_PLUGIN_EXPORT void free_dynamic_value(struct DynamicValue val);
 /**
  * check if unhandled error occured
  */
-FFI_PLUGIN_EXPORT bool graph_in_errorstate(crifi_graph graph);
+FFI_PLUGIN_EXPORT bool graph_in_errorstate(crifi_graph* graph);
 
 #ifdef __cplusplus
 }

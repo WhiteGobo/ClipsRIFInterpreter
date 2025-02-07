@@ -20,7 +20,7 @@
 
 CMRC_DECLARE(clipsrifinterpreter);
 
-static crifi_graph create_logic_helpergraph(
+static crifi_graph* create_logic_helpergraph(
 		const char* logicpath,
 		LoadingFunction *loading_functions,
 		const void **loading_function_context,
@@ -30,7 +30,7 @@ static crifi_graph create_logic_helpergraph(
 	auto fs = cmrc::clipsrifinterpreter::get_filesystem();
 	cmrc::file asfile = fs.open(logicpath);
 	std::string owllogic_data = std::string(asfile.begin(), asfile.end());
-	crifi_graph helper_graph = init_graph();
+	crifi_graph* helper_graph = init_graph();
 	if (!add_needed_user_functions(helper_graph, loading_functions, loading_function_context, loading_functions_length, retString)){
 		throw std::runtime_error("failed adding needed to clips "
 				"environment functions.");
@@ -49,7 +49,7 @@ static crifi_graph create_logic_helpergraph(
 
 static std::string *create_clipsrifinterpreter_program(
 		const char* create_clips_symbol,
-		crifi_graph helper_graph
+		crifi_graph* helper_graph
 		){
 	std::string *retString;
 	struct DynamicValue tmpval;
@@ -90,7 +90,7 @@ static std::string *generate_logic(
 		){
 	int err;
 	std::string *retString = new std::string("");
-	crifi_graph helper_graph
+	crifi_graph* helper_graph
 		= create_logic_helpergraph(logicpath,
 						loading_functions,
 						loading_function_context,
@@ -228,7 +228,7 @@ std::string *generate_owldirect_entailment(
 			debuglevel);
 }
 
-bool check_statements(crifi_graph graph){
+bool check_statements(crifi_graph* graph){
 	struct DynamicValue ret = eval(graph, CHECKFUNCTION);
 	//struct DynamicValue ret = eval(graph, "TRUE");
 	//if (ret != 0) throw std::runtime_error("No function loaded to "

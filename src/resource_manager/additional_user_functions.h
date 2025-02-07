@@ -29,13 +29,13 @@ typedef struct indexData
 #define LoadingData(theEnv) \
 	((struct indexData *) GetEnvironmentData(theEnv,CRIFI_RM_INDEX_DATA))
 
-bool add_needed_user_functions(crifi_graph graph,
+bool add_needed_user_functions(crifi_graph* graph,
 		LoadingFunction* loading_functions,
 		const void **loading_function_context,
 		unsigned int loading_functions_length,
 		std::string *output);
 
-bool append_loading_function(crifi_graph graph,
+bool append_loading_function(crifi_graph* graph,
 		LoadingFunction loading_function,
 		const void *context
 		);
