@@ -1,6 +1,7 @@
 #include <ffi_clips_interface.h>
 #include "additional_user_functions.h"
-#include <n3parser.h>
+//#include <n3parser.h>
+#include <info_query.h>
 #include "resource_manager.h"
 #include "rema_functions.h"
 
@@ -90,12 +91,12 @@ static void import_directive(Environment *env, UDFContext *udfc, UDFValue *out){
 			return;
 		}
 		//profile = profile_val.lexemeValue->contents;
-		profile = extract_lexical(env, profile_val.lexemeValue);
+		profile = extract_lexical(env, profile_val.header);
 	} else {
 		profile = NULL;
 	}
 	//location = location_val.lexemeValue->contents;
-	location = extract_lexical(env, location_val.lexemeValue);
+	location = extract_lexical(env, location_val.header);
 
 	data = LoadingData(env);
 	for (LoadingInfo *loading_info = data->nextinfo;

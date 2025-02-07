@@ -1,6 +1,6 @@
 #include <clips.h>
 #include "plainliteral_user_defined_functions.h"
-#include <n3parser.h>
+#include "info_query.h"
 
 
 #define RETURNFAIL(failure) \
@@ -20,12 +20,12 @@ void rif_PlainLiteral_from_string_lang(Environment *env, UDFContext *udfc, UDFVa
 		RETURNFAIL("Argument error for plainliteral from string lang.");
 	}
 
-	value = extract_lexical(env, udfval.lexemeValue);
+	value = extract_lexical(env, udfval.header);
 	if (value == NULL){
 		RETURNFAIL("Invalid String as Argument. "
 				"error for plainliteral from string lang.");
 	}
-	lang = extract_lexical(env, udflang.lexemeValue);
+	lang = extract_lexical(env, udflang.header);
 	if (lang == NULL){
 		free(value);
 		RETURNFAIL("Invalid String as Argument. "
@@ -53,13 +53,13 @@ void rif_string_from_PlainLiteral(Environment *env, UDFContext *udfc, UDFValue *
 	if (udfval.header->type != STRING_TYPE){
 		RETURNFAIL("rif_string_from_plainliteral expected lexeme.");
 	}
-	datatype = extract_datatype(env, udfval.lexemeValue);
+	datatype = extract_datatype(env, udfval.header);
 	if (datatype == NULL){
 		RETURNFAIL("is-literal-Plainliteral: couldnt extract datatype");
 	}
 
 	if(0 == strcmp(datatype, _RDF_PlainLiteral_)){
-		lexical = extract_lexical(env, udfval.lexemeValue);
+		lexical = extract_lexical(env, udfval.header);
 		pos = strstr(lexical, "@");
 		*pos = '\0'; //cut of lang tail
 
@@ -71,7 +71,7 @@ void rif_string_from_PlainLiteral(Environment *env, UDFContext *udfc, UDFValue *
 		free(retval);
 		free(lexical);
 	} else if (0 == strcmp(datatype, _RDF_string_)) {
-		lexical = extract_lexical(env, udfval.lexemeValue);
+		lexical = extract_lexical(env, udfval.header);
 		value_length = strlen(lexical);
 		retval = malloc(3*value_length + 1);
 		value_and_datatype_to_slotstring(retval, lexical, value_length,
@@ -80,7 +80,7 @@ void rif_string_from_PlainLiteral(Environment *env, UDFContext *udfc, UDFValue *
 		free(retval);
 		free(lexical);
 	} else if (0 == strcmp(datatype, _RDF_langString_)){
-		value = extract_lexical(env, udfval.lexemeValue);
+		value = extract_lexical(env, udfval.header);
 		value_length = strlen(value);
 		retval = malloc(3*value_length + 1);
 		value_and_datatype_to_slotstring(retval, value, value_length,
@@ -108,13 +108,13 @@ void rif_lang_from_PlainLiteral(Environment *env, UDFContext *udfc, UDFValue *ou
 	if (udfval.header->type != STRING_TYPE){
 		RETURNFAIL("rif_lang_from_plainliteral expected lexeme.");
 	}
-	datatype = extract_datatype(env, udfval.lexemeValue);
+	datatype = extract_datatype(env, udfval.header);
 	if (datatype == NULL){
 		RETURNFAIL("is-literal-Plainliteral: couldnt extract datatype");
 	}
 
 	if(0 == strcmp(datatype, _RDF_PlainLiteral_)){
-		lexical = extract_lexical(env, udfval.lexemeValue);
+		lexical = extract_lexical(env, udfval.header);
 		pos = strstr(lexical, "@");
 		pos += 1;
 		strcpy(lang, pos);
@@ -122,7 +122,7 @@ void rif_lang_from_PlainLiteral(Environment *env, UDFContext *udfc, UDFValue *ou
 	} else if (0 == strcmp(datatype, _RDF_string_)) {
 		lang[0] = '\0';
 	} else if (0 == strcmp(datatype, _RDF_langString_)){
-		tmp = extract_lang(env, udfval.lexemeValue);
+		tmp = extract_lang(env, udfval.header);
 		if (tmp == NULL){
 			free(datatype);
 			RETURNFAIL("is-literal-PlainLiteral: argument error.");
@@ -156,7 +156,7 @@ void rif_cast_as_PlainLiteral(Environment *env, UDFContext *udfc, UDFValue *out)
 	if (udfval.header->type != STRING_TYPE){
 		RETURNFAIL("cast as plainliteral expected lexeme.");
 	}
-	datatype = extract_datatype(env, udfval.lexemeValue);
+	datatype = extract_datatype(env, udfval.header);
 	if (datatype == NULL){
 		RETURNFAIL("cast as plainliteral: couldnt extract datatype");
 	}
@@ -169,7 +169,7 @@ void rif_cast_as_PlainLiteral(Environment *env, UDFContext *udfc, UDFValue *out)
 	}
 	free(datatype);
 
-	lexical = extract_lexical(env, udfval.lexemeValue);
+	lexical = extract_lexical(env, udfval.header);
 	tmplang = strstr(lexical, "@");
 	if (tmplang != NULL){
 		value_length = tmplang - lexical;
@@ -202,7 +202,7 @@ void rif_is_literal_PlainLiteral(Environment *env, UDFContext *udfc, UDFValue *o
 	if (udfval.header->type != STRING_TYPE){
 		RETURNFAIL("is_literal_plainliteral expected lexeme.");
 	}
-	datatype = extract_datatype(env, udfval.lexemeValue);
+	datatype = extract_datatype(env, udfval.header);
 	if (datatype == NULL){
 		RETURNFAIL("is-literal-Plainliteral: couldnt extract datatype");
 	}
@@ -256,13 +256,13 @@ void rif_matches_language_range(Environment *env, UDFContext *udfc, UDFValue *ou
 	if (!UDFNextArgument(udfc, STRING_BIT, &udflangrange)){
 		RETURNFAIL("matches-language-range: Argument error.");
 	}
-	datatype = extract_datatype(env, udfval.lexemeValue);
+	datatype = extract_datatype(env, udfval.header);
 	if (datatype == NULL){
 		RETURNFAIL("is-literal-Plainliteral: couldnt extract datatype");
 	}
 
 	if(0 == strcmp(datatype, _RDF_PlainLiteral_)){
-		lexical = extract_lexical(env, udfval.lexemeValue);
+		lexical = extract_lexical(env, udfval.header);
 		pos = strstr(lexical, "@");
 		if (pos != NULL){
 			pos += 1;
@@ -274,7 +274,7 @@ void rif_matches_language_range(Environment *env, UDFContext *udfc, UDFValue *ou
 	} else if (0 == strcmp(datatype, _RDF_string_)) {
 		lang[0] = '\0';
 	} else if (0 == strcmp(datatype, _RDF_langString_)){
-		retval = extract_lang(env, udfval.lexemeValue);
+		retval = extract_lang(env, udfval.header);
 		if (retval == NULL){
 			free(datatype);
 			RETURNFAIL("matches-language-range: "
@@ -288,7 +288,7 @@ void rif_matches_language_range(Environment *env, UDFContext *udfc, UDFValue *ou
 	}
 	free(datatype);
 
-	lexical = extract_lexical(env, udflangrange.lexemeValue);
+	lexical = extract_lexical(env, udflangrange.header);
 	size_t i = 0;
 	while (
 			lang[i] != '\0'

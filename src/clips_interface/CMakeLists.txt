@@ -17,6 +17,7 @@ target_include_directories(ffi_clips_interface PUBLIC
 target_include_directories(ffi_clips_interface
 	PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
 
+add_subdirectory(interface)
 add_subdirectory(n3parser)
 add_subdirectory(numeric)
 add_subdirectory(lists)
@@ -24,15 +25,18 @@ add_subdirectory(objects)
 add_subdirectory(crifi_time)
 add_subdirectory(external_functions)
 add_subdirectory(tools)
+add_subdirectory(info_query)
 
 target_link_libraries(ffi_clips_interface PUBLIC
 	clips
 )
 
 target_link_libraries(ffi_clips_interface PRIVATE
+	crifi_public_interface
 	external_functions
 	n3parser
 	crifi_time
+	info_query
 )
 
 #if(TARGET SqrtLibrary)

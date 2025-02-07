@@ -114,11 +114,11 @@ int value_and_datatype_to_slotstring(char* result, const char* value, size_t val
 /**
  *
  */
-char* extract_lexical(Environment *env, CLIPSLexeme *lexeme);
+char* lexeme_extract_lexical(Environment *env, CLIPSLexeme *lexeme);
 
-char* extract_datatype(Environment *env, CLIPSLexeme *lexeme);
+char* lexeme_extract_datatype(Environment *env, CLIPSLexeme *lexeme);
 
-char* extract_lang(Environment *env, CLIPSLexeme *lexeme);
+char* lexeme_extract_lang(Environment *env, CLIPSLexeme *lexeme);
 
 int n3_as_clipsvalue(Environment *env, N3String node, CLIPSValue *target);
 

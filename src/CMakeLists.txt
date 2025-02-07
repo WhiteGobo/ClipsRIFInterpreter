@@ -43,6 +43,7 @@ add_subdirectory(ntriples_parser)
 add_subdirectory(clips_interface)
 add_subdirectory(resource_manager)
 add_subdirectory(generate_crifi_script)
+add_subdirectory(raptor_serializer)
 
 if(BUILD_TESTING)
 	enable_testing()

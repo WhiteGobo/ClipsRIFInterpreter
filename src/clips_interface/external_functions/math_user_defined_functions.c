@@ -3,7 +3,7 @@
  */
 
 #include <clips.h>
-#include <n3parser.h>
+#include "info_query.h"
 #include <math.h>
 #include "math_user_defined_functions.h"
 

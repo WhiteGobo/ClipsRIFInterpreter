@@ -181,8 +181,8 @@ bool clipsvalue_as_numeric_value(Environment *env, CLIPSValue val, NumericValue 
 		//case BOOLEAN_TYPE:
 		//	break;
 		case STRING_TYPE:
-			lexical = extract_lexical(env, val.lexemeValue);
-			datatype = extract_datatype(env, val.lexemeValue);
+			lexical = lexeme_extract_lexical(env, val.lexemeValue);
+			datatype = lexeme_extract_datatype(env, val.lexemeValue);
 			if (value_datatype_pair_to_integer(lexical, datatype, &(out->dividend))){
 				out->t = NT_RATIONAL;
 				out->divisor = 1;

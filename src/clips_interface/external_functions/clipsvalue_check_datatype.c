@@ -1,6 +1,6 @@
 #include "clipsvalue_check_datatype.h"
 #include <check_datatype.h>
-#include <n3parser.h>
+#include "info_query.h"
 
 
 #define RETURNFAIL(failure) \
@@ -20,12 +20,12 @@ void rif_check_datatype(Environment *env, UDFContext *udfc, UDFValue *out){
 		RETURNFAIL("Argument error for is_literal_string.");
 	}
 	if (udfval.header->type == STRING_TYPE){
-		datatype = extract_datatype(env, udfval.lexemeValue);
+		datatype = extract_datatype(env, udfval.header);
 		if (datatype == NULL){
 			RETURNFAIL("is-literal-string: "
 					"couldnt extract datatype");
 		}
-		lexical = extract_lexical(env, udfval.lexemeValue);
+		lexical = extract_lexical(env, udfval.header);
 		if (lexical ==NULL){
 			free(datatype);
 			RETURNFAIL("");

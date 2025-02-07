@@ -209,13 +209,13 @@ bool check_is_date(Environment *env, CLIPSValue val, DateTimeStamp *result){
 	if (val.header->type != STRING_TYPE){
 		return false;
 	}
-	datatype = extract_datatype(env, val.lexemeValue);
+	datatype = lexeme_extract_datatype(env, val.lexemeValue);
 	if (0!=strcmp(datatype, _XS_date_)){
 		free(datatype);
 		return false;
 	}
 	free(datatype);
-	lexical = extract_lexical(env, val.lexemeValue);
+	lexical = lexeme_extract_lexical(env, val.lexemeValue);
 
 	err = regexec(&(data->reg_date), lexical, 15, matches, 0);
 	if (err!=0){
@@ -297,13 +297,13 @@ bool check_is_dateTime(Environment *env, CLIPSValue val, DateTimeStamp *result){
 	if (val.header->type != STRING_TYPE){
 		return false;
 	}
-	datatype = extract_datatype(env, val.lexemeValue);
+	datatype = lexeme_extract_datatype(env, val.lexemeValue);
 	if (0!=strcmp(datatype, _XS_dateTime_)){
 		free(datatype);
 		return false;
 	}
 	free(datatype);
-	lexical = extract_lexical(env, val.lexemeValue);
+	lexical = lexeme_extract_lexical(env, val.lexemeValue);
 
 	err = regexec(&(data->reg_dateTime), lexical, 14, matches, 0);
 	if (err!=0){
@@ -328,13 +328,13 @@ bool check_is_dateTimeStamp(Environment *env, CLIPSValue val, DateTimeStamp *res
 	if (val.header->type != STRING_TYPE){
 		return false;
 	}
-	datatype = extract_datatype(env, val.lexemeValue);
+	datatype = lexeme_extract_datatype(env, val.lexemeValue);
 	if (0!=strcmp(datatype, _XS_dateTimeStamp_)){
 		free(datatype);
 		return false;
 	}
 	free(datatype);
-	lexical = extract_lexical(env, val.lexemeValue);
+	lexical = lexeme_extract_lexical(env, val.lexemeValue);
 
 	err = regexec(&(data->reg_dateTimeStamp), lexical, 14, matches, 0);
 	if (err!=0){
@@ -410,13 +410,13 @@ bool check_is_time(Environment *env, CLIPSValue val, DateTimeStamp *result){
 	if (val.header->type != STRING_TYPE){
 		return false;
 	}
-	datatype = extract_datatype(env, val.lexemeValue);
+	datatype = lexeme_extract_datatype(env, val.lexemeValue);
 	if (0!=strcmp(datatype, _XS_time_)){
 		free(datatype);
 		return false;
 	}
 	free(datatype);
-	lexical = extract_lexical(env, val.lexemeValue);
+	lexical = lexeme_extract_lexical(env, val.lexemeValue);
 
 	err = regexec(&(data->reg_time), lexical, MATCHESSIZETIME, matches, 0);
 	if (err!=0){
@@ -510,13 +510,13 @@ bool check_is_dayTimeDuration(Environment *env, CLIPSValue val, DateTimeStamp *r
 	if (val.header->type != STRING_TYPE){
 		return false;
 	}
-	datatype = extract_datatype(env, val.lexemeValue);
+	datatype = lexeme_extract_datatype(env, val.lexemeValue);
 	if (0!=strcmp(datatype, _XS_dayTimeDuration_)){
 		free(datatype);
 		return false;
 	}
 	free(datatype);
-	lexical = extract_lexical(env, val.lexemeValue);
+	lexical = lexeme_extract_lexical(env, val.lexemeValue);
 
 	//printf("checking dayTimeDuration for %s:\n", lexical);
 	err = regexec(&(data->reg_dayTimeDuration), lexical, 10, matches, 0);
@@ -557,13 +557,13 @@ bool check_is_yearMonthDuration(Environment *env, CLIPSValue val, YearMonthDurat
 	if (val.header->type != STRING_TYPE){
 		return false;
 	}
-	datatype = extract_datatype(env, val.lexemeValue);
+	datatype = lexeme_extract_datatype(env, val.lexemeValue);
 	if (0!=strcmp(datatype, _XS_yearMonthDuration_)){
 		free(datatype);
 		return false;
 	}
 	free(datatype);
-	lexical = extract_lexical(env, val.lexemeValue);
+	lexical = lexeme_extract_lexical(env, val.lexemeValue);
 
 	err = regexec(&(data->reg_yearMonthDuration), lexical, 10, matches, 0);
 	if (err!=0){

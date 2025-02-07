@@ -1,6 +1,6 @@
 #include <clips.h>
 #include "pred_user_defined_functions.h"
-#include "n3parser.h"
+#include "info_query.h"
 
 /**
  * Compares two literal strings on equality.
@@ -35,12 +35,13 @@ void rif_cast_as(Environment *env, UDFContext *udfc, UDFValue *out){
 	char *lexical;
 	const char *uri = (const char*) udfc->context;
 	UDFValue myval;
+	CLIPSValue cpyval;
 	if (!UDFFirstArgument(udfc, STRING_BIT, &myval)){
 		Writeln(env, "Argument Error for rif_cast_as");
 		UDFThrowError(udfc);
 		return;
 	}
-	lexical = extract_lexical(env, myval.lexemeValue);
+	lexical = extract_lexical(env, myval.header);
 	if (lexical == NULL){
 		Writeln(env, "Argument Error for rif_cast_as");
 		UDFThrowError(udfc);

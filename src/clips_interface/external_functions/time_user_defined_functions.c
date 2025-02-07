@@ -2,7 +2,7 @@
 #include <crifi_time.h>
 #include <crifi_numeric.h>
 #include <math.h>
-#include <n3parser.h>
+#include "info_query.h"
 
 #define RETURNFAIL(failure) \
 		Writeln(env, failure);\

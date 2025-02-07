@@ -306,13 +306,13 @@ char *clipsvalue_to_n3(Environment *env, CLIPSValue value){
 		strcpy(term, tmp);
 		return term;
 	} else if (value.header->type == STRING_TYPE) {
-		lexical = extract_lexical(env, value.lexemeValue);
+		lexical = lexeme_extract_lexical(env, value.lexemeValue);
 		if(NULL != strstr(value.lexemeValue->contents, "@@")){
-			lang = extract_lang(env, value.lexemeValue);
+			lang = lexeme_extract_lang(env, value.lexemeValue);
 			retval = value_and_lang_to_n3(lexical, lang);
 			free(lang);
 		} else {
-			datatype = extract_datatype(env, value.lexemeValue);
+			datatype = lexeme_extract_datatype(env, value.lexemeValue);
 			retval = value_and_datatype_to_n3(lexical, datatype);
 			free(datatype);
 		}
@@ -358,7 +358,7 @@ void _clipsudf_percent_encoding(
 }
 
 
-char* extract_lexical(Environment *env, CLIPSLexeme *lexeme){
+char* lexeme_extract_lexical(Environment *env, CLIPSLexeme *lexeme){
 	if (lexeme == NULL) return NULL;
 	size_t length;
 	char* retString;
@@ -375,7 +375,7 @@ char* extract_lexical(Environment *env, CLIPSLexeme *lexeme){
 }
 
 
-char* extract_datatype(Environment *env, CLIPSLexeme *lexeme){
+char* lexeme_extract_datatype(Environment *env, CLIPSLexeme *lexeme){
 	if (lexeme == NULL) return NULL;
 	size_t length;
 	char* retString;
@@ -399,14 +399,20 @@ char* extract_datatype(Environment *env, CLIPSLexeme *lexeme){
 	return retString;
 }
 
-char* extract_lang(Environment *env, CLIPSLexeme *lexeme){
+char* lexeme_extract_lang(Environment *env, CLIPSLexeme *lexeme){
 	if (lexeme == NULL) return NULL;
 	size_t length;
-	char* retString;
+	char *retString, *dt;
 	char* pos = strstr(lexeme->contents, "@@");
 	if (pos == NULL){
-		retString = malloc(1);
-		retString[0] = '\0';
+		dt = lexeme_extract_datatype(env, lexeme);
+		if (0 == strcmp(dt, _RDF_langString_)){
+			retString = malloc(1);
+			retString[0] = '\0';
+		} else {
+			retString = NULL;
+		}
+		free(dt);
 		return retString;
 	}
 	pos += 2;

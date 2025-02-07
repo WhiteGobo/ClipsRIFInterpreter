@@ -42,7 +42,8 @@ target_link_libraries(clipsrif_resource_manager PUBLIC
 
 target_link_libraries(clipsrif_resource_manager PRIVATE
 	clipsrifinterpreter::rc
-	n3parser
+	#n3parser
+	info_query
 )
 
 

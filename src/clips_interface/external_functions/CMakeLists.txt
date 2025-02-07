@@ -26,7 +26,8 @@ target_include_directories(external_functions PRIVATE "${CMAKE_CURRENT_SOURCE_DI
 #)
 
 target_link_libraries(external_functions PRIVATE
-	n3parser
+	#n3parser
+	info_query
 	clips
 	crifi_lists
 	crifi_objects

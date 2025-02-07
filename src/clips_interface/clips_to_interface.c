@@ -75,6 +75,8 @@ struct DynamicValue clipsToDynamic(CLIPSValue *val){
 			return retVal;
                 case STRING_TYPE:
                 case SYMBOL_TYPE:
+					//val.lexemeValue == FalseSymbol(env)
+					//val.lexemeValue == TrueSymbol(env)
 			if (0==strcmp(val->lexemeValue->contents, "TRUE")){
 				retVal.type = CTC_DYNAMIC_BOOL;
 				retVal.val.boolean = true;
@@ -87,6 +89,8 @@ struct DynamicValue clipsToDynamic(CLIPSValue *val){
 				strcpy(retVal.val.string, val->lexemeValue->contents);
 			}
 			return retVal;
+		case VOID_TYPE:
+			//VoidConstant(env)
                 case FLOAT_TYPE:
 		default:
 			retVal.type = CTC_DYNAMIC_ERROR;

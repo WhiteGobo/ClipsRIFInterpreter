@@ -1,4 +1,4 @@
-#include <n3parser.h>
+#include "info_query.h"
 #include <clips.h>
 #include "constfunctions.h"
 

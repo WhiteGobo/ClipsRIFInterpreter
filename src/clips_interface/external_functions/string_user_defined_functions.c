@@ -1,6 +1,6 @@
 #include <clips.h>
 #include "string_user_defined_functions.h"
-#include <n3parser.h>
+#include "info_query.h"
 #include <crifi_numeric.h>
 #include <ctype.h>
 #include <uriencode.h>
@@ -17,11 +17,12 @@ void rif_is_literal_string(Environment *env, UDFContext *udfc, UDFValue *out){
 	bool invert = *(bool*) udfc->context;
 	bool truth;
 	UDFValue udfval;
+	CLIPSValue valcpy;
 	if (!UDFFirstArgument(udfc, STRING_BIT, &udfval)){
 		RETURNFAIL("Argument error for is_literal_string.");
 	}
 	if (udfval.header->type == STRING_TYPE){
-		datatype = extract_datatype(env, udfval.lexemeValue);
+		datatype = extract_datatype(env, udfval.header);
 		if (datatype == NULL){
 			RETURNFAIL("is-literal-string: "
 					"couldnt extract datatype");
@@ -48,7 +49,7 @@ void rif_is_literal_normalizedString(Environment *env, UDFContext *udfc, UDFValu
 		RETURNFAIL("Argument error for is_literal_normalizedString.");
 	}
 	if (udfval.header->type == STRING_TYPE){
-		datatype = extract_datatype(env, udfval.lexemeValue);
+		datatype = extract_datatype(env, udfval.header);
 		if (datatype == NULL){
 			RETURNFAIL("is-literal-normalizedString: "
 					"couldnt extract datatype");
@@ -69,11 +70,12 @@ void rif_is_literal_token(Environment *env, UDFContext *udfc, UDFValue *out){
 	bool invert = *(bool*) udfc->context;
 	bool truth;
 	UDFValue udfval;
+	CLIPSValue valcpy;
 	if (!UDFFirstArgument(udfc, STRING_BIT, &udfval)){
 		RETURNFAIL("Argument error for is_literal_token.");
 	}
 	if (udfval.header->type == STRING_TYPE){
-		datatype = extract_datatype(env, udfval.lexemeValue);
+		datatype = extract_datatype(env, udfval.header);
 		if (datatype == NULL){
 			RETURNFAIL("is-literal-token: "
 					"couldnt extract datatype");
@@ -98,7 +100,7 @@ void rif_is_literal_language(Environment *env, UDFContext *udfc, UDFValue *out){
 		RETURNFAIL("Argument error for is_literal_language.");
 	}
 	if (udfval.header->type == STRING_TYPE){
-		datatype = extract_datatype(env, udfval.lexemeValue);
+		datatype = extract_datatype(env, udfval.header);
 		if (datatype == NULL){
 			RETURNFAIL("is-literal-language: "
 					"couldnt extract datatype");
@@ -123,7 +125,7 @@ void rif_is_literal_Name(Environment *env, UDFContext *udfc, UDFValue *out){
 		RETURNFAIL("Argument error for is_literal_Name.");
 	}
 	if (udfval.header->type == STRING_TYPE){
-		datatype = extract_datatype(env, udfval.lexemeValue);
+		datatype = extract_datatype(env, udfval.header);
 		if (datatype == NULL){
 			RETURNFAIL("is-literal-Name: "
 					"couldnt extract datatype");
@@ -148,7 +150,7 @@ void rif_is_literal_NCName(Environment *env, UDFContext *udfc, UDFValue *out){
 		RETURNFAIL("Argument error for is_literal_NCName.");
 	}
 	if (udfval.header->type == STRING_TYPE){
-		datatype = extract_datatype(env, udfval.lexemeValue);
+		datatype = extract_datatype(env, udfval.header);
 		if (datatype == NULL){
 			RETURNFAIL("is-literal-NCName: "
 					"couldnt extract datatype");
@@ -173,7 +175,7 @@ void rif_is_literal_NMTOKEN(Environment *env, UDFContext *udfc, UDFValue *out){
 		RETURNFAIL("Argument error for is_literal_NCName.");
 	}
 	if (udfval.header->type == STRING_TYPE){
-		datatype = extract_datatype(env, udfval.lexemeValue);
+		datatype = extract_datatype(env, udfval.header);
 		if (datatype == NULL){
 			RETURNFAIL("is-literal-NCName: "
 					"couldnt extract datatype");
@@ -203,7 +205,7 @@ void rif_iri_string(Environment *env, UDFContext *udfc, UDFValue *out){
 	}
 	if (udfstring.header->type == STRING_TYPE
 			&& udfiri.header->type == SYMBOL_TYPE){
-		lexical = extract_lexical(env, udfstring.lexemeValue);
+		lexical = extract_lexical(env, udfstring.header);
 		iristring = udfiri.lexemeValue->contents;
 		uri_length = strlen(iristring) - 2;
 		//According to w3c testfiles this should be the way:
@@ -236,7 +238,7 @@ void rif_concat(Environment *env, UDFContext *udfc, UDFValue *out){
 		myval[i].value = tmpval.value;
 	}
 	for (int i=0; i<l; i++){
-		lexicals[i] = extract_lexical(env, myval[i].lexemeValue);
+		lexicals[i] = extract_lexical(env, myval[i].header);
 		result_string_length += strlen(lexicals[i]) + sizeof(" ");
 	}
 	result = malloc(result_string_length);
@@ -281,10 +283,10 @@ void rif_string_join(Environment *env, UDFContext *udfc, UDFValue *out){
 	if(!UDFNextArgument(udfc, ANY_TYPE_BITS, &tmpval)){
 		RETURNFAIL("rif_concat");
 	}
-	delimiter = extract_lexical(env, tmpval.lexemeValue);
+	delimiter = extract_lexical(env, tmpval.header);
 	delimiter_size = strlen(delimiter);
 	for (int i=0; i<l-1; i++){
-		lexicals[i] = extract_lexical(env, myval[i].lexemeValue);
+		lexicals[i] = extract_lexical(env, myval[i].header);
 		result_string_length += strlen(lexicals[i]) + delimiter_size;
 	}
 	result = malloc(result_string_length);
@@ -322,7 +324,7 @@ void rif_substring(Environment *env, UDFContext *udfc, UDFValue *out){
 		RETURNFAIL("rif_substring");
 	}
 	tmpval.value = udfSourceString.value;
-	lexical = extract_lexical(env, udfSourceString.lexemeValue);
+	lexical = extract_lexical(env, udfSourceString.header);
 	if (lexical == NULL){
 		RETURNFAIL("rif:substring - Cant extract string from input 1");
 	}
@@ -379,7 +381,7 @@ void rif_string_length(Environment *env, UDFContext *udfc, UDFValue *out){
 	if (!UDFFirstArgument(udfc, ANY_TYPE_BITS, &udfSourceString)){
 		RETURNFAIL("rif_substring");
 	}
-	lexical = extract_lexical(env, udfSourceString.lexemeValue);
+	lexical = extract_lexical(env, udfSourceString.header);
 	if (lexical == NULL){
 		RETURNFAIL("rif:substring - Cant extract string from input 1");
 	}
@@ -400,7 +402,7 @@ void rif_upper_case(Environment *env, UDFContext *udfc, UDFValue *out){
 	if (!UDFFirstArgument(udfc, ANY_TYPE_BITS, &udfSourceString)){
 		RETURNFAIL("rif_substring");
 	}
-	lexical = extract_lexical(env, udfSourceString.lexemeValue);
+	lexical = extract_lexical(env, udfSourceString.header);
 	if (lexical == NULL){
 		RETURNFAIL("rif:substring - Cant extract string from input 1");
 	}
@@ -431,7 +433,7 @@ void rif_lower_case(Environment *env, UDFContext *udfc, UDFValue *out){
 	if (!UDFFirstArgument(udfc, ANY_TYPE_BITS, &udfSourceString)){
 		RETURNFAIL("rif_substring");
 	}
-	lexical = extract_lexical(env, udfSourceString.lexemeValue);
+	lexical = extract_lexical(env, udfSourceString.header);
 	if (lexical == NULL){
 		RETURNFAIL("rif:substring - Cant extract string from input 1");
 	}
@@ -462,7 +464,7 @@ void rif_encode_for_uri(Environment *env, UDFContext *udfc, UDFValue *out){
 	if (!UDFFirstArgument(udfc, ANY_TYPE_BITS, &udfSourceString)){
 		RETURNFAIL("rif:encode-for-uri");
 	}
-	lexical = extract_lexical(env, udfSourceString.lexemeValue);
+	lexical = extract_lexical(env, udfSourceString.header);
 	if (lexical == NULL){
 		RETURNFAIL("rif:encode-for-uri - "
 				"Cant extract string from input 1");
@@ -491,7 +493,7 @@ void rif_iri_to_uri(Environment *env, UDFContext *udfc, UDFValue *out){
 	if (!UDFFirstArgument(udfc, ANY_TYPE_BITS, &udfSourceString)){
 		RETURNFAIL("rif:encode-for-uri");
 	}
-	lexical = extract_lexical(env, udfSourceString.lexemeValue);
+	lexical = extract_lexical(env, udfSourceString.header);
 	if (lexical == NULL){
 		RETURNFAIL("rif:encode-for-uri - "
 				"Cant extract string from input 1");
@@ -521,7 +523,7 @@ void rif_escape_html_uri(Environment *env, UDFContext *udfc, UDFValue *out){
 	if (!UDFFirstArgument(udfc, ANY_TYPE_BITS, &udfSourceString)){
 		RETURNFAIL("rif:escape-html-uri");
 	}
-	lexical = extract_lexical(env, udfSourceString.lexemeValue);
+	lexical = extract_lexical(env, udfSourceString.header);
 	if (lexical == NULL){
 		RETURNFAIL("rif:escape-html-uri - "
 				"Cant extract string from input 1");
@@ -553,11 +555,11 @@ void rif_substring_before(Environment *env, UDFContext *udfc, UDFValue *out){
 	if (!UDFNextArgument(udfc, ANY_TYPE_BITS, &udfSearch)){
 		RETURNFAIL("rif:encode-for-uri");
 	}
-	source = extract_lexical(env, udfSource.lexemeValue);
+	source = extract_lexical(env, udfSource.header);
 	if (source == NULL){
 		RETURNFAIL("rif:substring-before");
 	}
-	search = extract_lexical(env, udfSearch.lexemeValue);
+	search = extract_lexical(env, udfSearch.header);
 	if (search == NULL){
 		RETURNFAIL("rif:substring-before");
 	}
@@ -595,11 +597,11 @@ void rif_substring_after(Environment *env, UDFContext *udfc, UDFValue *out){
 	if (!UDFNextArgument(udfc, ANY_TYPE_BITS, &udfSearch)){
 		RETURNFAIL("rif:encode-for-uri");
 	}
-	source = extract_lexical(env, udfSource.lexemeValue);
+	source = extract_lexical(env, udfSource.header);
 	if (source == NULL){
 		RETURNFAIL("rif:substring-after");
 	}
-	search = extract_lexical(env, udfSearch.lexemeValue);
+	search = extract_lexical(env, udfSearch.header);
 	if (search == NULL){
 		RETURNFAIL("rif:substring-after");
 	}
@@ -642,13 +644,13 @@ void rif_replace(Environment *env, UDFContext *udfc, UDFValue *out){
 		if (!UDFNextArgument(udfc, ANY_TYPE_BITS, &udfFlags)){
 			RETURNFAIL("rif_replace");
 		}
-		flags = extract_lexical(env, udfFlags.lexemeValue);
+		flags = extract_lexical(env, udfFlags.header);
 	} else {
 		flags = NULL;
 	}
-	src = extract_lexical(env, udfInput.lexemeValue);
-	pattern = extract_lexical(env, udfPattern.lexemeValue);
-	replacement = extract_lexical(env, udfReplacement.lexemeValue);
+	src = extract_lexical(env, udfInput.header);
+	pattern = extract_lexical(env, udfPattern.header);
+	replacement = extract_lexical(env, udfReplacement.header);
 
 	outString = xpath_replace(src, pattern, replacement, flags);
 	if (flags != NULL) free(flags);
@@ -682,11 +684,11 @@ void rif_contains(Environment *env, UDFContext *udfc, UDFValue *out){
 	if (!UDFNextArgument(udfc, ANY_TYPE_BITS, &udfSearch)){
 		RETURNFAIL("rif:encode-for-uri");
 	}
-	source = extract_lexical(env, udfSource.lexemeValue);
+	source = extract_lexical(env, udfSource.header);
 	if (source == NULL){
 		RETURNFAIL("rif:substring-after");
 	}
-	search = extract_lexical(env, udfSearch.lexemeValue);
+	search = extract_lexical(env, udfSearch.header);
 	if (search == NULL){
 		RETURNFAIL("rif:substring-after");
 	}
@@ -717,11 +719,11 @@ void rif_starts_with(Environment *env, UDFContext *udfc, UDFValue *out){
 	if (!UDFNextArgument(udfc, ANY_TYPE_BITS, &udfSearch)){
 		RETURNFAIL("rif:encode-for-uri");
 	}
-	source = extract_lexical(env, udfSource.lexemeValue);
+	source = extract_lexical(env, udfSource.header);
 	if (source == NULL){
 		RETURNFAIL("rif:substring-after");
 	}
-	search = extract_lexical(env, udfSource.lexemeValue);
+	search = extract_lexical(env, udfSource.header);
 	if (search == NULL){
 		RETURNFAIL("rif:substring-after");
 	}
@@ -751,11 +753,11 @@ void rif_ends_with(Environment *env, UDFContext *udfc, UDFValue *out){
 	if (!UDFNextArgument(udfc, ANY_TYPE_BITS, &udfSearch)){
 		RETURNFAIL("rif:encode-for-uri");
 	}
-	source = extract_lexical(env, udfSource.lexemeValue);
+	source = extract_lexical(env, udfSource.header);
 	if (source == NULL){
 		RETURNFAIL("rif:substring-after");
 	}
-	search = extract_lexical(env, udfSource.lexemeValue);
+	search = extract_lexical(env, udfSource.header);
 	if (search == NULL){
 		RETURNFAIL("rif:substring-after");
 	}
@@ -787,11 +789,11 @@ void rif_matches(Environment *env, UDFContext *udfc, UDFValue *out){
 	if (!UDFNextArgument(udfc, ANY_TYPE_BITS, &udfSearch)){
 		RETURNFAIL("rif:encode-for-uri");
 	}
-	source = extract_lexical(env, udfSource.lexemeValue);
+	source = extract_lexical(env, udfSource.header);
 	if (source == NULL){
 		RETURNFAIL("rif:substring-after");
 	}
-	search = extract_lexical(env, udfSource.lexemeValue);
+	search = extract_lexical(env, udfSource.header);
 	if (search == NULL){
 		RETURNFAIL("rif:substring-after");
 	}
@@ -823,11 +825,11 @@ void rif_compare(Environment *env, UDFContext *udfc, UDFValue *out){
 	if (!UDFNextArgument(udfc, ANY_TYPE_BITS, &udfSearch)){
 		RETURNFAIL("rif:encode-for-uri");
 	}
-	source = extract_lexical(env, udfSource.lexemeValue);
+	source = extract_lexical(env, udfSource.header);
 	if (source == NULL){
 		RETURNFAIL("rif:substring-after");
 	}
-	search = extract_lexical(env, udfSearch.lexemeValue);
+	search = extract_lexical(env, udfSearch.header);
 	if (search == NULL){
 		RETURNFAIL("rif:substring-after");
 	}

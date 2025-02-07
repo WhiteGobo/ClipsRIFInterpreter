@@ -5,7 +5,7 @@
 #include <crifi_lists.h>
 #include <crifi_objects.h>
 
-#include <n3parser.h>
+#include "info_query.h"
 
 #define RETURNARGERROR(fooname) \
 		SetErrorValue(env, &(CreateString(env, "Argument Error for "fooname)->header));\
