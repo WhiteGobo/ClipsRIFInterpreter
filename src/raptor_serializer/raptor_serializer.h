@@ -18,6 +18,10 @@ typedef enum {
 extern "C" {
 #endif
 
+/**
+ * Serialize all triples in crifi_graph to RDF. 
+ * Supports only default formats from raptor.
+ */
 CRIFI_SERIALIZE_RET crifi_serialize_all_triples(crifi_graph* graph,
 					FILE *filehandle,
 					const char* format, const char* base);
