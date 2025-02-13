@@ -1,5 +1,7 @@
 /**
  * See example_info_query.c for an example.
+ * TODO: gather all internal symbols to assert search and extract statements
+ * 	from graph.
  */
 #pragma once
 
@@ -11,6 +13,14 @@
 #define TRIPLESLOTPREDICATE "predicate"
 #define TRIPLESLOTOBJECT "object"
 #define TRIPLESLOTCONTEXT "context"
+
+typedef enum {
+	CRIFI_ASSTR_NO_ERROR = 0,
+	CRIFI_ASSTR_SUBJECT,
+	CRIFI_ASSTR_PREDICATE,
+	CRIFI_ASSTR_OBJECT,
+	CRIFI_ASSTR_UNKNOWN
+} CrifiAssertTripleError;
 
 #ifdef __cplusplus
 extern "C" {
@@ -28,6 +38,8 @@ char *extract_bnodeid(Environment *env, TypeHeader *head);
 char *extract_lexical(Environment *env, TypeHeader *head);
 char *extract_datatype(Environment *env, TypeHeader *head);
 char *extract_lang(Environment *env, TypeHeader *head);
+
+CrifiAssertTripleError assert_triple(Environment *env, CLIPSValue *subject, CLIPSValue *predicate, CLIPSValue *object);
 
 #ifdef __cplusplus
 } //extern "C"

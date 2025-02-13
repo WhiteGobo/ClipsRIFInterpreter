@@ -267,6 +267,7 @@ FFI_PLUGIN_EXPORT struct TriplesLinkedList *get_facts(crifi_graph* graph_contain
 
 /**
  * Asserts fact and returns success. Expects values in builtin format.
+ * TODO: Maybe replace with plugin methods.
  *
  * @param[subject] cant be NULL
  * @param[predicate] cant be NULL

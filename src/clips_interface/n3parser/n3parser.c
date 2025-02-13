@@ -72,16 +72,6 @@ int percent_decode(char *dst, const char *src, const size_t len)
 	return j;
 }
 
-#define REGEXURIREF "^<("URLSYMBOLS"*)>$"
-#define REGEXBLANKNODE "^_:("URLSYMBOLS"+)$"
-#define REGEXDATATYPESINGLE "^\'(.*)\'[°^][°^]<("URLSYMBOLS"*)>$"
-#define REGEXDATATYPE "^\"(.*)\"[°^][°^]<("URLSYMBOLS"*)>$"
-#define REGEXLANG "^\"(([^\"]|(\\\"))*)\"@([a-zA-Z\-]*)$"
-#define REGEXLANGSINGLE "^\'(([^\']|(\\\'))*)\'@([a-zA-Z\-]*)$"
-#define REGEXSIMPLESINGLE "^\'(.*)\'$"
-#define REGEXSIMPLE "^\"(.*)\"$"
-#define REGEXCLIPSVALUELANGSTRING "^(.*)@@(.*)$"
-#define REGEXCLIPSVALUELITERAL "^(.*)[°^][°^](.*)$"
 
 int value_and_lang_to_slotstring(char* result, const char* value, size_t value_length, const char* lang, size_t lang_length){
 	char* result_tmp;
@@ -424,119 +414,6 @@ char* lexeme_extract_lang(Environment *env, CLIPSLexeme *lexeme){
 
 
 
-/**
- * method given at registration for tidying up timedata after Environment is
- * freed
- */
-static void release_crifi_n3parserdata(Environment *env){
-	free_crifi_n3parserdata(LoadingCRIFIN3ParserData(env));
-}
-
-bool crifi_n3parserdata_register_data(Environment *env){
-	if (! AllocateEnvironmentData(env, CRIFI_N3PARSER_DATA_INDEX,
-						sizeof(CRIFIN3ParserData),
-						release_crifi_n3parserdata))
-	{
-		Writeln(env, "Internal error 0. "
-				"Cant load plugin for n3 parsing..");
-		ExitRouter(env, EXIT_FAILURE);
-		return false;
-	}
-	if(!initialize_crifi_n3parserdata(LoadingCRIFIN3ParserData(env))){
-		return false;
-	}
-	return true;
-}
-
-bool initialize_crifi_n3parserdata(CRIFIN3ParserData *data){
-	int err;
-	err = regcomp(&(data->reg_uriref),
-			REGEXURIREF,
-			REG_EXTENDED);
-	if (err != 0){
-		free_crifi_n3parserdata(data);
-		return false;
-	}
-	err = regcomp(&(data->reg_blanknode),
-			REGEXBLANKNODE,
-			REG_EXTENDED);
-	if (err != 0){
-		free_crifi_n3parserdata(data);
-		return false;
-	}
-	err = regcomp(&(data->reg_datatype),
-			REGEXDATATYPE,
-			REG_EXTENDED);
-	if (err != 0){
-		free_crifi_n3parserdata(data);
-		return false;
-	}
-	err = regcomp(&(data->reg_datatype_single),
-			REGEXDATATYPESINGLE,
-			REG_EXTENDED);
-	if (err != 0){
-		free_crifi_n3parserdata(data);
-		return false;
-	}
-	err = regcomp(&(data->reg_lang),
-			REGEXLANG,
-			REG_EXTENDED);
-	if (err != 0){
-		free_crifi_n3parserdata(data);
-		return false;
-	}
-	err = regcomp(&(data->reg_lang_single),
-			REGEXLANGSINGLE,
-			REG_EXTENDED);
-	if (err != 0){
-		free_crifi_n3parserdata(data);
-		return false;
-	}
-	err = regcomp(&(data->reg_simple),
-			REGEXSIMPLE,
-			REG_EXTENDED);
-	if (err != 0){
-		free_crifi_n3parserdata(data);
-		return false;
-	}
-	err = regcomp(&(data->reg_simple_single),
-			REGEXSIMPLESINGLE,
-			REG_EXTENDED);
-	if (err != 0){
-		free_crifi_n3parserdata(data);
-		return false;
-	}
-	err = regcomp(&(data->reg_clipsvalue_langString),
-			REGEXCLIPSVALUELANGSTRING,
-			REG_EXTENDED);
-	if (err != 0){
-		free_crifi_n3parserdata(data);
-		return false;
-	}
-	err = regcomp(&(data->reg_clipsvalue_literal),
-			REGEXCLIPSVALUELITERAL,
-			REG_EXTENDED);
-	if (err != 0){
-		free_crifi_n3parserdata(data);
-		return false;
-	}
-	return true;
-}
-
-void free_crifi_n3parserdata(CRIFIN3ParserData *data){
-	regfree(&(data->reg_uriref));
-	regfree(&(data->reg_blanknode));
-	regfree(&(data->reg_datatype));
-	regfree(&(data->reg_datatype_single));
-	regfree(&(data->reg_lang));
-	regfree(&(data->reg_lang_single));
-	regfree(&(data->reg_simple));
-	regfree(&(data->reg_simple_single));
-	regfree(&(data->reg_clipsvalue_langString));
-	regfree(&(data->reg_clipsvalue_literal));
-}
-
-
 
 int value_and_datatype_to_clipsvalue(Environment *env, const char* value, size_t value_length, const char* datatype, size_t datatype_length, CLIPSValue *result){
 	size_t offset;
@@ -578,5 +455,24 @@ int value_and_lang_to_clipsvalue(Environment *env, const char* value, size_t val
 	result_tmp[0] = '\0';
 	result->lexemeValue = CreateString(env, result_safe);
 	free(result_safe);
+	return 0;
+}
+
+int new_blanknode(Environment *env, CLIPSValue* result){
+	struct crifiN3ParserData *data = LoadingCRIFIN3ParserData(env);
+	unsigned int graph_id = (unsigned int) env;
+	char bnodeid[30];
+	sprintf(bnodeid, "_:n%x_%i", graph_id, data->next_blanknode_id++);
+	result->lexemeValue = CreateSymbol(env, bnodeid);
+	return 0;
+}
+
+int uri_to_clipsvalue(Environment *env, const char* uri, size_t uri_length, CLIPSValue *result){
+	char symb[uri_length + 3];
+	symb[0]='<';
+	memcpy(symb+1, uri, uri_length);
+	symb[uri_length+1]='>';
+	symb[uri_length+2]='\0';
+	result->lexemeValue = CreateSymbol(env, symb);
 	return 0;
 }

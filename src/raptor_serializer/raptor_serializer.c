@@ -1,6 +1,7 @@
 #include "raptor_serializer.h"
 #include <stdio.h>
 #include "info_query.h"
+#include "crifi_raptor_interface.h"
 
 static const char *testinput ="\n"
 "@prefix ex: <http://example.com/> .\n"
@@ -14,45 +15,6 @@ enum {
 	SAT_OBJ
 };
 
-static raptor_term* clipsvalue_to_raptorterm(raptor_world *world, crifi_graph* graph, CLIPSValue val)
-{
-	raptor_term *retval;
-	char *uri, *lexical, *lang, *datatype, *bnodeid;
-	raptor_uri *dt_uri;
-	if (clipsvalue_is_uri(graph, val)){
-		uri = extract_uri(graph, val.header);
-		retval = raptor_new_term_from_uri_string(world, uri);
-		free(uri);
-		return retval;
-	} else if (clipsvalue_is_literal(graph, val)){
-		lexical = extract_lexical(graph, val.header);
-		lang = extract_lang(graph, val.header);
-		if (lang != NULL){
-			retval = raptor_new_term_from_literal(world, lexical,
-								NULL, lang);
-			free(lang);
-		} else {
-			datatype = extract_datatype(graph, val.header);
-			if (datatype == NULL){
-				free(lexical);
-				return NULL;
-			}
-			dt_uri = raptor_new_uri(world, datatype);
-			retval = raptor_new_term_from_literal(world, lexical,
-								dt_uri, NULL);
-			raptor_free_uri(dt_uri);
-			free(datatype);
-		}
-		free(lexical);
-		return retval;
-	} else if (clipsvalue_is_bnode(graph, val)){
-		bnodeid = extract_bnodeid(graph, val.header);
-		retval = raptor_new_term_from_blank(world, bnodeid);
-		free(bnodeid);
-		return retval;
-	}
-	return NULL;
-}
 
 static int serialize_all_triples(raptor_world *world, crifi_graph* graph, raptor_serializer *my_serializer){
 	if (world == NULL || my_serializer == NULL){
@@ -117,37 +79,3 @@ CRIFI_SERIALIZE_RET crifi_serialize_all_triples(crifi_graph* graph,
 	return CRIFI_SERIALIZE_NOERROR;
 }
 
-/*
-char *toot2(){
-	char *ret;
-	raptor_world *world = NULL;
-	raptor_parser* rdf_parser = NULL;
-	unsigned char *uri_string;
-	raptor_uri *uri, *base_uri;
-	FILE *qq;
-
-	qq = fmemopen(testinput, strlen(testinput), "r");
-
-	world = raptor_new_world();
-	rdf_parser = raptor_new_parser(world, "turtle");
-	//rdf_parser = raptor_new_parser(world, "ntriples");
-	if (rdf_parser == NULL){
-		return NULL;
-	}
-	//raptor_parser_set_statement_handler(rdf_parser, NULL, print_triple);
-
-	//base_uriuri_string = raptor_uri_filename_to_uri_string(argv[1]);
-	base_uri = raptor_new_uri(world, "http://example.com/testbaseuri");
-
-	printf("qwertz\n");
-	raptor_parser_parse_file_stream(rdf_parser, qq, "nofile", base_uri);
-	fclose(qq);
-	raptor_free_parser(rdf_parser);
-	raptor_free_uri(base_uri);
-
-	//ret = myserializing(world);
-
-	raptor_free_world(world);
-	return NULL;
-}
-*/

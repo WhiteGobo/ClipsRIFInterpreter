@@ -1,6 +1,7 @@
 add_library(n3parser STATIC
 	n3parser.c
 	n3parser.h
+	init_data.c
 )
 
 target_include_directories(n3parser PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")

@@ -25,7 +25,7 @@ target_link_libraries(hello_test PRIVATE
 	ntriplesParser
 	clipsrif_resource_manager
 	crifi_test::rc
-	raptor_serializer
+	crifi_raptor
 )
 
 

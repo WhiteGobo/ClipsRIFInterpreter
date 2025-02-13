@@ -1,6 +1,7 @@
 add_library(info_query STATIC
 	info_query.h
 	info_query.c
+	internal_fact_interface.c
 )
 
 set_target_properties(info_query PROPERTIES

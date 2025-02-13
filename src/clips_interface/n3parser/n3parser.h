@@ -16,6 +16,7 @@
 #endif
 
 typedef struct crifiN3ParserData{
+	uint next_blanknode_id;
 	regex_t reg_uriref;
 	regex_t reg_blanknode;
 	regex_t reg_datatype;
@@ -37,8 +38,6 @@ typedef struct crifiN3ParserData{
 bool crifi_n3parserdata_register_data(Environment *env);
 bool initialize_crifi_n3parserdata(CRIFIN3ParserData *data);
 void free_crifi_n3parserdata(CRIFIN3ParserData *data);
-
-
 
 
 
@@ -125,6 +124,9 @@ int n3_as_clipsvalue(Environment *env, N3String node, CLIPSValue *target);
 int value_and_lang_to_clipsvalue(Environment *env, const char* value, size_t value_length, const char* lang, size_t lang_length, CLIPSValue *result);
 
 int value_and_datatype_to_clipsvalue(Environment *env, const char* value, size_t value_length, const char* datatype, size_t datatype_length, CLIPSValue *result);
+
+int new_blanknode(Environment *env, CLIPSValue *target);
+int uri_to_clipsvalue(Environment *env, const char* uri, size_t uri_length, CLIPSValue *result);
 
 #ifdef __cplusplus
 }
