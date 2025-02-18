@@ -83,34 +83,54 @@ TEST(SerializingTest, RaptorParse){
 	//FAIL() << "success";
 }
 
-TEST(SerializingTest, ClipsScript){
-	const char *subj, *pred, *obj;
-	CRI_RET_BUILDTRIPLE assert_err;
-	const size_t l = 2;
-	const char triples[l][3][30] = {
-		{EX("node"), EX("prop1"), LITERAL("asdf")},
-		{EX("node"), EX("prop2"), LITERAL("qwer")},
-	};
-	crifi_graph* graph = init_graph();
+static char* RDFClipsScript = ""
+"@prefix cs: <http://clips.script/>.\n"
+"_:rule2 a cs:Defrule ;\n"
+"    cs:rule-name \"myrule\" ;\n"
+"    cs:conditional-element (<pattern1>) ;\n"
+"    cs:action (_:funcA) .\n"
+"_:rule1 a cs:Deffact ;\n"
+"    cs:rule-name \"myfacts\" .\n"
+"<pattern1> a cs:TemplatePatternCE ;\n"
+"    cs:deftemplate-name \"TripleTemplate\";"
+"    cs:slot (\n"
+"        [cs:slot-name \"subject\"; cs:constraint _:varA]\n"
+"        [cs:slot-name \"predicate\"; cs:constraints (_:literalA)]\n"
+"        [cs:slot-name \"object\"; cs:constraint cs:SingleWildcard]\n"
+"    ).\n"
+"_:varA cs:variable-name \"a\".\n"
+"_:uriA cs:symbol \"<http://example.com/a>\".\n"
+"_:literalA cs:string \"string^^http://example.com/dt\".\n"
+"_:funcA cs:function-name \"myfunc\" ;\n"
+"	cs:function-args (_:varA _:uriA).\n"
+;
 
-	//init
-	for (int i=0; i<l; i++){
-		subj = triples[i][0];
-		pred = triples[i][1];
-		obj = triples[i][2];
-		assert_err = assert_fact(graph, subj, pred, obj, "");
-		if(assert_err != CRI_RET_BUILDTRIPLE_NOERROR){
-		       	GTEST_SKIP() << "Couldnt assert fact.";
-		}
+TEST(SerializingTest, ClipsScript){
+	CRIFI_PARSE_RET err;
+	crifi_graph* graph = init_graph();
+	FILE *source;
+       
+	source = fmemopen(RDFClipsScript, strlen(RDFClipsScript), "r");
+	
+	err = crifi_parse_to_triples(graph, source, "turtle", "http://example.com/");
+	fclose(source); source = NULL;
+
+	if (err != CRIFI_PARSE_NOERROR){
+		GTEST_SKIP() << "Couldnt parse turtle";
 	}
 
 	//working
-	int ctrl = toot(graph);
+	int ctrl = serialize_information_as_clips_script(stdout, graph);
 	close_graph(graph);
 	switch (ctrl){
 		case CRIFI_SERIALIZE_SCRIPT_NOERROR:
 			break;
-
+		case CRIFI_SERIALIZE_BROKEN_GRAPH:
+			FAIL() << "Broken Graph";
+		case CRIFI_SERIALIZE_MALLOC_ERROR:
+			FAIL() << "Malloc error";
+		case CRIFI_SERIALIZE_SCRIPT_INPUT:
+			FAIL() << "Input has void pointer.";
 		case CRIFI_SERIALIZE_SCRIPT_CANT_CREATE_NODE:
 			FAIL() << "Cant malloc new node.";
 		case CRIFI_SERIALIZE_SCRIPT_CANT_CREATE_STRUCTS:
@@ -125,6 +145,7 @@ TEST(SerializingTest, ClipsScript){
 			FAIL() << "failed getting raptor term from object";
 		case CRIFI_SERIALIZE_SCRIPT_FAILED_ADDING_NEW_NODE:
 			FAIL() << "Failed adding new node.";
+		case CRIFI_SERIALIZE_SCRIPT_UNKNOWN:
 		default:
 			FAIL() << "unhandled error";
 	}
