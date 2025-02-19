@@ -1,0 +1,52 @@
+#Describes following clips program in RDF:
+#
+#(defrule rule1
+#	(a (p1 ?x))
+#	=>
+#	(assert (b (p1 1) (p2 "asdf") (p3 ?x)))
+#)
+#
+#(deffact facts1
+#	(a (p1 "property"))
+#)
+
+_:rule1
+	clips:rulename "rule1";
+	#clips:comment <nil>;
+	#clips:declaration <nil>;
+	clips:CE (_:pattern1);
+	clips:action ([
+		clips:symbol "assert";
+		clips:value _:assert_value]).
+
+_:facts1
+	clips:deffactname "facts1";
+	#clips:comment <nil>;
+	clips:RHS_pattern _:f1.
+
+_:f1 a clips:template_RHS_pattern;
+	clips:symbol "a";
+	clips:RHS_slot [
+		clips:symbol "p1";
+		clips:value "property"].
+
+_:pattern1 a clips:pattern_CE;
+	clips:symbol "a";
+	clips:slot [
+		clips:symbol "p1";
+		clips:value [a clips:var;
+			clips:varname "x"]
+		].
+
+_:assert_value a clips:template_RHS_pattern;
+	clips:symbol "b";
+	clips:slot [
+		clips:symbol "p1";
+		clips:value 1];
+	clips:slot [
+		clips:symbol "p1";
+		clips:value "asdf"];
+	clips:slot [
+		clips:symbol "p1";
+		clips:value [a clips:var;
+			clips:varname "x"]]].
