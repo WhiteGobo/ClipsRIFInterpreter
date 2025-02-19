@@ -75,9 +75,10 @@ FFI_PLUGIN_EXPORT struct TriplesLinkedList *get_facts(crifi_graph* graph_contain
 }
 
 
-FFI_PLUGIN_EXPORT int close_graph(crifi_graph* graph_container){
+FFI_PLUGIN_EXPORT void close_graph(crifi_graph* graph_container){
+	if (graph_container == NULL) return;
 	closeEnvironment(graph_container);
-	return 0;
+	return;
 }
 
 static void qq1(struct TriplesLinkedList *current){

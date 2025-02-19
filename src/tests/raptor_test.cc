@@ -6,7 +6,7 @@
 #define EX(suffix) "<http://example.com/" suffix ">"
 #define LITERAL(value) "\"" value "\""
 
-TEST(SerializingTest, Basic){
+TEST(RaptorTest, BasicSerialize){
 	const char *subj, *pred, *obj;
 	CRI_RET_BUILDTRIPLE assert_err;
 	const size_t l = 2;
@@ -48,7 +48,7 @@ static char* RaptorParseExample = ""
 "[] ex:a \"asdf\" ;\n"
 "\t ex:b \"qwer\" .\n";
 
-TEST(SerializingTest, RaptorParse){
+TEST(RaptorTest, BasicParse){
 	CRIFI_PARSE_RET err;
 	crifi_graph* graph = init_graph();
 	FILE *source;
@@ -105,7 +105,7 @@ static char* RDFClipsScript = ""
 "	cs:function-args (_:varA _:uriA).\n"
 ;
 
-TEST(SerializingTest, ClipsScript){
+TEST(RaptorTest, ClipsScript){
 	CRIFI_PARSE_RET err;
 	crifi_graph* graph = init_graph();
 	FILE *source;

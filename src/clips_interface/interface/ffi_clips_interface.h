@@ -257,7 +257,7 @@ FFI_PLUGIN_EXPORT RET_LOADCONFIG load_config_mem(
  * End for everything this framework does.
  * Deletes a clips_graph_container. Counterpart to init_graph 
  */
-FFI_PLUGIN_EXPORT int close_graph(crifi_graph*);
+FFI_PLUGIN_EXPORT void close_graph(crifi_graph*);
 
 /**
  * Returns list of all facts in graph.
