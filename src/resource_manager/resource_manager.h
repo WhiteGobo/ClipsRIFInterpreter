@@ -97,4 +97,20 @@ std::string *generate_owldirect_entailment(struct TriplesLinkedList* owl_triples
 bool check_statements(crifi_graph* graph);
 
 
+/**
+ * Returns a graph that can be used to generate a clips script from data in RIF.
+ * Load graph, run rules and serialize as clips script.
+ */
+crifi_graph* new_rif_logic_graph(
+		LoadingFunction loading_function,
+		const void *loading_function_context);
+
+/**
+ * TODO: this is just temporary
+ */
+std::string *create_clipsrifinterpreter_program(
+		const char* create_clips_symbol,
+		crifi_graph* helper_graph
+		);
+
 #endif //_CLIPSRIFRESOURCEMANAGER_H_

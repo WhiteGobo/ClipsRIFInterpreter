@@ -1,11 +1,12 @@
 #include <stdio.h>
 #include <unistd.h>
 
+#include <iostream>
+#include <stdexcept>
+
 #include <ffi_clips_interface.h>
 #include <ntriplesParser.h>
 #include <resource_manager.h>
-#include <iostream>
-#include <stdexcept>
 #include "crifi_raptor.h"
 
 #define _USAGE "Usage: %s [-i input] [-o output] name\n"
@@ -16,7 +17,8 @@ const char *input, *output;
  * See `https://librdf.org/raptor/api/raptor-parsers.html`_ for more info.
  * TODO: move this to parse input
  */
-const char* format = "guess";
+//const char* format = "guess";
+const char* format = "turtle";
 
 /**
  * TODO: move this to parse input
@@ -44,7 +46,7 @@ int main(int argc, char* argv[]){
 	if (0 != load_inputfile())
 		exit(EXIT_FAILURE);
 	if (0 == generate_logic()){
-		if (0 == print_logic()) {
+		if (0 != print_logic()) {
 			err = EXIT_FAILURE;
 		} else {
 			err = EXIT_SUCCESS;
@@ -60,11 +62,25 @@ int main(int argc, char* argv[]){
 
 
 static int print_logic(){
+	std::string* retstring;
+	try {
+		retstring = create_clipsrifinterpreter_program(
+			"create-script-rif-logic", graph);
+	} catch (const std::runtime_error& err){
+		std::cerr << "generate rif logic failed: " << err.what();
+		std::cerr << std::endl;
+		return 1;
+	}
+	printf("%s\n", retstring->c_str());
+	return 0;
+	/*
 	int ctrl = crifi_serialize_all_triples(graph, stdout, "turtle", "");
 	if (0 == ctrl) print_serialize_turtle_error(ctrl);
 	//int ctrl = serialize_information_as_clips_script(stdout, graph);
 	//if (0 == ctrl) print_serialize_script_error(ctrl);
 	return ctrl;
+	*/
+
 	/*
 	if (logicAsString == nullptr) return 1;
 	printf("%s", logicAsString->c_str());
@@ -73,6 +89,8 @@ static int print_logic(){
 }
 
 static int generate_logic(){
+	int number_executed_rules = run_rules(graph, 0);
+	fprintf(stderr, "number of executed rules: %d\n", number_executed_rules);
 	return 0;
 	/*
 	
@@ -109,7 +127,7 @@ static int load_inputfile(){
 		return 1;
 	}
 
-	graph = init_graph();
+	graph = new_rif_logic_graph(NULL, NULL);
 	err = crifi_parse_to_triples(graph, q, format, baseuri);
 	fclose(q);
 	if (err != 0){

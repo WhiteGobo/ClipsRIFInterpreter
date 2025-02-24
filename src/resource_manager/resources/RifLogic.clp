@@ -54,7 +54,7 @@
 "))
 
 (deffunction print-bind-new (?varname)
-	(str-cat "(bind "?varname" (strcat \"_:tmpvar\" (gensym)))")
+	(str-cat "(bind "?varname" (<http://white.gobo/new-blanknode>))")
 )
 
 (deffunction print-and (?conditions)
@@ -1515,6 +1515,9 @@
 		)
 		(return (str-cat ""(expand$ ?ret)))
 	)
+	(if (eq ?t RIFExists) then
+		(return (str-cat "(not" (send ?self:formula create-pattern) ")"))
+	)
 	(set-error (str-cat "create-pattern in rifineg not implemented for " ?t))
 	(return "")
 )
@@ -1659,7 +1662,7 @@
 	(bind ?templates "")
 	(bind ?rules (create$))
 	(do-for-all-instances ((?doc RIFDocument)) TRUE
-		(println "create clips subscript for " ?doc)
+		;(println "create clips subscript for " ?doc)
 		(bind ?rules (insert$ ?rules (+ 1 (length$ ?rules)) (send ?doc create-rules)))
 	)
 	(if (eq 0 (length$ ?rules)) then 

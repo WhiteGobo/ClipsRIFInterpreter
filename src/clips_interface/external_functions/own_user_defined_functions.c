@@ -1,5 +1,6 @@
 #include "own_user_defined_functions.h"
 #include <crifi_objects.h>
+#include "n3parser.h"
 
 #define RETURNFAIL(failure, ret) \
 		Writeln(env, failure);\
@@ -37,6 +38,17 @@ void clipsudf_import(Environment *env, UDFContext *udfc, UDFValue *out){
 	char *qq = (char*) udfc->context;
 	SetErrorValue(env, &(CreateString(env, "import isnt implemented")->header));
 	out->lexemeValue = CreateString(env, "");
+}
+
+void clipsudf_new_blanknode(Environment *env, UDFContext *udfc, UDFValue *out){
+	int err;
+	CLIPSValue target;
+	err = new_blanknode(env, &target);
+	if (err == 0){
+		out->value = target.value;
+	} else {
+		//RETURNFAIL();
+	}
 }
 
 #undef RETURNFAIL

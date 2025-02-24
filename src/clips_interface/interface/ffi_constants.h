@@ -14,6 +14,7 @@
 #define _CRIFI_success_ "http://white.gobo/success"
 #define _CRIFI_percent_encode_ "http://white.gobo/percent-encode"
 #define _CRIFI_import_ "http://white.gobo/import"
+#define _CRIFI_new_blanknode_ "http://white.gobo/new-blanknode"
 
 #define _XS_anyURI_ "http://www.w3.org/2001/XMLSchema#anyURI"
 #define _XS_base64Binary_ "http://www.w3.org/2001/XMLSchema#base64Binary"

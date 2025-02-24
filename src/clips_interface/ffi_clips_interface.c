@@ -163,7 +163,7 @@ FFI_PLUGIN_EXPORT CRI_RET_BUILDTRIPLE assert_fact(
 
 
 FFI_PLUGIN_EXPORT long long run_rules(crifi_graph* graph, long long limit){
-	return Run(graph, limit);
+	return Run(graph, -1);
 }
 
 FFI_PLUGIN_EXPORT int build(crifi_graph* graph, Utf8String command){

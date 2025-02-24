@@ -42,6 +42,8 @@ static UDFDescription builtinFunctionList[] = {
 		clipsudf_equal, "clipsudf_equal", CT_static, NULL},
 	{"<"_CRIFI_percent_encode_">", "s", 1, 1, "s",
 		_clipsudf_percent_encoding, "_clipsudf_percent_encoding",  CT_static, NULL},
+	{"<"_CRIFI_new_blanknode_">", "*", 0, 0, "*",
+		clipsudf_new_blanknode, "clipsudf_new_blanknode", CT_static, NULL},
 	{"PercentDecoding", "s", 1, 1, "s",
 		_clipsudf_percent_encoding,
 		"_clipsudf_percent_encoding",

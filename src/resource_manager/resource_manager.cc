@@ -47,7 +47,7 @@ static crifi_graph* create_logic_helpergraph(
 	return helper_graph;
 }
 
-static std::string *create_clipsrifinterpreter_program(
+std::string *create_clipsrifinterpreter_program(
 		const char* create_clips_symbol,
 		crifi_graph* helper_graph
 		){
@@ -64,14 +64,10 @@ static std::string *create_clipsrifinterpreter_program(
 	if (tmpval.type != CTC_DYNAMIC_STRING){
 		throw std::runtime_error("Clipsscript didnt return "
 				"string value");
-		//printf("something went wrong during clips script creation.");
-		//return nullptr;
 	}
 	if (0 == strcmp(tmpval.val.string, "")) {
 		throw std::runtime_error("Clips script creation returned "
-				"empty sciprt");
-		//printf("failed to create clips script");
-		//return nullptr;
+				"empty script");
 	}
 	retString = new std::string(tmpval.val.string);
 	free_dynamic_value(tmpval);
@@ -262,4 +258,31 @@ bool check_statements(crifi_graph* graph){
 					"Clips function 'check-statements' "
 					"didnt return bool");
 	}
+}
+
+
+crifi_graph* new_rif_logic_graph(
+		LoadingFunction loading_function,
+		const void *loading_function_context)
+{
+	int debuglevel = 0;
+	int wrapper_lf_length = 0;
+	LoadingFunction wrapper_lf[2] = {NULL, NULL};
+	const void *wrapper_lfc[2] = {NULL, NULL};
+	if (loading_function != NULL && loading_function_context != NULL){
+		wrapper_lf_length = 1;
+		wrapper_lf[0] = loading_function;
+		wrapper_lfc[0] = loading_function_context;
+	} else if (loading_function != NULL || loading_function_context != NULL){
+		//fprintf(stderr, "generate_rif_logic couldnt use given "
+		//		"loading function\n");
+	}
+	//TODO: remove blackHoleString
+	//artifact for subgeneration of logic. will be replaced
+	std::string *blackHoleString = new std::string("");
+	crifi_graph* helper_graph
+		= create_logic_helpergraph(RIFLOGIC,
+			wrapper_lf, wrapper_lfc, wrapper_lf_length,
+						blackHoleString);
+	return helper_graph;
 }
