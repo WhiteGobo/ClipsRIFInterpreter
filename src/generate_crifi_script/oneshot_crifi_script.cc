@@ -30,6 +30,7 @@ static int postprocess();
 
 static void print_parsing_error(int err);
 static void print_serialize_turtle_error(int err);
+static void print_serialize_script_error(int err);
 
 int main(int argc, char* argv[]){
 	int err = EXIT_SUCCESS;
@@ -51,18 +52,27 @@ int main(int argc, char* argv[]){
 }
 
 static int postprocess(){
-	int ctrl = crifi_serialize_all_triples(graph, stdout, "turtle", "");
+	int ctrl;
+	ctrl = crifi_serialize_all_triples(graph, stderr, "turtle", "");
 	if (0 != ctrl){
 		print_serialize_turtle_error(ctrl);
+		return ctrl;
 	}
-	//int ctrl = serialize_information_as_clips_script(stdout, graph);
-	//if (0 != ctrl) print_serialize_script_error(ctrl);
+	/*
+	ctrl = serialize_information_as_clips_script(stdout, graph);
+	if (0 != ctrl) print_serialize_script_error(ctrl);
+	*/
 	return ctrl;
 }
 
 static int run(){
 	int number_rule_executions = run_rules(graph, -1);
 	fprintf(stderr, "Number of rule executions: %d\n", number_rule_executions);
+
+	if (graph_in_errorstate(graph, stderr)){
+		fprintf(stderr, "Exiting after graph in errorstate\n");
+		return 1;
+	}
 	return 0;
 }
 
@@ -170,6 +180,10 @@ static void print_parsing_error(int err){
 		default:
 			fprintf(stderr, "unhandled error");
 	}
+}
+
+static void print_serialize_script_error(int err){
+	print_serialize_turtle_error(err);
 }
 
 static void print_serialize_turtle_error(int err){

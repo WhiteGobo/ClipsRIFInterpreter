@@ -963,6 +963,12 @@
 
 ;##methods
 
+(defmessage-handler RIFObj create-binding-in-action (?varname)
+	(set-error (str-cat 
+		"Missing implementation for create-binding-in-action for " (type ?self)
+	))
+	(return "")
+)
 
 (defmessage-handler RIFObj create-action ()
 	;Create a prd style action
@@ -997,7 +1003,8 @@
 	(set-error (str-cat 
 		"Missing implementation for create-condition for " (type ?self)
 	))
-	(return ""))
+	(return "")
+)
 
 (defmessage-handler RIFObj create-sentence (?salience)
 	(bind ?name (send ?self get-rulename))
@@ -1173,19 +1180,40 @@
 ;(defmessage-handler RIFOr create-condition ()
 ;	(send))
 
+(defmessage-handler RIFNew create-binding-in-action (?varname)
+	(return (print-bind-new ?varname))
+)
+
+(defmessage-handler RIFFrame create-binding-in-action (?varname)
+	(bind ?items (send ?self:slots get-items))
+	(if (neq 1 (length$ ?items)) then
+		(set-error "during binding in action frames can only have one slot") 
+		(return "")
+	)
+	(bind ?slt (expand$ ?items))
+	(bind ?s (send ?self:object as_term))
+	(bind ?p (send (send ?slt get-slotkey) as_term))
+	(bind ?o (send (send ?slt get-slotvalue) as_term))
+        (return (str-cat "(do-for-fact ((?trpl TripleTemplate))
+		(and (eq ?trpl:subject "?s") (eq ?trpl:predicate "?p"))
+		(bind "?o" ?trpl:object))"))
+)
+
 (defmessage-handler RIFDo create-action ()
 	(bind ?actions (create$))
 	(foreach ?vr ?self:actionVars
 		(bind ?x (send ?vr get-items))
 		(bind ?varname (send (expand$ (first$ ?x)) as_term))
 		(bind ?binder (expand$ (rest$ ?x)))
-		(if (eq (type ?binder) RIFNew)
-			then
-				(bind ?tmpact (print-bind-new ?varname))
-			else
-				(set-error "frames are not supportin actionVar")
-				(return "")
-		)
+		(bind ?tmpact (send ?binder create-binding-in-action ?varname))
+		(if (get-error) then (return ""))
+		;(if (eq (type ?binder) RIFNew)
+		;	then
+		;		(bind ?tmpact (print-bind-new ?varname))
+		;	else
+		;		(set-error "frames are not supportin actionVar")
+		;		(return "")
+		;)
 		(bind ?actions (append$ ?actions ?tmpact))
 	)
 	(foreach ?act (send ?self:actions get-items)

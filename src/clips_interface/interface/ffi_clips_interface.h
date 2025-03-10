@@ -316,7 +316,7 @@ FFI_PLUGIN_EXPORT void free_dynamic_value(struct DynamicValue val);
 /**
  * check if unhandled error occured
  */
-FFI_PLUGIN_EXPORT bool graph_in_errorstate(crifi_graph* graph);
+FFI_PLUGIN_EXPORT bool graph_in_errorstate(crifi_graph* graph, FILE* f);
 
 #ifdef __cplusplus
 }

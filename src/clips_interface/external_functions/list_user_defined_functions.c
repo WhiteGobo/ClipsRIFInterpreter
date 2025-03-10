@@ -34,6 +34,7 @@ void pred_list_contains(Environment *env, UDFContext *udfc, UDFValue *out){
 	UDFValue arglist, entry;
 	CLIPSValue c_arglist;
 	CLIPSValue entry_dupl, items;
+	out->lexemeValue = FalseSymbol(env); //default output
 	if (!UDFFirstArgument(udfc, ANY_TYPE_BITS, &arglist)){
 		RETURNARGERROR("list_contains");
 	}
@@ -56,7 +57,6 @@ void pred_list_contains(Environment *env, UDFContext *udfc, UDFValue *out){
 			RETURNARGERROR("pred_list_contains");
 		}
 	}
-	out->lexemeValue = CreateBoolean(env, false);
 }
 
 static size_t get_argsize(CLIPSValue val){

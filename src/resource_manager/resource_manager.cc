@@ -57,7 +57,7 @@ std::string *create_clipsrifinterpreter_program(
 			+ sizeof("(%s \"description\")") + 1 + 30];
 	sprintf(command, "(%s \"description\")", create_clips_symbol);
 	tmpval = eval(helper_graph, command);
-	if (graph_in_errorstate(helper_graph)){
+	if (graph_in_errorstate(helper_graph, NULL)){
 		throw std::runtime_error("Rulecreation ended in errorstate. "
 				"Happend during clipsscript retrieval.");
 	}
@@ -92,7 +92,7 @@ static std::string *generate_logic(
 						loading_function_context,
 						loading_functions_length,
 						retString);
-	if (graph_in_errorstate(helper_graph)){
+	if (graph_in_errorstate(helper_graph, NULL)){
 		//fprintf(stderr, "Couldnt load logic\n");
 		close_graph(helper_graph);
 		throw std::runtime_error("Graph in error state.");
@@ -123,7 +123,7 @@ static std::string *generate_logic(
 	//eval(helper_graph, "(facts)");
 	//fprintf(stderr, "rules run: %d\n", qq);
 	//tmpval = eval(helper_graph, "(matches RIFprocess_Group)");
-	if (graph_in_errorstate(helper_graph)){
+	if (graph_in_errorstate(helper_graph, NULL)){
 		throw std::runtime_error("Rulecreation ended in errorstate. "
 				"Happend during run.");
 	}
@@ -132,7 +132,7 @@ static std::string *generate_logic(
 		retString = create_clipsrifinterpreter_program(
 				create_clips_symbol, helper_graph);
 
-		if (graph_in_errorstate(helper_graph)){
+		if (graph_in_errorstate(helper_graph, NULL)){
 			throw std::runtime_error("Rulecreation ended in "
 					"errorstate. Happend during "
 					"retrieval of clips program.");

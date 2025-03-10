@@ -223,6 +223,7 @@ static CRIFI_SERIALIZE_SCRIPT_RET add_info_to_tree(MyContext* cntxt,
 		//raptor_serializer_serialize_statement(my_serializer, triple);
 		//raptor_free_statement(triple);
 	}
+	/*
 	fprintf(stderr, "qwertzstart lists\n");
 	for(Fact *l = get_next_list(graph, NULL);
 			l != NULL;
@@ -234,6 +235,7 @@ static CRIFI_SERIALIZE_SCRIPT_RET add_info_to_tree(MyContext* cntxt,
 			return err;
 		}
 	}
+	*/
 	return CRIFI_SERIALIZE_SCRIPT_NOERROR;
 }
 

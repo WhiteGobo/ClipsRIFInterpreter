@@ -23,7 +23,7 @@ FFI_PLUGIN_EXPORT crifi_graph* init_graph(){
 FFI_PLUGIN_EXPORT RET_LOADCONFIG load_config_mem(
 		crifi_graph* graph,
 		const char* configString, size_t lengthString){
-	if (graph_in_errorstate(graph)){
+	if (graph_in_errorstate(graph, NULL)){
 		return CTC_LC_UNKNOWN_STATE;
 	}
 	bool success = load_config_internal_mem(
@@ -31,7 +31,7 @@ FFI_PLUGIN_EXPORT RET_LOADCONFIG load_config_mem(
 			configString,
 			lengthString);
 
-	if (graph_in_errorstate(graph)){
+	if (graph_in_errorstate(graph, NULL)){
 		return CTC_LC_PARSING_ERROR;
 	}
 	if (success) {
@@ -43,7 +43,7 @@ FFI_PLUGIN_EXPORT RET_LOADCONFIG load_config_mem(
 
 FFI_PLUGIN_EXPORT RET_LOADCONFIG load_config(crifi_graph* graph_container, char *configPath){
 	LoadError lerr = load_config_internal(graph_container, configPath);
-	if (graph_in_errorstate(graph_container)){
+	if (graph_in_errorstate(graph_container, NULL)){
 		return CTC_LC_PARSING_ERROR;
 	}
 	switch(lerr){
@@ -180,19 +180,23 @@ FFI_PLUGIN_EXPORT int build(crifi_graph* graph, Utf8String command){
 	}
 }
 
-FFI_PLUGIN_EXPORT bool graph_in_errorstate(crifi_graph* graph){
+FFI_PLUGIN_EXPORT bool graph_in_errorstate(crifi_graph* graph, FILE* f){
 	struct DynamicValue retval = eval(graph, "(get-error)");
 	switch (retval.type){
 		case CTC_DYNAMIC_ERROR:
-			//fprintf(stderr, "dynamic error\n");
+			if (f != NULL){
+				fprintf(f, "dynamic error\n");
+			}
 			return true;
 			break;
 		case CTC_DYNAMIC_BOOL:
 			return retval.val.boolean;
 			break;
 		case CTC_DYNAMIC_STRING:
-			//fprintf(stderr, "graph in errorstate: %s\n",
-			//		retval.val.string);
+			if (f != NULL){
+				fprintf(f, "graph in errorstate: %s\n",
+							retval.val.string);
+			}
 		case CTC_DYNAMIC_VOID:
 		case CTC_DYNAMIC_INT:
 		default:
