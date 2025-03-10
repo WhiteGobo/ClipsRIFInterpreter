@@ -189,18 +189,32 @@ FFI_PLUGIN_EXPORT bool graph_in_errorstate(crifi_graph* graph, FILE* f){
 			}
 			return true;
 			break;
-		case CTC_DYNAMIC_BOOL:
-			return retval.val.boolean;
-			break;
 		case CTC_DYNAMIC_STRING:
 			if (f != NULL){
 				fprintf(f, "graph in errorstate: %s\n",
 							retval.val.string);
 			}
+			return true;
+		case CTC_DYNAMIC_BOOL:
+			if (retval.val.boolean && (f != NULL)){
+				fprintf(f, "graph in errorstate(true).\n");
+			}
+			return retval.val.boolean;
 		case CTC_DYNAMIC_VOID:
+			if (f != NULL){
+				fprintf(f, "errorstate type void\n");
+			}
+			return true;
 		case CTC_DYNAMIC_INT:
+			if (f != NULL){
+				fprintf(f, "graph in errorstate: %d\n",
+							retval.val.integer);
+			}
+			return true;
 		default:
-			//fprintf(stderr, "errorstate type %d\n", retval.type);
+			if (f != NULL){
+				fprintf(f, "errorstate type %d\n", retval.type);
+			}
 			return true;
 	}
 }
