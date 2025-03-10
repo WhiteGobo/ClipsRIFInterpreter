@@ -11,8 +11,13 @@ set_target_properties(crifi_lists PROPERTIES
 target_include_directories(crifi_lists
 	PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/")
 
+target_include_directories(crifi_lists PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../interface/")
 
-target_link_libraries(crifi_lists
+target_link_libraries(crifi_lists PUBLIC
 	clips
 	crifi_objects
+)
+
+target_link_libraries(crifi_lists PRIVATE
+	n3parser
 )

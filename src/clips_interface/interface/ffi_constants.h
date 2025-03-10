@@ -4,10 +4,15 @@
 #define _RDF_langString_ "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString"
 #define _RDF_PlainLiteral_ "http://www.w3.org/1999/02/22-rdf-syntax-ns#PlainLiteral"
 
+#define _RDF_ "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
 #define _PRED_ "http://www.w3.org/2007/rif-builtin-predicate#"
 #define _FUNC_ "http://www.w3.org/2007/rif-builtin-function#"
 
 #define _XML_ "http://www.w3.org/2001/XMLSchema#"
+
+#define _RDF_first_ _RDF_ "first"
+#define _RDF_rest_ _RDF_ "rest"
+#define _RDF_nil_ _RDF_ "nil"
 
 //here defined urls
 #define _CRIFI_equal_ "http://white.gobo/equal"
@@ -15,6 +20,8 @@
 #define _CRIFI_percent_encode_ "http://white.gobo/percent-encode"
 #define _CRIFI_import_ "http://white.gobo/import"
 #define _CRIFI_new_blanknode_ "http://white.gobo/new-blanknode"
+#define _CRIFI_iri_to_clipsconstant_ "http://white.gobo/iri-to-clipsconstant"
+#define _CRIFI_literal_to_clipsconstant_ "http://white.gobo/literal-to-clipsconstant"
 
 #define _XS_anyURI_ "http://www.w3.org/2001/XMLSchema#anyURI"
 #define _XS_base64Binary_ "http://www.w3.org/2001/XMLSchema#base64Binary"

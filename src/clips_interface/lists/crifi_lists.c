@@ -1,6 +1,9 @@
 #include "crifi_lists.h"
 
 #include <crifi_objects.h>
+#include "n3parser.h"
+#include "dataspace_constants.h"
+#include "ffi_constants.h"
 
 /**
  * returns success
@@ -183,7 +186,6 @@ static size_t get_argsize(CLIPSValue val){
 Fact* crifi_list_new(Environment *env, CLIPSValue *values, size_t values_length){
 	Fact* ret;
 
-	//printf("asdf %d\n", values[0].header->type);
 	Multifield *items;
 	MultifieldBuilder *mb;
 	mb = CreateMultifieldBuilder(env, values_length);
@@ -292,4 +294,50 @@ Fact *crifi_list_except(Environment *env, CLIPSValue list, CLIPSValue exceptions
 	ret = crifi_list_new(env, newitems, newlist_length);
 	free(newitems);
 	return ret;
+}
+
+bool crifi_is_list(Environment *env, CLIPSValue *arglist){
+	Deftemplate *listtempl, *facttempl;
+	if (arglist == NULL) return false;
+	if (arglist->header->type != FACT_ADDRESS_TYPE){
+		return false;
+	}
+	listtempl = FindDeftemplate(env, ATOMLISTTEMPLATE);
+	facttempl = FactDeftemplate(arglist->factValue);
+	if (facttempl == listtempl){
+		return true;
+	}
+	return false;
+}
+
+int crifi_list_count(Environment *env, CLIPSValue *list){
+	size_t length;
+	CLIPSValue items;
+	if (!retrieve_items(env, *list, &items)){
+		return -1;
+	}
+	length = items.multifieldValue->length;
+	return length;
+}
+
+bool crifi_list_as_identifier(Environment *env, CLIPSValue *val, int index, CLIPSValue *target){
+	Fact *f;
+	char* ret;
+	long long factindex;
+	int length, err;
+	if (val->header->type != FACT_ADDRESS_TYPE) return false;
+	length = crifi_list_count(env, val);
+	if (index >= length){
+		err = uri_to_clipsvalue(env, _RDF_nil_, strlen(_RDF_nil_), target);
+		return err == 0;
+
+	}
+       	f = val->factValue;
+	factindex = FactIndex(f);
+	ret = malloc(24 + 12 + sizeof("factlistp") + 1);
+	if (ret == NULL) return NULL;
+	sprintf(ret, "factlist%ldp%d", factindex, index);
+
+	err = blanknode_from_idstring(env, ret, target);
+	return err == 0;
 }

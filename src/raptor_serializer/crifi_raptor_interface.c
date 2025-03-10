@@ -3,22 +3,31 @@
 
 raptor_term* clipsvalue_to_raptorterm(raptor_world *world, crifi_graph* graph, CLIPSValue val)
 {
+	//fprintf(stderr, "clipsvalue_to_raptorterm\n");
 	raptor_term *retval;
 	char *uri, *lexical, *lang, *datatype, *bnodeid;
 	raptor_uri *dt_uri;
 	if (clipsvalue_is_uri(graph, val)){
+		//fprintf(stderr, "is uri\n");
 		uri = extract_uri(graph, val.header);
 		retval = raptor_new_term_from_uri_string(world, uri);
 		free(uri);
 		return retval;
 	} else if (clipsvalue_is_literal(graph, val)){
+		//fprintf(stderr, "is literal\n");
 		lexical = extract_lexical(graph, val.header);
+		if (lexical == NULL){
+			//fprintf(stderr, "fail1\n");
+			return NULL;
+		}
 		lang = extract_lang(graph, val.header);
 		if (lang != NULL){
+			//fprintf(stderr, "lang\n");
 			retval = raptor_new_term_from_literal(world, lexical,
 								NULL, lang);
 			free(lang);
 		} else {
+			//fprintf(stderr, "datatype\n");
 			datatype = extract_datatype(graph, val.header);
 			if (datatype == NULL){
 				free(lexical);
@@ -33,10 +42,17 @@ raptor_term* clipsvalue_to_raptorterm(raptor_world *world, crifi_graph* graph, C
 		free(lexical);
 		return retval;
 	} else if (clipsvalue_is_bnode(graph, val)){
+		//fprintf(stderr, "is bnode\n");
 		bnodeid = extract_bnodeid(graph, val.header);
+		if (bnodeid == NULL){
+			//fprintf(stderr, "failed to generate bnode\n");
+			return NULL;
+		}
+		//fprintf(stderr, "brubru %s\n", bnodeid);
 		retval = raptor_new_term_from_blank(world, bnodeid);
 		free(bnodeid);
 		return retval;
 	}
+		fprintf(stderr, "failed\n");
 	return NULL;
 }

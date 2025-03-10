@@ -103,15 +103,17 @@ void func_make_list(Environment *env, UDFContext *udfc, UDFValue *out){
 	unsigned int l = UDFArgumentCount(udfc);
 	UDFValue tmpval;
 	CLIPSValue myval[l+1];
-	if (!UDFFirstArgument(udfc, STRING_BIT, &tmpval)){
-		RETURNARGERROR("func_make_list");
-	}
-	myval[0].value = tmpval.value;
-	for (int i=1; i<l; i++){
-		if(!UDFNextArgument(udfc, ANY_TYPE_BITS, &tmpval)){
+	if (l > 0){
+		if (!UDFFirstArgument(udfc, ANY_TYPE_BITS, &tmpval)){
 			RETURNARGERROR("func_make_list");
 		}
-		myval[i].value = tmpval.value;
+		myval[0].value = tmpval.value;
+		for (int i=1; i<l; i++){
+			if(!UDFNextArgument(udfc, ANY_TYPE_BITS, &tmpval)){
+				RETURNARGERROR("func_make_list");
+			}
+			myval[i].value = tmpval.value;
+		}
 	}
 	ret = crifi_list_new(env, myval, l);
 	if (ret != NULL){
@@ -119,7 +121,6 @@ void func_make_list(Environment *env, UDFContext *udfc, UDFValue *out){
 	} else {
 		out->voidValue = VoidConstant(env);
 	}
-	//out->lexemeValue = CreateInstanceName(env, InstanceName(retinstance));
 }
 
 
@@ -135,11 +136,10 @@ void func_count(Environment *env, UDFContext *udfc, UDFValue *out){
 		RETURNFAIL("func_count requires instance of type AtomList");
 	}
 	list_clipsvalue.value = list_udfvalue.value;
-
-	if (!retrieve_items(env, list_clipsvalue, &items)){
+	length = crifi_list_count(env, &list_clipsvalue);
+	if (length < 0){
 		RETURNFAIL("Argument error. func_count requires AtomList");
 	}
-	length = items.multifieldValue->length;
 
 	TEMPORARYINTERNALREPRESENTATION(tmpi, length, 11, "%d", _XS_integer_);
 	out->lexemeValue = CreateString(env, tmpi);

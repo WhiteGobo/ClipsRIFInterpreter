@@ -2,6 +2,8 @@
 
 #include <clips.h>
 
+bool crifi_is_list(Environment *env, CLIPSValue *arglist);
+int crifi_list_count(Environment *env, CLIPSValue *list);
 
 /**
  * TODO: remove this method
@@ -22,5 +24,6 @@ Fact *crifi_list_intersect(Environment *env, CLIPSValue leftlist, CLIPSValue rig
 
 Fact *crifi_list_except(Environment *env, CLIPSValue list, CLIPSValue exceptions);
 
-
 Fact *clipsvalue_to_list(CLIPSValue val);
+
+bool crifi_list_as_identifier(Environment *env, CLIPSValue *val, int index, CLIPSValue *target);

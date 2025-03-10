@@ -121,11 +121,14 @@ char* lexeme_extract_lang(Environment *env, CLIPSLexeme *lexeme);
 
 int n3_as_clipsvalue(Environment *env, N3String node, CLIPSValue *target);
 
+char* value_and_lang_to_string(const char* value, size_t value_length, const char* lang, size_t lang_length);
 int value_and_lang_to_clipsvalue(Environment *env, const char* value, size_t value_length, const char* lang, size_t lang_length, CLIPSValue *result);
 
+char* value_and_datatype_to_string(const char* value, size_t value_length, const char* datatype, size_t datatype_length);
 int value_and_datatype_to_clipsvalue(Environment *env, const char* value, size_t value_length, const char* datatype, size_t datatype_length, CLIPSValue *result);
 
 int new_blanknode(Environment *env, CLIPSValue *target);
+int blanknode_from_idstring(Environment *env, const char* id, CLIPSValue *target);
 int uri_to_clipsvalue(Environment *env, const char* uri, size_t uri_length, CLIPSValue *result);
 
 #ifdef __cplusplus

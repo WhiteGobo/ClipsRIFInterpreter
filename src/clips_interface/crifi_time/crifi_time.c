@@ -99,7 +99,6 @@ static void normalize_dateTimeStamp(DateTimeStamp *result){
 }
 
 static void normalize_dayTimeDuration(DateTimeStamp *result){
-	//printf("norm: %dD, %dH %dM %dS %dms\n", result->day, result->hour, result->minute, result->second, result->millisecond);
 	result->second += result->millisecond / 1000;
 	result->millisecond = result->millisecond % 1000;
 	if (result->millisecond < 0) {
@@ -124,7 +123,6 @@ static void normalize_dayTimeDuration(DateTimeStamp *result){
 		result->hour += 24;
 		result->day -= 1;
 	}
-	//printf("norm2: %dD, %dH %dM %dS %dms\n", result->day, result->hour, result->minute, result->second, result->millisecond);
 
 	if (result->day < 0){
 		result->is_negative_duration = !result->is_negative_duration;
@@ -145,7 +143,6 @@ static void normalize_dayTimeDuration(DateTimeStamp *result){
 			result->day += 1;
 		}
 		result->day = - result->day;
-	//printf("norm3: %dD, %dH %dM %dS %dms\n", result->day, result->hour, result->minute, result->second, result->millisecond);
 	}
 }
 
@@ -171,13 +168,11 @@ static void transform_date_match(char *lexical, regmatch_t matches[14], DateTime
 	result->minute = 0;
 	result->second = 0;
 	result->millisecond = 0;
-	//printf("analyze: %s\n", lexical);
 	result->timezone_minute=0;
 	if (matches[5].rm_so >= 0) {//Z (zero)
 		result->no_timezone_data = false;
 	} else if (matches[6].rm_so >= 0){
 		result->no_timezone_data = false;
-		//printf("found timezone data: %s\n", lexical+matches[7].rm_so);
 		memcpy(tmp, lexical+matches[7].rm_so, 2); //hours
 		tmp[2] = '\0';
 		result->timezone_minute = 60*atoi(tmp);
@@ -219,12 +214,10 @@ bool check_is_date(Environment *env, CLIPSValue val, DateTimeStamp *result){
 
 	err = regexec(&(data->reg_date), lexical, 15, matches, 0);
 	if (err!=0){
-		//printf("couldnt recognise: %s\n", lexical);
 		free(lexical);
 		return false;
 	} else if (result != NULL){
 		transform_date_match(lexical, matches, result);
-		//printf("qwertz: transformed: %s\ny:%d, m:%d, d:%d, h:%d, m:%d, s:%d, qq:%d\n", lexical, result->year, result->month, result->day, result->hour, result->minute, result->second, result->timezone_minute);
 		normalize_dateTimeStamp(result);
 	}
 	free(lexical);
@@ -307,11 +300,9 @@ bool check_is_dateTime(Environment *env, CLIPSValue val, DateTimeStamp *result){
 
 	err = regexec(&(data->reg_dateTime), lexical, 14, matches, 0);
 	if (err!=0){
-		//printf("failed datetime: %s\n", lexical);
 		free(lexical);
 		return false;
 	} else if (result != NULL){
-		//printf("extract info from: %s\n", lexical);
 		transform_dateTimeStamp_match(lexical, matches, result);
 		normalize_dateTimeStamp(result);
 	}
@@ -398,7 +389,6 @@ static void transform_time_match(char *lexical,
 	} else {
 		result->timezone_minute = 0;
 	}
-	//printf("%s->matches: m5: %d, m6: %d, a7:%d, a8:%d, a9: %d, a10: %d, a11: %d\n", lexical, matches[5].rm_so, matches[6].rm_so, matches[7].rm_so, matches[8].rm_so, matches[9].rm_so, matches[10].rm_so, matches[11].rm_so);
 }
 
 bool check_is_time(Environment *env, CLIPSValue val, DateTimeStamp *result){
@@ -424,7 +414,6 @@ bool check_is_time(Environment *env, CLIPSValue val, DateTimeStamp *result){
 		return false;
 	} else if (result != NULL){
 		transform_time_match(lexical, matches, result);
-		//printf("qwertz: transformed: %s\ny:%d, m:%d, d:%d, h:%d, m:%d, s:%d tz: %d\n", lexical, result->year, result->month, result->day, result->hour, result->minute, result->second, result->timezone_minute);
 		normalize_dateTimeStamp(result);
 	}
 	free(lexical);
@@ -518,7 +507,6 @@ bool check_is_dayTimeDuration(Environment *env, CLIPSValue val, DateTimeStamp *r
 	free(datatype);
 	lexical = lexeme_extract_lexical(env, val.lexemeValue);
 
-	//printf("checking dayTimeDuration for %s:\n", lexical);
 	err = regexec(&(data->reg_dayTimeDuration), lexical, 10, matches, 0);
 	if (err!=0){
 		free(lexical);
@@ -880,13 +868,11 @@ DateTimeStamp subtract_dateTime(DateTimeStamp val1, DateTimeStamp val2){
 	DateTimeStamp diff;
 	transform_day_to_month(&val1, 12);
 	transform_day_to_month(&val2, 12);
-	//printf("q %dM %dD | %dM %dD\n", val1.month, val1.day, val2.month, val2.day);
 	if (val1.year > val2.year) {
 		transform_year_to_days(&val1, val2.year);
 	} else {
 		transform_year_to_days(&val2, val1.year);
 	}
-	//printf("q %dY %dD | %dY %dD\n", val1.year, val1.day, val2.year, val2.day);
 	diff.is_negative_duration = false;
 	diff.day = val1.day - val2.day;
 	diff.hour = val1.hour - val2.hour;

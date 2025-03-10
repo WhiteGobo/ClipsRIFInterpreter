@@ -3,6 +3,7 @@
 #include "info_query.h"
 #include "crifi_raptor_interface.h"
 #include "rdf_object.h"
+#include "crifi_lists.h"
 
 #define EX(suffix) "http://example.com/" suffix
 #define CLIPS(suffix) "http://clips.script/" suffix
@@ -13,7 +14,8 @@ enum {
 	SAT_NOERROR = 0,
 	SAT_SUBJ,
 	SAT_PRED,
-	SAT_OBJ
+	SAT_OBJ,
+	SAT_LISTITEMS
 };
 
 typedef enum {
@@ -127,6 +129,51 @@ static void free_context(MyContext* cntxt){
 	}
 }
 
+static CRIFI_SERIALIZE_SCRIPT_RET add_info_to_tree_list(MyContext* cntxt, crifi_graph *graph, Fact *l){
+	int err, length;
+	raptor_term *first = cntxt->rdf_cntxt->rdf_first;
+	raptor_term *rest = cntxt->rdf_cntxt->rdf_rest;
+	raptor_term *nil = cntxt->rdf_cntxt->rdf_nil;
+	raptor_term *last = NULL;
+	raptor_term *current = NULL;
+	CLIPSValue tmpval;
+	CLIPSValue clipsval_list = {.factValue = l};
+	length = crifi_list_count(graph, &clipsval_list);
+	fprintf(stderr, "asdf start addinfototreelist\n");
+	for (int i = 0; i<length; i++){
+		fprintf(stderr, "brubru %d\n", i);
+		if (last != NULL){
+			err = add_triple(cntxt->nodes, last, rest, current);
+			switch (err){
+				case 0: break;
+				default: return CRIFI_SERIALIZE_SCRIPT_UNKNOWN;
+			}
+		}
+		current = clipsvalue_to_raptorterm(cntxt->world, graph, tmpval);
+		if (current == NULL){
+			return CRIFI_SERIALIZE_SCRIPT_OBJECT;
+		}
+		err = add_triple(cntxt->nodes, last, rest, current);
+		switch (err){
+			case 0: break;
+			default: return CRIFI_SERIALIZE_SCRIPT_UNKNOWN;
+		}
+		raptor_free_term(last);
+		last = current;
+		current = NULL;
+	}
+	if (last != NULL){
+		err = add_triple(cntxt->nodes, last, rest, nil);
+		switch (err){
+			case 0: break;
+			default: return CRIFI_SERIALIZE_SCRIPT_UNKNOWN;
+		}
+		raptor_free_term(last);
+	}
+	if (current != NULL) raptor_free_term(current);
+	return CRIFI_SERIALIZE_SCRIPT_NOERROR;
+}
+
 
 static CRIFI_SERIALIZE_SCRIPT_RET add_info_to_tree(MyContext* cntxt,
 							crifi_graph *graph)
@@ -138,6 +185,7 @@ static CRIFI_SERIALIZE_SCRIPT_RET add_info_to_tree(MyContext* cntxt,
 	CLIPSValue tmpValue;
 	raptor_statement *triple;
 	raptor_term *subj, *pred, *obj;
+	fprintf(stderr, "brubru1234\n");
 	for(Fact *f = get_next_triple(graph, NULL);
 			f != NULL;
 			f = get_next_triple(graph, f))
@@ -174,6 +222,17 @@ static CRIFI_SERIALIZE_SCRIPT_RET add_info_to_tree(MyContext* cntxt,
 		}
 		//raptor_serializer_serialize_statement(my_serializer, triple);
 		//raptor_free_statement(triple);
+	}
+	fprintf(stderr, "qwertzstart lists\n");
+	for(Fact *l = get_next_list(graph, NULL);
+			l != NULL;
+			l = get_next_list(graph, l))
+	{
+		fprintf(stderr, "convert list:\n");
+		err = add_info_to_tree_list(cntxt, graph, l);
+		if (err != CRIFI_SERIALIZE_SCRIPT_NOERROR){
+			return err;
+		}
 	}
 	return CRIFI_SERIALIZE_SCRIPT_NOERROR;
 }

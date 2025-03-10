@@ -6,7 +6,29 @@
 #define EX(suffix) "<http://example.com/" suffix ">"
 #define LITERAL(value) "\"" value "\""
 
-TEST(RaptorTest, BasicSerialize){
+/*
+ * Document(
+ *    Prefix(ex <http://ex.ample/>)
+ *    Group(If 0 = 0 Then ex:A[ex:p -> List(1 2 3)])
+ * )
+ */
+static char* script = "(defrule rule-gen15 =>"
+	"(assert 	(TripleTemplate"
+		"(subject <http://ex.ample/A>)"
+		"(predicate <http://ex.ample/p>)"
+		"(object (<http://www.w3.org/2007/rif-builtin-function#make-list> 1 2 3)))))";
+
+static crifi_graph* create_testgraph(){
+	crifi_graph* graph = init_graph();
+	if(!load_script(graph, script)){
+		fprintf(stderr, "Couldnt load script.\n");
+		return NULL;
+	}
+	run_rules(graph, -1);
+	return graph;
+}
+
+static crifi_graph* create_testgraph_old(){
 	const char *subj, *pred, *obj;
 	CRI_RET_BUILDTRIPLE assert_err;
 	const size_t l = 2;
@@ -23,11 +45,21 @@ TEST(RaptorTest, BasicSerialize){
 		obj = triples[i][2];
 		assert_err = assert_fact(graph, subj, pred, obj, "");
 		if(assert_err != CRI_RET_BUILDTRIPLE_NOERROR){
-		       	GTEST_SKIP() << "Couldnt assert fact.";
+		       	//GTEST_SKIP() << "Couldnt assert fact.";
+			return NULL;
 		}
+	}
+	return graph;
+}
+
+TEST(RaptorTest, BasicSerialize){
+	crifi_graph* graph = create_testgraph();
+	if (graph == NULL){
+		GTEST_SKIP() << "Failed creating testgraph.";
 	}
 
 	//working
+	eval(graph, "(facts)");
 	int ctrl = crifi_serialize_all_triples(graph, stdout, "turtle", "");
 	close_graph(graph);
 	switch (ctrl){
@@ -41,6 +73,7 @@ TEST(RaptorTest, BasicSerialize){
 		default:
 			FAIL() << "unhandled error";
 	}
+	//ASSERT_EQ(0, 1) << "success";
 }
 
 static char* RaptorParseExample = ""

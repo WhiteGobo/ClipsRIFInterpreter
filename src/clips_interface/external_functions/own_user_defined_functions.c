@@ -1,6 +1,7 @@
 #include "own_user_defined_functions.h"
 #include <crifi_objects.h>
 #include "n3parser.h"
+#include "info_query.h"
 
 #define RETURNFAIL(failure, ret) \
 		Writeln(env, failure);\
@@ -48,6 +49,62 @@ void clipsudf_new_blanknode(Environment *env, UDFContext *udfc, UDFValue *out){
 		out->value = target.value;
 	} else {
 		//RETURNFAIL();
+	}
+}
+
+void clipsudf_iri_to_clipsconstant(Environment *env, UDFContext *udfc, UDFValue *out){
+	int err;
+	char *lexical, *result;
+	CLIPSValue outclipsval;
+	UDFValue input;
+	if (!UDFFirstArgument(udfc, ANY_TYPE_BITS, &input)) return;
+
+	lexical = extract_lexical(env, input.header);
+	if (lexical == NULL) return;
+
+	result = genclipscode_iri(env, lexical);
+	if (result == NULL){
+		free(lexical);
+		return;
+	}
+	err = value_and_datatype_to_clipsvalue(env,
+			result, strlen(result), NULL, 0, &outclipsval);
+	free(lexical);
+	free(result);
+	if (err==0){
+		out->value = outclipsval.value;
+	}
+}
+
+void clipsudf_literal_to_clipsconstant(Environment *env, UDFContext *udfc, UDFValue *out){
+	int err;
+	char *lexical, *result, *datatype;
+	CLIPSValue outclipsval;
+	UDFValue input;
+	if (!UDFFirstArgument(udfc, ANY_TYPE_BITS, &input)) return;
+
+	lexical = extract_lexical(env, input.header);
+	if (lexical == NULL) return;
+	datatype = extract_datatype(env, input.header);
+	if (datatype == NULL){
+		free(datatype);
+		return;
+	}
+
+	result = genclipscode_lexical(env, lexical, datatype);
+	if (result == NULL){
+		free(lexical);
+		free(datatype);
+		return;
+	}
+
+	err = value_and_datatype_to_clipsvalue(env,
+			result, strlen(result), NULL, 0, &outclipsval);
+	free(datatype);
+	free(lexical);
+	free(result);
+	if (err==0){
+		out->value = outclipsval.value;
 	}
 }
 

@@ -1,6 +1,7 @@
 add_library(info_query STATIC
 	info_query.h
 	info_query.c
+	genclipscode.c
 	internal_fact_interface.c
 )
 
@@ -18,6 +19,6 @@ target_link_libraries(info_query PUBLIC
 	n3parser #for extract_literal -_datatype and -_lang
 )
 
-#target_link_libraries(info_query PRIVATE
-#	ffi_clips_interface
-#)
+target_link_libraries(info_query PRIVATE
+	crifi_lists
+)

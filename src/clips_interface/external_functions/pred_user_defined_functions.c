@@ -62,7 +62,6 @@ void rif_cast_as(Environment *env, UDFContext *udfc, UDFValue *out){
 
 void check_datatype(Environment *env, UDFContext *udfc, UDFValue *out){
 	const char* datatype = (const char*) udfc->context;
-	printf("\ncheck %s\n", datatype);
 	bool tmpb;
 	UDFValue val;
 	if (!UDFFirstArgument(udfc, STRING_BIT, &val)){
@@ -71,16 +70,13 @@ void check_datatype(Environment *env, UDFContext *udfc, UDFValue *out){
 		UDFThrowError(udfc);
 		return;
 	}
-	printf("got arg: %s\n", val.lexemeValue->contents);
 	FINDDATATYPE(dt_pos, dt_length, val.lexemeValue);
 	tmpb = (0 == strcmp(dt_pos, datatype));
-	if (!tmpb) printf("qwertz %s check failed\n", datatype);
 	out->lexemeValue = CreateBoolean(env, tmpb);
 }
 
 void check_not_datatype(Environment *env, UDFContext *udfc, UDFValue *out){
 	const char* datatype = (const char*) udfc->context;
-	printf("check not %s\n", datatype);
 	bool tmpb;
 	UDFValue val;
 	if (!UDFFirstArgument(udfc, STRING_BIT, &val)){
@@ -91,6 +87,5 @@ void check_not_datatype(Environment *env, UDFContext *udfc, UDFValue *out){
 	}
 	FINDDATATYPE(dt_pos, dt_length, val.lexemeValue);
 	tmpb = (0 != strcmp(dt_pos, datatype));
-	if (!tmpb) printf("qwertz not %s check failed\n", datatype);
 	out->lexemeValue = CreateBoolean(env, tmpb);
 }

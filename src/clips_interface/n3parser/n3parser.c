@@ -266,7 +266,6 @@ int n3_as_clipsvalue(Environment *env, N3String node, CLIPSValue *target){
 		target->lexemeValue = CreateSymbol(env, node);
 		return 0;
 	} else if (err != REG_NOMATCH){
-		//printf("Regex expression produced error.0\n");
 		return 2;
 	}
 
@@ -274,7 +273,6 @@ int n3_as_clipsvalue(Environment *env, N3String node, CLIPSValue *target){
 	if (err == 0) {
 		return blanknode_as_clipsvalue(env, node, target);
 	} else if (err != REG_NOMATCH){
-		//printf("Regex expression produced error.0\n");
 		return 2;
 	}
 
@@ -414,13 +412,9 @@ char* lexeme_extract_lang(Environment *env, CLIPSLexeme *lexeme){
 
 
 
-
-int value_and_datatype_to_clipsvalue(Environment *env, const char* value, size_t value_length, const char* datatype, size_t datatype_length, CLIPSValue *result){
+char* value_and_datatype_to_string(const char* value, size_t value_length, const char* datatype, size_t datatype_length){
 	size_t offset;
 	char *result_tmp, *result_safe;
-	if (datatype != NULL && ISURI(datatype, datatype_length, _RDF_langString_)){
-		return value_and_lang_to_clipsvalue(env, value, value_length, "", 0, result);
-	}
 	result_safe = malloc( 3*value_length + datatype_length + 3);
 	offset = percent_encode(result_safe, value, value_length);
 	result_tmp = result_safe + offset;
@@ -437,12 +431,21 @@ int value_and_datatype_to_clipsvalue(Environment *env, const char* value, size_t
 		memcpy(result_tmp, datatype, datatype_length);
 		result_tmp[datatype_length] = '\0';
 	}
+	return result_safe;
+}
+
+int value_and_datatype_to_clipsvalue(Environment *env, const char* value, size_t value_length, const char* datatype, size_t datatype_length, CLIPSValue *result){
+	char *result_safe;
+	if (datatype != NULL && ISURI(datatype, datatype_length, _RDF_langString_)){
+		return value_and_lang_to_clipsvalue(env, value, value_length, "", 0, result);
+	}
+	result_safe = value_and_datatype_to_string(value, value_length, datatype, datatype_length);
 	result->lexemeValue = CreateString(env, result_safe);
 	free(result_safe);
 	return 0;
 }
 
-int value_and_lang_to_clipsvalue(Environment *env, const char* value, size_t value_length, const char* lang, size_t lang_length, CLIPSValue *result){
+char* value_and_lang_to_string(const char* value, size_t value_length, const char* lang, size_t lang_length){
 	char* result_tmp;
 	char* result_safe = malloc( 3*value_length + lang_length + 3);
 	size_t offset = percent_encode(result_safe, value, value_length);
@@ -453,6 +456,11 @@ int value_and_lang_to_clipsvalue(Environment *env, const char* value, size_t val
 	memcpy(result_tmp, lang, lang_length);
 	result_tmp += lang_length;
 	result_tmp[0] = '\0';
+	return result_safe;
+}
+
+int value_and_lang_to_clipsvalue(Environment *env, const char* value, size_t value_length, const char* lang, size_t lang_length, CLIPSValue *result){
+	char* result_safe = value_and_lang_to_string(value, value_length, lang, lang_length);
 	result->lexemeValue = CreateString(env, result_safe);
 	free(result_safe);
 	return 0;
@@ -462,7 +470,15 @@ int new_blanknode(Environment *env, CLIPSValue* result){
 	struct crifiN3ParserData *data = LoadingCRIFIN3ParserData(env);
 	unsigned int graph_id = (unsigned int) env;
 	char bnodeid[30];
-	sprintf(bnodeid, "_:n%x_%i", graph_id, data->next_blanknode_id++);
+	sprintf(bnodeid, "_:n%x_n%i", graph_id, data->next_blanknode_id++);
+	result->lexemeValue = CreateSymbol(env, bnodeid);
+	return 0;
+}
+
+int blanknode_from_idstring(Environment *env, const char* id, CLIPSValue *result){
+	unsigned int graph_id = (unsigned int) env;
+	char bnodeid[30 + strlen(id)];
+	sprintf(bnodeid, "_:n%xs%s", graph_id, id);
 	result->lexemeValue = CreateSymbol(env, bnodeid);
 	return 0;
 }

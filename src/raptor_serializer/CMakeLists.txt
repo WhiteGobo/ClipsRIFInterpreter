@@ -27,6 +27,7 @@ target_link_libraries(crifi_raptor PUBLIC
 target_link_libraries(crifi_raptor PRIVATE
 	info_query
 	n3parser
+	crifi_lists
 )
 
 include(include_raptor.cmake)

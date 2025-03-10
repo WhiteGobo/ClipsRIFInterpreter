@@ -52,7 +52,9 @@ int main(int argc, char* argv[]){
 
 static int postprocess(){
 	int ctrl = crifi_serialize_all_triples(graph, stdout, "turtle", "");
-	if (0 != ctrl) print_serialize_turtle_error(ctrl);
+	if (0 != ctrl){
+		print_serialize_turtle_error(ctrl);
+	}
 	//int ctrl = serialize_information_as_clips_script(stdout, graph);
 	//if (0 != ctrl) print_serialize_script_error(ctrl);
 	return ctrl;
@@ -171,17 +173,18 @@ static void print_parsing_error(int err){
 }
 
 static void print_serialize_turtle_error(int err){
+	if (err == CRIFI_SERIALIZE_NOERROR) return;
+	fprintf(stderr, "crifi_serialize_all_triples failed,\n");
 	switch (err){
-		case CRIFI_SERIALIZE_NOERROR:
-			break;
 		case CRIFI_SERIALIZE_TERM:
-			fprintf(stderr, "Couldnt transform all terms");
+			fprintf(stderr, "Couldnt transform all terms"
+					"(CRIFI_SERIALIZE_TERM)\n");
 			break;
 		case CRIFI_SERIALIZE_MISSING_FORMAT:
 		case CRIFI_SERIALIZE_MISSING_BASE:
-			fprintf(stderr, "Input error");
+			fprintf(stderr, "Input error\n");
 			break;
 		default:
-			fprintf(stderr, "unhandled error");
+			fprintf(stderr, "unhandled error\n");
 	}
 }
