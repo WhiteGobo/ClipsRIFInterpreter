@@ -28,12 +28,28 @@ void pred_is_list(Environment *env, UDFContext *udfc, UDFValue *out){
 	out->lexemeValue = CreateBoolean(env, true);
 }
 
+static void my_set_error(Environment *env, const char *errmsg, CLIPSValue *errval){
+	MultifieldBuilder *mb;
+	CLIPSValue msg_part, msg_and_val;
+	msg_part.lexemeValue = CreateString(env, errmsg);
+	if (errval != NULL){
+		mb = CreateMultifieldBuilder(env, 2);
+		MBAppend(mb, &msg_part);
+		MBAppend(mb, errval);
+		msg_and_val.multifieldValue = MBCreate(mb);
+		MBDispose(mb);
+		SetErrorValue(env, msg_and_val.header);
+	} else {
+		SetErrorValue(env, msg_part.header);
+	}
+}
 
 void pred_list_contains(Environment *env, UDFContext *udfc, UDFValue *out){
 	IEQ_RET check;
 	UDFValue arglist, entry;
-	CLIPSValue c_arglist;
-	CLIPSValue entry_dupl, items;
+	CLIPSValue c_arglist = {.voidValue=VoidConstant(env)};
+	CLIPSValue entry_dupl = {.voidValue=VoidConstant(env)};
+	CLIPSValue items = {.voidValue=VoidConstant(env)};
 	out->lexemeValue = FalseSymbol(env); //default output
 	if (!UDFFirstArgument(udfc, ANY_TYPE_BITS, &arglist)){
 		RETURNARGERROR("list_contains");
@@ -43,8 +59,9 @@ void pred_list_contains(Environment *env, UDFContext *udfc, UDFValue *out){
 	}
 	c_arglist.value = arglist.value;
 	if (!retrieve_items(env, c_arglist, &items)){
-		RETURNFAIL("Cant handle given list."
-				"(retrieve_items_udf failed)");
+		my_set_error(env, "Cant handle given list."
+			"(retrieve_items_udf failed)", &c_arglist);
+		return;
 	}
 	entry_dupl.header = entry.header;
 	for(int i = 0; i < items.multifieldValue->length; i++){
