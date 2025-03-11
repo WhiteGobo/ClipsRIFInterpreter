@@ -70,6 +70,10 @@ static int run(){
 	fprintf(stderr, "Number of rule executions: %d\n", number_rule_executions);
 
 	if (graph_in_errorstate(graph, stderr)){
+		fprintf(stderr, "Exiting after graph in errorstate: "
+				"printing current information:\n");
+		eval(graph, "(facts)");
+		crifi_serialize_all_triples(graph, stderr, "turtle", "");
 		fprintf(stderr, "Exiting after graph in errorstate\n");
 		return 1;
 	}

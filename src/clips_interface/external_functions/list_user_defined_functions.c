@@ -18,14 +18,14 @@
 
 void pred_is_list(Environment *env, UDFContext *udfc, UDFValue *out){
 	UDFValue myval;
+	CLIPSValue val;
+	out->lexemeValue = FalseSymbol(env); //default output
 	if (!UDFFirstArgument(udfc, ANY_TYPE_BITS, &myval)){
 		return;
 		//RETURNARGERROR("pred_is_list");
 	}
-	if (myval.header->type != INSTANCE_NAME_TYPE)
-		out->lexemeValue = CreateBoolean(env, false);
-
-	out->lexemeValue = CreateBoolean(env, true);
+	val.header = myval.header;
+	out->lexemeValue = CreateBoolean(env, crifi_is_list(env, &val));
 }
 
 static void my_set_error(Environment *env, const char *errmsg, CLIPSValue *errval){
