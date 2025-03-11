@@ -68,7 +68,19 @@ struct TriplesLinkedList *copy_getfacts_to_list(Environment *env, Multifield *fa
 
 struct DynamicValue clipsToDynamic(CLIPSValue *val){
 	struct DynamicValue retVal;
+	int length;
         switch (val->header->type) {
+		case MULTIFIELD_TYPE:
+			retVal.type = CTC_DYNAMIC_LIST;
+			length = val->multifieldValue->length;
+			retVal.val.values
+				= calloc(length+1, sizeof(struct DynamicValue));
+			for (int i=0; i<length; i++){
+				retVal.val.values[i] = clipsToDynamic(
+					val->multifieldValue->contents + i);
+			}
+			retVal.val.values[length].type = CTC_DYNAMIC_VOID;
+			return retVal;
                 case INTEGER_TYPE:
 			retVal.type = CTC_DYNAMIC_INT;
 			retVal.val.integer = val->integerValue->contents;

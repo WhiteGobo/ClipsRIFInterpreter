@@ -83,6 +83,8 @@ typedef enum {
 	CTC_DYNAMIC_INT = 3,
 	/// use val.boolean
 	CTC_DYNAMIC_BOOL = 4,
+	/// use val.values
+	CTC_DYNAMIC_LIST = 5,
 } DYNAMIC_TYPE;
 
 typedef enum {
@@ -149,6 +151,8 @@ struct DynamicValue
 		void *content;
 		/// value if type is string
 		char *string;
+		/// value if type is list
+		struct DynamicValue *values;
 		/// value if type is integer(CTC_DYNAMIC_INT)
 		long long integer;
 		///value if type is bool(CTC_DYNMIC_BOOL)

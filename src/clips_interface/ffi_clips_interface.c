@@ -180,40 +180,28 @@ FFI_PLUGIN_EXPORT int build(crifi_graph* graph, Utf8String command){
 	}
 }
 
+static void fprint_dynamic_value(crifi_graph *graph, FILE* f, struct DynamicValue retval);
+
 FFI_PLUGIN_EXPORT bool graph_in_errorstate(crifi_graph* graph, FILE* f){
 	struct DynamicValue retval = eval(graph, "(get-error)");
 	switch (retval.type){
-		case CTC_DYNAMIC_ERROR:
-			if (f != NULL){
-				fprintf(f, "dynamic error\n");
-			}
-			return true;
-			break;
-		case CTC_DYNAMIC_STRING:
-			if (f != NULL){
-				fprintf(f, "graph in errorstate: %s\n",
-							retval.val.string);
-			}
-			return true;
 		case CTC_DYNAMIC_BOOL:
 			if (retval.val.boolean && (f != NULL)){
-				fprintf(f, "graph in errorstate(true).\n");
+				fprintf(f, "graph in errorstate: ");
+				fprint_dynamic_value(graph, f, retval);
+				fprintf(f, "\n");
 			}
 			return retval.val.boolean;
+		case CTC_DYNAMIC_STRING:
+		case CTC_DYNAMIC_LIST:
+		case CTC_DYNAMIC_ERROR:
 		case CTC_DYNAMIC_VOID:
-			if (f != NULL){
-				fprintf(f, "errorstate type void\n");
-			}
-			return true;
 		case CTC_DYNAMIC_INT:
-			if (f != NULL){
-				fprintf(f, "graph in errorstate: %d\n",
-							retval.val.integer);
-			}
-			return true;
 		default:
 			if (f != NULL){
-				fprintf(f, "errorstate type %d\n", retval.type);
+				fprintf(f, "graph in errorstate: ");
+				fprint_dynamic_value(graph, f, retval);
+				fprintf(f, "\n");
 			}
 			return true;
 	}
@@ -245,6 +233,16 @@ FFI_PLUGIN_EXPORT void free_container(struct DynamicValue value){
 			break;
 		case CTC_DYNAMIC_INT:
 		case CTC_DYNAMIC_ERROR:
+			break;
+		case CTC_DYNAMIC_LIST:
+			if (value.val.values != NULL){
+				for (struct DynamicValue* v=value.val.values;
+						v->type != CTC_DYNAMIC_VOID;
+						v++){
+					free_container(*v);
+				}
+				free(value.val.values);
+			}
 			break;
 		case CTC_DYNAMIC_STRING:
 			free(value.val.string);
@@ -280,3 +278,42 @@ FFI_PLUGIN_EXPORT void add_plugin(struct clips_graph_container *graph){
 	}
 }
 */
+
+static void fprint_dynamic_value(crifi_graph *graph, FILE* f, struct DynamicValue retval){
+	switch (retval.type){
+		case CTC_DYNAMIC_ERROR:
+			fprintf(f, "(not implemented clipsvaluetype)");
+			break;
+		case CTC_DYNAMIC_LIST:
+			fprintf(f, "[");
+			if (retval.val.values != NULL){
+				for (struct DynamicValue* v=retval.val.values;
+						v->type != CTC_DYNAMIC_VOID;
+						v++){
+					fprint_dynamic_value(graph, f, *v);
+					fprintf(f, ", ");
+				}
+			}
+			fprintf(f, "]");
+			break;
+		case CTC_DYNAMIC_STRING:
+			fprintf(f, "%s", retval.val.string);
+			break;
+		case CTC_DYNAMIC_BOOL:
+			if (retval.val.boolean){
+				fprintf(f, "true");
+			} else {
+				fprintf(f, "false");
+			}
+			break;
+		case CTC_DYNAMIC_VOID:
+			fprintf(f, "void");
+			break;
+		case CTC_DYNAMIC_INT:
+			fprintf(f, "%d", retval.val.integer);
+			break;
+		default:
+			fprintf(f, "(unhandled type %d)", retval.type);
+			break;
+	}
+}
