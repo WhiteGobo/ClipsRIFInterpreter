@@ -16,13 +16,13 @@ CLIPSValue crifi_list_get(Environment *env, CLIPSValue list, long long index);
 
 Fact *crifi_list_concatenate(Environment *env, CLIPSValue *listlist, size_t listlist_length);
 
-Fact* crifi_list_new(Environment *env, CLIPSValue *values, size_t values_length);
+int crifi_list_new(Environment *env, CLIPSValue *values, size_t values_length, CLIPSValue *ret);
 
 Fact *crifi_list_distinct_values(Environment *env, CLIPSValue list);
 
 Fact *crifi_list_intersect(Environment *env, CLIPSValue leftlist, CLIPSValue rightlist);
 
-Fact *crifi_list_except(Environment *env, CLIPSValue list, CLIPSValue exceptions);
+int crifi_list_except(Environment *env, CLIPSValue list, CLIPSValue exceptions, CLIPSValue *ret);
 
 Fact *clipsvalue_to_list(CLIPSValue val);
 

@@ -79,7 +79,7 @@ CLIPSValue crifi_list_get(Environment *env, CLIPSValue list, long long index){
 }
 
 Fact *crifi_list_concatenate(Environment *env, CLIPSValue *listlist, size_t listlist_length){
-	Fact *ret;
+	CLIPSValue ret = {.voidValue=VoidConstant(env)};
 	size_t newlist_length = 0;
 	CLIPSValue items[listlist_length];
 	CLIPSValue *newvalues, *tmpptr;
@@ -100,9 +100,9 @@ Fact *crifi_list_concatenate(Environment *env, CLIPSValue *listlist, size_t list
 			tmpptr++;
 		}
 	}
-	ret = crifi_list_new(env, newvalues, newlist_length);
+	crifi_list_new(env, newvalues, newlist_length, &ret);
 	free(newvalues);
-	return ret;
+	return ret.factValue;
 }
 
 
@@ -111,7 +111,7 @@ Fact *crifi_list_distinct_values(Environment *env, CLIPSValue list){
 	size_t newlist_length = 0;
 	CLIPSValue mf_items, *items;
 	CLIPSValue *newitems, *tmpptr;
-	Fact *ret;
+	CLIPSValue ret = {.voidValue=VoidConstant(env)};
 
 	if (!retrieve_items(env, list, &mf_items)){
 		return NULL;
@@ -134,9 +134,9 @@ Fact *crifi_list_distinct_values(Environment *env, CLIPSValue list){
 			return NULL;
 		}
 	}
-	ret = crifi_list_new(env, newitems, newlist_length);
+	crifi_list_new(env, newitems, newlist_length, &ret);
 	free(newitems);
-	return ret;
+	return ret.factValue;
 }
 
 
@@ -183,9 +183,9 @@ static size_t get_argsize(CLIPSValue val){
 	}
 }
 
-Fact* crifi_list_new(Environment *env, CLIPSValue *values, size_t values_length){
-	Fact* ret;
-
+int crifi_list_new(Environment *env, CLIPSValue *values, size_t values_length, CLIPSValue *ret){
+	int errret = 0;
+	CLIPSValue errval = {.voidValue = VoidConstant(env)};
 	Multifield *items;
 	MultifieldBuilder *mb;
 	mb = CreateMultifieldBuilder(env, values_length);
@@ -202,17 +202,26 @@ Fact* crifi_list_new(Environment *env, CLIPSValue *values, size_t values_length)
 		case PSE_NO_ERROR:
 			break;
 		default:
-			FBDispose(fb); return NULL;
+			FBDispose(fb); return 1;
 	}
-	ret = FBAssert(fb);
+	ret->factValue = FBAssert(fb);
 	switch (FBError(env)){
 		case FBE_NO_ERROR:
 			break;
+		case FBE_COULD_NOT_ASSERT_ERROR:
+			//TODO: Cant assert during pattern-matching
+			ret->multifieldValue = items;
+			break;
 		default:
-			FBDispose(fb); return NULL;
+			errret = 1;
+			ret->voidValue = VoidConstant(env);
+			errval.lexemeValue = CreateString(env, "make-list "
+					"failed due to unknown reasons.");
+			SetErrorValue(env, errval.header);
+			break;
 	}
 	FBDispose(fb);
-	return ret;
+	return errret;
 }
 
 
@@ -224,7 +233,7 @@ Fact *crifi_list_intersect(Environment *env, CLIPSValue leftlist, CLIPSValue rig
 	CLIPSValue left_mf_items, *left_items;
 
 	CLIPSValue *newitems, *tmpptr;
-	Fact *ret;
+	CLIPSValue ret = {.voidValue = VoidConstant(env)};
 
 	if (!retrieve_items(env, leftlist, &left_mf_items)) return NULL;
 	if (!retrieve_items(env, rightlist, &right_mf_items)) return NULL;
@@ -251,12 +260,12 @@ Fact *crifi_list_intersect(Environment *env, CLIPSValue leftlist, CLIPSValue rig
 			return NULL;
 		}
 	}
-	ret = crifi_list_new(env, newitems, newlist_length);
+	crifi_list_new(env, newitems, newlist_length, &ret);
 	free(newitems);
-	return ret;
+	return ret.factValue;
 }
 
-Fact *crifi_list_except(Environment *env, CLIPSValue list, CLIPSValue exceptions){
+int crifi_list_except(Environment *env, CLIPSValue list, CLIPSValue exceptions, CLIPSValue *ret){
 	IEQ_RET check;
 	size_t newlist_length = 0;
 	size_t left_items_length, right_items_length;
@@ -264,10 +273,9 @@ Fact *crifi_list_except(Environment *env, CLIPSValue list, CLIPSValue exceptions
 	CLIPSValue left_mf_items, *left_items;
 
 	CLIPSValue *newitems, *tmpptr;
-	Fact *ret;
 
-	if (!retrieve_items(env, list, &left_mf_items)) return NULL;
-	if (!retrieve_items(env, exceptions, &right_mf_items)) return NULL;
+	if (!retrieve_items(env, list, &left_mf_items)) return 1;
+	if (!retrieve_items(env, exceptions, &right_mf_items)) return 1;
 
 	left_items = left_mf_items.multifieldValue->contents;
 	right_items = right_mf_items.multifieldValue->contents;
@@ -288,12 +296,12 @@ Fact *crifi_list_except(Environment *env, CLIPSValue list, CLIPSValue exceptions
 			tmpptr++;
 		} else if (check == IEQ_ERROR){
 			free(newitems);
-			return NULL;
+			return 1;
 		}
 	}
-	ret = crifi_list_new(env, newitems, newlist_length);
+	crifi_list_new(env, newitems, newlist_length, ret);
 	free(newitems);
-	return ret;
+	return 0;
 }
 
 bool crifi_is_list(Environment *env, CLIPSValue *arglist){

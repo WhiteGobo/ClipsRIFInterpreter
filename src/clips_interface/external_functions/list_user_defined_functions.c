@@ -117,6 +117,7 @@ static size_t sprintf_arg(char *cptr, const char* format, CLIPSValue val){
 
 void func_make_list(Environment *env, UDFContext *udfc, UDFValue *out){
 	Fact* ret;
+	CLIPSValue tmpout = {.voidValue = VoidConstant(env)};
 	unsigned int l = UDFArgumentCount(udfc);
 	UDFValue tmpval;
 	CLIPSValue myval[l+1];
@@ -132,12 +133,8 @@ void func_make_list(Environment *env, UDFContext *udfc, UDFValue *out){
 			myval[i].value = tmpval.value;
 		}
 	}
-	ret = crifi_list_new(env, myval, l);
-	if (ret != NULL){
-		out->factValue = ret;
-	} else {
-		out->voidValue = VoidConstant(env);
-	}
+	crifi_list_new(env, myval, l, &tmpout);
+	out->header = tmpout.header;
 }
 
 
@@ -193,6 +190,7 @@ void func_get(Environment *env, UDFContext *udfc, UDFValue *out){
 }
 
 void func_sublist(Environment *env, UDFContext *udfc, UDFValue *out){
+	CLIPSValue tmpout = {.voidValue = VoidConstant(env)};
 	long long start, end;
 	size_t length;
 	Fact *ret;
@@ -226,14 +224,10 @@ void func_sublist(Environment *env, UDFContext *udfc, UDFValue *out){
 	if (!normalize_index(length, &start)) return;
 	if (end != length && !normalize_index(length, &end)) return;
 	if (start >= end) return;
-	ret = crifi_list_new(env,
+	crifi_list_new(env,
 			items.multifieldValue->contents + start,
-			end - start);
-	if (ret != NULL){
-		out->factValue = ret;
-	} else {
-		out->voidValue = VoidConstant(env);
-	}
+			end - start, &tmpout);
+	out->header = tmpout.header;
 }
 
 void func_append(Environment *env, UDFContext *udfc, UDFValue *out){
@@ -265,13 +259,9 @@ void func_append(Environment *env, UDFContext *udfc, UDFValue *out){
 		tmpptr->value = tmparg.value;
 		tmpptr++;
 	}
-	Fact *ret = crifi_list_new(env, newvalues,
-						listlength+arglength -1);
-	if (ret != NULL){
-		out->factValue = ret;
-	} else {
-		out->voidValue = VoidConstant(env);
-	}
+	CLIPSValue tmpout = {.voidValue = VoidConstant(env)};
+	crifi_list_new(env, newvalues, listlength+arglength -1, &tmpout);
+	out->header = tmpout.header;
 	free(newvalues);
 }
 
@@ -307,6 +297,7 @@ void func_insert_before(Environment *env, UDFContext *udfc, UDFValue *out){
 	long long position;
 	size_t listlength;
 	unsigned arglength;
+	CLIPSValue tmpout = {.voidValue = VoidConstant(env)};
 	UDFValue firstarg, positionarg, newvalarg;
 	CLIPSValue list;
 	CLIPSValue *newvalues, *tmpptr;
@@ -340,12 +331,8 @@ void func_insert_before(Environment *env, UDFContext *udfc, UDFValue *out){
 		tmpptr->value = list.multifieldValue->contents[i].value;
 		tmpptr++;
 	}
-	Fact *ret = crifi_list_new(env, newvalues, listlength+1);
-	if (ret != NULL) {
-		out->factValue = ret;
-	} else {
-		out->voidValue = VoidConstant(env);
-	}
+	crifi_list_new(env, newvalues, listlength+1, &tmpout);
+	out->header = tmpout.header;
 	free(newvalues);
 }
 
@@ -381,12 +368,9 @@ void func_remove(Environment *env, UDFContext *udfc, UDFValue *out){
 		tmpptr->value = list.multifieldValue->contents[i].value;
 		tmpptr++;
 	}
-	Fact *ret = crifi_list_new(env, newvalues, listlength-1);
-	if (ret != NULL){
-		out->factValue = ret;
-	} else {
-		out->voidValue = VoidConstant(env);
-	}
+	CLIPSValue tmpout = {.voidValue = VoidConstant(env)};
+	crifi_list_new(env, newvalues, listlength-1, &tmpout);
+	out->header = tmpout.header;
 	free(newvalues);
 }
 
@@ -410,12 +394,9 @@ void func_reverse(Environment *env, UDFContext *udfc, UDFValue *out){
 		tmpptr->value = list.multifieldValue->contents[i].value;
 		tmpptr++;
 	}
-	Fact *ret = crifi_list_new(env, newvalues, listlength);
-	if (ret != NULL){
-		out->factValue = ret;
-	} else {
-		out->voidValue = VoidConstant(env);
-	}
+	CLIPSValue tmpout = {.voidValue = VoidConstant(env)};
+	crifi_list_new(env, newvalues, listlength, &tmpout);
+	out->header = tmpout.header;
 	free(newvalues);
 }
 
@@ -458,12 +439,9 @@ void func_index_of(Environment *env, UDFContext *udfc, UDFValue *out){
 			return;
 		}
 	}
-	Fact *ret = crifi_list_new(env, newvalues, newvalues_length);
-	if (ret != NULL){
-		out->factValue = ret;
-	} else {
-		out->voidValue = VoidConstant(env);
-	}
+	CLIPSValue tmpout = {.voidValue = VoidConstant(env)};
+	crifi_list_new(env, newvalues, newvalues_length, &tmpout);
+	out->header = tmpout.header;
 	free(newvalues);
 }
 
@@ -542,6 +520,7 @@ void func_intersect(Environment *env, UDFContext *udfc, UDFValue *out){
 }
 
 void func_except(Environment *env, UDFContext *udfc, UDFValue *out){
+	CLIPSValue tmpout = {.voidValue = VoidConstant(env)};
 	Fact *newlist;
 	UDFValue leftarg, rightarg;
 	CLIPSValue leftlist, rightlist;
@@ -554,12 +533,8 @@ void func_except(Environment *env, UDFContext *udfc, UDFValue *out){
 	}
 	rightlist.value = rightarg.value;
 
-	newlist = crifi_list_except(env, leftlist, rightlist);
-	if (newlist != NULL) {
-		out->factValue = newlist;
-	} else {
-		out->voidValue = VoidConstant(env);
-	}
+	crifi_list_except(env, leftlist, rightlist, &tmpout);
+	out->header = tmpout.header;
 }
 
 
