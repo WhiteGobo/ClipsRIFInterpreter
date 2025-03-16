@@ -17,8 +17,7 @@ const char *input, *output;
  * See `https://librdf.org/raptor/api/raptor-parsers.html`_ for more info.
  * TODO: move this to parse input
  */
-//const char* format = "guess";
-const char* format = "turtle";
+char* format = "turtle";
 
 /**
  * TODO: move this to parse input
@@ -159,8 +158,11 @@ static int parse(int argc, char* argv[]){
 	int opt;
 	input = NULL;
 	output = NULL;
-	while ((opt = getopt(argc, argv, "i:o:")) != -1){
+	while ((opt = getopt(argc, argv, "i:o:f:")) != -1){
 		switch (opt){
+			case 'f':
+				format = optarg;
+				break;
 			case 'i':
 				input = optarg;
 				break;

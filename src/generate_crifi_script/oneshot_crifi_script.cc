@@ -11,11 +11,12 @@ FILE* source = NULL;
 FILE* data = NULL;
 crifi_graph *graph = NULL;
 
+//const char *outformat = "turtle";
+const char *outformat = "turtle";
+
 /**
  * See `https://librdf.org/raptor/api/raptor-parsers.html`_ for more info.
- * TODO: move this to parse input
  */
-//const char* format = "guess";
 const char* format = "turtle";
 
 /**
@@ -53,15 +54,16 @@ int main(int argc, char* argv[]){
 
 static int postprocess(){
 	int ctrl;
-	ctrl = crifi_serialize_all_triples(graph, stderr, "turtle", "");
-	if (0 != ctrl){
-		print_serialize_turtle_error(ctrl);
-		return ctrl;
+	if (0 == strcmp("clipsscript", outformat)){
+		ctrl = serialize_information_as_clips_script(stdout, graph);
+		if (0 != ctrl) print_serialize_script_error(ctrl);
+	} else {
+		ctrl = crifi_serialize_all_triples(graph, stdout, outformat, "");
+		if (0 != ctrl){
+			print_serialize_turtle_error(ctrl);
+			return ctrl;
+		}
 	}
-	/*
-	ctrl = serialize_information_as_clips_script(stdout, graph);
-	if (0 != ctrl) print_serialize_script_error(ctrl);
-	*/
 	return ctrl;
 }
 
@@ -73,7 +75,7 @@ static int run(){
 		fprintf(stderr, "Exiting after graph in errorstate: "
 				"printing current information:\n");
 		eval(graph, "(facts)");
-		crifi_serialize_all_triples(graph, stderr, "turtle", "");
+		crifi_serialize_all_triples(graph, stderr, outformat, "");
 		fprintf(stderr, "Exiting after graph in errorstate\n");
 		return 1;
 	}
@@ -124,8 +126,14 @@ static int load_graph(){
 static int parse(int argc, char* argv[]){
 	int opt;
 	char *sourcepath, *datapath;
-	while ((opt = getopt(argc, argv, "d:")) != -1){
+	while ((opt = getopt(argc, argv, "d:i:")) != -1){
 		switch (opt){
+			case 'i':
+				format = optarg;
+				break;
+			case 'o':
+				outformat = optarg;
+				break;
 			case 'd':
 				data = fopen(optarg, "r");
 				if (data==NULL){
