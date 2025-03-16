@@ -19,9 +19,11 @@ set_target_properties(crifi_raptor PROPERTIES
 target_include_directories(crifi_raptor PUBLIC
 	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/>)
 
+include(include_raptor.cmake)
+
 target_link_libraries(crifi_raptor PUBLIC
 	ffi_clips_interface
-	raptor
+	raptor2
 )
 
 target_link_libraries(crifi_raptor PRIVATE
@@ -30,4 +32,3 @@ target_link_libraries(crifi_raptor PRIVATE
 	crifi_lists
 )
 
-include(include_raptor.cmake)
