@@ -15,7 +15,10 @@ enum {
 	SAT_SUBJ,
 	SAT_PRED,
 	SAT_OBJ,
-	SAT_LISTITEMS
+	SAT_LISTITEMS,
+	SAT_LISTIDFAILED,
+	SAT_LISTELEMENTFAILED,
+	SAT_SERIALIZEFAILED
 };
 
 typedef enum {
@@ -50,12 +53,14 @@ typedef struct {
 	raptor_term *clips_function_name;
 	raptor_term *clips_function_args;
 	raptor_term *clips_expression;
+	raptor_term *clips_assert;
 
 	raptor_term *clips_deftemplate_name;
 	raptor_term *clips_slot;
 	raptor_term *clips_slot_name;
 	raptor_term *clips_constraint;
 	raptor_term *clips_constraints;
+	raptor_term *clips_field;
 
 	raptor_term *clips_symbol;
 	raptor_term *clips_string;
@@ -107,11 +112,14 @@ static MyContext* init_context(){
 	cntxt->clips_slot_name = URI(world, CLIPS("slot-name"));
 	cntxt->clips_constraint = URI(world, CLIPS("constraint"));
 	cntxt->clips_constraints = URI(world, CLIPS("constraints"));
+	cntxt->clips_field = URI(world, CLIPS("field"));
 	cntxt->clips_SingleWildcard = URI(world, CLIPS("SingleWildcard"));
 	cntxt->clips_MultiWildcard = URI(world, CLIPS("MultiWildcard"));
 
 	cntxt->clips_function_name = URI(world, CLIPS("function-name"));
 	cntxt->clips_function_args = URI(world, CLIPS("function-args"));
+
+	cntxt->clips_assert = URI(world, CLIPS("assert"));
 
 	//constant thingies
 	cntxt->clips_symbol = URI(world, CLIPS("symbol"));
@@ -131,46 +139,66 @@ static void free_context(MyContext* cntxt){
 
 static CRIFI_SERIALIZE_SCRIPT_RET add_info_to_tree_list(MyContext* cntxt, crifi_graph *graph, Fact *l){
 	int err, length;
+	bool success;
 	raptor_term *first = cntxt->rdf_cntxt->rdf_first;
 	raptor_term *rest = cntxt->rdf_cntxt->rdf_rest;
 	raptor_term *nil = cntxt->rdf_cntxt->rdf_nil;
 	raptor_term *last = NULL;
 	raptor_term *current = NULL;
-	CLIPSValue tmpval;
+	raptor_term *element = NULL;
+	CLIPSValue l_val = {.factValue = l};
+	CLIPSValue list_iterator_node = {.voidValue = VoidConstant(graph)};
+	CLIPSValue *tmpval;// = {.voidValue = VoidConstant(graph)};
+	CLIPSValue items = {.voidValue = VoidConstant(graph)};
 	CLIPSValue clipsval_list = {.factValue = l};
 	length = crifi_list_count(graph, &clipsval_list);
-	fprintf(stderr, "asdf start addinfototreelist\n");
+	if (length == 0){ //no further serializing needed
+		return SAT_NOERROR;
+	}
+	if (!retrieve_items(graph, l_val, &items)){
+		return SAT_LISTITEMS;
+	}
+	
 	for (int i = 0; i<length; i++){
-		fprintf(stderr, "brubru %d\n", i);
+		if (!crifi_list_as_identifier(graph, &l_val, i, &list_iterator_node)){
+			return SAT_LISTIDFAILED;
+		}
+		current = clipsvalue_to_raptorterm(cntxt->world, graph, list_iterator_node);
+		if (current == NULL){
+			return CRIFI_SERIALIZE_SCRIPT_OBJECT;
+		}
+		tmpval = items.multifieldValue->contents + i;
+		element = clipsvalue_to_raptorterm(cntxt->world, graph, *tmpval);
+		if (element == NULL){
+			return SAT_LISTELEMENTFAILED;
+		}
+		err = add_triple(cntxt->nodes, current, first, element);
+		switch (err){
+			case 0: break;
+			default: return CRIFI_SERIALIZE_SCRIPT_UNKNOWN;
+		}
 		if (last != NULL){
 			err = add_triple(cntxt->nodes, last, rest, current);
 			switch (err){
 				case 0: break;
 				default: return CRIFI_SERIALIZE_SCRIPT_UNKNOWN;
 			}
+			raptor_free_term(last);
 		}
-		current = clipsvalue_to_raptorterm(cntxt->world, graph, tmpval);
-		if (current == NULL){
-			return CRIFI_SERIALIZE_SCRIPT_OBJECT;
-		}
-		err = add_triple(cntxt->nodes, last, rest, current);
-		switch (err){
-			case 0: break;
-			default: return CRIFI_SERIALIZE_SCRIPT_UNKNOWN;
-		}
-		raptor_free_term(last);
 		last = current;
 		current = NULL;
 	}
+	success = true;
 	if (last != NULL){
 		err = add_triple(cntxt->nodes, last, rest, nil);
-		switch (err){
-			case 0: break;
-			default: return CRIFI_SERIALIZE_SCRIPT_UNKNOWN;
-		}
 		raptor_free_term(last);
+		last = NULL;
 	}
-	if (current != NULL) raptor_free_term(current);
+	switch (err){
+		case 0: break;
+		default:
+			return CRIFI_SERIALIZE_SCRIPT_UNKNOWN;
+	}
 	return CRIFI_SERIALIZE_SCRIPT_NOERROR;
 }
 
@@ -185,7 +213,6 @@ static CRIFI_SERIALIZE_SCRIPT_RET add_info_to_tree(MyContext* cntxt,
 	CLIPSValue tmpValue;
 	raptor_statement *triple;
 	raptor_term *subj, *pred, *obj;
-	fprintf(stderr, "brubru1234\n");
 	for(Fact *f = get_next_triple(graph, NULL);
 			f != NULL;
 			f = get_next_triple(graph, f))
@@ -223,19 +250,17 @@ static CRIFI_SERIALIZE_SCRIPT_RET add_info_to_tree(MyContext* cntxt,
 		//raptor_serializer_serialize_statement(my_serializer, triple);
 		//raptor_free_statement(triple);
 	}
-	/*
 	fprintf(stderr, "qwertzstart lists\n");
 	for(Fact *l = get_next_list(graph, NULL);
 			l != NULL;
 			l = get_next_list(graph, l))
 	{
-		fprintf(stderr, "convert list:\n");
+		//fprintf(stderr, "convert list:\n");
 		err = add_info_to_tree_list(cntxt, graph, l);
 		if (err != CRIFI_SERIALIZE_SCRIPT_NOERROR){
 			return err;
 		}
 	}
-	*/
 	return CRIFI_SERIALIZE_SCRIPT_NOERROR;
 }
 
@@ -255,6 +280,11 @@ FUNC_DESC(fprintf_constraint);
 FUNC_DESC(fprintf_term);
 FUNC_DESC(fprintf_constant);
 FUNC_DESC(fprintf_function);
+FUNC_DESC(fprintf_assert);
+
+FUNC_DESC(fprintf_template_rhs_pattern);
+FUNC_DESC(fprintf_rhs_slot);
+FUNC_DESC(fprintf_rhs_field);
 
 
 /**
@@ -292,8 +322,7 @@ FUNC_DESC(fprintf_term){
 	if (err != CRIFI_SERIALIZE_BROKEN_GRAPH) return err;
 	err = fprintf_variable(cntxt, stream, n);
 	if (err != CRIFI_SERIALIZE_BROKEN_GRAPH) return err;
-	fprintf(stream, "(fprintf_term not fully implemented)");
-	return CRIFI_SERIALIZE_SCRIPT_NOERROR;
+	return fprintf_function(cntxt, stream, n);
 }
 
 /**
@@ -312,14 +341,18 @@ FUNC_DESC(fprintf_term){
 FUNC_DESC(fprintf_function){
 	CRIFI_SERIALIZE_SCRIPT_RET err = CRIFI_SERIALIZE_SCRIPT_NOERROR;
 	NodeIterator* n_iter;
-	raptor_term *name, *args;
+	raptor_term *name, *args, *assert;
+	assert = get_object(n, cntxt->clips_assert);
+	if (assert != NULL) return fprintf_assert(cntxt, stream, n);
 	name = get_object(n, cntxt->clips_function_name);
 	if (name == NULL) return CRIFI_SERIALIZE_BROKEN_GRAPH;
 	fprintf(stream, " (");
 	fprintf_raptor_term(stream, name);
 
 	args = get_object(n, cntxt->clips_function_args);
+	if(args == NULL) return CRIFI_SERIALIZE_BROKEN_GRAPH;
 	n_iter = new_rdflist_iterator(cntxt->rdf_cntxt, cntxt->nodes, args);
+	if(n_iter == NULL) return CRIFI_SERIALIZE_BROKEN_GRAPH;
 	for(Node* x = node_iterator_get(n_iter);
 			x != NULL;
 			x = node_iterator_get_next(n_iter)){
@@ -331,6 +364,22 @@ FUNC_DESC(fprintf_function){
 	fprintf(stream, ")");
 	return err;
 
+}
+
+/**
+ * (assert <RHS-pattern>+)
+ */
+FUNC_DESC(fprintf_assert){
+	CRIFI_SERIALIZE_SCRIPT_RET err = CRIFI_SERIALIZE_SCRIPT_NOERROR;
+	raptor_term *assert;
+	Node *assert_n;
+	assert = get_object(n, cntxt->clips_assert);
+	if (assert == NULL) return CRIFI_SERIALIZE_BROKEN_GRAPH;
+	assert_n = retrieve_node(cntxt->nodes, assert);
+	fprintf(stream, "(assert");
+	err = fprintf_template_rhs_pattern(cntxt, stream, assert_n);
+	fprintf(stream, ")");
+	return err;
 }
 
 static CRIFI_SERIALIZE_SCRIPT_RET fprintf_lhs_slot(MyContext *cntxt, FILE* stream, Node* n){
@@ -364,6 +413,85 @@ static CRIFI_SERIALIZE_SCRIPT_RET fprintf_lhs_slot(MyContext *cntxt, FILE* strea
 	fprintf(stream, ")");
 	return err;
 }
+
+/**
+ * <RHS-pattern> ::= <ordered-RHS-pattern> | <template-RHS-pattern>
+ * <template-RHS-pattern> ::= (<deftemplate-name> <RHS-slot>*)
+ */
+static CRIFI_SERIALIZE_SCRIPT_RET fprintf_template_rhs_pattern(MyContext *cntxt, FILE* stream, Node* n){
+	CRIFI_SERIALIZE_SCRIPT_RET err;
+	raptor_term *name, *slots;
+	NodeIterator* n_iter;
+	name = get_object(n, cntxt->clips_deftemplate_name);
+	fprintf(stream, "(");
+	if (name == NULL){
+		return CRIFI_SERIALIZE_BROKEN_GRAPH;
+	}
+	fprintf_raptor_term(stream, name);
+	slots = get_object(n, cntxt->clips_slot);
+	n_iter = new_rdflist_iterator(cntxt->rdf_cntxt, cntxt->nodes, slots);
+	for(Node* x = node_iterator_get(n_iter);
+			x != NULL;
+			x=node_iterator_get_next(n_iter)){
+		err = fprintf_rhs_slot(cntxt, stream, x);
+		if (err != CRIFI_SERIALIZE_SCRIPT_NOERROR) break;
+	}
+	free_node_iterator(n_iter);
+
+	fprintf(stream, ")");
+	return err;
+}
+
+/**
+ * <RHS-slot> ::= <single-field-RHS-slot> |
+ * 		<multifield-RHS-slot>
+ * <single-field-RHS-slot> ::= (<slot-name> <RHS-field>)
+ * <multifield-RHS-slot> ::= (<slot-name> <RHS-field>*)
+ */
+static CRIFI_SERIALIZE_SCRIPT_RET fprintf_rhs_slot(MyContext *cntxt, FILE* stream, Node* n){
+	CRIFI_SERIALIZE_SCRIPT_RET err = CRIFI_SERIALIZE_SCRIPT_NOERROR;
+	raptor_term *name, *field, *fields;
+	Node* constraint_n;
+	NodeIterator* n_iter;
+	name = get_object(n, cntxt->clips_slot_name);
+	if (name == NULL) return CRIFI_SERIALIZE_BROKEN_GRAPH;
+	fprintf(stream, " (");
+	fprintf_raptor_term(stream, name);
+	fprintf(stream, " ");
+
+	fields = get_object(n, cntxt->clips_field);
+	if(fields == NULL){
+		fprintf(stderr, "missing fields\n");
+		return CRIFI_SERIALIZE_BROKEN_GRAPH;
+	}
+	n_iter = new_rdflist_iterator(cntxt->rdf_cntxt, cntxt->nodes, fields);
+	if(n_iter == NULL){
+		fprintf(stderr, "field should be rdf:List\n");
+		return CRIFI_SERIALIZE_BROKEN_GRAPH;
+	}
+	for(Node* x = node_iterator_get(n_iter);
+			x != NULL;
+			x = node_iterator_get_next(n_iter)){
+		err = fprintf_rhs_field(cntxt, stream, x);
+		if (err != CRIFI_SERIALIZE_SCRIPT_NOERROR) break;
+	}
+	free_node_iterator(n_iter);
+	fprintf(stream, ")");
+	return err;
+}
+
+/**
+ * <RHS-field> ::= <variable> | <constant> | <function-call>
+ */
+FUNC_DESC(fprintf_rhs_field){
+	CRIFI_SERIALIZE_SCRIPT_RET err;
+	err = fprintf_constant(cntxt, stream, n);
+	if (err != CRIFI_SERIALIZE_BROKEN_GRAPH) return err;
+	err = fprintf_variable(cntxt, stream, n);
+	if (err != CRIFI_SERIALIZE_BROKEN_GRAPH) return err;
+	return fprintf_function(cntxt, stream, n);
+}
+
 
 static CRIFI_SERIALIZE_SCRIPT_RET fprintf_template_pattern_ce(MyContext *cntxt, FILE* stream, Node* n){
 	CRIFI_SERIALIZE_SCRIPT_RET err;

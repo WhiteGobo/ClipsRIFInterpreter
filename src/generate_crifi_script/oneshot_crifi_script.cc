@@ -126,7 +126,7 @@ static int load_graph(){
 static int parse(int argc, char* argv[]){
 	int opt;
 	char *sourcepath, *datapath;
-	while ((opt = getopt(argc, argv, "d:i:")) != -1){
+	while ((opt = getopt(argc, argv, "d:i:o:")) != -1){
 		switch (opt){
 			case 'i':
 				format = optarg;
