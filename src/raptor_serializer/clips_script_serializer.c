@@ -301,9 +301,9 @@ FUNC_DESC(fprintf_constant){
 	}
 	string = get_object(n, cntxt->clips_string);
 	if (string != NULL){
-		fprintf(stream, " \"");
+		fprintf(stream, " ");
 		fprintf_raptor_term(stream, string);
-		fprintf(stream, "\" ");
+		fprintf(stream, " ");
 		return CRIFI_SERIALIZE_SCRIPT_NOERROR;
 	}
 	return CRIFI_SERIALIZE_BROKEN_GRAPH;
@@ -374,7 +374,10 @@ FUNC_DESC(fprintf_assert){
 	raptor_term *assert;
 	Node *assert_n;
 	assert = get_object(n, cntxt->clips_assert);
-	if (assert == NULL) return CRIFI_SERIALIZE_BROKEN_GRAPH;
+	if (assert == NULL){
+		fprintf(stderr, "fprintf_assert failed to find assert target\n");
+		return CRIFI_SERIALIZE_BROKEN_GRAPH;
+	}
 	assert_n = retrieve_node(cntxt->nodes, assert);
 	fprintf(stream, "(assert");
 	err = fprintf_template_rhs_pattern(cntxt, stream, assert_n);
@@ -425,6 +428,7 @@ static CRIFI_SERIALIZE_SCRIPT_RET fprintf_template_rhs_pattern(MyContext *cntxt,
 	name = get_object(n, cntxt->clips_deftemplate_name);
 	fprintf(stream, "(");
 	if (name == NULL){
+		fprintf(stderr, "template_rhs_pattern is missing a name\n");
 		return CRIFI_SERIALIZE_BROKEN_GRAPH;
 	}
 	fprintf_raptor_term(stream, name);
@@ -450,30 +454,40 @@ static CRIFI_SERIALIZE_SCRIPT_RET fprintf_template_rhs_pattern(MyContext *cntxt,
  */
 static CRIFI_SERIALIZE_SCRIPT_RET fprintf_rhs_slot(MyContext *cntxt, FILE* stream, Node* n){
 	CRIFI_SERIALIZE_SCRIPT_RET err = CRIFI_SERIALIZE_SCRIPT_NOERROR;
+	int i = 0;
 	raptor_term *name, *field, *fields;
 	Node* constraint_n;
 	NodeIterator* n_iter;
 	name = get_object(n, cntxt->clips_slot_name);
-	if (name == NULL) return CRIFI_SERIALIZE_BROKEN_GRAPH;
+	if (name == NULL){
+		fprintf(stderr, "fprintf_rhs_slot is missing a cs:slot-name\n");
+		return CRIFI_SERIALIZE_BROKEN_GRAPH;
+	}
 	fprintf(stream, " (");
 	fprintf_raptor_term(stream, name);
 	fprintf(stream, " ");
 
 	fields = get_object(n, cntxt->clips_field);
 	if(fields == NULL){
-		fprintf(stderr, "missing fields\n");
+		fprintf(stderr, "fprintf_rhs_slot is missing cs:field\n");
 		return CRIFI_SERIALIZE_BROKEN_GRAPH;
 	}
 	n_iter = new_rdflist_iterator(cntxt->rdf_cntxt, cntxt->nodes, fields);
 	if(n_iter == NULL){
-		fprintf(stderr, "field should be rdf:List\n");
+		fprintf(stderr, "cs:field should target a rdf:List\n");
 		return CRIFI_SERIALIZE_BROKEN_GRAPH;
 	}
+	i = 0;
 	for(Node* x = node_iterator_get(n_iter);
 			x != NULL;
 			x = node_iterator_get_next(n_iter)){
+		i++;
 		err = fprintf_rhs_field(cntxt, stream, x);
 		if (err != CRIFI_SERIALIZE_SCRIPT_NOERROR) break;
+	}
+	if (i == 0){
+		fprintf(stderr, "list for cs:field must be non empty.\n");
+		return CRIFI_SERIALIZE_BROKEN_GRAPH;
 	}
 	free_node_iterator(n_iter);
 	fprintf(stream, ")");
@@ -486,9 +500,25 @@ static CRIFI_SERIALIZE_SCRIPT_RET fprintf_rhs_slot(MyContext *cntxt, FILE* strea
 FUNC_DESC(fprintf_rhs_field){
 	CRIFI_SERIALIZE_SCRIPT_RET err;
 	err = fprintf_constant(cntxt, stream, n);
-	if (err != CRIFI_SERIALIZE_BROKEN_GRAPH) return err;
+	switch (err){
+		case CRIFI_SERIALIZE_SCRIPT_NOERROR:
+			return CRIFI_SERIALIZE_SCRIPT_NOERROR;
+		case CRIFI_SERIALIZE_BROKEN_GRAPH:
+			break;
+		default:
+			fprintf(stderr, "fprintf_constant failed\n");
+			return err;
+	}
 	err = fprintf_variable(cntxt, stream, n);
-	if (err != CRIFI_SERIALIZE_BROKEN_GRAPH) return err;
+	switch (err){
+		case CRIFI_SERIALIZE_SCRIPT_NOERROR:
+			return CRIFI_SERIALIZE_SCRIPT_NOERROR;
+		case CRIFI_SERIALIZE_BROKEN_GRAPH:
+			break;
+		default:
+			fprintf(stderr, "fprintf_variable failed\n");
+			return err;
+	}
 	return fprintf_function(cntxt, stream, n);
 }
 
