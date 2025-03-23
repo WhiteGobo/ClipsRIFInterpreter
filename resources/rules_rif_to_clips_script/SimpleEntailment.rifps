@@ -368,6 +368,7 @@ Document(
                       ?pattern[ex:binds-variables -> ?newsuppliedboundvars]
                       ?defrule[ex:bound-variables -> ?suppliedboundvars]
                       List() = External( func:except(?neededboundvars ?suppliedboundvars) )
+                      Not( ?defrule[ex:added-pattern -> ?pattern] )
                     ) Then Do (
                       (?currentconditions ?defrule[ex:out-as-conditional -> ?currentconditions])
                       Retract( ?defrule[ex:add-pattern-as-conditional -> ?pattern] )
