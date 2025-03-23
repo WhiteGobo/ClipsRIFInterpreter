@@ -105,8 +105,8 @@ static int load_graph(){
 	while(fgets(eo_script, script_size, source)){
 		eo_script = strchr(eo_script, '\0');
 	}
-	fprintf(stderr, "loading script: \n%s\n\n", script);
 	if(!load_script(graph, script)){
+		fprintf(stderr, "loading script: \n%s\n\n", script);
 		free(script);
 		fprintf(stderr, "Couldnt load script.\n");
 		return 1;

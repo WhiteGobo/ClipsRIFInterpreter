@@ -1,0 +1,28 @@
+Document( 
+ Prefix(func <http://www.w3.org/2007/rif-builtin-function#>) 
+ Prefix(pred <http://www.w3.org/2007/rif-builtin-predicate#>) 
+ Prefix(owl <http://www.w3.org/2002/07/owl#>)
+ Prefix(deffact <http://white.gobo/crifi/resource-manager/deffacts#>)
+ Prefix(rema <http://white.gobo/crifi/resource-manager#>)
+ Prefix(cs <http://clips.script/>)
+ Prefix(crifi <http://white.gobo/>)
+ Prefix(ex <http://example.com/>)
+ Prefix(rif <http://www.w3.org/2007/rif#>)
+
+ Group (
+
+  (* ex:transform-rif-consts *) Group (
+   (* ex:constIRI-to-constraint *) Forall ?rifnode ?iristring(
+    If And(
+     ?rifnode[rif:constIRI -> ?iristring]
+    ) Then Do ((?clipsnode New())
+     Assert( ?rifnode[ex:as-constraint -> ?clipsnode] )
+     Assert( ?clipsnode[cs:symbol -> External( crifi:iri-to-clipsconstant(?iristring))] )
+    )
+   )
+  )
+
+
+
+ )
+)

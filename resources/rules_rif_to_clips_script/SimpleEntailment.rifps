@@ -126,6 +126,27 @@ Document(
         )
       )
       (* ex:transform-rif-frame *) Group (
+        (* ex:part-frame-pattern *) Forall ?rifframe ?slotlist ?rifforall (
+          If And (
+            ?rifforall[rif:pattern -> ?rifframe]
+            ?rifframe[rif:object -> ?object]
+            ?rifframe[rif:slots -> ?slotlist]
+            External(pred:numeric-greater-than(External(func:count(?slotlist)) 1))
+          ) Then Do (
+            (?newframefirst New())
+            (?newframerest New())
+            Retract( ?rifforall[rif:pattern -> ?rifframe] )
+            Assert(?rifforall[ex:brubru -> ex:brubru])
+            Assert( ?rifforall[rif:pattern -> ?newframefirst] )
+            Assert( ?newframefirst[rdf:type -> rif:Frame] )
+            Assert( ?newframefirst[rif:object -> ?object] )
+            Assert( ?newframefirst[rif:slots -> External(func:sublist(?slotlist 0 1))] )
+            Assert( ?rifforall[rif:pattern -> ?newframerest] )
+            Assert( ?newframerest[rdf:type -> rif:Frame] )
+            Assert( ?newframerest[rif:object -> ?object] )
+            Assert( ?newframerest[rif:slots -> External(func:remove(?slotlist 0))] )
+          )
+        )
         (* ex:as-expression-transform-rif-frame *) Forall ?rifnode ?slotlist ?slot ?currentconditionalelement ?clipsrestraint ?slotvalue ?slotkey ?constraintsubject(
           If And (
             ?rifnode[rdf:type -> rif:Frame]
@@ -202,14 +223,58 @@ Document(
           Assert( ?slotobject[cs:constraint -> ?constraintobject])
         )
       )
-      (* ex:transform-assert *) Forall ?rifassert (
+      (* ex:transform-assert *) Forall ?rifassert ?riftarget(
         If And(
+          ?rifassert[rdf:type -> rif:Assert]
           ?rifassert[rif:target -> ?riftarget]
           ?riftarget[ex:as-rhspattern -> ?clipsfact]
         ) Then Do (
           (?clipsaction New())
           Assert( ?rifassert[ex:as-action -> External(func:make-list(?clipsaction))] )
           Assert( ?clipsaction[cs:assert -> ?clipsfact] )
+        )
+      )
+      (* ex:transform-retract-var *) Forall ?rifretract ?riftarget ?varname(
+        If And(
+          ?rifretract[rdf:type -> rif:Retract]
+          ?rifretract[rif:target -> ?riftarget]
+          ?riftarget[rif:varname -> ?varname]
+        ) Then Do (
+          (?clipsretract New())
+          (?clipsexpand New())
+          (?clipsfindfacts New())
+          (?clipsdeftemplate New())
+          (?factvariable New())
+          (?factquery New())
+          Assert( ?rifretract[ex:as-action -> External(func:make-list(?clipsretract))] )
+          Assert( ?clipsretract[cs:function-name -> "retract"] )
+          Assert( ?clipsretract[cs:function-args -> External( func:make-list(?clipsexpand))] )
+          Assert( ?clipsexpand[cs:function-name -> "expand$"] )
+          Assert( ?clipsexpand[cs:function-args -> External( func:make-list(?clipsfindfacts))] )
+          Assert( ?clipsfindfacts[cs:function-name -> "find-all-facts"])
+          Assert( ?clipsfindfacts[rdf:type -> cs:FindAllFacts] )
+          Assert( ?clipsfindfacts[cs:fact-set-template -> External(func:make-list(?clipsdeftemplate))] )
+          Assert( ?clipsfindfacts[cs:query -> ?factquery] )
+          Assert( ?clipsdeftemplate[cs:deftemplate-name -> "TripleTemplate"] )
+          Assert( ?clipsdeftemplate[cs:fact-set-member-variable -> ?factvariable] )
+          Assert( ?factvariable[cs:variable-name -> "fct"] )
+          Assert( ?factquery[cs:function-name -> "eq"] )
+          Assert( ?factquery[cs:function-args -> External(func:make-list(?factvariable ?varname))] )
+        )
+      )
+      (* ex:transform-retract-frame *) Forall ?rifretract ?riftarget(
+        If And(
+          ?rifretract[rdf:type -> rif:Retract]
+          ?rifretract[rif:target -> ?riftarget]
+          ?riftarget[rdf:type -> rif:Frame]
+        ) Then Do (
+          (?clipsretract New())
+          (?clipsexpand New())
+          Assert( ?rifretract[ex:as-action -> External(func:make-list(?clipsretract))] )
+          Assert( ?clipsretract[cs:function-name -> "retract"] )
+          Assert( ?clipsretract[cs:function-args -> External( func:make-list(?clipsexpand))] )
+          Assert( ?clipsexpand[cs:function-name -> "expand$"] )
+          Assert( ?clipsexpand[cs:function-args -> External( func:make-list())] )
         )
       )
       (* ex:transform-do *) Group (
@@ -287,10 +352,11 @@ Document(
                     If And (
                       ?defrule[ex:uses-patterns-as-conditional -> ?rifrule]
                       ?rifrule[rif:pattern -> ?pattern]
-                      ) Then Do (
-                        Assert( ?defrule[ex:add-pattern-as-conditional -> ?pattern] )
-                        )
+                      ?pattern[ex:as-conditional -> ?patternconditions]
+                    ) Then Do (
+                      Assert( ?defrule[ex:add-pattern-as-conditional -> ?pattern] )
                     )
+                  )
 
                   (* ex:add-formula-as-pattern-to-list *) Forall ?rule ?pattern ?defrule ?defruleconditionlist (
                     If And (
@@ -302,28 +368,30 @@ Document(
                       ?pattern[ex:binds-variables -> ?newsuppliedboundvars]
                       ?defrule[ex:bound-variables -> ?suppliedboundvars]
                       List() = External( func:except(?neededboundvars ?suppliedboundvars) )
-                      ) Then Do (
-                        (?currentconditions ?defrule[ex:out-as-conditional -> ?currentconditions])
-                        Retract( ?defrule[ex:add-pattern-as-conditional -> ?pattern] )
-                        Assert( ?defrule[ex:implemented-pattern -> ?pattern] )
-                        Modify( ?defrule[ex:out-as-conditional -> External(func:concatenate(?currentconditions ?patternconditions))])
-                        Modify( ?defrule[ex:bound-variables -> External(func:union(?suppliedboundvars ?suppliedboundvars))] )
-                        )
+                    ) Then Do (
+                      (?currentconditions ?defrule[ex:out-as-conditional -> ?currentconditions])
+                      Retract( ?defrule[ex:add-pattern-as-conditional -> ?pattern] )
+                      Assert( ?defrule[ex:implemented-pattern -> ?pattern] )
+                      Modify( ?defrule[ex:out-as-conditional -> External(func:concatenate(?currentconditions ?patternconditions))])
+                      Modify( ?defrule[ex:bound-variables -> External(func:union(?suppliedboundvars ?suppliedboundvars))] )
+                      Assert( ?defrule[ex:added-pattern -> ?pattern] )
                     )
-                  ) Group 3 (
-                    (* ex:complete-pattern-to-conditional *) Forall ?defrule ?clipsrule ?conditional (
+                  )
+                ) Group 3 (
+                    (* ex:complete-pattern-to-conditional *) Forall ?defrule ?conditional ?rifrule (
                       If And (
                         ?defrule[ex:uses-patterns-as-conditional -> ?rifrule]
-                        Not( Exists ?pattern (?defrule[ex:add-pattern-as-conditional -> ?pattern]) )
+                        Not( Exists ?pattern ( And(
+                          ?rifrule[rif:pattern -> ?pattern]
+                          Not( ?defrule[ex:added-pattern -> ?pattern])
+                        )))
                         ?defrule[ex:out-as-conditional -> ?conditional]
-                        ) Then Do (
-                          Assert(?defrule[cs:conditional-element -> ?conditional])
-                          Retract(?defrule[ex:out-as-conditional -> ?conditional])
-                          )
+                      ) Then Do (
+                        Assert(?defrule[cs:conditional-element -> ?conditional])
                       )
                     )
                   )
-                  )
-
+                )
+              )
   )
 )

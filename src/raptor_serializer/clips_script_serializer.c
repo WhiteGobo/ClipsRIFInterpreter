@@ -54,6 +54,10 @@ typedef struct {
 	raptor_term *clips_function_args;
 	raptor_term *clips_expression;
 	raptor_term *clips_assert;
+	raptor_term *clips_find_all_facts;
+	raptor_term *clips_fact_set_template;
+	raptor_term *clips_fact_set_member_variable;
+	raptor_term *clips_query;
 
 	raptor_term *clips_deftemplate_name;
 	raptor_term *clips_slot;
@@ -120,6 +124,10 @@ static MyContext* init_context(){
 	cntxt->clips_function_args = URI(world, CLIPS("function-args"));
 
 	cntxt->clips_assert = URI(world, CLIPS("assert"));
+	cntxt->clips_find_all_facts = URI(world, CLIPS("FindAllFacts"));
+	cntxt->clips_fact_set_template = URI(world, CLIPS("fact-set-template"));
+	cntxt->clips_fact_set_member_variable = URI(world, CLIPS("fact-set-member-variable"));
+	cntxt->clips_query = URI(world, CLIPS("query"));
 
 	//constant thingies
 	cntxt->clips_symbol = URI(world, CLIPS("symbol"));
@@ -281,6 +289,7 @@ FUNC_DESC(fprintf_term);
 FUNC_DESC(fprintf_constant);
 FUNC_DESC(fprintf_function);
 FUNC_DESC(fprintf_assert);
+FUNC_DESC(fprintf_find_facts);
 
 FUNC_DESC(fprintf_template_rhs_pattern);
 FUNC_DESC(fprintf_rhs_slot);
@@ -344,6 +353,9 @@ FUNC_DESC(fprintf_function){
 	raptor_term *name, *args, *assert;
 	assert = get_object(n, cntxt->clips_assert);
 	if (assert != NULL) return fprintf_assert(cntxt, stream, n);
+	if (check_property(n, cntxt->rdf_type, cntxt->clips_find_all_facts)){
+		return fprintf_find_facts(cntxt, stream, n);
+	}
 	name = get_object(n, cntxt->clips_function_name);
 	if (name == NULL) return CRIFI_SERIALIZE_BROKEN_GRAPH;
 	fprintf(stream, " (");
@@ -364,6 +376,84 @@ FUNC_DESC(fprintf_function){
 	fprintf(stream, ")");
 	return err;
 
+}
+
+/**
+ * (find-all-facts <fact-set-template> <query>)
+ * <fact-set-template> ::= (<fact-set-member-template>+)
+ * <fact-set-member-template>
+ * 	::= (<fact-set-member-variable> <deftemplate-restrictions>)
+ * <fact-set-member-variable> ::= <single-field-variable>
+ * <deftemplate-restrictions> ::= <deftemplate-name-expression>+
+ * (<deftemplate-name-expression> == <deftemplate-name>)
+ * (query == <boolean-expression> == <function>)
+ *
+ * TODO: Missing implementation for multiple deftemplate-name-expression
+ */
+FUNC_DESC(fprintf_find_facts){
+	CRIFI_SERIALIZE_SCRIPT_RET err = CRIFI_SERIALIZE_SCRIPT_NOERROR;
+	raptor_term *type, *var_templates, *query_facts, *tmpfactvar, *tmprestriction;
+	Node *tmpfactvar_n, *tmprestriction_n, *query_facts_n;
+	raptor_term *find_all_facts = cntxt->clips_find_all_facts;
+	raptor_term *fact_set_template = cntxt->clips_fact_set_template;
+	raptor_term *fact_set_member_variable = cntxt->clips_fact_set_member_variable;
+	raptor_term *deftemplate_name = cntxt->clips_deftemplate_name;
+	raptor_term *query = cntxt->clips_query;
+	NodeIterator* n_iter;
+
+	type = get_object(n, cntxt->rdf_type);
+	if (0 != raptor_term_equals(type, find_all_facts)){
+		fprintf(stream, " (find-all-facts ");
+	} else {
+		return CRIFI_SERIALIZE_BROKEN_GRAPH;
+	}
+	var_templates = get_object(n, fact_set_template);
+	n_iter = new_rdflist_iterator(cntxt->rdf_cntxt, cntxt->nodes, var_templates);
+	if(n_iter == NULL){
+		fprintf(stderr, "cs:fact-set-template should target a rdf:List\n");
+		return CRIFI_SERIALIZE_BROKEN_GRAPH;
+	}
+	for(Node* x = node_iterator_get(n_iter);
+			x != NULL;
+			x=node_iterator_get_next(n_iter)){
+		fprintf(stream, "(");
+		tmpfactvar = get_object(x, fact_set_member_variable);
+		tmpfactvar_n = retrieve_node(cntxt->nodes, tmpfactvar);
+		if(tmpfactvar_n == NULL){
+			err = CRIFI_SERIALIZE_BROKEN_GRAPH;
+			break;
+		}
+		err = fprintf_variable(cntxt, stream, tmpfactvar_n);
+		if (err != CRIFI_SERIALIZE_SCRIPT_NOERROR){
+			break;
+		}
+
+		tmprestriction = get_object(x, deftemplate_name);
+		if(tmprestriction == NULL){
+			err = CRIFI_SERIALIZE_BROKEN_GRAPH;
+			break;
+		}
+		err = fprintf_raptor_term(stream, tmprestriction);
+		if (err != CRIFI_SERIALIZE_SCRIPT_NOERROR){
+			break;
+		}
+		fprintf(stream, ")");
+	}
+	free_node_iterator(n_iter);
+	n_iter = NULL;
+	if (err != CRIFI_SERIALIZE_SCRIPT_NOERROR ){
+		return err;
+	}
+
+	query_facts = get_object(n, cntxt->clips_query);
+	query_facts_n = retrieve_node(cntxt->nodes, query_facts);
+	if(query_facts_n == NULL){
+		return CRIFI_SERIALIZE_BROKEN_GRAPH;
+	}
+	fprintf_function(cntxt, stream, query_facts_n);
+
+	fprintf(stream, ") ");
+	return err;
 }
 
 /**
@@ -659,6 +749,10 @@ static CRIFI_SERIALIZE_SCRIPT_RET fprintf_defrule(MyContext *cntxt, FILE* stream
 	fprintf(stream, "\n");
 	condition = get_object(n, cntxt->clips_conditional_element);
 	n_iter = new_rdflist_iterator(cntxt->rdf_cntxt, cntxt->nodes, condition);
+	if(n_iter == NULL){
+		fprintf(stderr, "cs:conditional-element should target a rdf:List\n");
+		return CRIFI_SERIALIZE_BROKEN_GRAPH;
+	}
 	for(Node* x = node_iterator_get(n_iter);
 			x != NULL;
 			x=node_iterator_get_next(n_iter)){

@@ -3,21 +3,29 @@
 set -e #exit on failure
 set -x
 
+if test -z "$logic_input"; then
+	#logic_input="resources/tmp/Assert-premise.rifps"
+	logic_input="resources/tmp/AssertRetract-premise.rifps"
+fi
+
 entailment="resources/rules_rif_to_clips_script/SimpleEntailment.rifps"
 #entailment="resources/rules_rif_to_clips_script/test.rifps"
 
-entailment_ttl="tmp/SimpleEntailment.ttl"
+temp_logic_in_ttl="tmp/temp_logic_in_ttl.ttl"
+temp_clips_script_all_data="tmp/qq.out.ttl"
 
 mkdir -p tmp
 
+echo "transform data from rifps to turtle"
 rdfpipe -i rifps -o ttl \
 	$entailment \
 	> tmp/SimpleEntailment.ttl
 
 rdfpipe -i rifps -o ttl \
-	resources/tmp/Assert-premise.rifps \
-	> tmp/Assert-premise.ttl
+	$logic_input \
+	> $temp_logic_in_ttl
 
+echo "generate SimpleEntailment script"
 ./build/generate_crifi_script/generate_crifi_script \
 	-i tmp/SimpleEntailment.ttl
 
@@ -25,23 +33,22 @@ rdfpipe -i rifps -o ttl \
 	-i tmp/SimpleEntailment.ttl \
 	> tmp/SimpleEntailment.clp
 
-cat tmp/SimpleEntailment.clp
+#cat tmp/SimpleEntailment.clp
 
+echo "generate only data for the new script"
 ./build/generate_crifi_script/oneshot_crifi_script \
 	-o turtle \
-	-d tmp/Assert-premise.ttl \
+	-d $temp_logic_in_ttl \
 	tmp/SimpleEntailment.clp \
-	> tmp/qq.out.ttl
+	> $temp_clips_script_all_data
 
-python helper_myfilter.py tmp/qq.out.ttl \
+python helper_myfilter.py $temp_clips_script_all_data \
 	http://example.com/ \
 	http://clips.script/ \
 	#http://www.w3.org/2007/rif# \
 
-
-cat tmp/Assert-premise.clp
-
+echo "generate new script itself"
 ./build/generate_crifi_script/oneshot_crifi_script \
 	-o clipsscript \
-	-d tmp/Assert-premise.ttl \
+	-d $temp_logic_in_ttl \
 	tmp/SimpleEntailment.clp 

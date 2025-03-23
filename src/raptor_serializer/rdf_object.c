@@ -126,6 +126,7 @@ static Node *new_node(raptor_term *id){
 
 Node* retrieve_node(NodeList* nodes, raptor_term *id){
 	int err;
+	if (id == NULL) return NULL;
 	Node searcher = {.id = id};
 	Node *existing = nodelist_search(nodes, &searcher);
 	if (existing == NULL){
