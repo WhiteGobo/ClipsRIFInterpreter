@@ -348,20 +348,10 @@ Document(
 
             (* ex:combine-formulas-to-pattern *) Group (
                 Group 20 (
-                  (* ex:init-pattern-to-add *) Forall ?defrule ?clipsrule ?pattern (
-                    If And (
-                      ?defrule[ex:uses-patterns-as-conditional -> ?rifrule]
-                      ?rifrule[rif:pattern -> ?pattern]
-                      ?pattern[ex:as-conditional -> ?patternconditions]
-                    ) Then Do (
-                      Assert( ?defrule[ex:add-pattern-as-conditional -> ?pattern] )
-                    )
-                  )
-
                   (* ex:add-formula-as-pattern-to-list *) Forall ?rule ?pattern ?defrule ?defruleconditionlist (
                     If And (
                       ?defrule[ex:uses-patterns-as-conditional -> ?rifrule]
-                      ?defrule[ex:add-pattern-as-conditional -> ?pattern]
+                      ?rifrule[rif:pattern -> ?pattern]
 
                       ?pattern[ex:as-conditional -> ?patternconditions]
                       ?pattern[ex:unbound-variables -> ?neededboundvars]
@@ -371,7 +361,6 @@ Document(
                       Not( ?defrule[ex:added-pattern -> ?pattern] )
                     ) Then Do (
                       (?currentconditions ?defrule[ex:out-as-conditional -> ?currentconditions])
-                      Retract( ?defrule[ex:add-pattern-as-conditional -> ?pattern] )
                       Assert( ?defrule[ex:implemented-pattern -> ?pattern] )
                       Modify( ?defrule[ex:out-as-conditional -> External(func:concatenate(?currentconditions ?patternconditions))])
                       Modify( ?defrule[ex:bound-variables -> External(func:union(?suppliedboundvars ?suppliedboundvars))] )
