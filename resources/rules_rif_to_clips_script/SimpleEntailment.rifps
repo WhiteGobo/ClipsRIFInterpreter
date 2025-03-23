@@ -320,6 +320,7 @@ Document(
               If And(
                 ?rule[rdf:type -> rif:Forall]
                 ?rule[rif:formula -> ?formula]
+                Not (Exists ?outerrule (?outerrule[rif:formula -> ?rule]))
               ) Then Do ((?defrule New()) (?actionlist New())
                 Assert( ?defrule[rdf:type -> cs:Defrule] )
                 Assert( ?defrule[ex:uses-patterns-as-conditional -> ?rule] )
