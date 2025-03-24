@@ -5,6 +5,7 @@
 #include <n3parser.h>
 #include <external_functions.h>
 #include <crifi_time.h>
+#include "crifi_import.h"
 
 CLIPSValue getFactsFromEnvironment(Environment *env){
 	CLIPSValue retList;
@@ -117,6 +118,11 @@ Environment *initEnvironment(){
 	if(!crifi_timedata_register_data(env)){
 		//fprintf(stderr, "initEnvironment failed cause crifi_time "
 		//		"couldnt initialize data.");
+		DestroyEnvironment(env);
+		return NULL;
+	}
+
+	if(!crifi_importdata_register_data(env)){
 		DestroyEnvironment(env);
 		return NULL;
 	}
