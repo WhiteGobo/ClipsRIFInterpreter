@@ -6,8 +6,14 @@
 #define CRIFI_IMPORT_DATA_INDEX USER_ENVIRONMENT_DATA + 3
 #endif
 
+typedef struct crifiSingleImportData {
+	struct crifiSingleImportData *next;
+} CRIFISingleImportData;
+
 typedef struct crifiImportData{
+	CRIFISingleImportData *first;
 } CRIFIImportData;
+
 
 /** LoadingCRIFIImportData
  */
@@ -19,7 +25,10 @@ typedef struct crifiImportData{
 extern "C" {
 #endif
 
-bool crifi_importdata_register_data(Environment *env);
+bool crifi_importdata_register_data(crifi_graph *graph);
+
+int crifi_add_import_function(crifi_graph *graph);
+void free_crifi_singleimportdata(CRIFISingleImportData *data);
 
 #ifdef __cplusplus
 }
