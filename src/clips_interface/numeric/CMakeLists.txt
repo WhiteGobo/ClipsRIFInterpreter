@@ -5,7 +5,7 @@ add_library(crifi_numeric STATIC
 
 target_include_directories(crifi_numeric PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
 
-target_include_directories(crifi_numeric PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../interface/")
+target_include_directories(crifi_numeric PRIVATE ${CRIFI_SHARED_HEADER})
 
 set_target_properties(crifi_numeric PROPERTIES
   PUBLIC_HEADER crifi_numeric.h

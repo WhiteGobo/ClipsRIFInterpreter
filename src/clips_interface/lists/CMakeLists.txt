@@ -11,7 +11,7 @@ set_target_properties(crifi_lists PROPERTIES
 target_include_directories(crifi_lists
 	PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/")
 
-target_include_directories(crifi_lists PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../interface/")
+target_include_directories(crifi_lists PRIVATE ${CRIFI_SHARED_HEADER})
 
 target_link_libraries(crifi_lists PUBLIC
 	clips

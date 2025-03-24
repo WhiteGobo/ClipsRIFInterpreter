@@ -18,7 +18,7 @@ add_library(external_functions STATIC
 
 target_include_directories(external_functions PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
 
-target_include_directories(external_functions PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../interface/")
+target_include_directories(external_functions PRIVATE ${CRIFI_SHARED_HEADER})
 
 #set_target_properties(external_functions PROPERTIES
 #	PUBLIC_HEADER external_functions.h

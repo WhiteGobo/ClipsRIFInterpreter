@@ -15,5 +15,4 @@ set_target_properties(crifi_tools PROPERTIES
 target_include_directories(crifi_tools
 	PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/")
 
-target_include_directories(crifi_tools
-	PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../interface/")
+target_include_directories(crifi_tools PRIVATE ${CRIFI_SHARED_HEADER})

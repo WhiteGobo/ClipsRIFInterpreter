@@ -7,7 +7,7 @@ add_library(crifi_time STATIC
 
 target_include_directories(crifi_time PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
 
-target_include_directories(crifi_time PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../interface/")
+target_include_directories(crifi_time PRIVATE ${CRIFI_SHARED_HEADER})
 
 set_target_properties(crifi_time PROPERTIES
 	PUBLIC_HEADER crifi_time.h
