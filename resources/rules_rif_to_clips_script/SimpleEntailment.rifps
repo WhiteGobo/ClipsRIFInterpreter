@@ -136,7 +136,6 @@ Document(
             (?newframefirst New())
             (?newframerest New())
             Retract( ?rifforall[rif:pattern -> ?rifframe] )
-            Assert(?rifforall[ex:brubru -> ex:brubru])
             Assert( ?rifforall[rif:pattern -> ?newframefirst] )
             Assert( ?newframefirst[rdf:type -> rif:Frame] )
             Assert( ?newframefirst[rif:object -> ?object] )
@@ -313,7 +312,44 @@ Document(
               )
             )
           )
-
+        (* ex:create-deffacts-for-groups *) Group (
+          (* ex:init-deffacts *) Forall ?group (
+            If And (
+              ?group[rif:sentences -> ?sentences]
+              External(pred:is-list(?sentences))
+              Exists ?factable ( And(
+                Or(
+                  ?factable[rdf:type -> rif:Frame]
+                  ?factable[rdf:type -> rif:Member]
+                  ?factable[rdf:type -> rif:Atom]
+                )
+                External(pred:list-contains(?sentences ?factable))
+              ))
+            ) Then Do (
+              (?deffacts New())
+              Assert( ?group[ex:combine-deffacts-in -> ?deffacts] )
+              Assert( ?deffacts[rdf:type -> cs:Deffacts] )
+              Assert( ?deffacts[cs:rhs-pattern -> External(func:make-list())] )
+            )
+          )
+          (* ex:add-fact-to-deffacts *) Forall ?group ?deffacts ?factable ?newrhspattern(
+            If And (
+              ?group[rif:sentences -> ?sentences]
+              ?group[ex:combine-deffacts-in -> ?deffacts]
+              Or(
+                ?factable[rdf:type -> rif:Frame]
+                ?factable[rdf:type -> rif:Member]
+                ?factable[rdf:type -> rif:Atom]
+              )
+              External(pred:is-list(?sentences))
+              External(pred:list-contains(?sentences ?factable))
+              ?factable[ex:as-rhspattern -> ?newrhspattern]
+            ) Then Do (
+              (?rhspatternlist ?deffacts[cs:rhs-pattern -> ?rhspatternlist] )
+              Modify( ?deffacts[cs:rhs-pattern -> External(func:append(?rhspatternlist ?newrhspattern))] )
+            )
+          )
+        )
 
         (* ex:init-defrules *) Group 10 (
             (* ex:init-defrule-per-forall *) Forall ?rule ?formula(

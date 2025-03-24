@@ -42,6 +42,10 @@ typedef struct {
 	raptor_term *clips_action;
 	//raptor_term *clips_Pattern_CE
 	
+	raptor_term *clips_Deffacts;
+	raptor_term *clips_deffacts_name;
+	raptor_term *clips_rhs_pattern;
+	
 	raptor_term *clips_pattern_ce;
 	raptor_term *clips_TemplatePatternCE;
 	raptor_term *clips_NotCE;
@@ -107,6 +111,10 @@ static MyContext* init_context(){
 
 	cntxt->clips_Defrule = URI(world, CLIPS("Defrule"));
 	cntxt->clips_rule_name = URI(world, CLIPS("rule-name"));
+
+	cntxt->clips_Deffacts = URI(world, CLIPS("Deffacts"));
+	cntxt->clips_deffacts_name = URI(world, CLIPS("deffacts-name"));
+	cntxt->clips_rhs_pattern = URI(world, CLIPS("rhs-pattern"));
 
 	cntxt->clips_conditional_element = URI(world, CLIPS("conditional-element"));
 	cntxt->clips_action = URI(world, CLIPS("action"));
@@ -284,6 +292,7 @@ FUNC_DESC(fprintf_variable);
 FUNC_DESC(fprintf_expression);
 FUNC_DESC(fprintf_action);
 FUNC_DESC(fprintf_defrule);
+FUNC_DESC(fprintf_deffacts);
 FUNC_DESC(fprintf_constraint);
 FUNC_DESC(fprintf_term);
 FUNC_DESC(fprintf_constant);
@@ -721,6 +730,7 @@ static CRIFI_SERIALIZE_SCRIPT_RET fprintf_action(MyContext *cntxt, FILE* stream,
 	return fprintf_expression(cntxt, stream, n);
 }
 
+
 /**
  *
  * <defrule-construct> ::= (defrule <rule-name> [<comment>]
@@ -777,6 +787,42 @@ static CRIFI_SERIALIZE_SCRIPT_RET fprintf_defrule(MyContext *cntxt, FILE* stream
 	return CRIFI_SERIALIZE_SCRIPT_NOERROR;
 }
 
+/**
+ * ::= (deffacts <deffacts-name> [<comment>] <RHS-pattern>*)
+ */
+FUNC_DESC(fprintf_deffacts){
+	CRIFI_SERIALIZE_SCRIPT_RET err = CRIFI_SERIALIZE_SCRIPT_NOERROR;
+	NodeIterator* n_iter;
+	raptor_term *rhspatterns, *name, *args, *assert;
+	fprintf(stream, "(deffacts ");
+	name = get_object(n, cntxt->clips_deffacts_name);
+	if (name != NULL){
+		fprintf_raptor_term(stream, name);
+	} else {
+		fprintf(stream, "facts%x", n);
+	}
+	fprintf(stream, "\n");
+
+	rhspatterns = get_object(n, cntxt->clips_rhs_pattern);
+	n_iter = new_rdflist_iterator(cntxt->rdf_cntxt, cntxt->nodes, rhspatterns);
+	if(n_iter == NULL){
+		return CRIFI_SERIALIZE_BROKEN_GRAPH;
+	}
+	for(Node* x = node_iterator_get(n_iter);
+			x != NULL;
+			x = node_iterator_get_next(n_iter)){
+		err = fprintf_template_rhs_pattern(cntxt, stream, x);
+		fprintf(stream, "\n");
+		if (err != CRIFI_SERIALIZE_SCRIPT_NOERROR){
+			break;
+		}
+	}
+	free_node_iterator(n_iter);
+	fprintf(stream, ")");
+	return err;
+}
+
+
 static CRIFI_SERIALIZE_SCRIPT_RET fprintf_script(MyContext *cntxt, FILE* stream){
 	CRIFI_SERIALIZE_SCRIPT_RET err;
 	NodeIterator *iter_node = new_node_iterator(cntxt->nodes);
@@ -789,7 +835,15 @@ static CRIFI_SERIALIZE_SCRIPT_RET fprintf_script(MyContext *cntxt, FILE* stream)
 			n = node_iterator_get_next(iter_node)){
 		if (check_property(n, cntxt->rdf_type, cntxt->clips_Defrule)){
 			err = fprintf_defrule(cntxt, stream, n);
-			if (err != CRIFI_SERIALIZE_SCRIPT_NOERROR) return err;
+			if (err != CRIFI_SERIALIZE_SCRIPT_NOERROR){
+				return err;
+			}
+			fprintf(stream, "\n\n");
+		} else if (check_property(n, cntxt->rdf_type, cntxt->clips_Deffacts)){
+			err = fprintf_deffacts(cntxt, stream, n);
+			if (err != CRIFI_SERIALIZE_SCRIPT_NOERROR){
+				return err;
+			}
 			fprintf(stream, "\n\n");
 		}
 	}

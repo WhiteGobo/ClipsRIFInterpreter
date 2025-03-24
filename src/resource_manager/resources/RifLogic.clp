@@ -1177,6 +1177,18 @@
 		else (str-cat "" (expand$ ?ret)))
 )
 
+(defmessage-handler RIFOr create-pattern ()
+	(bind ?ret (create$))
+	(foreach ?slt (send ?self:formulas get-items)
+		(bind ?ret (append$ ?ret (send ?slt create-pattern)))
+		(bind ?ret (append$ ?ret "
+	"))
+	)
+	(if (> (length$ ?ret) 1)
+		then (str-cat "(or " (expand$ ?ret) ")")
+		else (str-cat "" (expand$ ?ret)))
+)
+
 ;(defmessage-handler RIFOr create-condition ()
 ;	(send))
 
