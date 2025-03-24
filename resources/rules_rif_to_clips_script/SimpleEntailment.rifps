@@ -175,7 +175,40 @@ Document(
           )
         )
       )
+      Forall ?frame (
+        If And (
+          ?frame[rdf:type -> rif:Frame]
+        ) Then Do (
+          Assert( ?frame # ex:construct-as-conditional )
+          Assert( ?frame[ex:in-as-conditional -> External(func:make-list())])
+        )
+      )
+      Forall ?rifineg ?formula ?clipsconditional (
+        If And (
+          ?rifineg[rdf:type -> rif:INeg]
+          ?rifineg[rif:formula -> ?formula]
+          ?formula[ex:as-conditional -> ?clipsconditional]
+        ) Then Do (
+          (?notCE New())
+          Assert( ?rifineg[ex:as-conditional -> External(func:make-list(?notCE))])
+          Assert( ?notCE[rdf:type -> cs:NotCE] )
+          Assert( ?notCE[cs:conditional-element -> ?clipsconditional] )
+        )
+      )
 
+      Forall ?rifnode ?slotlist ?existingconditionals(
+        If And (
+          ?rifnode[rif:slots -> ?slotlist]
+          ?rifnode[ex:in-as-conditional -> ?existingconditionals]
+          Not(Exists ?slot( And(
+            ?slot[rdf:type -> rif:Slot]
+            External(pred:list-contains(?slotlist ?slot))
+            Not(?rifnode[ex:used-slot-for-conditional -> ?slot])
+          )))
+        ) Then Do (
+          Assert( ?rifnode[ex:as-conditional -> ?existingconditionals] )
+        )
+      )
       (* ex:add-slot-transform-rif-frame *) Forall ?rifnode ?slotlist ?slot ?currentconditionalelement ?clipsrestraint ?slotvalue ?slotkey ?constraintsubject(
         If And (
           ?rifnode[rdf:type -> rif:Frame]
@@ -187,21 +220,25 @@ Document(
           ?slot[rif:slotvalue -> ?slotvalue]
           ?slotvalue[ex:as-constraint -> ?constraintobject]
           External(pred:is-list(?slotlist))
-          1 = External(func:count(?slotlist))
           External(pred:list-contains(?slotlist ?slot))
           ?constraintsubject[ex:as-constraint-needs-additional-conditionals -> ?additionalconditionalssubject]
           ?constraintpredicate[ex:as-constraint-needs-additional-conditionals -> ?additionalconditionalspredicate]
           ?constraintobject[ex:as-constraint-needs-additional-conditionals -> ?additionalconditionalsobject]
+          ?rifnode # ex:construct-as-conditional
+          Not(?rifnode[ex:used-slot-for-conditional -> ?slot])
         ) Then Do (
           (?clipsconditionalelement New())
           (?slotsubject New())
           (?slotpredicate New())
           (?slotobject New())
+          (?existingconditionals ?rifnode[ex:in-as-conditional -> ?existingconditionals])
 
-          Assert( ?rifnode[
-            ex:as-conditional
+          Assert( ?rifnode[ex:used-slot-for-conditional -> ?slot] )
+          Modify( ?rifnode[
+            ex:in-as-conditional
             ->
             External(func:concatenate(
+                ?existingconditionals
                 ?additionalconditionalssubject
                 ?additionalconditionalspredicate
                 ?additionalconditionalsobject
@@ -351,6 +388,25 @@ Document(
         )
 
         (* ex:init-defrules *) Group 10 (
+            (* ex:init-defrule-per-implies *) Forall ?group ?rule ?formula(
+              If And(
+                ?group[rif:sentences -> ?sentences]
+                ?rule[rdf:type -> rif:Implies]
+                External(pred:is-list(?sentences))
+                External(pred:list-contains(?sentences ?rule))
+                ?rule[rif:if -> ?rifcondition]
+                ?rifcondition[ex:as-conditional -> ?clipsconditions]
+                ?rule[rif:then -> ?rifaction]
+                ?rifaction[ex:as-action -> ?clipsactions]
+              ) Then Do (
+                (?defrule New())
+                (?actionlist New())
+                Assert( ?rule[ex:translate-implies-to-defrule -> ?defrule] )
+                Assert( ?defrule[rdf:type -> cs:Defrule] )
+                Assert( ?defrule[cs:conditional-element -> ?clipsconditions] )
+                Assert( ?defrule[cs:action -> ?clipsactions] )
+              )
+            )
             (* ex:init-defrule-per-forall *) Forall ?rule ?formula(
               If And(
                 ?rule[rdf:type -> rif:Forall]

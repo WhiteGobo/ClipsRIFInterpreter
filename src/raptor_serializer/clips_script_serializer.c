@@ -288,6 +288,7 @@ static CRIFI_SERIALIZE_SCRIPT_RET add_info_to_tree(MyContext* cntxt,
 FUNC_DESC(fprintf_lhs_slot);
 FUNC_DESC(fprintf_template_pattern_ce);
 FUNC_DESC(fprintf_conditional_element);
+FUNC_DESC(fprintf_not_ce);
 FUNC_DESC(fprintf_variable);
 FUNC_DESC(fprintf_expression);
 FUNC_DESC(fprintf_action);
@@ -658,9 +659,42 @@ static CRIFI_SERIALIZE_SCRIPT_RET fprintf_template_pattern_ce(MyContext *cntxt, 
 static CRIFI_SERIALIZE_SCRIPT_RET fprintf_conditional_element(MyContext *cntxt, FILE* stream, Node* n){
 	if (check_property(n, cntxt->rdf_type, cntxt->clips_TemplatePatternCE)){
 		return fprintf_template_pattern_ce(cntxt, stream, n);
+	} else if (check_property(n, cntxt->rdf_type, cntxt->clips_NotCE)){
+		return fprintf_not_ce(cntxt, stream, n);
 	}
 	debug_fprintf_node(stderr, "failed conditional element ", n, "\n");
 	return CRIFI_SERIALIZE_BROKEN_GRAPH;
+}
+
+FUNC_DESC(fprintf_not_ce){
+	CRIFI_SERIALIZE_SCRIPT_RET err = CRIFI_SERIALIZE_SCRIPT_NOERROR;
+	raptor_term *targets;
+	NodeIterator* n_iter;
+	bool at_least_one = false;
+
+	fprintf(stream, "(not\n");
+	targets = get_object(n, cntxt->clips_conditional_element);
+	n_iter = new_rdflist_iterator(cntxt->rdf_cntxt, cntxt->nodes, targets);
+	if(n_iter == NULL){
+		return CRIFI_SERIALIZE_BROKEN_GRAPH;
+	}
+	for(Node* x = node_iterator_get(n_iter);
+			x != NULL;
+			x=node_iterator_get_next(n_iter)){
+		at_least_one = true;
+		err = fprintf_conditional_element(cntxt, stream, x);
+		if (err != CRIFI_SERIALIZE_SCRIPT_NOERROR){
+			break;
+		}
+		fprintf(stream, "\n");
+	}
+	free_node_iterator(n_iter);
+	if (err != CRIFI_SERIALIZE_SCRIPT_NOERROR && !at_least_one){
+		err = CRIFI_SERIALIZE_BROKEN_GRAPH;
+	}
+	//err = fprintf_conditional_element(cntxt, stream, target_n);
+	fprintf(stream, ")");
+	return err;
 }
 
 
