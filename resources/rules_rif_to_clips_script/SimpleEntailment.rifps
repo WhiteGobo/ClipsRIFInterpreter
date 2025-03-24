@@ -157,7 +157,6 @@ Document(
             ?slot[rif:slotvalue -> ?slotvalue]
             ?slotvalue[ex:as-expression -> ?expressionobject]
             External(pred:is-list(?slotlist))
-            1 = External(func:count(?slotlist))
             External(pred:list-contains(?slotlist ?slot))
           ) Then Do (
             (?clipsnode New())
