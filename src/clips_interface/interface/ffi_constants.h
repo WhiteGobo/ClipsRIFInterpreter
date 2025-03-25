@@ -15,13 +15,14 @@
 #define _RDF_nil_ _RDF_ "nil"
 
 //here defined urls
-#define _CRIFI_equal_ "http://white.gobo/equal"
-#define _CRIFI_success_ "http://white.gobo/success"
-#define _CRIFI_percent_encode_ "http://white.gobo/percent-encode"
-#define _CRIFI_import_ "http://white.gobo/import"
-#define _CRIFI_new_blanknode_ "http://white.gobo/new-blanknode"
-#define _CRIFI_iri_to_clipsconstant_ "http://white.gobo/iri-to-clipsconstant"
-#define _CRIFI_literal_to_clipsconstant_ "http://white.gobo/literal-to-clipsconstant"
+#define _CRIFI_ "http://white.gobo/"
+#define _CRIFI_equal_ _CRIFI_ "equal"
+#define _CRIFI_success_ _CRIFI_ "success"
+#define _CRIFI_percent_encode_ _CRIFI_ "percent-encode"
+#define _CRIFI_new_blanknode_ _CRIFI_ "new-blanknode"
+#define _CRIFI_iri_to_clipsconstant_ _CRIFI_ "iri-to-clipsconstant"
+#define _CRIFI_literal_to_clipsconstant_ _CRIFI_ "literal-to-clipsconstant"
+#define _CRIFI_import_ _CRIFI_ "import"
 
 #define _XS_anyURI_ "http://www.w3.org/2001/XMLSchema#anyURI"
 #define _XS_base64Binary_ "http://www.w3.org/2001/XMLSchema#base64Binary"
