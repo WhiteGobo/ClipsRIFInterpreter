@@ -8,6 +8,8 @@
 
 #include <ffi_clips_interface.h>
 #include <ntriplesParser.h>
+#include "crifi_import.h"
+#include "ffi_constants.h"
 
 /*
 #include <gmock/gmock.h>
@@ -91,6 +93,52 @@ TEST(BasicFactTest, ParseTriplesMemory){
 	free_linked_list(retFacts);
 	close_graph(graph);
 }
+
+static RET_CRIFI_IMPORT test_import_function(crifi_graph *graph,
+		CLIPSValue *import_location, CLIPSValue *entailment_regime,
+		CLIPSValue *values, int number_values, void *context){
+	int *qq = (int*) context;
+	*qq = 1;
+	fprintf(stderr, "test_import_function brubru\n");
+	return RET_CRIFI_IMPORT_NOERROR;
+}
+
+TEST(BasicFactTest, TestImport){
+	int qq = 0;
+	struct DynamicValue retval;
+	crifi_graph* graph = init_graph();
+	int err = crifi_add_import_function(graph, test_import_function, &qq, NULL);
+	switch (err){
+		case 0:
+			break;
+		default:
+			close_graph(graph);
+			FAIL() << "unhandled error in "
+				"crifi_add_import_function";
+	}
+	retval = eval(graph, "(<" _CRIFI_import_ "> <http://example.com/import> <" _RIFENTAIL_SIMPLE_ ">)");
+	switch (retval.type){
+		case CTC_DYNAMIC_ERROR:
+			switch (retval.val.error){
+				case CTC_CTD_PARSING_ERROR:
+					FAIL() << "parsing error? test broken? "
+						"crifi:import is maybe not "
+						"loaded as "
+						"user defined function";
+				case CTC_CTD_PROCESSING_ERROR:
+					FAIL() << "failed processing command.";
+				case CTC_CTD_CANTTRANSLATE:
+					FAIL() << "Cant process returned "
+						"CLIPSValue to DynamicType";
+				default:
+					FAIL() << "eval import failed. "
+						"Unhandled error.";
+			}
+	}
+	EXPECT_EQ(qq, 1) << "test_import_function wasnt executed.";
+	close_graph(graph);
+}
+
 
 TEST(BasicFactTest, ParseNTriplesFile){
 	FILE *inputptr;

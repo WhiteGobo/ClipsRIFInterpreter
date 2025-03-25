@@ -12,6 +12,7 @@
 #include "xmlliteral_user_defined_functions.h"
 #include "boolean_user_defined_functions.h"
 #include "clipsvalue_check_datatype.h"
+#include "import_user_defined_functions.h"
 
 #include "external_functions.h"
 
@@ -625,6 +626,8 @@ static UDFDescription builtinFunctionList[] = {
 		rif_cast_as, "rif_cast_as", CT_static, _XS_time_},
 	{"<"_XS_yearMonthDuration_">", "s", 1, 1, "s",
 		rif_cast_as, "rif_cast_as", CT_static, _XS_yearMonthDuration_},
+	{"<"_CRIFI_import_">", "s", 2, UNBOUNDED, "y",
+		crifi_import, "crifi_import", CT_static, NULL},
 
 	{NULL, NULL, 0,0, NULL, NULL, NULL, CT_static, NULL}
 };

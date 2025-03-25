@@ -12,6 +12,8 @@ add_library(external_functions STATIC
 	own_user_defined_functions.c
 	external_functions.h
 	clipsvalue_check_datatype.c
+	import_user_defined_functions.h
+	import_user_defined_functions.c
 )
 
 #add_compile_options(-fPIC)
@@ -34,4 +36,5 @@ target_link_libraries(external_functions PRIVATE
 	crifi_time
 	crifi_numeric
 	crifi_tools
+	crifi_import
 )

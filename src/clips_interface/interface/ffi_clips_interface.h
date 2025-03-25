@@ -97,10 +97,11 @@ typedef enum {
  * Error description during \ref eval
  */
 typedef enum {
-	CTC_CTD_CANTTRANSLATE = 0,
+	/// Error from clipsToDynamic
+	CTC_CTD_CANTTRANSLATE = 1,
 	/// parsing error
-	CTC_CTD_PARSING_ERROR = 1,
-	CTC_CTD_PROCESSING_ERROR = 2,
+	CTC_CTD_PARSING_ERROR = 2,
+	CTC_CTD_PROCESSING_ERROR = 3,
 } CLIPS_TO_DYNAMIC_ERROR;
 
 

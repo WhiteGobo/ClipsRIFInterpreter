@@ -263,6 +263,15 @@
 #define _PRED_dayTimeDuration_less_than_or_equal_ _PRED_ "dayTimeDuration-less-than-or-equal"
 #define _PRED_dayTimeDuration_greater_than_or_equal_ _PRED_ "dayTimeDuration-greater-than-or-equal"
 
+#define _RIFENTAIL_ "http://www.w3.org/ns/entailment/"
+#define _RIFENTAIL_SIMPLE_ _RIFENTAIL_ "Simple"
+#define _RIFENTAIL_RDF_ _RIFENTAIL_ "RDF"
+#define _RIFENTAIL_RDFS_ _RIFENTAIL_ "RDFS"
+#define _RIFENTAIL_D_ _RIFENTAIL_ "D"
+#define _RIFENTAIL_OWLRDFBASED_ _RIFENTAIL_ "OWL-RDF-Based"
+#define _RIFENTAIL_RIF_ _RIFENTAIL_ "RIF"
+#define _RIFENTAIL_OWLDIRECT_ _RIFENTAIL_ "OWL-Direct"
+
 
 #define _RIF_ "http://www.w3.org/2007/rif#"
 #define _RIFBUILTIN_ "http://www.w3.org/2007/rif-builtin-function#"

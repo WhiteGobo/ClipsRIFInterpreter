@@ -26,6 +26,7 @@ target_link_libraries(hello_test PRIVATE
 	clipsrif_resource_manager
 	crifi_test::rc
 	crifi_raptor
+	crifi_import
 )
 
 

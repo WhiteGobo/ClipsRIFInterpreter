@@ -102,6 +102,9 @@ struct DynamicValue clipsToDynamic(CLIPSValue *val){
 			}
 			return retVal;
 		case VOID_TYPE:
+			retVal.type = CTC_DYNAMIC_VOID;
+			retVal.val.content = NULL;
+			return retVal;
 			//VoidConstant(env)
                 case FLOAT_TYPE:
 		default:
