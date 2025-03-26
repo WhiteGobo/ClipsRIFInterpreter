@@ -7,6 +7,5 @@ void crifi_import(Environment *env, UDFContext *udfc, UDFValue *out){
 	CLIPSValue *entailment_regime = NULL;
 	CLIPSValue *values = NULL;
 	RET_CRIFI_IMPORT err = crifi_execute_import(env, import_location, entailment_regime, values, 0);
-
-	out->voidValue = VoidConstant(env);
+	out->lexemeValue = CreateBoolean(env, err == RET_CRIFI_IMPORT_NOERROR);
 }

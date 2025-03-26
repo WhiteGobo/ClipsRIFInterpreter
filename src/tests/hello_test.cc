@@ -134,6 +134,12 @@ TEST(BasicFactTest, TestImport){
 					FAIL() << "eval import failed. "
 						"Unhandled error.";
 			}
+			break;
+		case CTC_DYNAMIC_BOOL:
+			EXPECT_EQ(retval.val.boolean, true);
+			break;
+		default:
+			FAIL() << "crifi:import return unexpected value.";
 	}
 	EXPECT_EQ(qq, 1) << "test_import_function wasnt executed.";
 	close_graph(graph);
