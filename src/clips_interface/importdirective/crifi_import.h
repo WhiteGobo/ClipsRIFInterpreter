@@ -10,6 +10,9 @@
 typedef enum {
 	RET_CRIFI_IMPORT_UNHANDLED = -1,
 	RET_CRIFI_IMPORT_NOERROR = 0,
+	RET_CRIFI_IMPORT_INVALIDCONTEXT,
+	///if a CRIFIImportMethod was called with broken inputs.
+	RET_CRIFI_BROKEN_ALGORITHM
 } RET_CRIFI_IMPORT;
 
 typedef void CRIFIImportDataCleanupFunction(void *context);

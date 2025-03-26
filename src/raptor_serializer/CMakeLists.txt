@@ -31,4 +31,3 @@ target_link_libraries(crifi_raptor PRIVATE
 	n3parser
 	crifi_lists
 )
-

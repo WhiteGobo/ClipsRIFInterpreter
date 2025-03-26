@@ -17,6 +17,7 @@ add_executable(hello_test
 	hello_test.cc
 	testcases_test.cc
 	raptor_test.cc
+	import_test.cc
 )
 
 target_link_libraries(hello_test PRIVATE
@@ -27,6 +28,8 @@ target_link_libraries(hello_test PRIVATE
 	crifi_test::rc
 	crifi_raptor
 	crifi_import
+	crifi_import_implementations
+	info_query
 )
 
 
