@@ -10,18 +10,22 @@
 #include "crifi_import_implementations.h"
 
 static FILE *test_import_method(void *context){
-	return NULL;
+	char data[] = "#asdf";
+	return fmemopen(data, strlen(data), "r");
 }
+
+#define TESTADDRESSA "http://example.com/test_address_a"
+#define TESTADDRESSB "http://example.com/test_address_b"
 
 TEST(ImportTest, Basic){
 	struct DynamicValue retval;
 	crifi_graph* graph = init_graph();
 	FilepathImportidPair importlocations[] = {
-		{.id="http://example.com/brubru", .filepath="asdf"},
+		{.id= TESTADDRESSA, .filepath="asdf"},
 		{.id=NULL}
 	};
 	GetfileImportidPair importmethods[] = {
-		{.id="http://example.com/testimportmethod", .method=test_import_method, .context=NULL, .cleanup=NULL},
+		{.id= TESTADDRESSB, .method=test_import_method, .context=NULL, .cleanup=NULL},
 		{.id=NULL}
 	};
 
@@ -30,7 +34,7 @@ TEST(ImportTest, Basic){
 		FAIL() << "Failed to add import locations";
 		close_graph(graph);
 	}
-	retval = eval(graph, "(<" _CRIFI_import_ "> <http://example.com/import> <" _RIFENTAIL_SIMPLE_ ">)");
+	retval = eval(graph, "(<" _CRIFI_import_ "> <"TESTADDRESSB"> <" _RIFENTAIL_SIMPLE_ ">)");
 	switch (retval.type){
 		case CTC_DYNAMIC_ERROR:
 			switch (retval.val.error){
@@ -57,7 +61,6 @@ TEST(ImportTest, Basic){
 			FAIL() << "crifi:import return unexpected value.";
 	}
 
-
 	close_graph(graph);
-	FAIL() << "testfailure";
+	//FAIL() << "testfailure";
 }

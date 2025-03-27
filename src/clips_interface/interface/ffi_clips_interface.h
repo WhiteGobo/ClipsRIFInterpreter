@@ -120,6 +120,9 @@ typedef struct crifiExtension {
  * contains the graph and additional information. Used to transfer all needed
  * data for c framework as a single struct.
  * Use init_graph to create a new one.
+ *
+ * TODO: Is this an implementation for a Semantic Structure?
+ * See `https://www.w3.org/TR/2013/REC-rif-bld-20130205/#Semantic_Structures`_
  */
 typedef Environment crifi_graph;
 /*struct clips_graph_container

@@ -1,6 +1,7 @@
 #include "crifi_import_implementations.h"
 #include "crifi_import.h"
 #include "info_query.h"
+#include "import_from_file.h"
 
 struct data {
 	FilepathImportidPair *importlocations;
@@ -12,6 +13,7 @@ struct data {
 static RET_CRIFI_IMPORT myimportfunction(crifi_graph *graph,
 		CLIPSValue *import_location, CLIPSValue *entailment_regime,
 		CLIPSValue *values, int number_values, void *context){
+	RET_CRIFI_IMPORT import_err;
 	if (context == NULL) return RET_CRIFI_IMPORT_INVALIDCONTEXT;
 	char *id = extract_uri(graph, import_location->header);
 	char *entailment = extract_uri(graph, entailment_regime->header);
@@ -24,16 +26,36 @@ static RET_CRIFI_IMPORT myimportfunction(crifi_graph *graph,
 	if (mydata->importlocations != NULL){
 		for (int i = 0; i<mydata->number_importlocations; i++){
 			if (0==strcmp(id, mydata->importlocations[i].id)){
+				FILE *f = fopen(mydata->importlocations[i].filepath, "r");
+				if (f != NULL){
+
+					import_err = import_data_from_file(graph, f);
+					fclose(f);
+				} else {
+					import_err = RET_CRIFI_IMPORT_COULDNT_LOCATE_SOURCE;
+				}
+				free(entailment);
 				free(id);
-				return RET_CRIFI_IMPORT_NOERROR;
+				return import_err;
 			}
 		}
 	}
 	if (mydata->importmethods != NULL){
 		for (int i = 0; i<mydata->number_importmethods; i++){
-			if (0==strcmp(id, mydata->importmethods[i].id)){
+
+			GetfileImportidPair *tmpmethod = mydata->importmethods + i;
+			if (0==strcmp(id, tmpmethod->id)){
+				FILE *f = tmpmethod->method(tmpmethod->context);
+				if (f != NULL){
+
+					import_err = import_data_from_file(graph, f);
+					fclose(f);
+				} else {
+					import_err = RET_CRIFI_IMPORT_COULDNT_LOCATE_SOURCE;
+				}
+				free(entailment);
 				free(id);
-				return RET_CRIFI_IMPORT_NOERROR;
+				return import_err;
 			}
 		}
 	}

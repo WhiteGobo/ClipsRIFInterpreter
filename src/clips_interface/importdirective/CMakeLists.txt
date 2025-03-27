@@ -1,6 +1,8 @@
 add_library(crifi_import STATIC
 	crifi_import.c
 	crifi_import.h
+	interpretation.c
+	interpretations.h
 	init_data.c
 )
 
