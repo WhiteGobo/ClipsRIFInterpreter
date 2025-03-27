@@ -61,6 +61,17 @@ TEST(ImportTest, Basic){
 			FAIL() << "crifi:import return unexpected value.";
 	}
 
+
+	retval = eval(graph, "(< 0 (length$ (find-fact ((?x TripleTemplate)) TRUE)))");
+	switch (retval.type){
+		case CTC_DYNAMIC_BOOL:
+			EXPECT_EQ(retval.val.boolean, true)
+				<< "crifi:import didnt assert any triple";
+			break;
+		default:
+			FAIL() << "broken test?";
+	}
+
 	close_graph(graph);
 	//FAIL() << "testfailure";
 }
