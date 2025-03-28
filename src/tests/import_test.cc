@@ -9,7 +9,7 @@
 #include "ffi_constants.h"
 #include "crifi_import_implementations.h"
 
-static char data[] = "[] <http://example.com/prop> 3.\n";
+static char data[] = "[] <http://example.com/propA> 3; <http://example.com/propB> [].\n";
 
 static FILE *test_import_method(void *context){
 	FILE *qq = fmemopen(data, strlen(data), "r");
@@ -79,5 +79,5 @@ TEST(ImportTest, Basic){
 	}
 
 	close_graph(graph);
-	//FAIL() << "testfailure";
+	FAIL() << "testfailure";
 }

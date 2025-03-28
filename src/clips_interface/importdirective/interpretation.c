@@ -38,6 +38,7 @@ int end_import_process(ImportProcess *process){
 	if (process == NULL){
 		return 1;
 	}
+	free_bnodelookup(process->bnode_lookup);
 	free(process);
 	return 0;
 }

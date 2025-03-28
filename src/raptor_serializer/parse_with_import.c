@@ -47,6 +47,7 @@ CRIFI_PARSE_RET crifi_parse(raptor_statement_handler assert_triple_handler,
 
 	raptor_free_parser(parser);
 	raptor_free_uri(base_uri);
+	raptor_free_uri(r_syntax_uri);
 	raptor_free_world(world);
 	if (err != 0){
 		return CRIFI_PARSE_PARSING_ERROR;

@@ -48,13 +48,21 @@ static int new_bnode_entry(BNodeLookup *bnode_lookup, const char *id,
 	}
 	BNodeEntry *ret = malloc(sizeof(BNodeEntry));
 	if (ret == NULL){
-		return 1;
+		return 2;
+	}
+	ret->id = malloc(strlen(id) + 1);
+	if (ret->id == NULL){
+		free(ret);
+		return 2;
 	}
 	strcpy(ret->id, id);
 	ret->clipsnode.value = value->value;
 
 	err = raptor_avltree_add(bnode_lookup->avltree, ret);
-	if (err != 0) free(ret);
+	if (err != 0){
+		free(ret->id);
+		free(ret);
+	}
 	return err;
 }
 
