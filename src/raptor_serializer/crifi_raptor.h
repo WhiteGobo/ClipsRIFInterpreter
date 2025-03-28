@@ -23,6 +23,9 @@ typedef enum {
 	CRIFI_PARSE_INITERROR,
 	CRIFI_PARSE_BASEERROR,
 	CRIFI_PARSE_TERM_CONVERT,
+	CRIFI_PARSE_SYNTAX_ERROR,
+	///Throw when parser in progress returns error
+	CRIFI_PARSE_PARSING_ERROR,
 	CRIFI_PARSE_UNKNOWN
 } CRIFI_PARSE_RET;
 
@@ -62,6 +65,14 @@ CRIFI_SERIALIZE_RET crifi_serialize_all_triples(crifi_graph* graph,
 CRIFI_PARSE_RET crifi_parse_to_triples(crifi_graph* graph,
 					FILE *filehandle,
 					const char* format, const char* base);
+
+/**
+ * For valid syntax_uri see `https://www.w3.org/ns/formats/`_
+ */
+CRIFI_PARSE_RET crifi_parse(raptor_statement_handler assert_triple_handler,
+					void *assert_triple_context,
+					FILE *filehandle, const char *filepath,
+					const char* syntax_uri, const char* base);
 
 CRIFI_SERIALIZE_SCRIPT_RET serialize_information_as_clips_script(FILE* stream, crifi_graph* graph);
 

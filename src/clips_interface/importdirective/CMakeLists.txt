@@ -14,6 +14,10 @@ target_link_libraries(crifi_import PUBLIC
 	clips
 )
 
+target_link_libraries(crifi_import PRIVATE
+	info_query
+)
+
 set_target_properties(crifi_import PROPERTIES
 	PUBLIC_HEADER crifi_import.h
 	OUTPUT_NAME "crifi_import"

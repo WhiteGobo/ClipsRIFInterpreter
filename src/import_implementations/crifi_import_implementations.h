@@ -6,6 +6,7 @@
 typedef struct filepath_importid_pair {
 	char *id;
 	char *filepath;
+	char *syntax;
 } FilepathImportidPair;
 
 typedef FILE* GetFileMethod(void *context);
@@ -16,6 +17,7 @@ typedef struct getfile_importid_pair {
 	GetFileMethod *method;
 	void *context;
 	CleanupGetFileMethodContext *cleanup;
+	char *syntax;
 } GetfileImportidPair;
 
 #ifdef __cplusplus

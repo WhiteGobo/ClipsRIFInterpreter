@@ -9,23 +9,29 @@
 #include "ffi_constants.h"
 #include "crifi_import_implementations.h"
 
+static char data[] = "[] <http://example.com/prop> 3.\n";
+
 static FILE *test_import_method(void *context){
-	char data[] = "#asdf";
-	return fmemopen(data, strlen(data), "r");
+	FILE *qq = fmemopen(data, strlen(data), "r");
+	if (qq == NULL){
+		fprintf(stderr, "test_import_method failed\n");
+	}
+	return qq;
 }
 
 #define TESTADDRESSA "http://example.com/test_address_a"
 #define TESTADDRESSB "http://example.com/test_address_b"
 
+
 TEST(ImportTest, Basic){
 	struct DynamicValue retval;
 	crifi_graph* graph = init_graph();
 	FilepathImportidPair importlocations[] = {
-		{.id= TESTADDRESSA, .filepath="asdf"},
+		{.id= TESTADDRESSA, .filepath="asdf", .syntax=_SYNTAX_TURTLE_},
 		{.id=NULL}
 	};
 	GetfileImportidPair importmethods[] = {
-		{.id= TESTADDRESSB, .method=test_import_method, .context=NULL, .cleanup=NULL},
+		{.id= TESTADDRESSB, .method=test_import_method, .context=NULL, .cleanup=NULL, .syntax=_SYNTAX_TURTLE_},
 		{.id=NULL}
 	};
 
@@ -54,7 +60,7 @@ TEST(ImportTest, Basic){
 			}
 			break;
 		case CTC_DYNAMIC_BOOL:
-			EXPECT_EQ(retval.val.boolean, true)
+			ASSERT_EQ(retval.val.boolean, true)
 				<< "crifi:import return failure.";
 			break;
 		default:

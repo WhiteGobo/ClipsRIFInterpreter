@@ -9,6 +9,8 @@ add_library(crifi_raptor
 	parse_with_raptor.c
 	rdf_object.c
 	rdf_object.h
+	parse_with_import.c
+	parse_with_import.h
 )
 
 set_target_properties(crifi_raptor PROPERTIES

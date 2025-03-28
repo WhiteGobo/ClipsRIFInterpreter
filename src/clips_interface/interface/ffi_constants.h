@@ -277,6 +277,8 @@
 #define _RIFBUILTIN_ "http://www.w3.org/2007/rif-builtin-function#"
 
 
+#define _SYNTAX_ "http://www.w3.org/ns/formats/"
+#define _SYNTAX_TURTLE_ _SYNTAX_ "Turtle"
 
 ///uri has to be macro constant uri
 #define ISURI(cmp, cmp_size, uri) ((cmp_size == (sizeof(uri) - 1)) && (0 == memcmp(cmp, uri, sizeof(uri) - 1)))

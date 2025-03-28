@@ -16,8 +16,24 @@ typedef enum {
 	///If inputdata cant imported because of its interpretation
 	RET_CRIFI_IMPORT_REJECTED_PROFILE,
 	RET_CRIFI_IMPORT_COULDNT_LOCATE_SOURCE,
-	RET_CRIFI_IMPORT_PROCESS_FAILED
+	RET_CRIFI_IMPORT_PROCESS_FAILED,
+	///Return on unhandled problem
+	RET_CRIFI_IMPORT_UNKNOWN_ERROR
+	
 } RET_CRIFI_IMPORT;
+
+typedef enum {
+	CRIFI_IMPORT_TERM_URI,
+	CRIFI_IMPORT_TERM_BNODE,
+	CRIFI_IMPORT_TERM_TYPEDLITERAL,
+	CRIFI_IMPORT_TERM_LANGLITERAL,
+	CRIFI_IMPORT_TERM_UNKOWN
+} IMPORT_TERM_TYPE;
+
+typedef enum {
+	CRIFI_IMPORT_ASSERT_NOERROR = 0,
+	CRIFI_IMPORT_ASSERT_UNHANDLED_ERROR
+} CRIFI_IMPORT_ASSERT_RET;
 
 typedef void CRIFIImportDataCleanupFunction(void *context);
 typedef RET_CRIFI_IMPORT CRIFIImportMethod(crifi_graph *graph,
@@ -67,6 +83,14 @@ void free_crifi_singleimportdata(CRIFISingleImportData *data);
 
 ImportProcess *start_import_process(crifi_graph *graph, CLIPSValue *input_interpretation);
 int end_import_process(ImportProcess *process);
+CRIFI_IMPORT_ASSERT_RET assert_frame(ImportProcess *process,
+		const char *object, const char *object_suffix,
+		IMPORT_TERM_TYPE object_type,
+		const char *slotkey, const char *slotkey_suffix,
+		IMPORT_TERM_TYPE slotkey_type,
+		const char *slotvalue, const char *slotvalue_suffix,
+		IMPORT_TERM_TYPE slotvalue_type
+		);
 
 RET_CRIFI_IMPORT crifi_execute_import(crifi_graph *graph, CLIPSValue *import_location, CLIPSValue *entailment_regime, CLIPSValue *values, int number_values);
 

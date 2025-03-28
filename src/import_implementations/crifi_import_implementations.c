@@ -13,6 +13,9 @@ struct data {
 static RET_CRIFI_IMPORT myimportfunction(crifi_graph *graph,
 		CLIPSValue *import_location, CLIPSValue *entailment_regime,
 		CLIPSValue *values, int number_values, void *context){
+	FILE *f = NULL;
+	const char *filepath;
+	GetfileImportidPair *tmpmethod;
 	RET_CRIFI_IMPORT import_err;
 	if (context == NULL) return RET_CRIFI_IMPORT_INVALIDCONTEXT;
 	char *id = extract_uri(graph, import_location->header);
@@ -26,10 +29,15 @@ static RET_CRIFI_IMPORT myimportfunction(crifi_graph *graph,
 	if (mydata->importlocations != NULL){
 		for (int i = 0; i<mydata->number_importlocations; i++){
 			if (0==strcmp(id, mydata->importlocations[i].id)){
-				FILE *f = fopen(mydata->importlocations[i].filepath, "r");
+				filepath = mydata->importlocations[i].filepath;
+				char *syntax_uri = mydata->importlocations[i].syntax;
+				f = fopen(filepath, "r");
 				if (f != NULL){
 
-					import_err = import_data_from_file(graph, f);
+					import_err = import_data_from_file(
+							graph, f, filepath,
+							entailment_regime,
+							syntax_uri);
 					fclose(f);
 				} else {
 					import_err = RET_CRIFI_IMPORT_COULDNT_LOCATE_SOURCE;
@@ -43,12 +51,16 @@ static RET_CRIFI_IMPORT myimportfunction(crifi_graph *graph,
 	if (mydata->importmethods != NULL){
 		for (int i = 0; i<mydata->number_importmethods; i++){
 
-			GetfileImportidPair *tmpmethod = mydata->importmethods + i;
+			tmpmethod = mydata->importmethods + i;
 			if (0==strcmp(id, tmpmethod->id)){
-				FILE *f = tmpmethod->method(tmpmethod->context);
+				f = tmpmethod->method(tmpmethod->context);
 				if (f != NULL){
 
-					import_err = import_data_from_file(graph, f);
+					import_err = import_data_from_file(
+							graph, f,
+							tmpmethod->id,
+							entailment_regime,
+							tmpmethod->syntax);
 					fclose(f);
 				} else {
 					import_err = RET_CRIFI_IMPORT_COULDNT_LOCATE_SOURCE;
@@ -67,10 +79,12 @@ static RET_CRIFI_IMPORT myimportfunction(crifi_graph *graph,
 static void cleanup_importlocation(FilepathImportidPair *data){
 	free(data->id);
 	free(data->filepath);
+	free(data->syntax);
 }
 
 static void cleanup_importmethod(GetfileImportidPair *data){
 	free(data->id);
+	free(data->syntax);
 }
 
 static void mycleanupfunction(void *context){
@@ -90,14 +104,19 @@ static void mycleanupfunction(void *context){
 	free(mydata);
 }
 
-bool add_importlocations(crifi_graph *graph, FilepathImportidPair *importlocations, GetfileImportidPair *importmethods){
+bool add_importlocations(crifi_graph *graph,
+		FilepathImportidPair *importlocations,
+		GetfileImportidPair *importmethods){
 	int err;
 	int number_importlocations = 0;
 	int number_importmethods = 0;
 	FilepathImportidPair *importlocations_cpy = NULL;
 	GetfileImportidPair *importmethods_cpy = NULL;
 	if (importlocations != NULL){
-		for(FilepathImportidPair *x = importlocations; x->id != NULL || x->filepath != NULL; x++){
+		for(FilepathImportidPair *x = importlocations;
+				x->id != NULL || x->filepath != NULL;
+				x++)
+		{
 			number_importlocations++;
 		}
 		importlocations_cpy = calloc(1 + number_importlocations,
@@ -107,6 +126,8 @@ bool add_importlocations(crifi_graph *graph, FilepathImportidPair *importlocatio
 			strcpy(importlocations_cpy[i].id, importlocations[i].id);
 			importlocations_cpy[i].filepath = calloc(strlen(importlocations[i].filepath) +1, sizeof(char));
 			strcpy(importlocations_cpy[i].filepath, importlocations[i].filepath);
+			importlocations_cpy[i].syntax = calloc(strlen(importlocations[i].syntax) +1, sizeof(char));
+			strcpy(importlocations_cpy[i].syntax, importlocations[i].syntax);
 		}
 	}
 	if (importmethods != NULL){
@@ -121,6 +142,8 @@ bool add_importlocations(crifi_graph *graph, FilepathImportidPair *importlocatio
 			importmethods_cpy[i].method = importmethods[i].method;
 			importmethods_cpy[i].context = importmethods[i].context;
 			importmethods_cpy[i].cleanup = importmethods[i].cleanup;
+			importmethods_cpy[i].syntax = calloc(strlen(importmethods[i].syntax) +1, sizeof(char));
+			strcpy(importmethods_cpy[i].syntax, importmethods[i].syntax);
 		}
 	}
 	struct data* mydata = malloc(sizeof(struct data));
@@ -129,6 +152,7 @@ bool add_importlocations(crifi_graph *graph, FilepathImportidPair *importlocatio
 	mydata->importmethods = importmethods_cpy;
 	mydata->number_importmethods = number_importmethods;
 
-	err = crifi_add_import_function(graph, myimportfunction, mydata, mycleanupfunction);
+	err = crifi_add_import_function(graph, myimportfunction, mydata,
+					mycleanupfunction);
 	return err == 0;
 }
