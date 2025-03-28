@@ -114,7 +114,7 @@ RET_CRIFI_IMPORT import_data_from_file(crifi_graph *graph, FILE *inputfile, cons
 	CLIPSValue inputinterpretation = {.voidValue = VoidConstant(graph)};
 	//`https://www.w3.org/ns/formats/`_
 
-	cntxt.process = start_import_process(graph, &inputinterpretation);
+	cntxt.process = start_import_process(graph, entailment);
 	if (cntxt.process == NULL){
 		return RET_CRIFI_IMPORT_REJECTED_PROFILE;
 	}

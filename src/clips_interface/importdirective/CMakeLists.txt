@@ -8,6 +8,8 @@ add_library(crifi_import STATIC
 	direct_interpretation.h
 	bnode_lookup.c
 	bnode_lookup.h
+	rdf_to_rif_interpretation.c
+	rdf_to_rif_interpretation.h
 )
 
 target_include_directories(crifi_import PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")

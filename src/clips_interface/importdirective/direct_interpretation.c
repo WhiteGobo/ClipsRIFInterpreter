@@ -1,6 +1,24 @@
 #include "direct_interpretation.h"
 
 
+ImportProcess *start_import_process_direct_interpretation(crifi_graph *graph){
+	ImportProcess *process = malloc(sizeof(ImportProcess));
+	process->graph = graph;
+	process->interpreter_id = CRIFI_IMPORT_IP_DIRECT;
+	process->bnode_lookup = new_bnodelookup();
+	return process;
+}
+
+int end_import_process_direct_interpretation(ImportProcess *process){
+	if (process == NULL){
+		return 1;
+	}
+	free_bnodelookup(process->bnode_lookup);
+	free(process);
+	return 0;
+}
+
+
 static int brubru(ImportProcess *process,
 		const char *value, const char *suffix, IMPORT_TERM_TYPE type,
 		CLIPSValue *retval)

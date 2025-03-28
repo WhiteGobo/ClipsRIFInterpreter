@@ -81,7 +81,11 @@ int crifi_add_import_function(crifi_graph *graph,
 
 void free_crifi_singleimportdata(CRIFISingleImportData *data);
 
+/**
+ * TODO: rename input_interpretation to input_entailment
+ */
 ImportProcess *start_import_process(crifi_graph *graph, CLIPSValue *input_interpretation);
+
 int end_import_process(ImportProcess *process);
 CRIFI_IMPORT_ASSERT_RET assert_frame(ImportProcess *process,
 		const char *object, const char *object_suffix,

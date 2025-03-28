@@ -4,10 +4,13 @@
 #include "interpretations.h"
 #include "info_query.h"
 
-ImportProcess *start_import_process_direct_interpretation(crifi_graph *graph);
-int end_import_process_direct_interpretation(ImportProcess *process);
+ImportProcess *start_import_process_rdf_to_rif_interpretation(
+				crifi_graph *graph,
+				CRIFI_IMPORT_INTERPRETER_ID interpreter_id);
 
-CRIFI_IMPORT_ASSERT_RET assert_frame_direct(ImportProcess *process,
+int end_import_process_rdf_to_rif_interpretation(ImportProcess *process);
+
+CRIFI_IMPORT_ASSERT_RET assert_frame_rdf_to_rif(ImportProcess *process,
 		const char *object, const char *object_suffix,
 		IMPORT_TERM_TYPE object_type,
 		const char *slotkey, const char *slotkey_suffix,

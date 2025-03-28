@@ -280,6 +280,10 @@
 #define _SYNTAX_ "http://www.w3.org/ns/formats/"
 #define _SYNTAX_TURTLE_ _SYNTAX_ "Turtle"
 
+#define _CRIFI_MODEL_ "http://white.gobo/model#"
+#define _CRIFI_MODEL_SIMPLE_ _CRIFI_MODEL_ "simple"
+#define _CRIFI_MODEL_RIFGENERATOR_ _CRIFI_MODEL_ "rifgenerator"
+
 ///uri has to be macro constant uri
 #define ISURI(cmp, cmp_size, uri) ((cmp_size == (sizeof(uri) - 1)) && (0 == memcmp(cmp, uri, sizeof(uri) - 1)))
 
