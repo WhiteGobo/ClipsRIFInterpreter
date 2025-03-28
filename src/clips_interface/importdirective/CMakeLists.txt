@@ -4,6 +4,10 @@ add_library(crifi_import STATIC
 	interpretation.c
 	interpretations.h
 	init_data.c
+	direct_interpretation.c
+	direct_interpretation.h
+	bnode_lookup.c
+	bnode_lookup.h
 )
 
 target_include_directories(crifi_import PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
@@ -16,6 +20,7 @@ target_link_libraries(crifi_import PUBLIC
 
 target_link_libraries(crifi_import PRIVATE
 	info_query
+	raptor2
 )
 
 set_target_properties(crifi_import PROPERTIES
