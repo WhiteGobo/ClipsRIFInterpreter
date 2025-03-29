@@ -6,43 +6,39 @@
 #include "rdf_to_rif_interpretation.h"
 
 
-int get_interpretation_id(crifi_graph *graph, CLIPSValue *cv){
-	const char* value = _CRIFI_MODEL_SIMPLE_;
-	int err = uri_to_clipsvalue(graph,
-			value, strlen(value),
-			cv);
-	return err;
-}
-
 static CRIFI_IMPORT_INTERPRETER_ID get_interpreter(crifi_graph *graph, CLIPSValue *input_entailment){
 	int err;
+	char *entailment;
+	CRIFI_IMPORT_MODEL_ID model;
 	CRIFI_IMPORT_INTERPRETER_ID ret = CRIFI_IMPORT_IP_UNKNOWN;
-	char *entailment = extract_uri(graph, input_entailment->header);
-	if (entailment == NULL) return CRIFI_IMPORT_IP_UNKNOWN;
 	CLIPSValue graph_interpretation_id = {.voidValue = VoidConstant(graph)};
 	CLIPSValue tmpval = {.voidValue = VoidConstant(graph)};
 
-	err = get_interpretation_id(graph, &graph_interpretation_id);
-	char *model = extract_uri(graph, graph_interpretation_id.header);
-	if (model == NULL){
-		free(entailment);
-		return CRIFI_IMPORT_IP_UNKNOWN;
-	}
+	entailment = extract_uri(graph, input_entailment->header);
+	if (entailment == NULL) return CRIFI_IMPORT_IP_UNKNOWN;
+	model = LoadingCRIFIImportData(graph)->model_id;
+	//err = get_interpretation_id(graph, &graph_interpretation_id);
+	//model = extract_uri(graph, graph_interpretation_id.header);
 	if (0 == strcmp(entailment, _RIFENTAIL_SIMPLE_)){
-		if (0 == strcmp(model, _CRIFI_MODEL_SIMPLE_)){
-			ret = CRIFI_IMPORT_IP_DIRECT;
-		} else if (0 == strcmp(model, _CRIFI_MODEL_RIFGENERATOR_)){
-			ret = CRIFI_IMPORT_IP_SIMPLE_TO_RIF;
+		switch (model){
+			case CRIFI_IMPORT_MODEL_SIMPLE:
+				ret = CRIFI_IMPORT_IP_DIRECT;
+				break;
+			case CRIFI_IMPORT_MODEL_RIFGENERATOR:
+				ret = CRIFI_IMPORT_IP_SIMPLE_TO_RIF;
+				break;
 		}
 	} else if (0 == strcmp(entailment, _RIFENTAIL_RIF_)){
-		if (0 == strcmp(model, _CRIFI_MODEL_SIMPLE_)){
-			ret = CRIFI_IMPORT_IP_UNKNOWN;
-		} else if (0 == strcmp(model, _CRIFI_MODEL_RIFGENERATOR_)){
-			ret = CRIFI_IMPORT_IP_DIRECT;
+		switch (model){
+			case CRIFI_IMPORT_MODEL_SIMPLE:
+				ret = CRIFI_IMPORT_IP_UNKNOWN;
+				break;
+			case CRIFI_IMPORT_MODEL_RIFGENERATOR:
+				ret = CRIFI_IMPORT_IP_DIRECT;
+				break;
 		}
 	}
 	free(entailment);
-	free(model);
 	return ret;
 }
 

@@ -12,4 +12,5 @@ target_link_libraries(generate_crifi_script PRIVATE
 target_link_libraries(oneshot_crifi_script PRIVATE
 	ffi_clips_interface
 	crifi_raptor
+	crifi_import
 )

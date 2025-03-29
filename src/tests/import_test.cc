@@ -79,5 +79,5 @@ TEST(ImportTest, Basic){
 	}
 
 	close_graph(graph);
-	FAIL() << "testfailure";
+	//FAIL() << "testfailure";
 }

@@ -4,12 +4,15 @@
 #include <ffi_clips_interface.h>
 #include <iostream>
 #include "crifi_raptor.h"
+#include "crifi_import.h"
 
 #define USAGE "Usage: %s [-d DATAPATH] sourcepath\n"
 
 FILE* source = NULL;
 FILE* data = NULL;
 crifi_graph *graph = NULL;
+
+CRIFI_IMPORT_MODEL_ID model = CRIFI_IMPORT_MODEL_UNDEFINED;
 
 //const char *outformat = "turtle";
 const char *outformat = "turtle";
@@ -92,6 +95,13 @@ static int load_graph(){
 		return 1;
 	}
 
+	if (model != CRIFI_IMPORT_MODEL_UNDEFINED){
+		if (0 != set_model_id_for_import(graph, model)){
+			fprintf(stderr, "Invalid graph model.\n");
+			return 1;
+		}
+	}
+
 	if (fseeko(source, 0, SEEK_END) != 0) {
 		fprintf(stderr, "Couldnt process given source\n");
 		return 1;
@@ -126,7 +136,7 @@ static int load_graph(){
 static int parse(int argc, char* argv[]){
 	int opt;
 	char *sourcepath, *datapath;
-	while ((opt = getopt(argc, argv, "d:i:o:")) != -1){
+	while ((opt = getopt(argc, argv, "d:i:o:m:")) != -1){
 		switch (opt){
 			case 'i':
 				format = optarg;
@@ -139,6 +149,16 @@ static int parse(int argc, char* argv[]){
 				if (data==NULL){
 					fprintf(stderr, "Couldnt open: '%s'\n",
 							optarg);
+					return 1;
+				}
+				break;
+			case 'm':
+				if (0 == strcmp(optarg, "rif")){
+					model = CRIFI_IMPORT_MODEL_RIFGENERATOR;
+				} else {
+					fprintf(stderr, "'%s' isnt a valid "
+							"model\n", optarg);
+					fprintf(stderr, USAGE, argv[0]);
 					return 1;
 				}
 				break;

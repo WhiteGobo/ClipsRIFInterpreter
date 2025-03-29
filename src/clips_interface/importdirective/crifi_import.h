@@ -35,6 +35,14 @@ typedef enum {
 	CRIFI_IMPORT_ASSERT_UNHANDLED_ERROR
 } CRIFI_IMPORT_ASSERT_RET;
 
+typedef enum {
+	CRIFI_IMPORT_MODEL_UNDEFINED = -1,
+	///type of _CRIFI_MODEL_SIMPLE_
+	CRIFI_IMPORT_MODEL_SIMPLE,
+	///type of _CRIFI_MODEL_RIFGENERATOR_
+	CRIFI_IMPORT_MODEL_RIFGENERATOR
+} CRIFI_IMPORT_MODEL_ID;
+
 typedef void CRIFIImportDataCleanupFunction(void *context);
 typedef RET_CRIFI_IMPORT CRIFIImportMethod(crifi_graph *graph,
 		CLIPSValue *import_location, CLIPSValue *entailment_regime,
@@ -49,7 +57,7 @@ typedef struct crifiSingleImportData {
 
 typedef struct crifiImportData{
 	CRIFISingleImportData *first;
-	CLIPSValue *interpretation;
+	CRIFI_IMPORT_MODEL_ID model_id;
 } CRIFIImportData;
 
 typedef struct importProcess ImportProcess;
@@ -80,6 +88,8 @@ int crifi_add_import_function(crifi_graph *graph,
 		CRIFIImportDataCleanupFunction *cleanup_function);
 
 void free_crifi_singleimportdata(CRIFISingleImportData *data);
+
+int set_model_id_for_import(crifi_graph *graph, CRIFI_IMPORT_MODEL_ID model_id);
 
 /**
  * TODO: rename input_interpretation to input_entailment

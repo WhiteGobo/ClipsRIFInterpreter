@@ -39,6 +39,7 @@ echo "generate only data for the new script"
 ./build/generate_crifi_script/oneshot_crifi_script \
 	-o turtle \
 	-d $temp_logic_in_ttl \
+	-m rif \
 	tmp/SimpleEntailment.clp \
 	> $temp_clips_script_all_data
 
@@ -51,4 +52,5 @@ echo "generate new script itself"
 ./build/generate_crifi_script/oneshot_crifi_script \
 	-o clipsscript \
 	-d $temp_logic_in_ttl \
+	-m rif \
 	tmp/SimpleEntailment.clp 

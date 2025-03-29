@@ -1,5 +1,6 @@
 #include <clips.h>
 #include "crifi_import.h"
+#include "ffi_constants.h"
 
 static void release_crifi_importdata(Environment *env);
 static void free_crifi_importdata(CRIFIImportData *data);
@@ -32,6 +33,7 @@ bool crifi_importdata_register_data(crifi_graph *graph){
 static bool initialize_crifi_importdata(CRIFIImportData *data){
 	int err;
 	data->first = NULL;
+	data->model_id = CRIFI_IMPORT_MODEL_SIMPLE;
 	return true;
 }
 
