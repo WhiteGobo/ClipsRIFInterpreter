@@ -9,6 +9,7 @@ Document(
     Prefix(ex <http://example.com/>)
     Prefix(triplestordf <http://example.com/triples-to-rdf#>)
     Prefix(rif <http://www.w3.org/2007/rif#>)
+    Prefix(entailment <http://www.w3.org/ns/entailment/>)
 
     Group(
       (* triplestordf:combine-rdf-lists *) Group 100 (
@@ -269,6 +270,16 @@ Document(
           Assert( ?clipsaction[cs:assert -> ?clipsfact] )
         )
       )
+      (* ex:transform-frame-to-assert *) Forall ?rifassert ?riftarget(
+        If And(
+          ?rifframe[rdf:type -> rif:Frame]
+          ?rifframe[ex:as-rhspattern -> ?clipsfact]
+        ) Then Do (
+          (?clipsaction New())
+          Assert( ?rifframe[ex:as-action -> External(func:make-list(?clipsaction))] )
+          Assert( ?clipsaction[cs:assert -> ?clipsfact] )
+        )
+      )
       (* ex:transform-retract-var *) Forall ?rifretract ?riftarget ?varname(
         If And(
           ?rifretract[rdf:type -> rif:Retract]
@@ -471,6 +482,24 @@ Document(
                     ) Then Do (
                       Assert(?defrule[cs:conditional-element -> ?conditional])
                     )
+                  )
+                )
+              )
+              (* ex:import-thingies *) Group (
+                Forall ?directive ?location ?profile (
+                  If And (
+                    ?directive[rif:location -> ?location]
+                    ?directive[rif:profile -> ?profile]
+                  ) Then Do (
+                    Execute(crifi:import(?location ?profile))
+                  )
+                )
+                Forall ?directive ?location (
+                  If And (
+                    ?directive[rif:location -> ?location]
+                    Not( Exists ?profile (?directive[rif:profile -> ?profile]))
+                  ) Then Do (
+                    Assert( ?directive[rif:profile -> entailment:RIF] )
                   )
                 )
               )

@@ -13,11 +13,16 @@ FetchContent_MakeAvailable(googletest)
 
 enable_testing()
 
+set(TESTDATA_OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/testdata.h")
+compile_resources(${TESTDATA_OUTPUT} myname TARGETS asdf qwer)
+
+
 add_executable(hello_test
 	hello_test.cc
 	testcases_test.cc
 	raptor_test.cc
 	import_test.cc
+	${TESTDATA_OUTPUT}
 )
 
 target_link_libraries(hello_test PRIVATE

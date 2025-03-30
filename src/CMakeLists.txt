@@ -17,6 +17,7 @@ See also CMAKE_MODULE_PATH."
 )
 set(installable_libs )
 
+
 include(FetchContent)
 
 #Patch adds CMakeLists.txt to clips
@@ -38,13 +39,12 @@ else()
 endif()
 
 
-
+add_subdirectory(import_implementations)
 add_subdirectory(ntriples_parser)
 add_subdirectory(clips_interface)
 add_subdirectory(resource_manager)
 add_subdirectory(generate_crifi_script)
 add_subdirectory(raptor_serializer)
-add_subdirectory(import_implementations)
 
 if(BUILD_TESTING)
 	enable_testing()

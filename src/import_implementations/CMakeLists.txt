@@ -1,3 +1,5 @@
+include(import_as_source.cmake)
+
 add_library(crifi_import_implementations
 	crifi_import_implementations.c
 	crifi_import_implementations.h

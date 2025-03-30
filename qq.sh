@@ -11,17 +11,22 @@ fi
 entailment="resources/rules_rif_to_clips_script/SimpleEntailment.rifps"
 #entailment="resources/rules_rif_to_clips_script/test.rifps"
 
+filename=$(basename -- "$logic_input")
+extensionlogic="${filename##*.}"
+filename=$(basename -- "$entailment")
+extensionentailment="${filename##*.}"
+
 temp_logic_in_ttl="tmp/temp_logic_in_ttl.ttl"
 temp_clips_script_all_data="tmp/qq.out.ttl"
 
 mkdir -p tmp
 
 echo "transform data from rifps to turtle"
-rdfpipe -i rifps -o ttl \
+rdfpipe -i $extensionentailment -o ttl \
 	$entailment \
 	> tmp/SimpleEntailment.ttl
 
-rdfpipe -i rifps -o ttl \
+rdfpipe -i $extensionlogic -o ttl \
 	$logic_input \
 	> $temp_logic_in_ttl
 
