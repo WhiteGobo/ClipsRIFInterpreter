@@ -1,0 +1,24 @@
+#pragma once
+
+#include "stdbool.h"
+#include "crifi_import_implementations.h"
+
+@memory@
+
+static FILE *@name@_import_method(void *context){
+	char *data = (char*) context;
+	FILE *qq = fmemopen(data, strlen(data), "r");
+	//if (qq == NULL){
+	//	fprintf(stderr, "test_import_method failed\n");
+	//}
+	return qq;
+}
+
+static GetfileImportidPair @name@_importmethods[] = {
+@importmethods@
+	{.id=NULL}
+};
+
+static bool @functionname@(crifi_graph *graph){
+	return  add_importlocations(graph, NULL, @name@_importmethods);
+}

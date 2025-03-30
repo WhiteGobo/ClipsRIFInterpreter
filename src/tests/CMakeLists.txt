@@ -14,7 +14,10 @@ FetchContent_MakeAvailable(googletest)
 enable_testing()
 
 set(TESTDATA_OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/testdata.h")
-compile_resources(${TESTDATA_OUTPUT} myname TARGETS asdf qwer)
+compile_resources(myname ${TESTDATA_OUTPUT} TARGETS
+	"http://example.com/testdata#shared_bnode" importdata/shared_bnode.ttl
+	"http://example.com/testdata#asdf.ttl" importdata/asdf.ttl
+)
 
 
 add_executable(hello_test
@@ -24,6 +27,8 @@ add_executable(hello_test
 	import_test.cc
 	${TESTDATA_OUTPUT}
 )
+
+target_include_directories(hello_test PRIVATE "${CMAKE_CURRENT_BINARY_DIR}")
 
 target_link_libraries(hello_test PRIVATE
 	GTest::gtest_main

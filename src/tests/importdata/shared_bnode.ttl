@@ -1,0 +1,4 @@
+
+
+[] <http://example.com/propA> 3 ;
+	<http://example.com/propB> [] .
