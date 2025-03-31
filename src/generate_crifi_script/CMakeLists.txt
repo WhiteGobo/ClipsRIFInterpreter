@@ -13,4 +13,5 @@ target_link_libraries(oneshot_crifi_script PRIVATE
 	ffi_clips_interface
 	crifi_raptor
 	crifi_import
+	crifi_import_implementations
 )

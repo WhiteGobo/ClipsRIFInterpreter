@@ -5,12 +5,14 @@
 #include <iostream>
 #include "crifi_raptor.h"
 #include "crifi_import.h"
+#include "crifi_import_implementations.h"
 
 #define USAGE "Usage: %s [-d DATAPATH] sourcepath\n"
 
 FILE* source = NULL;
 FILE* data = NULL;
 crifi_graph *graph = NULL;
+FileImportList *importlocations_list = NULL;
 
 CRIFI_IMPORT_MODEL_ID model = CRIFI_IMPORT_MODEL_UNDEFINED;
 
@@ -85,6 +87,15 @@ static int run(){
 	return 0;
 }
 
+static bool my_add_importlocations(){
+	FilepathImportidPair *importlocations;
+	if (importlocations_list == NULL) return true;
+	importlocations = combine_importlocationlist(importlocations_list);
+	if (importlocations == NULL) return false;
+	if (!add_importlocations(graph, importlocations, NULL)) return false;
+	return true;
+}
+
 static int load_graph(){
 	int err;
 	off_t script_size;
@@ -98,6 +109,13 @@ static int load_graph(){
 	if (model != CRIFI_IMPORT_MODEL_UNDEFINED){
 		if (0 != set_model_id_for_import(graph, model)){
 			fprintf(stderr, "Invalid graph model.\n");
+			return 1;
+		}
+	}
+
+	if (importlocations_list != NULL){
+		if(!my_add_importlocations()){
+			fprintf(stderr, "Couldnt add import locations.\n");
 			return 1;
 		}
 	}
@@ -133,11 +151,42 @@ static int load_graph(){
 	return 0;
 }
 
+static int parse_import(char *qq){
+	char *separator, *id, *location;
+	size_t l = strlen(optarg);
+	size_t id_size;
+	id = (char*) malloc(l);
+	location = (char*) malloc(l);
+	if (id == NULL || location == NULL){
+		fprintf(stderr, "Couldnt allocate.\n");
+		free(id); free(location);
+		return 1;
+	}
+	separator = strrchr(qq, '=');
+	if (separator == NULL){
+		fprintf(stderr, "Import option cant be read: %s\n", qq);
+		return 1;
+	}
+	id_size = separator - qq;
+	strcpy(location, separator+1);
+	memcpy(id, qq, id_size);
+	id[id_size] = '\0';
+	importlocations_list = append_importlocation_to_list(
+			importlocations_list,
+			id, location, "http://www.w3.org/ns/formats/Turtle");
+	return 0;
+}
+
 static int parse(int argc, char* argv[]){
 	int opt;
 	char *sourcepath, *datapath;
-	while ((opt = getopt(argc, argv, "d:i:o:m:")) != -1){
+	while ((opt = getopt(argc, argv, "d:i:o:m:I:")) != -1){
 		switch (opt){
+			case 'I':
+				if (0 != parse_import(optarg)){
+					return 1;
+				}
+				break;
 			case 'i':
 				format = optarg;
 				break;

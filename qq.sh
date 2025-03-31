@@ -57,5 +57,6 @@ echo "generate new script itself"
 ./build/generate_crifi_script/oneshot_crifi_script \
 	-o clipsscript \
 	-d $temp_logic_in_ttl \
+	-I http://example.com/asdf#qwer=qwer \
 	-m rif \
 	tmp/SimpleEntailment.clp 

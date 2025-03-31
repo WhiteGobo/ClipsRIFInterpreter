@@ -9,6 +9,11 @@ typedef struct filepath_importid_pair {
 	char *syntax;
 } FilepathImportidPair;
 
+typedef struct fileimport_list {
+	FilepathImportidPair *first;
+	struct fileimport_list *rest;
+} FileImportList;
+
 typedef FILE* GetFileMethod(void *context);
 typedef void CleanupGetFileMethodContext(void *context);
 
@@ -34,6 +39,11 @@ extern "C" {
  * with an element, which id is NULL.
  */
 bool add_importlocations(crifi_graph *graph, FilepathImportidPair *importlocations, GetfileImportidPair *importmethods);
+
+FileImportList *append_importlocation_to_list(FileImportList *first,
+					const char *id, const char *filepath,
+					const char *syntax);
+FilepathImportidPair *combine_importlocationlist(FileImportList *);
 
 #ifdef __cplusplus
 } //extern "C"

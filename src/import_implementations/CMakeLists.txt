@@ -5,6 +5,7 @@ add_library(crifi_import_implementations
 	crifi_import_implementations.h
 	import_from_file.c
 	import_from_file.h
+	combine_importlocations.c
 )
 
 target_include_directories(crifi_import_implementations PUBLIC
