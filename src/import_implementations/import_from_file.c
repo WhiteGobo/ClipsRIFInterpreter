@@ -108,16 +108,13 @@ static void my_assert_triple_handler(
 	}
 }
 
-RET_CRIFI_IMPORT import_data_from_file(crifi_graph *graph, FILE *inputfile, const char *filename, CLIPSValue *entailment, const char *syntax_uri){
+RET_CRIFI_IMPORT import_data_from_file(crifi_graph *graph,
+		FILE *inputfile, const char *filename,
+		ImportProcess *process, const char *syntax_uri){
 	int err = 0;
-	MyContext cntxt = {.graph = graph, .err=CNTXT_NOERROR};
+	MyContext cntxt = {.graph = graph, .err=CNTXT_NOERROR, .process=process};
 	CLIPSValue inputinterpretation = {.voidValue = VoidConstant(graph)};
 	//`https://www.w3.org/ns/formats/`_
-
-	cntxt.process = start_import_process(graph, entailment);
-	if (cntxt.process == NULL){
-		return RET_CRIFI_IMPORT_REJECTED_PROFILE;
-	}
 
 	CRIFI_PARSE_RET parse_err = crifi_parse(
 			(raptor_statement_handler) my_assert_triple_handler,
@@ -125,7 +122,6 @@ RET_CRIFI_IMPORT import_data_from_file(crifi_graph *graph, FILE *inputfile, cons
 			inputfile, filename, syntax_uri,
 			"http://example.com/somebase.ttl");
 
-	err = end_import_process(cntxt.process);
 	switch(parse_err){
 		case CRIFI_PARSE_NOERROR:
 			break;
@@ -144,12 +140,6 @@ RET_CRIFI_IMPORT import_data_from_file(crifi_graph *graph, FILE *inputfile, cons
 			break;
 		default:
 			return RET_CRIFI_IMPORT_UNKNOWN_ERROR;
-	}
-	switch (err){
-		case 0:
-			break;
-		default:
-			return RET_CRIFI_IMPORT_PROCESS_FAILED;
 	}
 	return RET_CRIFI_IMPORT_NOERROR;
 }

@@ -11,21 +11,15 @@ struct data {
 };
 
 static RET_CRIFI_IMPORT myimportfunction(crifi_graph *graph,
-		CLIPSValue *import_location, CLIPSValue *entailment_regime,
+		ImportProcess *process, const char *import_location,
 		CLIPSValue *values, int number_values, void *context){
-	FILE *f = NULL;
 	const char *filepath;
 	GetfileImportidPair *tmpmethod;
 	RET_CRIFI_IMPORT import_err;
-	if (context == NULL) return RET_CRIFI_IMPORT_INVALIDCONTEXT;
-	char *id = extract_uri(graph, import_location->header);
-	char *entailment = extract_uri(graph, entailment_regime->header);
-	if (entailment == NULL || id == NULL){
-		free(entailment);
-		free(id);
-		return RET_CRIFI_BROKEN_ALGORITHM;
-	}
+	char *id = import_location;
 	struct data *mydata = (struct data*) context;
+	FILE *f = NULL;
+	if (context == NULL) return RET_CRIFI_IMPORT_INVALIDCONTEXT;
 	if (mydata->importlocations != NULL){
 		for (int i = 0; i<mydata->number_importlocations; i++){
 			if (0==strcmp(id, mydata->importlocations[i].id)){
@@ -36,13 +30,12 @@ static RET_CRIFI_IMPORT myimportfunction(crifi_graph *graph,
 
 					import_err = import_data_from_file(
 							graph, f, filepath,
-							entailment_regime,
+							process,
 							syntax_uri);
 					fclose(f);
 				} else {
 					import_err = RET_CRIFI_IMPORT_COULDNT_LOCATE_SOURCE;
 				}
-				free(entailment);
 				free(id);
 				return import_err;
 			}
@@ -59,20 +52,18 @@ static RET_CRIFI_IMPORT myimportfunction(crifi_graph *graph,
 					import_err = import_data_from_file(
 							graph, f,
 							tmpmethod->id,
-							entailment_regime,
+							process,
 							tmpmethod->syntax);
 					fclose(f);
 				} else {
 					import_err = RET_CRIFI_IMPORT_COULDNT_LOCATE_SOURCE;
 				}
-				free(entailment);
 				free(id);
 				return import_err;
 			}
 		}
 	}
 	free(id);
-	free(entailment);
 	return RET_CRIFI_IMPORT_UNHANDLED;
 }
 

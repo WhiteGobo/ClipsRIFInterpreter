@@ -1,5 +1,6 @@
 project(ffi_clips_interface VERSION 0.1.0 LANGUAGES C)
 
+add_compile_options(-fPIC)
 add_library(ffi_clips_interface
 	ffi_clips_interface.c
 	graph_engine.c

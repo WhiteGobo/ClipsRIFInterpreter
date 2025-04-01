@@ -8,6 +8,7 @@
 #include <ntriplesParser.h>
 #include "ffi_constants.h"
 #include "crifi_import_implementations.h"
+#include "crifi_import.h"
 
 #include "testdata.h"
 
@@ -21,15 +22,22 @@ static FILE *test_import_method(void *context){
 	return qq;
 }
 
+#define PREFIX_TESTDATA_IMPORT "http://example.com/testdata#"
 #define TESTADDRESSA "http://example.com/test_address_a"
 #define TESTADDRESSB "http://example.com/test_address_b"
 
 static void execute_import(crifi_graph* graph, const char *address, const char *entailment){
 	struct DynamicValue retval;
+	bool in_errorstate;
 	char *qq = (char*) malloc(1 + sizeof("(<" _CRIFI_import_ "> <> <>)") + strlen(address) + strlen(entailment));
 	sprintf(qq, "(<" _CRIFI_import_ "> <%s> <%s>)", address, entailment);
 	retval = eval(graph, qq);
+	in_errorstate = graph_in_errorstate(graph, stderr);
 	switch (retval.type){
+		case CTC_DYNAMIC_BOOL:
+			ASSERT_EQ(retval.val.boolean, true)
+				<< "crifi:import return failure.";
+			break;
 		case CTC_DYNAMIC_ERROR:
 			switch (retval.val.error){
 				case CTC_CTD_PARSING_ERROR:
@@ -47,12 +55,11 @@ static void execute_import(crifi_graph* graph, const char *address, const char *
 						"Unhandled error.";
 			}
 			break;
-		case CTC_DYNAMIC_BOOL:
-			ASSERT_EQ(retval.val.boolean, true)
-				<< "crifi:import return failure.";
-			break;
 		default:
 			FAIL() << "crifi:import return unexpected value.";
+	}
+	if (in_errorstate){
+		FAIL() << "Graph in errorstate after import";
 	}
 }
 
@@ -95,6 +102,39 @@ TEST(ImportTest, Basic){
 }
 
 TEST(ImportTest, SourceImport){
+	CRIFI_IMPORT_MODEL_ID model = CRIFI_IMPORT_MODEL_RIFGENERATOR;
+	const char *import_entailment = _RIFENTAIL_SIMPLE_;
+	const char *import_location = PREFIX_TESTDATA_IMPORT "shared_bnode";
+	struct DynamicValue retval;
+	crifi_graph* graph = init_graph();
+
+	if (0 != set_model_id_for_import(graph, model)){
+		FAIL() << "Invalid graph model.";
+	}
+
+
+	if(!testdata_add_importlocations(graph)){
+		close_graph(graph);
+		FAIL() << "Failed to add import locations";
+	}
+	execute_import(graph, import_location, import_entailment);
+	if (graph_in_errorstate(graph, stderr)){
+		close_graph(graph);
+		FAIL() << "Graph in errorstate after import";
+	}
+
+	check_any_triples(graph);
+
+	eval(graph, "(facts)");
+	close_graph(graph);
+	//FAIL() << "testfailure";
+}
+
+
+#define QQ 
+
+//_RIFENTAIL_SIMPLE_);
+TEST(ImportTest, RIFModel){
 	struct DynamicValue retval;
 	crifi_graph* graph = init_graph();
 
@@ -103,8 +143,11 @@ TEST(ImportTest, SourceImport){
 		FAIL() << "Failed to add import locations";
 		close_graph(graph);
 	}
-	execute_import(graph, "http://example.com/testdata#shared_bnode",
+	execute_import(graph, "http://example.com/testdata#import_simple_to_rif",
 			_RIFENTAIL_SIMPLE_);
+	if (graph_in_errorstate(graph, stderr)){
+		FAIL() << "Graph in errorstate after import";
+	}
 
 	check_any_triples(graph);
 

@@ -26,6 +26,8 @@ CRIFI_IMPORT_ASSERT_RET assert_frame_rdf_to_rif(ImportProcess *process,
 		const char *slotkey, const char *slotkey_suffix,
 		IMPORT_TERM_TYPE slotkey_type,
 		const char *slotvalue, const char *slotvalue_suffix,
-		IMPORT_TERM_TYPE slotvalue_type){
+		IMPORT_TERM_TYPE slotvalue_type)
+{
+	printf("failing to assert frame qwertz\n");
 	return CRIFI_IMPORT_ASSERT_UNHANDLED_ERROR;
 }

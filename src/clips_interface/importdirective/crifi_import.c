@@ -1,4 +1,5 @@
 #include "crifi_import.h"
+#include "info_query.h"
 
 int crifi_add_import_function(crifi_graph *graph,
 		CRIFIImportMethod *method,
@@ -37,18 +38,52 @@ void free_crifi_singleimportdata(CRIFISingleImportData *data){
 	}
 }
 
+static char *extract_import_location(crifi_graph *graph, CLIPSValue *import_location){
+	char *ret;
+	ret = extract_uri(graph, import_location->header);
+	if (ret != NULL){
+		return ret;
+	}
+	return extract_lexical(graph, import_location->header);
+}
 
 RET_CRIFI_IMPORT crifi_execute_import(crifi_graph *graph, CLIPSValue *import_location, CLIPSValue *entailment_regime, CLIPSValue *values, int number_values){
+	int process_err;
+	char *import_location_str;
+
+	ImportProcess *process;
 	RET_CRIFI_IMPORT err = RET_CRIFI_IMPORT_UNHANDLED;
 	CRIFIImportData *data = LoadingCRIFIImportData(graph);
+
+	import_location_str = extract_import_location(graph, import_location);
+	if(import_location_str == NULL){
+		return RET_CRIFI_IMPORT_UNKNOWN_ERROR;
+	}
+
+	process = start_import_process(graph, entailment_regime);
+	if (process == NULL){
+		return RET_CRIFI_IMPORT_REJECTED_PROFILE;
+	}
+
 	for(CRIFISingleImportData *x = data->first; x != NULL; x = x->next){
-		err = x->method(graph, import_location, entailment_regime,
+		err = x->method(graph, process, import_location_str,
 				values, number_values, x->context);
 		if (err != RET_CRIFI_IMPORT_UNHANDLED){
-			return err;
+			break;
 		}
 	}
-	return err;
+
+	process_err = end_import_process(process);
+	if (err != RET_CRIFI_IMPORT_NOERROR){
+		return err;
+	}
+	switch (process_err){
+		case 0:
+			break;
+		default:
+			return RET_CRIFI_IMPORT_PROCESS_FAILED;
+	}
+	return RET_CRIFI_IMPORT_NOERROR;
 }
 
 

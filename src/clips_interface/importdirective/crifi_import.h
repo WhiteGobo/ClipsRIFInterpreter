@@ -43,9 +43,11 @@ typedef enum {
 	CRIFI_IMPORT_MODEL_RIFGENERATOR
 } CRIFI_IMPORT_MODEL_ID;
 
+typedef struct importProcess ImportProcess;
+
 typedef void CRIFIImportDataCleanupFunction(void *context);
 typedef RET_CRIFI_IMPORT CRIFIImportMethod(crifi_graph *graph,
-		CLIPSValue *import_location, CLIPSValue *entailment_regime,
+		ImportProcess *process, const char *import_location,
 		CLIPSValue *values, int number_values, void *context);
 
 typedef struct crifiSingleImportData {
@@ -60,7 +62,6 @@ typedef struct crifiImportData{
 	CRIFI_IMPORT_MODEL_ID model_id;
 } CRIFIImportData;
 
-typedef struct importProcess ImportProcess;
 
 
 /** LoadingCRIFIImportData

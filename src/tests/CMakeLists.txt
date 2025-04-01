@@ -13,10 +13,11 @@ FetchContent_MakeAvailable(googletest)
 
 enable_testing()
 
+set(PREFIX_TESTDATA_IMPORT "http://example.com/testdata#")
 set(TESTDATA_OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/testdata.h")
 compile_resources(myname ${TESTDATA_OUTPUT} TARGETS
-	"http://example.com/testdata#shared_bnode" importdata/shared_bnode.ttl
-	"http://example.com/testdata#asdf.ttl" importdata/asdf.ttl
+	"${PREFIX_TESTDATA_IMPORT}shared_bnode" importdata/shared_bnode.ttl
+	"${PREFIX_TESTDATA_IMPORT}import_simple_to_rif" importdata/import_simple_to_rif.ttl
 )
 
 

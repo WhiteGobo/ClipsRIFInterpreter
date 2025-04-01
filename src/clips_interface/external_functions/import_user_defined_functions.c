@@ -1,8 +1,39 @@
 #include "import_user_defined_functions.h"
 #include "crifi_import.h"
+#include "info_query.h"
 
 #define SETERROR(errormessage) \
 		SetErrorValue(env, &(CreateString(env, errormessage)->header));
+
+static void set_error_combine(Environment *env, CLIPSValue *values, int number_values){
+	CLIPSValue errval;
+	MultifieldBuilder *mb;
+	Multifield *mf;
+	mb = CreateMultifieldBuilder(env,10);
+	for (int i=0; i< number_values; i++){
+		MBAppend(mb, values + i);
+	}
+	mf = MBCreate(mb);
+	MBDispose(mb);
+	SetErrorValue(env, &(mf->header));
+}
+
+static void set_error_string_uri(Environment *env, const char *string, CLIPSValue *uri){
+	char *qq, *extra_str;
+	CLIPSValue ret;
+	extra_str = extract_uri(env, uri->header);
+	if (extra_str == NULL){
+		extra_str = extract_lexical(env, uri->header);
+	}
+	if (extra_str == NULL){
+		extra_str = malloc(sizeof("(NULL)")+1);
+		strcpy(extra_str, "(NULL)");
+	}
+	qq = malloc(strlen(string) + strlen(extra_str) + 1);
+	sprintf(qq, string, extra_str);
+	SetErrorValue(env, &(CreateString(env, qq)->header));
+	free(extra_str);
+}
 
 void crifi_import(Environment *env, UDFContext *udfc, UDFValue *out){
 	RET_CRIFI_IMPORT err_import;
@@ -11,6 +42,7 @@ void crifi_import(Environment *env, UDFContext *udfc, UDFValue *out){
 	CLIPSValue import_location = {.voidValue = VoidConstant(env)};
 	CLIPSValue entailment_regime = {.voidValue = VoidConstant(env)};
 	CLIPSValue *values = NULL;
+	CLIPSValue errlist[2];
 
 	out->lexemeValue = FalseSymbol(env);
 
@@ -53,15 +85,18 @@ void crifi_import(Environment *env, UDFContext *udfc, UDFValue *out){
 			SETERROR("crifi:import is broken.");
 			break;
 		case RET_CRIFI_IMPORT_UNHANDLED:
-			SETERROR("crifi:import doesnt know how to find:");
+			set_error_string_uri(env, "crifi:import doesnt know "
+					"how to find: %s", &import_location);
+			//SETERROR("crifi:import doesnt know how to find:");
 			break;
 		case RET_CRIFI_IMPORT_COULDNT_LOCATE_SOURCE:
 			SETERROR("crifi:import couldnt has method to locate "
 					"but couldnt load source");
 			break;
 		case RET_CRIFI_IMPORT_REJECTED_PROFILE:
-			SETERROR("crifi:import doesnt support "
-					"given entailment profile");
+			set_error_string_uri(env, "crifi:import doesnt "
+					"support given entailment profile: %s",
+					&entailment_regime);
 			break;
 		case RET_CRIFI_IMPORT_INVALIDCONTEXT:
 		case RET_CRIFI_IMPORT_PROCESS_FAILED:

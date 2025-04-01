@@ -15,11 +15,24 @@ static CRIFI_IMPORT_INTERPRETER_ID get_interpreter(crifi_graph *graph, CLIPSValu
 	CLIPSValue tmpval = {.voidValue = VoidConstant(graph)};
 
 	entailment = extract_uri(graph, input_entailment->header);
+	if (entailment == NULL) entailment = extract_lexical(graph, input_entailment->header);
 	if (entailment == NULL) return CRIFI_IMPORT_IP_UNKNOWN;
 	model = LoadingCRIFIImportData(graph)->model_id;
 	//err = get_interpretation_id(graph, &graph_interpretation_id);
 	//model = extract_uri(graph, graph_interpretation_id.header);
 	if (0 == strcmp(entailment, _RIFENTAIL_SIMPLE_)){
+		switch (model){
+			case CRIFI_IMPORT_MODEL_SIMPLE:
+				ret = CRIFI_IMPORT_IP_DIRECT;
+				break;
+			case CRIFI_IMPORT_MODEL_RIFGENERATOR:
+				ret = CRIFI_IMPORT_IP_SIMPLE_TO_RIF;
+				break;
+		}
+	} else if (
+			0 == strcmp(entailment, _RIFENTAIL_RDF_)
+			|| 0 == strcmp(entailment, _RIFENTAIL_RDFS_))
+	{
 		switch (model){
 			case CRIFI_IMPORT_MODEL_SIMPLE:
 				ret = CRIFI_IMPORT_IP_DIRECT;
@@ -51,6 +64,8 @@ ImportProcess *start_import_process(crifi_graph *graph, CLIPSValue *input_interp
 			ret = start_import_process_direct_interpretation(graph);
 			break;
 		case CRIFI_IMPORT_IP_SIMPLE_TO_RIF:
+			ret = start_import_process_rdf_to_rif_interpretation(graph, interpreter_id);
+			break;
 		case CRIFI_IMPORT_IP_UNKNOWN:
 		default:
 			return NULL;

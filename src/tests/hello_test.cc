@@ -97,16 +97,10 @@ TEST(BasicFactTest, ParseTriplesMemory){
 }
 
 static RET_CRIFI_IMPORT test_import_function(crifi_graph *graph,
-		CLIPSValue *import_location, CLIPSValue *entailment_regime,
+		ImportProcess *process, const char *import_location,
 		CLIPSValue *values, int number_values, void *context){
 	int *qq = (int*) context;
 
-	char *id = extract_uri(graph, import_location->header);
-	if (id == NULL) return RET_CRIFI_BROKEN_ALGORITHM;
-	free(id);
-	char *entailment = extract_uri(graph, entailment_regime->header);
-	if (entailment == NULL) return RET_CRIFI_BROKEN_ALGORITHM;
-	free(entailment);
 	*qq = 1;
 	fprintf(stderr, "test_import_function brubru\n");
 	return RET_CRIFI_IMPORT_NOERROR;
