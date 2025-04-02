@@ -22,7 +22,8 @@ set(syntax "\"http://www.w3.org/ns/formats/Turtle\"")
 while(${length} GREATER 0)
 	list(POP_FRONT targets first second)
 
-	find_file(src NAMES ${second} HINTS ${sourcedir})
+	unset(src)
+	find_file(src NAMES ${second} HINTS ${sourcedir} NO_CACHE)
 
 	list(LENGTH targets length)
 
