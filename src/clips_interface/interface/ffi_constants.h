@@ -10,6 +10,7 @@
 
 #define _XML_ "http://www.w3.org/2001/XMLSchema#"
 
+#define _RDF_type_ _RDF_ "type"
 #define _RDF_first_ _RDF_ "first"
 #define _RDF_rest_ _RDF_ "rest"
 #define _RDF_nil_ _RDF_ "nil"
@@ -275,6 +276,22 @@
 
 #define _RIF_ "http://www.w3.org/2007/rif#"
 #define _RIFBUILTIN_ "http://www.w3.org/2007/rif-builtin-function#"
+
+#define _RIF_Document_ _RIF_ "Document"
+#define _RIF_payload_ _RIF_ "payload"
+#define _RIF_Group_ _RIF_ "Group"
+#define _RIF_sentences_ _RIF_ "sentences"
+#define _RIF_slots_ _RIF_ "slots"
+#define _RIF_slotkey_ _RIF_ "slotkey"
+#define _RIF_slotvalue_ _RIF_ "slotvalue"
+#define _RIF_Slot_ _RIF_ "Slot"
+#define _RIF_Frame_ _RIF_ "Frame"
+#define _RIF_object_ _RIF_ "object"
+#define _RIF_Const_ _RIF_ "Const"
+#define _RIF_constIRI_ _RIF_ "constIRI"
+#define _RIF_value_ _RIF_ "value"
+#define _RIF_Var_ _RIF_ "Var"
+#define _RIF_varname_ _RIF_ "varname"
 
 
 #define _SYNTAX_ "http://www.w3.org/ns/formats/"

@@ -22,7 +22,7 @@ struct term_info {
 };
 
 static struct term_info extract_term_info(raptor_term *term){
-	struct term_info ret = {.value = NULL, .suffix = NULL, .type = CRIFI_IMPORT_TERM_UNKOWN};
+	struct term_info ret = {.value = NULL, .suffix = NULL, .type = CRIFI_IMPORT_TERM_UNKNOWN};
 	size_t tmplen = 0;
 	raptor_term_literal_value as_literal;
 	raptor_term_blank_value as_bnode;
@@ -44,6 +44,9 @@ static struct term_info extract_term_info(raptor_term *term){
 				if (ret.suffix == NULL){
 					ret.value = NULL;
 				}
+				ret.type = CRIFI_IMPORT_TERM_TYPEDLITERAL;
+			} else {
+				ret.suffix = NULL;
 				ret.type = CRIFI_IMPORT_TERM_TYPEDLITERAL;
 			}
 			break;
@@ -74,22 +77,43 @@ static void my_assert_triple_handler(
 	const char *slotvalue = NULL;
 	const char *slotvalue_suffix = NULL;
 	struct term_info tmpterminfo = {.value = NULL, .suffix = NULL,
-					.type = CRIFI_IMPORT_TERM_UNKOWN};
+					.type = CRIFI_IMPORT_TERM_UNKNOWN};
 
 	tmpterminfo = extract_term_info(statement->subject);
 	object = tmpterminfo.value;
 	object_suffix = tmpterminfo.suffix;
 	object_type = tmpterminfo.type;
+	if (object_type == CRIFI_IMPORT_TERM_UNKNOWN){
+		fprintf(stderr, "Failed to work with subject in triple: ");
+		raptor_statement_print(statement, stderr);
+		fprintf(stderr, "\n");
+		cntxt->err = CNTXT_UNKNOWN_ERROR;
+		return;
+	}
 
 	tmpterminfo = extract_term_info(statement->predicate);
 	slotkey = tmpterminfo.value;
 	slotkey_suffix = tmpterminfo.suffix;
 	slotkey_type = tmpterminfo.type;
+	if (slotkey_type == CRIFI_IMPORT_TERM_UNKNOWN){
+		fprintf(stderr, "Failed to work with predicate in triple: ");
+		raptor_statement_print(statement, stderr);
+		fprintf(stderr, "\n");
+		cntxt->err = CNTXT_UNKNOWN_ERROR;
+		return;
+	}
 
 	tmpterminfo = extract_term_info(statement->object);
 	slotvalue = tmpterminfo.value;
 	slotvalue_suffix = tmpterminfo.suffix;
 	slotvalue_type = tmpterminfo.type;
+	if (slotvalue_type == CRIFI_IMPORT_TERM_UNKNOWN){
+		fprintf(stderr, "Failed to work with object in triple: ");
+		raptor_statement_print(statement, stderr);
+		fprintf(stderr, "\n");
+		cntxt->err = CNTXT_UNKNOWN_ERROR;
+		return;
+	}
 
 	if (object != NULL && slotkey != NULL && slotvalue != NULL){
 		err = assert_frame(cntxt->process,

@@ -104,7 +104,8 @@ TEST(ImportTest, Basic){
 TEST(ImportTest, SourceImport){
 	CRIFI_IMPORT_MODEL_ID model = CRIFI_IMPORT_MODEL_RIFGENERATOR;
 	const char *import_entailment = _RIFENTAIL_SIMPLE_;
-	const char *import_location = PREFIX_TESTDATA_IMPORT "shared_bnode";
+	const char *import_location
+		= PREFIX_TESTDATA_IMPORT "import_simple_to_rif";
 	struct DynamicValue retval;
 	crifi_graph* graph = init_graph();
 
@@ -125,33 +126,8 @@ TEST(ImportTest, SourceImport){
 
 	check_any_triples(graph);
 
-	eval(graph, "(facts)");
-	close_graph(graph);
-	//FAIL() << "testfailure";
-}
-
-
-#define QQ 
-
-//_RIFENTAIL_SIMPLE_);
-TEST(ImportTest, RIFModel){
-	struct DynamicValue retval;
-	crifi_graph* graph = init_graph();
-
-
-	if(!testdata_add_importlocations(graph)){
-		FAIL() << "Failed to add import locations";
-		close_graph(graph);
-	}
-	execute_import(graph, "http://example.com/testdata#import_simple_to_rif",
-			_RIFENTAIL_SIMPLE_);
-	if (graph_in_errorstate(graph, stderr)){
-		FAIL() << "Graph in errorstate after import";
-	}
-
-	check_any_triples(graph);
-
-	eval(graph, "(facts)");
+	//eval(graph, "(facts)");
+	crifi_serialize_all_triples(graph, stderr, "turtle", "");
 	close_graph(graph);
 	//FAIL() << "testfailure";
 }

@@ -1,3 +1,6 @@
 @prefix ex: <http://example.com/> .
 
-ex:karl a ex:Person .
+ex:karl a ex:Person ;
+	ex:description "A nice person"@en ;
+	ex:age 21 ;
+	ex:name "Karl" .
