@@ -101,8 +101,8 @@ list(APPEND mytargets
 set(compilelist)
 list(APPEND targetendings "-conclusion.ntriples" "-premise.ntriples" "-import001.ntriples" "-nonconclusion.ntriples" "-input.ntriples")
 foreach(base ${mytargets})
-	unset(targetfile)
 	foreach(ending ${targetendings})
+		unset(targetfile)
 		set(targetfilename "${base}${ending}")
 		find_file(targetfile "${targetfilename}" HINTS "data/" NO_CACHE)
 		if(targetfile)
@@ -126,6 +126,7 @@ target_link_libraries(w3c_tests PRIVATE
 	ffi_clips_interface
 	crifi_import_implementations
 	crifi_graph_models
+	crifi_raptor
 )
 
 target_include_directories(w3c_tests PRIVATE "${CMAKE_CURRENT_BINARY_DIR}")
