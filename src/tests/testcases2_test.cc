@@ -515,6 +515,7 @@ TEST_P(officialw3cPETTestCases_Test, CreateAndTestModelWithModelA) {
 	fprintf(stderr, "loading logic info from: %s\n", testdata.premise_uri.c_str());
 	load_from_memory_to_graph(create_logic_graph, testdata.premise_uri.c_str());
 
+	fprintf(stderr, "information in create_logic_graph after rules run.\n");
 	//ignore error:
 	crifi_serialize_all_triples(create_logic_graph, stderr, "turtle", "");
 
