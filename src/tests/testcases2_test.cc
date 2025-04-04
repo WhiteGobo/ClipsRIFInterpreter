@@ -68,14 +68,312 @@ class officialw3cPETTestCases_Test : public testing::TestWithParam<TestdataPET> 
 		}
 };
 
-
-
-static auto petTestdata = testing::Values(
+/*
 		TestdataPET("Core_PET_Builtin_literal-not-identical",
 			NULL,
 			_W3C_TESTDATA_"Builtin_literal-not-identical/",
 			"Builtin_literal-not-identical-premise.ntriples",
 			"Builtin_literal-not-identical-conclusion.ntriples")
+		);
+		*/
+
+static auto petTestdata = testing::Values(
+		TestdataPET("Core_PET_Builtin_literal-not-identical",
+			"SKIP",
+			_W3C_TESTDATA_"Builtin_literal-not-identical/",
+			"Builtin_literal-not-identical-premise.ntriples",
+			"Builtin_literal-not-identical-conclusion.ntriples"),
+		TestdataPET("Core_PET_Builtins_Binary",
+			"SKIP",
+			_W3C_TESTDATA_"/",
+			"Builtins_Binary-premise.ntriples",
+			"Builtins_Binary-conclusion.ntriples"),
+		TestdataPET("Core_PET_Builtins_List",
+			"SKIP",
+			_W3C_TESTDATA_"/",
+			"Builtins_List-premise.ntriples",
+			"Builtins_List-conclusion.ntriples"),
+		TestdataPET("Core_PET_Builtins_Numeric",
+			"SKIP",
+			_W3C_TESTDATA_"/",
+			"Builtins_Numeric-premise.ntriples",
+			"Builtins_Numeric-conclusion.ntriples"),
+		TestdataPET("Core_PET_Builtins_PlainLiteral",
+			"SKIP",
+			_W3C_TESTDATA_"/",
+			"Builtins_PlainLiteral-premise.ntriples",
+			"Builtins_PlainLiteral-conclusion.ntriples"),
+		TestdataPET("Core_PET_Builtins_String",
+			"SKIP",
+			_W3C_TESTDATA_"/",
+			"Builtins_String-premise.ntriples",
+			"Builtins_String-conclusion.ntriples"),
+		TestdataPET("Core_PET_Builtins_Time",
+			"SKIP",
+			_W3C_TESTDATA_"/",
+			"Builtins_Time-premise.ntriples",
+			"Builtins_Time-conclusion.ntriples"),
+		TestdataPET("Core_PET_Builtins_XMLLiteral",
+			"SKIP",
+			_W3C_TESTDATA_"/",
+			"Builtins_XMLLiteral-premise.ntriples",
+			"Builtins_XMLLiteral-conclusion.ntriples"),
+		TestdataPET("Core_PET_Builtins_anyURI",
+			"SKIP",
+			_W3C_TESTDATA_"/",
+			"Builtins_anyURI-premise.ntriples",
+			"Builtins_anyURI-conclusion.ntriples"),
+		TestdataPET("Core_PET_Builtins_boolean",
+			"not implemented",
+			_W3C_TESTDATA_"/",
+			"Builtins_boolean-premise.ntriples",
+			"Builtins_boolean-conclusion.ntriples"),
+		TestdataPET("Core_PET_Chaining_strategy_numeric-add_1",
+			"not implemented",
+			_W3C_TESTDATA_"/",
+			"Chaining_strategy_numeric-add_1-premise.ntriples",
+			"Chaining_strategy_numeric-add_1-conclusion.ntriples"),
+		TestdataPET("Core_PET_Chaining_strategy_numeric-subtract_2",
+			"not implemented",
+			_W3C_TESTDATA_"/",
+			"Chaining_strategy_numeric-subtract_2-premise.ntriples",
+			"Chaining_strategy_numeric-subtract_2-conclusion.ntriples"),
+		TestdataPET("Core_PET_EBusiness_Contract",
+			"not implemented",
+			_W3C_TESTDATA_"/",
+			"EBusiness_Contract-premise.ntriples",
+			"EBusiness_Contract-conclusion.ntriples"),
+		TestdataPET("Core_PET_Factorial_Forward_Chaining",
+			"not implemented",
+			_W3C_TESTDATA_"/",
+			"Factorial_Forward_Chaining-premise.ntriples",
+			"Factorial_Forward_Chaining-conclusion.ntriples"),
+		TestdataPET("Core_PET_Frame_slots_are_independent",
+			"not implemented",
+			_W3C_TESTDATA_"/",
+			"Frame_slots_are_independent-premise.ntriples",
+			"Frame_slots_are_independent-conclusion.ntriples"),
+		TestdataPET("Core_PET_Frames",
+			"not implemented",
+			_W3C_TESTDATA_"/",
+			"Frames-premise.ntriples",
+			"Frames-conclusion.ntriples"),
+		TestdataPET("Core_PET_Guards_and_subtypes",
+			"not implemented",
+			_W3C_TESTDATA_"/",
+			"Guards_and_subtypes-premise.ntriples",
+			"Guards_and_subtypes-conclusion.ntriples"),
+		TestdataPET("Core_PET_Modeling_Brain_Anatomy",
+			"not implemented",
+			_W3C_TESTDATA_"/",
+			"Modeling_Brain_Anatomy-premise.ntriples",
+			"Modeling_Brain_Anatomy-conclusion.ntriples"),
+		TestdataPET("Core_PET_OWL_Combination_Vocabulary_Separation_Inconsistency_1",
+			"not implemented",
+			_W3C_TESTDATA_"/",
+			"OWL_Combination_Vocabulary_Separation_Inconsistency_1-premise.ntriples",
+			"OWL_Combination_Vocabulary_Separation_Inconsistency_1-conclusion.ntriples"),
+		TestdataPET("Core_PET_OWL_Combination_Vocabulary_Separation_Inconsistency_2",
+			"not implemented",
+			_W3C_TESTDATA_"/",
+			"OWL_Combination_Vocabulary_Separation_Inconsistency_2-premise.ntriples",
+			"OWL_Combination_Vocabulary_Separation_Inconsistency_2-conclusion.ntriples"),
+		TestdataPET("Core_PET_Positional_Arguments",
+			"not implemented",
+			_W3C_TESTDATA_"/",
+			"Positional_Arguments-premise.ntriples",
+			"Positional_Arguments-conclusion.ntriples"),
+		TestdataPET("Core_PET_RDF_Combination_Blank_Node",
+
+			"not implemented",
+			_W3C_TESTDATA_"/",
+			"RDF_Combination_Blank_Node-premise.ntriples",
+			"RDF_Combination_Blank_Node-conclusion.ntriples"),
+		TestdataPET("Core_PET_RDF_Combination_Constant_Equivalence_1",
+			"not implemented",
+			_W3C_TESTDATA_"/",
+			"RDF_Combination_Constant_Equivalence_1-premise.ntriples",
+			"RDF_Combination_Constant_Equivalence_1-conclusion.ntriples"),
+		TestdataPET("Core_PET_RDF_Combination_Constant_Equivalence_2",
+			"not implemented",
+			_W3C_TESTDATA_"/",
+			"RDF_Combination_Constant_Equivalence_2-premise.ntriples",
+			"RDF_Combination_Constant_Equivalence_2-conclusion.ntriples"),
+		TestdataPET("Core_PET_RDF_Combination_Constant_Equivalence_3",
+			"not implemented",
+			_W3C_TESTDATA_"/",
+			"RDF_Combination_Constant_Equivalence_3-premise.ntriples",
+			"RDF_Combination_Constant_Equivalence_3-conclusion.ntriples"),
+		TestdataPET("Core_PET_RDF_Combination_Constant_Equivalence_4",
+			"not implemented",
+			_W3C_TESTDATA_"/",
+			"RDF_Combination_Constant_Equivalence_4-premise.ntriples",
+			"RDF_Combination_Constant_Equivalence_4-conclusion.ntriples"),
+		TestdataPET("Core_PET_RDF_Combination_Constant_Equivalence_Graph_Entailment",
+			"not implemented",
+			_W3C_TESTDATA_"/",
+				"RDF_Combination_Constant_Equivalence_Graph_Entailment-premise.ntriples",
+				"RDF_Combination_Constant_Equivalence_Graph_Entailment-conclusion.ntriples"),
+		TestdataPET("Core_PET_RDF_Combination_SubClass_2",
+			"not implemented",
+			_W3C_TESTDATA_"/",
+				"RDF_Combination_SubClass_2-premise.ntriples",
+				"RDF_Combination_SubClass_2-conclusion.ntriples"),
+		TestdataPET("BLD_PET_Chaining_strategy_numeric-add_2",
+			"not implemented",
+			_W3C_TESTDATA_"/",
+				"Chaining_strategy_numeric-add_2-premise.ntriples",
+				"Chaining_strategy_numeric-add_2-conclusion.ntriples"),
+		TestdataPET("BLD_PET_Chaining_strategy_numeric-subtract_1",
+			"not implemented",
+			_W3C_TESTDATA_"/",
+				"Chaining_strategy_numeric-subtract_1-premise.ntriples",
+				"Chaining_strategy_numeric-subtract_1-conclusion.ntriples"),
+		TestdataPET("BLD_PET_Class_Membership",
+			"not implemented",
+			_W3C_TESTDATA_"/",
+				"Class_Membership-premise.ntriples",
+				"Class_Membership-conclusion.ntriples"),
+		TestdataPET("BLD_PET_Classification-inheritance",
+				"not implemented",
+			_W3C_TESTDATA_"/",
+				"Classification-inheritance-premise.ntriples",
+				"Classification-inheritance-conclusion.ntriples"),
+		TestdataPET("BLD_PET_ElementEqualityFromListEquality",
+				"not implemented",
+			_W3C_TESTDATA_"/",
+				"ElementEqualityFromListEquality-premise.ntriples",
+				"ElementEqualityFromListEquality-conclusion.ntriples"),
+		TestdataPET("BLD_PET_EntailEverything",
+				"not implemented",
+			_W3C_TESTDATA_"/",
+				"EntailEverything-premise.ntriples",
+				"EntailEverything-conclusion.ntriples"),
+		TestdataPET("BLD_PET_Equality_in_conclusion_1",
+				"not implemented",
+			_W3C_TESTDATA_"/",
+				"Equality_in_conclusion_1-premise.ntriples",
+				"Equality_in_conclusion_1-conclusion.ntriples"),
+		TestdataPET("BLD_PET_Equality_in_conclusion_2",
+				"not implemented",
+			_W3C_TESTDATA_"/",
+				"Equality_in_conclusion_2-premise.ntriples",
+				"Equality_in_conclusion_2-conclusion.ntriples"),
+		TestdataPET("BLD_PET_Equality_in_conclusion_3",
+				"not implemented",
+			_W3C_TESTDATA_"/",
+				"Equality_in_conclusion_3-premise.ntriples",
+				"Equality_in_conclusion_3-conclusion.ntriples"),
+		TestdataPET("BLD_PET_Equality_in_condition",
+				"not implemented",
+			_W3C_TESTDATA_"/",
+				"Equality_in_condition-premise.ntriples",
+				"Equality_in_condition-conclusion.ntriples"),
+		TestdataPET("BLD_PET_Factorial_Functional",
+				"not implemented",
+			_W3C_TESTDATA_"/",
+				"Factorial_Functional-premise.ntriples",
+				"Factorial_Functional-conclusion.ntriples"),
+		TestdataPET("BLD_PET_Factorial_Relational",
+				"not implemented",
+			_W3C_TESTDATA_"/",
+				"Factorial_Relational-premise.ntriples",
+				"Factorial_Relational-conclusion.ntriples"),
+		TestdataPET("BLD_PET_IRI_from_IRI",
+				"not implemented",
+			_W3C_TESTDATA_"/",
+				"IRI_from_IRI-premise.ntriples",
+				"IRI_from_IRI-conclusion.ntriples"),
+		TestdataPET("BLD_PET_Inconsistent_Entailment",
+				"not implemented",
+			_W3C_TESTDATA_"/",
+				"Inconsistent_Entailment-premise.ntriples",
+				"Inconsistent_Entailment-conclusion.ntriples"),
+		TestdataPET("BLD_PET_Individual-Data_Separation_Inconsistency",
+				"not implemented",
+			_W3C_TESTDATA_"/",
+				"Individual-Data_Separation_Inconsistency-premise.ntriples",
+				"Individual-Data_Separation_Inconsistency-conclusion.ntriples"),
+		TestdataPET("BLD_PET_ListConstantEquality",
+				"not implemented",
+			_W3C_TESTDATA_"/",
+				"ListConstantEquality-premise.ntriples",
+				"ListConstantEquality-conclusion.ntriples"),
+		TestdataPET("BLD_PET_ListEqualityFromElementEquality",
+				"not implemented",
+			_W3C_TESTDATA_"/",
+				"ListEqualityFromElementEquality-premise.ntriples",
+				"ListEqualityFromElementEquality-conclusion.ntriples"),
+		TestdataPET("BLD_PET_ListLiteralEquality",
+				"not implemented",
+			_W3C_TESTDATA_"/",
+				"ListLiteralEquality-premise.ntriples",
+				"ListLiteralEquality-conclusion.ntriples"),
+		TestdataPET("BLD_PET_Arbitrary_Entailment",
+				"not implemented",
+			_W3C_TESTDATA_"/",
+				"Arbitrary_Entailment-premise.ntriples",
+				"Arbitrary_Entailment-conclusion.ntriples"),
+		TestdataPET("BLD_PET_Multiple_IRIs_from_String",
+				"not implemented",
+			_W3C_TESTDATA_"/",
+				"Multiple_IRIs_from_String-premise.ntriples",
+				"Multiple_IRIs_from_String-conclusion.ntriples"),
+		TestdataPET("BLD_PET_Multiple_Strings_from_IRI",
+				"not implemented",
+			_W3C_TESTDATA_"/",
+				"Multiple_Strings_from_IRI-premise.ntriples",
+				"Multiple_Strings_from_IRI-conclusion.ntriples"),
+		TestdataPET("BLD_PET_Named_Arguments",
+				"not implemented",
+			_W3C_TESTDATA_"/",
+				"Named_Arguments-premise.ntriples",
+				"Named_Arguments-conclusion.ntriples"),
+		TestdataPET("BLD_PET_RDF_Combination_Member_1",
+				"not implemented",
+			_W3C_TESTDATA_"/",
+				"RDF_Combination_Member_1-premise.ntriples",
+				"RDF_Combination_Member_1-conclusion.ntriples"),
+		TestdataPET("BLD_PET_RDF_Combination_SubClass_4",
+				"not implemented",
+			_W3C_TESTDATA_"/",
+				"RDF_Combination_SubClass_4-premise.ntriples",
+				"RDF_Combination_SubClass_4-conclusion.ntriples"),
+		TestdataPET("BLD_PET_RDF_Combination_SubClass_6",
+				"not implemented",
+			_W3C_TESTDATA_"/",
+				"RDF_Combination_SubClass_6-premise.ntriples",
+				"RDF_Combination_SubClass_6-conclusion.ntriples"),
+		TestdataPET("BLD_PET_YoungParentDiscount_1",
+				"not implemented",
+			_W3C_TESTDATA_"/",
+				"YoungParentDiscount_1-premise.ntriples",
+				"YoungParentDiscount_1-conclusion.ntriples"),
+		TestdataPET("PRD_PET_Assert_", //_ makes unique
+				NULL,
+				_W3C_TESTDATA_"Assert/",
+				"Assert-premise.ntriples",
+				"Assert-conclusion.ntriples"),
+		TestdataPET("PRD_PET_AssertRetract",
+				"not implemented",
+			_W3C_TESTDATA_"/",
+				"AssertRetract-premise.ntriples",
+				"AssertRetract-conclusion.ntriples"),
+		TestdataPET("PRD_PET_AssertRetract2",
+				"not implemented",
+			_W3C_TESTDATA_"/",
+				"AssertRetract2-premise.ntriples",
+				"AssertRetract2-conclusion.ntriples"),
+		TestdataPET("PRD_PET_Modify1",
+				"not implemented",
+			_W3C_TESTDATA_"/",
+				"Modify-premise.ntriples",
+				"Modify-conclusion.ntriples"),
+		TestdataPET("PRD_PET_Modify_loop",
+				"not implemented",
+			_W3C_TESTDATA_"/",
+				"Modify_loop-premise.ntriples",
+				"Modify_loop-conclusion.ntriples")
 		);
 
 static void add_import_function(crifi_graph *graph){
@@ -122,6 +420,13 @@ static void load_from_memory_to_graph(crifi_graph *graph, const char *source_uri
 		FAIL() << "graph ended up in errorstate after import\n";
 	}
 }
+static void load_new_logic(crifi_graph *graph,const char* config, size_t configlength){
+	RET_LOADCONFIG err = load_config_mem(graph, config, configlength);
+	switch (err){
+		default:
+			break;
+	}
+}
 
 static void create_new_logic(crifi_graph *create_logic_graph, FILE *memory){
 	CRIFI_SERIALIZE_SCRIPT_RET err;
@@ -146,9 +451,57 @@ static void create_new_logic(crifi_graph *create_logic_graph, FILE *memory){
 	}
 }
 
+static void run_and_check(crifi_graph *graph, const char* check_command, bool expect){
+	bool errorstate;
+	struct DynamicValue retval;
+	int number_rules_run = run_rules(graph, -1);
+	fprintf(stderr, "numer of rules during logic: %d\n", number_rules_run);
+	if (graph_in_errorstate(graph, stderr)){
+		FAIL() << "graph ended up in errorstate, while running logic.";
+		return;
+	}
+
+	retval = eval(graph, check_command);
+	errorstate = graph_in_errorstate(graph, stderr);
+	switch (retval.type){
+		case CTC_DYNAMIC_ERROR:
+			switch (retval.val.error){
+				case CTC_CTD_PARSING_ERROR:
+					FAIL() << "parsing error? test broken? "
+						"crifi:import is maybe not "
+						"loaded as "
+						"user defined function";
+				case CTC_CTD_PROCESSING_ERROR:
+					FAIL() << "failed processing command.";
+				case CTC_CTD_CANTTRANSLATE:
+					FAIL() << "Cant process returned "
+						"CLIPSValue to DynamicType";
+				default:
+					FAIL() << "eval import failed. "
+						"Unhandled error.";
+			}
+			break;
+		case CTC_DYNAMIC_BOOL:
+			ASSERT_EQ(retval.val.boolean, expect)
+				<< "check command didnt returned expected "
+				"value. check command was:\n"
+				<< check_command;
+			break;
+		default:
+			FAIL() << "check command return unexpected value type. "
+				"check command that was used:\n"
+				<< check_command;
+	}
+	if (errorstate){
+		FAIL() << "graph ended up in errorstate after check command:\n"
+			<< check_command;
+	}
+}
+
 TEST_P(officialw3cPETTestCases_Test, CreateAndTestModelWithModelA) {
 	TestdataPET testdata = GetParam();
 	size_t memory_size = 1000000;
+	int number_rules_run;
 	char tmpmem[memory_size]; //script size maximal a megabyte
 	tmpmem[memory_size-1] = '\0';
 	tmpmem[0] = '\0';
@@ -165,7 +518,8 @@ TEST_P(officialw3cPETTestCases_Test, CreateAndTestModelWithModelA) {
 	//ignore error:
 	crifi_serialize_all_triples(create_logic_graph, stderr, "turtle", "");
 
-	run_rules(create_logic_graph, -1);
+	number_rules_run = run_rules(create_logic_graph, -1);
+	fprintf(stderr, "rules run during rule creation: %d\n", number_rules_run);
 	if (graph_in_errorstate(create_logic_graph, stderr)){
 		FAIL() << "graph ended up in errorstate, while "
 			"createing new logic";
@@ -176,7 +530,13 @@ TEST_P(officialw3cPETTestCases_Test, CreateAndTestModelWithModelA) {
 	create_new_logic(create_logic_graph, tmpmem_f);
 	fclose(tmpmem_f);
 	fprintf(stderr, "<created script>:\n%s\n</created script>\n", tmpmem);
-	FAIL() << "testfailure";
+	close_graph(create_logic_graph);
+
+	maingraph = init_graph();
+	load_new_logic(maingraph, tmpmem, strlen(tmpmem));
+	run_and_check(maingraph, "(eq 0 1)", true);
+	close_graph(maingraph);
+	FAIL() << "test not complete";
 }
 
 
