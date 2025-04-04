@@ -6,6 +6,8 @@
 @memory@
 
 static FILE *@name@_import_method(void *context){
+	//data is original a const char*.
+	//Please ensure its only accessed read-only.
 	char *data = (char*) context;
 	FILE *qq = fmemopen(data, strlen(data), "r");
 	//if (qq == NULL){

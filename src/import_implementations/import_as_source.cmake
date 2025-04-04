@@ -9,9 +9,11 @@ function(compile_resources name outputfile)
 	cmake_parse_arguments(PARSE_ARGV 0 arg
 		"${options}" "${oneValueArgs}" "${multiValueArgs}"
 	)
-	set(opt_args "")
 	if(DEFINED arg_FUNCTIONNAME)
-		string(APPEND opt_args "-Dfunctionname=${arg_FUNCTIONNAME} ")
+		set(opt_functionname "${arg_FUNCTIONNAME} ")
+		#string(APPEND opt_args "-Dfunctionname=${arg_FUNCTIONNAME} ")
+	else()
+		set(opt_functionname "${name}_add_importlocations")
 	endif()
 	list(LENGTH arg_TARGETS length)
 	math(EXPR qq "${length} % 2")
@@ -35,10 +37,11 @@ function(compile_resources name outputfile)
 		list(LENGTH tmplist length)
 	endwhile()
 
+	set(TESTDATA_OUTPUT "compile_import_as_source_${name}")
 	#message(FATAL_ERROR "asdf ${dependencies}")
 	add_custom_command(
-		OUTPUT ${TESTDATA_OUTPUT}
-		COMMAND ${CMAKE_COMMAND} -Dname=${name} -Dskeleton=${CRIFI_COMPILE_RESOURCES_SKELETON} -Doutputfile="${TESTDATA_OUTPUT}" -Dsourcedir=${CMAKE_CURRENT_SOURCE_DIR} -Dname=testdata -Dtargets="${arg_TARGETS}" ${opt_args} -P ${CRIFI_COMPILE_RESOURCES_SCRIPT}
+		OUTPUT ${outputfile}
+		COMMAND ${CMAKE_COMMAND} -Dname=${name} -Dskeleton=${CRIFI_COMPILE_RESOURCES_SKELETON} -Doutputfile="${outputfile}" -Dsourcedir=${CMAKE_CURRENT_SOURCE_DIR} -Dname=${name} -Dtargets="${arg_TARGETS}" -Dfunctionname=${opt_functionname} -P ${CRIFI_COMPILE_RESOURCES_SCRIPT}
 		DEPENDS ${CRIFI_COMPILE_RESOURCES_SKELETON} ${CRIFI_COMPILE_RESOURCES_SCRIPT} ${dependencies}
 		COMMENT "creates a method "
 			"\"bool @name@_add_importlocations(crifi_graph*)\" "

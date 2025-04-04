@@ -15,7 +15,7 @@ enable_testing()
 
 set(PREFIX_TESTDATA_IMPORT "http://example.com/testdata#")
 set(TESTDATA_OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/testdata.h")
-compile_resources(myname ${TESTDATA_OUTPUT} TARGETS
+compile_resources(testdata ${TESTDATA_OUTPUT} TARGETS
 	"${PREFIX_TESTDATA_IMPORT}shared_bnode" importdata/shared_bnode.ttl
 	"${PREFIX_TESTDATA_IMPORT}import_simple_to_rif" importdata/import_simple_to_rif.ttl
 )
@@ -43,6 +43,7 @@ target_link_libraries(hello_test PRIVATE
 	info_query
 )
 
+include(w3c_tests.cmake)
 
 include(GoogleTest)
 gtest_discover_tests(hello_test)

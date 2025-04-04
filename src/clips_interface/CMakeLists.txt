@@ -22,6 +22,7 @@ target_include_directories(ffi_clips_interface PUBLIC
 target_include_directories(ffi_clips_interface
 	PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
 
+add_subdirectory(cmake_tools)
 add_subdirectory(interface)
 add_subdirectory(n3parser)
 add_subdirectory(numeric)
@@ -32,6 +33,7 @@ add_subdirectory(external_functions)
 add_subdirectory(tools)
 add_subdirectory(info_query)
 add_subdirectory(importdirective)
+add_subdirectory(graph_models)
 
 target_link_libraries(ffi_clips_interface PUBLIC
 	clips
@@ -44,6 +46,7 @@ target_link_libraries(ffi_clips_interface PRIVATE
 	crifi_time
 	info_query
 	crifi_import
+	crifi_graph_models
 )
 
 #if(TARGET SqrtLibrary)

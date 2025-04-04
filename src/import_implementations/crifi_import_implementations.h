@@ -4,9 +4,9 @@
 #include "crifi_raptor.h"
 
 typedef struct filepath_importid_pair {
-	char *id;
-	char *filepath;
-	char *syntax;
+	const char *id;
+	const char *filepath;
+	const char *syntax;
 } FilepathImportidPair;
 
 typedef struct fileimport_list {
@@ -18,11 +18,11 @@ typedef FILE* GetFileMethod(void *context);
 typedef void CleanupGetFileMethodContext(void *context);
 
 typedef struct getfile_importid_pair {
-	char *id;
+	const char *id;
 	GetFileMethod *method;
 	void *context;
 	CleanupGetFileMethodContext *cleanup;
-	char *syntax;
+	const char *syntax;
 } GetfileImportidPair;
 
 #ifdef __cplusplus

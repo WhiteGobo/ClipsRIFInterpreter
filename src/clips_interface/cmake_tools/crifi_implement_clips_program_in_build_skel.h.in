@@ -1,0 +1,20 @@
+#pragma once
+
+#include "ffi_clips_interface.h"
+
+static char *@inputclipsscript_memory_name@ = "@script_memory@";
+
+static crifi_graph *@init_graph_name@(RET_LOADCONFIG *err){
+	crifi_graph *graph = init_graph(); 
+	RET_LOADCONFIG err_tmp = load_config_mem(graph, @inputclipsscript_memory_name@, strlen(@inputclipsscript_memory_name@));
+	if (err != NULL){
+		*err = err_tmp;
+	}
+	switch (err_tmp){
+		case CTC_LC_NO_ERROR:
+			return graph;
+		default:
+			close_graph(graph);
+			return NULL;
+	}
+}
