@@ -904,3 +904,20 @@ CRIFI_SERIALIZE_SCRIPT_RET serialize_information_as_clips_script(FILE* stream, c
 	return err;
 }
 
+CRIFI_SERIALIZE_SCRIPT_RET serialize_information_as_clips_function(FILE* stream, crifi_graph* graph){
+	int err = 0;
+	if (stream == NULL || graph == NULL){
+		return CRIFI_SERIALIZE_SCRIPT_INPUT;
+	}
+	MyContext *cntxt = init_context();
+	if (cntxt == NULL){
+		return CRIFI_SERIALIZE_SCRIPT_CANT_CREATE_STRUCTS;
+	}
+	err = add_info_to_tree(cntxt, graph);
+	if (err == 0){
+		fprintf(stream, "(eq 1 1)");
+		//err = fprintf_script(cntxt, stream);
+	}
+	free_context(cntxt);
+	return err;
+}

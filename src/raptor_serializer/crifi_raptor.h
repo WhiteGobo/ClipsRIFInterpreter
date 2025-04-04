@@ -76,6 +76,8 @@ CRIFI_PARSE_RET crifi_parse(raptor_statement_handler assert_triple_handler,
 
 CRIFI_SERIALIZE_SCRIPT_RET serialize_information_as_clips_script(FILE* stream, crifi_graph* graph);
 
+CRIFI_SERIALIZE_SCRIPT_RET serialize_information_as_clips_function(FILE* stream, crifi_graph* graph);
+
 #ifdef __cplusplus
 } //extern "C"
 #endif
