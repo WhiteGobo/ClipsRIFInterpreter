@@ -4,169 +4,116 @@ set(PREFIX_TESTDATA_W3C_IMPORT
 set(TESTDATA_W3C_AS_HEADER
 	"${CMAKE_CURRENT_BINARY_DIR}/testdata_w3c_as_header.h")
 
+
+#find_file(qq "AssertRetract-conclusion.ntriples" HINTS "${CMAKE_CURRENT_SOURCE_DIR}/data/" NO_CACHE)
+#set(qq1 "${qq}")
+#set(qq)
+#find_file(qq "Arbitrary_Entailment-conclusion.ntriples" HINTS "${CMAKE_CURRENT_SOURCE_DIR}/data/" NO_CACHE)
+#set(qq2 "${qq}")
+#message(FATAL_ERROR "brubru ${qq1} ${qq2}")
+
+
+list(APPEND mytargets
+	AssertRetract
+	Arbitrary_Entailment
+	Assert
+	AssertRetract2
+	Builtin_literal-not-identical
+	Builtins_Binary
+	Builtins_List
+	Builtins_Numeric
+	Builtins_PlainLiteral
+	Builtins_String
+	Builtins_Time
+	Builtins_XMLLiteral
+	Builtins_anyURI
+	Builtins_boolean
+	Chaining_strategy_numeric-add_1
+	Chaining_strategy_numeric-add_2
+	Chaining_strategy_numeric-subtract_1
+	Chaining_strategy_numeric-subtract_2
+	Class_Membership
+	Classification-inheritance-conclusion.ntriples
+	Classification_non-inheritance-nonconclusion.ntriples
+	Core_NonSafeness
+	Core_NonSafeness_2
+	Core_Safeness
+	Core_Safeness_2
+	Core_Safeness_3
+	EBusiness_Contract
+	ElementEqualityFromListEquality
+	EntailEverything
+	Equality_in_conclusion_1
+	Equality_in_conclusion_2
+	Equality_in_conclusion_3
+	Equality_in_condition
+	Factorial_Forward_Chaining
+	Factorial_Functional
+	Factorial_Relational
+	Frame_slots_are_independent
+	Frames
+	Guards_and_subtypes
+	IRI_from_IRI
+	Inconsistent_Entailment
+	Individual-Data_Separation_Inconsistency
+	ListConstantEquality
+	ListEqualityFromElementEquality
+	ListLiteralEquality
+	Local_Constant
+	Local_Predicate
+	Modeling_Brain_Anatomy
+	Modify
+	Modify_loop
+	Multiple_Context_Error
+	Multiple_IRIs_from_String
+	Multiple_Strings_from_IRI
+	Named_Argument_Uniterms_non-polymorphic
+	Named_Arguments
+	NestedListsAreNotFlatLists
+	No_free_variables
+	Non-Annotation_Entailment
+	OWL_Combination_Invalid_DL_Formula
+	OWL_Combination_Invalid_DL_Import
+	OWL_Combination_Vocabulary_Separation_Inconsistency_1
+	OWL_Combination_Vocabulary_Separation_Inconsistency_1
+	OWL_Combination_Vocabulary_Separation_Inconsistency_2
+	OpenLists
+	Positional_Arguments
+	RDF_Combination_Blank_Node
+	RDF_Combination_Constant_Equivalence_1
+	RDF_Combination_Constant_Equivalence_2
+	RDF_Combination_Constant_Equivalence_3
+	RDF_Combination_Constant_Equivalence_4
+	RDF_Combination_Constant_Equivalence_Graph_Entailment
+	RDF_Combination_Invalid_Constant_1
+	RDF_Combination_Invalid_Constant_2
+	RDF_Combination_Invalid_Profiles_1
+	RDF_Combination_Member_1
+	RDF_Combination_SubClass
+	RDF_Combination_SubClass_2
+	RDF_Combination_SubClass_3
+	RDF_Combination_SubClass_4
+	RDF_Combination_SubClass_5
+	RDF_Combination_SubClass_6
+	Retract
+	YoungParentDiscount_1
+)
+set(compilelist)
+list(APPEND targetendings "-conclusion.ntriples" "-premise.ntriples" "-import001.ntriples" "-nonconclusion.ntriples" "-input.ntriples")
+foreach(base ${mytargets})
+	unset(targetfile)
+	foreach(ending ${targetendings})
+		set(targetfilename "${base}${ending}")
+		find_file(targetfile "${targetfilename}" HINTS "data/" NO_CACHE)
+		if(targetfile)
+			set(targeturi "${PREFIX_TESTDATA_W3C_IMPORT}${base}/${targetfilename}")
+			list(APPEND compilelist ${targeturi} ${targetfile})
+		endif()
+	endforeach()
+endforeach()
 compile_resources(w3ctestcases ${TESTDATA_W3C_AS_HEADER}
 	FUNCTIONNAME "w3ctestcases_add_importlocations"
-	TARGETS
-	"${PREFIX_TESTDATA_W3C_IMPORT}AssertRetract/AssertRetract-conclusion.ntriples" data/AssertRetract-conclusion.ntriples
-	"${PREFIX_TESTDATA_W3C_IMPORT}AssertRetract/AssertRetract-premise.ntriples" data/AssertRetract-premise.ntriples
-	#Arbitrary_Entailment-conclusion.ntriples
-	#Arbitrary_Entailment-premise.ntriples
-	#Assert-conclusion.ntriples
-	#Assert-premise.ntriples
-	#AssertRetract2-conclusion.ntriples
-	#AssertRetract2-premise.ntriples
-	"${PREFIX_TESTDATA_W3C_IMPORT}Builtin_literal-not-identical/Builtin_literal-not-identical-conclusion.ntriples" data/Builtin_literal-not-identical-conclusion.ntriples
-	"${PREFIX_TESTDATA_W3C_IMPORT}Builtin_literal-not-identical/Builtin_literal-not-identical-premise.ntriples" data/Builtin_literal-not-identical-premise.ntriples
-	#Builtins_Binary-conclusion.ntriples
-	#Builtins_Binary-premise.ntriples
-	#Builtins_List-conclusion.ntriples
-	#Builtins_List-premise.ntriples
-	#Builtins_Numeric-conclusion.ntriples
-	#Builtins_Numeric-premise.ntriples
-	#Builtins_PlainLiteral-conclusion.ntriples
-	#Builtins_PlainLiteral-premise.ntriples
-	#Builtins_String-conclusion.ntriples
-	#Builtins_String-premise.ntriples
-	#Builtins_Time-conclusion.ntriples
-	#Builtins_Time-premise.ntriples
-	#Builtins_XMLLiteral-conclusion.ntriples
-	#Builtins_XMLLiteral-premise.ntriples
-	#Builtins_anyURI-conclusion.ntriples
-	#Builtins_anyURI-premise.ntriples
-	#Builtins_boolean-conclusion.ntriples
-	#Builtins_boolean-premise.ntriples
-	#Chaining_strategy_numeric-add_1-conclusion.ntriples
-	#Chaining_strategy_numeric-add_1-premise.ntriples
-	#Chaining_strategy_numeric-add_2-conclusion.ntriples
-	#Chaining_strategy_numeric-add_2-premise.ntriples
-	#Chaining_strategy_numeric-subtract_1-conclusion.ntriples
-	#Chaining_strategy_numeric-subtract_1-premise.ntriples
-	#Chaining_strategy_numeric-subtract_2-conclusion.ntriples
-	#Chaining_strategy_numeric-subtract_2-premise.ntriples
-	#Class_Membership-conclusion.ntriples
-	#Class_Membership-premise.ntriples
-	#Classification-inheritance-conclusion.ntriples
-	#Classification-inheritance-premise.ntriples
-	#Classification_non-inheritance-nonconclusion.ntriples
-	#Classification_non-inheritance-premise.ntriples
-	#Core_NonSafeness-input.ntriples
-	#Core_NonSafeness_2-input.ntriples
-	#Core_Safeness-input.ntriples
-	#Core_Safeness_2-input.ntriples
-	#Core_Safeness_3-input.ntriples
-	#EBusiness_Contract-conclusion.ntriples
-	#EBusiness_Contract-premise.ntriples
-	#ElementEqualityFromListEquality-conclusion.ntriples
-	#ElementEqualityFromListEquality-premise.ntriples
-	#EntailEverything-conclusion.ntriples
-	#EntailEverything-premise.ntriples
-	#Equality_in_conclusion_1-conclusion.ntriples
-	#Equality_in_conclusion_1-premise.ntriples
-	#Equality_in_conclusion_2-conclusion.ntriples
-	#Equality_in_conclusion_2-premise.ntriples
-	#Equality_in_conclusion_3-conclusion.ntriples
-	#Equality_in_conclusion_3-premise.ntriples
-	#Equality_in_condition-conclusion.ntriples
-	#Equality_in_condition-premise.ntriples
-	#Factorial_Forward_Chaining-conclusion.ntriples
-	#Factorial_Forward_Chaining-premise.ntriples
-	#Factorial_Functional-conclusion.ntriples
-	#Factorial_Functional-premise.ntriples
-	#Factorial_Relational-conclusion.ntriples
-	#Factorial_Relational-premise.ntriples
-	#Frame_slots_are_independent-conclusion.ntriples
-	#Frame_slots_are_independent-premise.ntriples
-	#Frames-conclusion.ntriples
-	#Frames-premise.ntriples
-	#Guards_and_subtypes-conclusion.ntriples
-	#Guards_and_subtypes-premise.ntriples
-	#IRI_from_IRI-conclusion.ntriples
-	#IRI_from_IRI-premise.ntriples
-	#Inconsistent_Entailment-conclusion.ntriples
-	#Inconsistent_Entailment-premise.ntriples
-	#Individual-Data_Separation_Inconsistency-conclusion.ntriples
-	#Individual-Data_Separation_Inconsistency-premise.ntriples
-	#ListConstantEquality-conclusion.ntriples
-	#ListConstantEquality-premise.ntriples
-	#ListEqualityFromElementEquality-conclusion.ntriples
-	#ListEqualityFromElementEquality-premise.ntriples
-	#ListLiteralEquality-conclusion.ntriples
-	#ListLiteralEquality-premise.ntriples
-	#Local_Constant-nonconclusion.ntriples
-	#Local_Constant-premise.ntriples
-	#Local_Predicate-nonconclusion.ntriples
-	#Local_Predicate-premise.ntriples
-	#Modeling_Brain_Anatomy-conclusion.ntriples
-	#Modeling_Brain_Anatomy-premise.ntriples
-	#Modify-conclusion.ntriples
-	#Modify-premise.ntriples
-	#Modify_loop-conclusion.ntriples
-	#Modify_loop-premise.ntriples
-	#Multiple_Context_Error-input.ntriples
-	#Multiple_IRIs_from_String-conclusion.ntriples
-	#Multiple_IRIs_from_String-premise.ntriples
-	#Multiple_Strings_from_IRI-conclusion.ntriples
-	#Multiple_Strings_from_IRI-premise.ntriples
-	#Named_Argument_Uniterms_non-polymorphic-nonconclusion.ntriples
-	#Named_Argument_Uniterms_non-polymorphic-premise.ntriples
-	#Named_Arguments-conclusion.ntriples
-	#Named_Arguments-premise.ntriples
-	#NestedListsAreNotFlatLists-nonconclusion.ntriples
-	#NestedListsAreNotFlatLists-premise.ntriples
-	#No_free_variables-input.ntriples
-	#Non-Annotation_Entailment-nonconclusion.ntriples
-	#Non-Annotation_Entailment-premise.ntriples
-	#OWL_Combination_Invalid_DL_Formula-input.ntriples
-	#OWL_Combination_Invalid_DL_Import-input.ntriples
-	#OWL_Combination_Vocabulary_Separation_Inconsistency_1-conclusion.ntriples
-	#OWL_Combination_Vocabulary_Separation_Inconsistency_1-premise.ntriples
-	#OWL_Combination_Vocabulary_Separation_Inconsistency_1-import001.ntriples
-	#OWL_Combination_Vocabulary_Separation_Inconsistency_2-conclusion.ntriples
-	#OWL_Combination_Vocabulary_Separation_Inconsistency_2-premise.ntriples
-	#OpenLists-nonconclusion.ntriples
-	#OpenLists-premise.ntriples
-	#Positional_Arguments-conclusion.ntriples
-	#Positional_Arguments-premise.ntriples
-	#RDF_Combination_Blank_Node-conclusion.ntriples
-	#RDF_Combination_Blank_Node-premise.ntriples
-	#RDF_Combination_Blank_Node-import001.ntriples
-	#RDF_Combination_Constant_Equivalence_1-conclusion.ntriples
-	#RDF_Combination_Constant_Equivalence_1-premise.ntriples
-	#RDF_Combination_Constant_Equivalence_1-import001.ntriples
-	#RDF_Combination_Constant_Equivalence_2-conclusion.ntriples
-	#RDF_Combination_Constant_Equivalence_2-premise.ntriples
-	#RDF_Combination_Constant_Equivalence_2-import001.ntriples
-	#RDF_Combination_Constant_Equivalence_3-conclusion.ntriples
-	#RDF_Combination_Constant_Equivalence_3-premise.ntriples
-	#RDF_Combination_Constant_Equivalence_3-import001.ntriples
-	#RDF_Combination_Constant_Equivalence_4-conclusion.ntriples
-	#RDF_Combination_Constant_Equivalence_4-premise.ntriples
-	#RDF_Combination_Constant_Equivalence_4-import001.ntriples
-	#RDF_Combination_Constant_Equivalence_Graph_Entailment-conclusion.ntriples
-	#RDF_Combination_Constant_Equivalence_Graph_Entailment-premise.ntriples
-	#RDF_Combination_Invalid_Constant_1-input.ntriples
-	#RDF_Combination_Invalid_Constant_2-input.ntriples
-	#RDF_Combination_Invalid_Profiles_1-input.ntriples
-	#RDF_Combination_Member_1-conclusion.ntriples
-	#RDF_Combination_Member_1-premise.ntriples
-	#RDF_Combination_SubClass-nonconclusion.ntriples
-	#RDF_Combination_SubClass-premise.ntriples
-	#RDF_Combination_SubClass_2-conclusion.ntriples
-	#RDF_Combination_SubClass_2-premise.ntriples
-	#RDF_Combination_SubClass_2-import001.ntriples
-	#RDF_Combination_SubClass_3-nonconclusion.ntriples
-	#RDF_Combination_SubClass_3-premise.ntriples
-	#RDF_Combination_SubClass_4-conclusion.ntriples
-	#RDF_Combination_SubClass_4-premise.ntriples
-	#RDF_Combination_SubClass_5-nonconclusion.ntriples
-	#RDF_Combination_SubClass_5-premise.ntriples
-	#RDF_Combination_SubClass_6-conclusion.ntriples
-	#RDF_Combination_SubClass_6-premise.ntriples
-	#Retract-nonconclusion.ntriples
-	#Retract-premise.ntriples
-	#YoungParentDiscount_1-conclusion.ntriples
-	#YoungParentDiscount_1-premise.ntriples
-)
+	TARGETS ${compilelist})
 
 add_executable(w3c_tests
 	builtins_model_test.cc

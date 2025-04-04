@@ -22,7 +22,14 @@ while(${length} GREATER 0)
 	list(POP_FRONT targets first second)
 
 	unset(src)
-	find_file(src NAMES ${second} HINTS ${sourcedir} NO_CACHE)
+	if (IS_ABSOLUTE "${second}")
+		set(src "${second}")
+	else()
+		find_file(src NAMES ${second} HINTS ${sourcedir} NO_CACHE)
+	endif()
+	if(NOT src)
+		message(FATAL_ERROR "Couldnt locate ${second} in ${sourcedir}")
+	endif()
 
 	list(LENGTH targets length)
 
