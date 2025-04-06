@@ -36,6 +36,9 @@ typedef struct {
 	raptor_term *rdf_type;
 	raptor_term *rdf_List;
 
+	//used when creating a callable function
+	raptor_term *clips_RootFunction;
+
 	raptor_term *clips_Defrule;
 	raptor_term *clips_rule_name;
 	raptor_term *clips_conditional_element;
@@ -109,6 +112,8 @@ static MyContext* init_context(){
 	cntxt->rdf_rest = raptor_new_term_from_uri_string(world, RDF("rest"));
 	cntxt->rdf_nil = raptor_new_term_from_uri_string(world, RDF("nil"));
 
+	cntxt->clips_RootFunction = URI(world, CLIPS("RootFunction"));
+
 	cntxt->clips_Defrule = URI(world, CLIPS("Defrule"));
 	cntxt->clips_rule_name = URI(world, CLIPS("rule-name"));
 
@@ -151,6 +156,25 @@ static void free_context(MyContext* cntxt){
 		raptor_free_world(cntxt->world);
 		free(cntxt);
 	}
+}
+
+static CRIFI_SERIALIZE_SCRIPT_RET find_crifi_serialize_root_function(MyContext* cntxt, crifi_graph *graph){
+	NodeIterator *iter_node = new_node_iterator(cntxt->nodes);
+	if (iter_node == NULL){
+		return CRIFI_SERIALIZE_SCRIPT_UNKNOWN;
+	}
+	for(Node* n = node_iterator_get(iter_node);
+			n != NULL;
+			n = node_iterator_get_next(iter_node)){
+		if (check_property(n, cntxt->rdf_type, cntxt->clips_RootFunction)){
+			fprintf(stderr, "brubru1 found rootfunction\n");
+			free_node_iterator(iter_node);
+			return CRIFI_SERIALIZE_SCRIPT_NOERROR;
+		}
+	}
+	free_node_iterator(iter_node);
+	fprintf(stderr, "brubru2 no rootfunction found\n");
+	return CRIFI_SERIALIZE_BROKEN_GRAPH;
 }
 
 static CRIFI_SERIALIZE_SCRIPT_RET add_info_to_tree_list(MyContext* cntxt, crifi_graph *graph, Fact *l){
@@ -914,8 +938,18 @@ CRIFI_SERIALIZE_SCRIPT_RET serialize_information_as_clips_function(FILE* stream,
 		return CRIFI_SERIALIZE_SCRIPT_CANT_CREATE_STRUCTS;
 	}
 	err = add_info_to_tree(cntxt, graph);
+	if (err != 0){
+		free_context(cntxt);
+		return err;
+	}
+	err = find_crifi_serialize_root_function(cntxt, graph);
+	if (err != 0){
+		free_context(cntxt);
+		return err;
+	}
 	if (err == 0){
-		fprintf(stream, "(eq 1 1)");
+		err = CRIFI_SERIALIZE_SCRIPT_UNKNOWN;
+		//fprintf(stream, "(eq 1 1)");
 		//err = fprintf_script(cntxt, stream);
 	}
 	free_context(cntxt);

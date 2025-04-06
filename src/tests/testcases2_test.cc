@@ -427,14 +427,20 @@ static void load_new_logic(crifi_graph *graph,const char* config, size_t configl
 			break;
 	}
 }
-static void create_new_check(crifi_graph *create_check_graph, FILE *memory){
+static void create_new_check(crifi_graph *create_check_graph, FILE *memory, bool *failed){
+	const char *errmsg;
 	CRIFI_SERIALIZE_SCRIPT_RET err;
 	err = serialize_information_as_clips_function(memory, create_check_graph);
 	switch(err){
 		case CRIFI_SERIALIZE_SCRIPT_NOERROR:
-			break;
-		case CRIFI_SERIALIZE_MALLOC_ERROR:
+			return;
 		case CRIFI_SERIALIZE_BROKEN_GRAPH:
+			*failed = true;
+			FAIL() << "Graph not usable for "
+				"serialize_information_as_clips_function. "
+				"Either graph structure isnt as expected or "
+				"root function couldnt be found.";
+		case CRIFI_SERIALIZE_MALLOC_ERROR:
 		case CRIFI_SERIALIZE_SCRIPT_CANT_CREATE_NODE:
 		case CRIFI_SERIALIZE_SCRIPT_CANT_CREATE_STRUCTS:
 		case CRIFI_SERIALIZE_SCRIPT_UNHANDLED_PREDICATE:
@@ -445,12 +451,13 @@ static void create_new_check(crifi_graph *create_check_graph, FILE *memory){
 		case CRIFI_SERIALIZE_SCRIPT_INPUT:
 		case CRIFI_SERIALIZE_SCRIPT_UNKNOWN:
 		default:
+			*failed = true;
 			FAIL() << "Unhandled error during serialization of "
 				"graphinformation as clips script.";
 	}
 }
 
-static void create_new_logic(crifi_graph *create_logic_graph, FILE *memory){
+static void create_new_logic(crifi_graph *create_logic_graph, FILE *memory, bool *failed){
 	CRIFI_SERIALIZE_SCRIPT_RET err;
 	err = serialize_information_as_clips_script(memory, create_logic_graph);
 	switch(err){
@@ -468,6 +475,7 @@ static void create_new_logic(crifi_graph *create_logic_graph, FILE *memory){
 		case CRIFI_SERIALIZE_SCRIPT_INPUT:
 		case CRIFI_SERIALIZE_SCRIPT_UNKNOWN:
 		default:
+			*failed = true;
 			FAIL() << "Unhandled error during serialization of "
 				"graphinformation as clips script.";
 	}
@@ -520,22 +528,11 @@ static void run_and_check(crifi_graph *graph, const char* check_command, bool ex
 	}
 }
 
-
-TEST_P(officialw3cPETTestCases_Test, CreateAndTestModelWithModelA) {
-	TestdataPET testdata = GetParam();
-	size_t memory_size = 1000000;
+static void create_logic_into_memory(FILE* tmpmem_f, TestdataPET testdata, bool *failed){
 	int number_rules_run;
-	char tmpmem[memory_size]; //script size maximal a megabyte
-	char tmpcheckmem[memory_size]; //check command size maximal a megabyte
-	tmpmem[memory_size-1] = '\0';
-	tmpmem[0] = '\0';
-	tmpcheckmem[memory_size-1] = '\0';
-	tmpcheckmem[0] = '\0';
-	FILE *tmpmem_f, *tmpcheckmem_f;
-	crifi_graph *maingraph;
-	crifi_graph *create_check_graph;
 	crifi_graph *create_logic_graph = init_graph_modelA();
 	if (create_logic_graph == NULL){
+		*failed = true;
 		GTEST_SKIP() << "couldnt craete modelA graph";
 	}
 	w3ctestcases_add_importlocations(create_logic_graph);
@@ -549,24 +546,24 @@ TEST_P(officialw3cPETTestCases_Test, CreateAndTestModelWithModelA) {
 	number_rules_run = run_rules(create_logic_graph, -1);
 	fprintf(stderr, "rules run during rule creation: %d\n", number_rules_run);
 	if (graph_in_errorstate(create_logic_graph, stderr)){
+		*failed = true;
 		FAIL() << "graph ended up in errorstate, while "
 			"createing new logic";
 	}
 
-	tmpmem_f = fmemopen(tmpmem, memory_size-1, "w");
-	ASSERT_NE(tmpmem_f, nullptr) << "Couldnt open memory. broken test.";
-	create_new_logic(create_logic_graph, tmpmem_f);
-	fclose(tmpmem_f);
-	fprintf(stderr, "<created script>:\n%s\n</created script>\n", tmpmem);
+	create_new_logic(create_logic_graph, tmpmem_f, failed);
 	close_graph(create_logic_graph);
 	create_logic_graph = NULL;
-	
+}
 
+static void create_check_into_memory(FILE *tmpmem_f, TestdataPET testdata, bool *failed){
+	int number_rules_run;
+	crifi_graph *create_check_graph;
 	create_check_graph = init_graph_modelcheckA();
 	if (create_check_graph == NULL){
 		GTEST_SKIP() << "couldnt craete modelA graph";
 	}
-	//w3ctestcases_add_importlocations(create_check_graph);
+	w3ctestcases_add_importlocations(create_check_graph);
 	fprintf(stderr, "loading check info from: %s\n", testdata.conclusion_uri.c_str());
 	load_from_memory_to_graph(create_check_graph, testdata.conclusion_uri.c_str());
 
@@ -577,23 +574,50 @@ TEST_P(officialw3cPETTestCases_Test, CreateAndTestModelWithModelA) {
 	number_rules_run = run_rules(create_check_graph, -1);
 	fprintf(stderr, "rules run during check creation: %d\n", number_rules_run);
 	if (graph_in_errorstate(create_check_graph, stderr)){
+		*failed = true;
 		FAIL() << "graph ended up in errorstate, while "
 			"createing check";
 	}
 
+	create_new_check(create_check_graph, tmpmem_f, failed);
+	close_graph(create_check_graph);
+}
+
+
+TEST_P(officialw3cPETTestCases_Test, CreateAndTestModelWithModelA) {
+	bool failed = false;
+	TestdataPET testdata = GetParam();
+	size_t memory_size = 1000000;
+	int number_rules_run;
+	char tmpmem[memory_size]; //script size maximal a megabyte
+	char tmpcheckmem[memory_size]; //check command size maximal a megabyte
+	tmpmem[memory_size-1] = '\0';
+	tmpmem[0] = '\0';
+	tmpcheckmem[memory_size-1] = '\0';
+	tmpcheckmem[0] = '\0';
+	FILE *tmpmem_f, *tmpcheckmem_f;
+	crifi_graph *maingraph;
+
+	tmpmem_f = fmemopen(tmpmem, memory_size-1, "w");
+	ASSERT_NE(tmpmem_f, nullptr) << "Couldnt open memory. broken test.";
+	create_logic_into_memory(tmpmem_f, testdata, &failed);
+	fclose(tmpmem_f);
+	if (failed) FAIL();
+	fprintf(stderr, "<created script>:\n%s\n</created script>\n", tmpmem);
+	ASSERT_NE(strlen(tmpmem), 0) << "no logic script created";
+	
 	tmpcheckmem_f = fmemopen(tmpcheckmem, memory_size-1, "w");
 	ASSERT_NE(tmpcheckmem_f, nullptr) << "Couldnt open memory.broken test.";
-	create_new_logic(create_check_graph, tmpcheckmem_f);
+	create_check_into_memory(tmpcheckmem_f, testdata, &failed);
 	fclose(tmpcheckmem_f);
+	if (failed) FAIL();
 	fprintf(stderr, "check command:\n%s\n", tmpcheckmem);
-	close_graph(create_check_graph);
-
-
+	ASSERT_NE(strlen(tmpcheckmem), 0) << "no check command created.";
 
 
 	maingraph = init_graph();
 	load_new_logic(maingraph, tmpmem, strlen(tmpmem));
-	run_and_check(maingraph, "(eq 0 1)", true);
+	run_and_check(maingraph, tmpcheckmem, true);
 	close_graph(maingraph);
 	FAIL() << "test not complete";
 }

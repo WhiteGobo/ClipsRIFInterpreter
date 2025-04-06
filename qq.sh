@@ -19,6 +19,19 @@ extensionentailment="${filename##*.}"
 temp_logic_in_ttl="tmp/temp_logic_in_ttl.ttl"
 temp_clips_script_all_data="tmp/qq.out.ttl"
 
+w3ctc="http://www.w3.org/2005/rules/test/repository/tc/"
+extraimport="
+-I ${w3ctc}OWL_Combination_Vocabulary_Separation_Inconsistency_1/OWL_Combination_Vocabulary_Separation_Inconsistency_1-import001=OWL_Combination_Vocabulary_Separation_Inconsistency_1-import001.ntriples
+-I ${w3ctc}RDF_Combination_Blank_Node/RDF_Combination_Blank_Node-import001=RDF_Combination_Blank_Node-import001.ntriples
+-I ${w3ctc}RDF_Combination_Constant_Equivalence_1/RDF_Combination_Constant_Equivalence_1-import001=RDF_Combination_Constant_Equivalence_1-import001.ntriples
+-I ${w3ctc}RDF_Combination_Constant_Equivalence_2/RDF_Combination_Constant_Equivalence_2-import001=RDF_Combination_Constant_Equivalence_2-import001.ntriples
+-I ${w3ctc}RDF_Combination_Constant_Equivalence_3/RDF_Combination_Constant_Equivalence_3-import001=RDF_Combination_Constant_Equivalence_3-import001.ntriples
+-I ${w3ctc}RDF_Combination_Constant_Equivalence_4/RDF_Combination_Constant_Equivalence_4-import001=RDF_Combination_Constant_Equivalence_4-import001.ntriples
+"
+extraimport="
+-I ${w3ctc}RDF_Combination_SubClass_2/RDF_Combination_SubClass_2-import001=RDF_Combination_SubClass_2-import001.ntriples
+"
+
 mkdir -p tmp
 
 echo "transform data from rifps to turtle"
@@ -57,6 +70,6 @@ echo "generate new script itself"
 ./build/generate_crifi_script/oneshot_crifi_script \
 	-o clipsscript \
 	-d $temp_logic_in_ttl \
-	-I http://example.com/asdf#qwer=qwer \
+	${extraimport} \
 	-m rif \
 	tmp/SimpleEntailment.clp 

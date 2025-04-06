@@ -8,6 +8,7 @@ extern "C" {
 
 crifi_graph *init_graph_modelA();
 
+crifi_graph *init_graph_modelcheckA();
 
 #ifdef __cplusplus
 } //extern "C"
