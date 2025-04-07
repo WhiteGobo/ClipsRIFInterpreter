@@ -42,6 +42,12 @@ while(${length} GREATER 0)
 	string(REGEX REPLACE "(..)" "\\\\x\\1" chars "${bytes}")
 	string(LENGTH "${bytes}" n_bytes2)
 	math(EXPR n_bytes "${n_bytes2} / 2")
+	if(n_bytes GREATER 4294967295)
+		message(FATAL_ERROR "Can only compile resources with "
+					"maximal size of uint32_t."
+					"Please dont compile resources in code "
+					"that are >1GB big :(")
+	endif()
 	#math(EXPR remainder "${n_bytes} % 5") # <-- '5' is the grouping count from above
 	#set(cleanup_re "$")
 	#set(cleanup_sub )
@@ -56,8 +62,8 @@ while(${length} GREATER 0)
 
 	#context must be cast to non-const here.
 	#Please ensure the method respects that it handles context as const.
-	string(APPEND importmethods "\t{.id=\"${first}\", .method=${name}_import_method, .context=(void*) ${loading_context}, .cleanup=NULL, .syntax=${syntax}},\n")
-	string(APPEND memory "static const char *${loading_context} = \"${chars}\";\n")
+	string(APPEND importmethods "\t{.id=\"${first}\", .method=${name}_import_method, .context=&${loading_context}, .cleanup=NULL, .syntax=${syntax}},\n")
+	string(APPEND memory "static struct ${name}_memory_container ${loading_context} = {\n        .length=${n_bytes},\n        .data = \"${chars}\"\n};\n")
 	#string(APPEND memory "static size_t @loading_context_length@ = @n_bytes@;\n")
 endwhile()
 configure_file(${skeleton} ${outputfile})

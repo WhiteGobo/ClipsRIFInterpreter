@@ -14,13 +14,13 @@ typedef struct fileimport_list {
 	struct fileimport_list *rest;
 } FileImportList;
 
-typedef FILE* GetFileMethod(void *context);
+typedef FILE* GetFileMethod(const void *context);
 typedef void CleanupGetFileMethodContext(void *context);
 
 typedef struct getfile_importid_pair {
 	const char *id;
 	GetFileMethod *method;
-	void *context;
+	const void *context;
 	CleanupGetFileMethodContext *cleanup;
 	const char *syntax;
 } GetfileImportidPair;

@@ -85,7 +85,7 @@ int get_interpretation_id(crifi_graph *graph, CLIPSValue *cv);
 
 int crifi_add_import_function(crifi_graph *graph,
 		CRIFIImportMethod *method,
-		void *context,
+		const void *context,
 		CRIFIImportDataCleanupFunction *cleanup_function);
 
 void free_crifi_singleimportdata(CRIFISingleImportData *data);

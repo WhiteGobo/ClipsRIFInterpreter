@@ -1,0 +1,54 @@
+Document(
+    Prefix(func <http://www.w3.org/2007/rif-builtin-function#>) 
+    Prefix(pred <http://www.w3.org/2007/rif-builtin-predicate#>) 
+    Prefix(owl <http://www.w3.org/2002/07/owl#>)
+    Prefix(deffact <http://white.gobo/crifi/resource-manager/deffacts#>)
+    Prefix(rema <http://white.gobo/crifi/resource-manager#>)
+    Prefix(cs <http://clips.script/>)
+    Prefix(crifi <http://white.gobo/>)
+    Prefix(ex <http://example.com/>)
+    Prefix(triplestordf <http://example.com/triples-to-rdf#>)
+    Prefix(rif <http://www.w3.org/2007/rif#>)
+    Prefix(entailment <http://www.w3.org/ns/entailment/>)
+
+    (* triplestordf:combine-rdf-lists *) Group 100 (
+      Forall ?base ?prop (
+        If And(?base[?prop -> rdf:nil])
+        Then Do (
+          Retract(?base[?prop -> rdf:nil])
+          Assert(?base[?prop -> List()])
+        ) 
+      )
+
+      Forall ?base ?list(
+        If And(
+          ?base[triplestordf:as-list -> ?list]
+          Not (Exists ?s ?p (?s[?p -> ?base]))
+        ) Then Do (
+          Retract(?base[triplestordf:as-list -> ?list])
+        ) 
+      )
+
+      Forall ?base ?first ?rest(
+        If And(
+          ?base[rdf:rest -> ?rest]
+          ?base[rdf:first -> ?first]
+          External(pred:is-list(?rest))
+        ) Then Do (
+          Retract(?base[rdf:rest -> ?rest])
+          Retract(?base[rdf:first -> ?first])
+          Assert(?base[triplestordf:as-list -> External(func:insert-before(?rest 0 ?first))])
+        ) 
+      )
+
+      Forall ?subject ?prop ?listbase ?aslist (
+        If And(
+          ?subject[?prop -> ?listbase]
+          ?listbase[triplestordf:as-list -> ?aslist]
+        ) Then Do (
+          Retract(?subject[?prop -> ?listbase])
+          Assert(?subject[?prop -> ?aslist])
+        ) 
+      )
+    )
+)

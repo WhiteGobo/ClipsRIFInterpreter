@@ -45,6 +45,7 @@ add_subdirectory(clips_interface)
 add_subdirectory(resource_manager)
 add_subdirectory(generate_crifi_script)
 add_subdirectory(raptor_serializer)
+add_subdirectory(builtin_resources)
 
 if(BUILD_TESTING)
 	enable_testing()

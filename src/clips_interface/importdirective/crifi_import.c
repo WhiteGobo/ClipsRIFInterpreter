@@ -3,7 +3,7 @@
 
 int crifi_add_import_function(crifi_graph *graph,
 		CRIFIImportMethod *method,
-		void *context,
+		const void *context,
 		CRIFIImportDataCleanupFunction *cleanup_function)
 {
 	CRIFISingleImportData *next;

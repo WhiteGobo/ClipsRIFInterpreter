@@ -1,0 +1,51 @@
+Document(
+    Prefix(func <http://www.w3.org/2007/rif-builtin-function#>) 
+    Prefix(pred <http://www.w3.org/2007/rif-builtin-predicate#>) 
+    Prefix(owl <http://www.w3.org/2002/07/owl#>)
+    Prefix(deffact <http://white.gobo/crifi/resource-manager/deffacts#>)
+    Prefix(rema <http://white.gobo/crifi/resource-manager#>)
+    Prefix(cs <http://clips.script/>)
+    Prefix(crifi <http://white.gobo/>)
+    Prefix(ex <http://example.com/>)
+    Prefix(triplestordf <http://example.com/triples-to-rdf#>)
+    Prefix(rif <http://www.w3.org/2007/rif#>)
+    Prefix(entailment <http://www.w3.org/ns/entailment/>)
+    (* ex:normalize-rules *) Group 90 (
+      (* ex:move-pattern-outwards *)Forall ?innerrule ?outerrule ?pattern(
+        If And(
+          ?outerrule[rdf:type -> rif:Forall]
+          ?innerrule[rdf:type -> rif:Forall]
+          ?outerrule[rif:formula -> ?innerrule]
+          ?innerrule[rif:pattern -> ?pattern]
+        ) Then Do (
+          Retract(?innerrule[rif:pattern -> ?pattern])
+          Assert(?outerrule[rif:pattern -> ?pattern])
+        )
+      )
+      (* ex:move-action-outwards *) Forall ?innerrule ?outerrule ?action(
+        If And(
+          ?outerrule[rdf:type -> rif:Forall]
+          ?innerrule[rdf:type -> rif:Forall]
+          ?outerrule[rif:formula -> ?innerrule]
+          ?innerrule[rif:formula -> ?action]
+          Not( Exists ?pattern ( ?innerrule[rif:pattern -> ?pattern]))
+        ) Then Do (
+          Assert(?outerrule[rif:formula -> ?action])
+          Retract(?innerrule)
+        )
+      )
+      (* ex:expand-implies *) Forall ?implies ?outerrule ?pattern ?action(
+        If And(
+          ?outerrule[rdf:type -> rif:Forall]
+          ?outerrule[rif:formula -> ?implies]
+          ?implies[rdf:type -> rif:Implies]
+          ?implies[rif:if -> ?formula]
+          ?implies[rif:then -> ?action]
+        ) Then Do (
+          Assert(?outerrule[rif:pattern -> ?formula])
+          Modify(?outerrule[rif:formula -> ?action])
+          Retract(?implies)
+        )
+      )
+    )
+)

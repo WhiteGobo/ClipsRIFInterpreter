@@ -3,13 +3,20 @@
 #include "stdbool.h"
 #include "crifi_import_implementations.h"
 
+struct @name@_memory_container{
+	uint32_t length;
+	const char* data;
+};
+
 @memory@
 
-static FILE *@name@_import_method(void *context){
+static FILE *@name@_import_method(const void *context){
 	//data is original a const char*.
 	//Please ensure its only accessed read-only.
-	char *data = (char*) context;
-	FILE *qq = fmemopen(data, strlen(data), "r");
+	//char *data = (char*) context;
+	struct @name@_memory_container *data
+		= (struct @name@_memory_container*) context;
+	FILE *qq = fmemopen((char*) data->data, data->length, "r");
 	//if (qq == NULL){
 	//	fprintf(stderr, "test_import_method failed\n");
 	//}
