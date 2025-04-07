@@ -32,6 +32,7 @@ function(crifi_implement_clips_program_in_build
 	set(dependencies "")
 	list(APPEND dependencies ${CRIFI_IMPLEMENT_CLIPS_PROGRAM_IN_BUILD_SCRIPT})
 	list(APPEND dependencies ${CRIFI_IMPLEMENT_CLIPS_PROGRAM_IN_BUILD_SKELETON})
+	list(APPEND dependencies ${inputclipsscript})
 
 	add_custom_command(
 		OUTPUT ${outputfile}

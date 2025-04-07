@@ -10,6 +10,8 @@ crifi_graph *init_graph_modelA();
 
 crifi_graph *init_graph_modelcheckA();
 
+crifi_graph *init_graph_model_first();
+
 #ifdef __cplusplus
 } //extern "C"
 #endif

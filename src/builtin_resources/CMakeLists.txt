@@ -14,11 +14,22 @@ add_library(crifi_builtin_resources STATIC
 	${MODELDATA_AS_HEADER_MODELA}
 )
 
-target_link_libraries(crifi_builtin_resources PRIVATE
+target_link_libraries(crifi_builtin_resources PUBLIC
 	ffi_clips_interface
 	crifi_import_implementations
 )
 
 target_include_directories(crifi_builtin_resources PUBLIC
+	"${CMAKE_CURRENT_SOURCE_DIR}"
 	"${MODELDATA_DIRECTORY}"
+)
+
+add_executable(generate_builtin_model
+	generate_builtin_model.c
+)
+
+target_link_libraries(generate_builtin_model PRIVATE
+	crifi_builtin_resources
+	crifi_raptor
+	crifi_graph_models
 )

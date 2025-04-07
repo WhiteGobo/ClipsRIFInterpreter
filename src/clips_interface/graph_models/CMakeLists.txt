@@ -1,3 +1,10 @@
+set(MODEL_FIRST_HEADER "${CMAKE_CURRENT_BINARY_DIR}/first.h")
+crifi_implement_clips_program_in_build(
+	${MODEL_FIRST_HEADER}
+	"${CMAKE_CURRENT_SOURCE_DIR}/first.clp"
+	init_graph_model_first_internal
+)
+
 set(MODEL_A_HEADER "${CMAKE_CURRENT_BINARY_DIR}/modelA.h")
 crifi_implement_clips_program_in_build(
 	${MODEL_A_HEADER}
@@ -17,6 +24,7 @@ add_library(crifi_graph_models STATIC
 	crifi_graph_models.h
 	${MODEL_A_HEADER}
 	${MODEL_CHECK_A_HEADER}
+	${MODEL_FIRST_HEADER}
 )
 
 target_link_libraries(crifi_graph_models PUBLIC
