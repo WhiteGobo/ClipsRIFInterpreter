@@ -32,6 +32,7 @@ target_link_libraries(crifi_graph_models PUBLIC
 )
 
 target_link_libraries(crifi_graph_models PRIVATE
+	crifi_import
 	#info_query
 	#raptor2
 )

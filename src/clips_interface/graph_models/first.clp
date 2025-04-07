@@ -918,6 +918,19 @@
 	(assert (RIFRepresentation (node ?node) (object ?x)))
 )
 
+(defrule UseImportDirective
+	?importobj <- (object (is-a RIFImport) (profile ?profile) (location ?location))
+	(not (exists (already-imported ?profile ?location)))
+	=>
+	(assert (already-imported ?profile ?location))
+	(if (not (<http://white.gobo/import> ?location ?profile ))
+		then
+		(if (not (get-error)) then
+			(set-error "<http://white.gobo/import> failed")
+		)
+	)
+)
+
 (defrule RIFprocess_DocumentB
 	(TripleTemplate
 		(subject ?node)
@@ -1563,6 +1576,7 @@
 )
 
 (defmessage-handler RIFImport create-rules ()
+	(return "")
 	;(return (<http://white.gobo/ResourceManager/import> ?self:location ?self:profile))
 	;(set-error (str-cat "brubru1 " ?self:location " qwertz " ?self:profile))
 	;(return "")

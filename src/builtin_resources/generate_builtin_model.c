@@ -59,6 +59,7 @@ static int printout_generated_rules(){
 	bool errorstate;
 	struct DynamicValue retval;
 	retval = eval(graph, "(create-script-rif-logic \"mydescription\")");
+
 	errorstate = graph_in_errorstate(graph, stderr);
 	switch(retval.type){
 		case CTC_DYNAMIC_STRING:
@@ -186,6 +187,11 @@ static int import_base_information(){
 	if (errorstate){
 		fprintf(stderr, "graph ended up in errorstate after import\n");
 		return 1;
+	}
+	if (verbosity > 1){
+		fprintf(stderr, "printing information after base import "
+				"before rules run\n");
+		crifi_serialize_all_triples(graph, stderr, "turtle", "");
 	}
 	return 0;
 }
