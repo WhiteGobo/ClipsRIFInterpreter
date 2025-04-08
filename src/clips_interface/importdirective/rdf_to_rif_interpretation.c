@@ -157,19 +157,14 @@ static CRIFI_IMPORT_ASSERT_RET assert_term(ImportProcess *process,
 	CLIPSValue rif_value = {.value = info->rif_value.value};
 	//CLIPSValue rif_Var;
 	//CLIPSValue rif_varname;
-				fprintf(stderr, "qqq1\n");
 	if (0 != new_blanknode(process->graph, ret)){
-				fprintf(stderr, "qqq2\n");
 		return CRIFI_IMPORT_ASSERT_UNHANDLED_ERROR;
 	}
-				fprintf(stderr, "qqq3\n");
 	if (suffix != NULL){
 		suffix_length = strlen(suffix);
 	} else {
-				fprintf(stderr, "qqq4\n");
 		suffix_length = 0;
 	}
-				fprintf(stderr, "qqq5\n");
 	switch(type){
 		case CRIFI_IMPORT_TERM_URI:
 			err = value_and_datatype_to_clipsvalue(process->graph,
@@ -183,23 +178,17 @@ static CRIFI_IMPORT_ASSERT_RET assert_term(ImportProcess *process,
 			ASSERT_TRIPLE_OR_FAIL(process, ret, &rif_constIRI, &value_cv);
 			break;
 		case CRIFI_IMPORT_TERM_TYPEDLITERAL:
-				fprintf(stderr, "qq1\n");
 			err = value_and_datatype_to_clipsvalue(process->graph,
 						value, strlen(value),
 						suffix, suffix_length,
 						&value_cv);
 			if (err != 0){
-				fprintf(stderr, "qq2\n");
 				return CRIFI_IMPORT_ASSERT_UNHANDLED_ERROR;
 			}
-				fprintf(stderr, "qq3\n");
 			ASSERT_TRIPLE_OR_FAIL(process, ret, &rdf_type, &rif_Const);
-				fprintf(stderr, "qq4\n");
 			ASSERT_TRIPLE_OR_FAIL(process, ret, &rif_value, &value_cv);
-				fprintf(stderr, "qq5\n");
 			break;
 		case CRIFI_IMPORT_TERM_LANGLITERAL:
-				fprintf(stderr, "qqq7\n");
 			err = value_and_lang_to_clipsvalue(process->graph,
 						value, strlen(value),
 						suffix, suffix_length,
@@ -211,16 +200,12 @@ static CRIFI_IMPORT_ASSERT_RET assert_term(ImportProcess *process,
 			ASSERT_TRIPLE_OR_FAIL(process, ret, &rif_value, &value_cv);
 			break;
 		case CRIFI_IMPORT_TERM_BNODE:
-				fprintf(stderr, "qqq8\n");
 			//TODO: missing use exrternal create bnode
 			return CRIFI_IMPORT_ASSERT_UNHANDLED_ERROR;
 		case CRIFI_IMPORT_TERM_UNKNOWN:
-				fprintf(stderr, "qqq9\n");
 		default:
-				fprintf(stderr, "qqq10\n");
 			return CRIFI_IMPORT_ASSERT_UNHANDLED_ERROR;
 	}
-				fprintf(stderr, "qqq11\n");
 	return CRIFI_IMPORT_ASSERT_NOERROR;
 }
 
@@ -232,7 +217,6 @@ CRIFI_IMPORT_ASSERT_RET assert_frame_rdf_to_rif(ImportProcess *process,
 		const char *slotvalue, const char *slotvalue_suffix,
 		IMPORT_TERM_TYPE slotvalue_type)
 {
-	fprintf(stderr, "assert frame %s %s %s\n", object, slotkey, slotvalue);
 	int err;
 	CRIFI_IMPORT_ASSERT_RET ret;
 	crifi_graph *graph = process->graph;
@@ -267,11 +251,9 @@ CRIFI_IMPORT_ASSERT_RET assert_frame_rdf_to_rif(ImportProcess *process,
 	if (ret != CRIFI_IMPORT_ASSERT_NOERROR){
 		return ret;
 	}
-	fprintf(stderr, "assert object\n");
 	ret = assert_term(process, slotvalue, slotvalue_suffix,
 				slotvalue_type, &slotvalue_cv);
 	if (ret != CRIFI_IMPORT_ASSERT_NOERROR){
-	fprintf(stderr, "assert object failed\n");
 		return ret;
 	}
 	if (0 != new_blanknode(graph, &frame)){

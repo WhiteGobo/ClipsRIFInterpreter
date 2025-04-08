@@ -29,7 +29,6 @@ CRIFI_IMPORT_ASSERT_RET assert_frame_direct(ImportProcess *process,
 		IMPORT_TERM_TYPE slotvalue_type)
 {
 	int err;
-	fprintf(stderr, "assert %s[%s -> %s]\n", object, slotkey, slotvalue);
 	CLIPSValue object_cv = {.voidValue = VoidConstant(process->graph)};
 	CLIPSValue slotkey_cv = {.voidValue = VoidConstant(process->graph)};
 	CLIPSValue slotvalue_cv = {.voidValue = VoidConstant(process->graph)};

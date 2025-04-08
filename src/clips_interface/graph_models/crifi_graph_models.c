@@ -9,7 +9,6 @@
 
 crifi_graph *init_graph_modelA(){
 	crifi_graph *graph = init_graph_modelA_internal(NULL);
-
 	set_model_id_for_import(graph, CRIFI_IMPORT_MODEL_RIFGENERATOR);
 	return graph;
 }
@@ -17,6 +16,7 @@ crifi_graph *init_graph_modelA(){
 
 crifi_graph *init_graph_modelcheckA(){
 	crifi_graph *graph = init_graph_modelcheckA_internal(NULL);
+	set_model_id_for_import(graph, CRIFI_IMPORT_MODEL_RIFGENERATOR);
 	return graph;
 }
 

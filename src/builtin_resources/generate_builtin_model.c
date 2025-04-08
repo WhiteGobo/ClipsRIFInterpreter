@@ -8,11 +8,13 @@
 
 #define _CRIFI_MODELA_DATA_BASEURI_ "http://white.gobo/crifi/built_resources/data_modela#"
 #define _CRIFI_BUILTIN_MODEL_GENERATE_MODELA_ _CRIFI_MODELA_DATA_BASEURI_ "crifi_modelA"
+#define _CRIFI_BUILTIN_MODEL_GENERATE_MODELA_CHECKER_ _CRIFI_MODELA_DATA_BASEURI_ "crifi_modelA_checker"
 
 typedef enum {
 	GBM_ERROR = -1,
 	GBM_UNKNOWN_MODEL,
 	GBM_MODELA = 'a',
+	GBM_MODELA_CHECKER = 'A',
 	GBM_MODELB = 'b'
 } MODEL_TYPE;
 
@@ -32,14 +34,6 @@ int main(int argc, char* argv[]){
 	out_f = stdout;
 	if (0 != parse(argc, argv)){
 		exit(EXIT_FAILURE);
-	}
-	switch (modeltype){
-		case GBM_MODELA:
-		case GBM_MODELB:
-			break;
-		default:
-			fprintf(stderr, "No model chosen\n");
-			exit(EXIT_FAILURE);
 	}
 	if (0 != init_graph_with_import()){
 		err = EXIT_FAILURE;
@@ -138,6 +132,7 @@ static int init_graph_with_import(){
 }
 
 static char *cmd_import_modelA = "(<"_CRIFI_import_"> <"_CRIFI_BUILTIN_MODEL_GENERATE_MODELA_"> <"_RIFENTAIL_SIMPLE_">)";
+static char *cmd_import_modelA_checker = "(<"_CRIFI_import_"> <"_CRIFI_BUILTIN_MODEL_GENERATE_MODELA_CHECKER_"> <"_RIFENTAIL_SIMPLE_">)";
 
 static int import_base_information(){
 	bool errorstate;
@@ -147,8 +142,11 @@ static int import_base_information(){
 		case GBM_MODELA:
 			retval = eval(graph, cmd_import_modelA);
 			break;
+		case GBM_MODELA_CHECKER:
+			retval = eval(graph, cmd_import_modelA_checker);
+			break;
 		default:
-			fprintf(stderr, "Given model isnt implemented.\n");
+			fprintf(stderr, "No valid model chosen.\n");
 			return 1;
 	}
 	errorstate = graph_in_errorstate(graph, stderr);
@@ -198,6 +196,7 @@ static int import_base_information(){
 
 static struct option parse_options[] = {
 	{"modelA", no_argument, NULL, GBM_MODELA},
+	{"modelAchecker", no_argument, NULL, GBM_MODELA_CHECKER},
 	{"modelB", no_argument, NULL, GBM_MODELB},
 	{NULL, 0, NULL, 0}
 };
@@ -206,13 +205,14 @@ static int parse(int argc, char* argv[]){
 	int c;
 	int option_index = 0;
 	while (1){
-		c = getopt_long(argc, argv, "abv",
-				       parse_options, &option_index);
+		c = getopt_long(argc, argv, "aAbv",
+				parse_options, &option_index);
 		if (c == -1){
 			break;
 		}
 		switch (c){
 			case GBM_MODELA:
+			case GBM_MODELA_CHECKER:
 			case GBM_MODELB:
 				if (modeltype != GBM_UNKNOWN_MODEL
 						&& modeltype != c){

@@ -15,7 +15,7 @@ crifi_implement_clips_program_in_build(
 set(MODEL_CHECK_A_HEADER "${CMAKE_CURRENT_BINARY_DIR}/modelcheckA.h")
 crifi_implement_clips_program_in_build(
 	${MODEL_CHECK_A_HEADER}
-	"${CMAKE_CURRENT_SOURCE_DIR}/modelA.clp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/modelAchecker.clp"
 	init_graph_modelcheckA_internal
 )
 

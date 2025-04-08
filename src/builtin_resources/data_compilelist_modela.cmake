@@ -4,8 +4,10 @@ set(compilelist_modela "" PARENT_SCOPE)
 
 list(APPEND mytargets
 	crifi_modelA
+	crifi_modelA_checker
 	rule-normalization
 	transform-list
+	rest
 )
 
 set(compilelist)

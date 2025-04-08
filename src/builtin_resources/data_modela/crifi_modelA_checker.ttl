@@ -1,0 +1,10 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rif: <http://www.w3.org/2007/rif#> .
+
+[] a rif:Document ;
+    rif:directives ( [ a rif:Import ;
+                rif:location "http://white.gobo/crifi/built_resources/data_modela#rule-normalization" ;
+                rif:profile "http://www.w3.org/ns/entailment/Simple" ] [ a rif:Import ;
+                rif:location "http://white.gobo/crifi/built_resources/data_modela#transform-list" ;
+                rif:profile "http://www.w3.org/ns/entailment/Simple" ] ) .
+

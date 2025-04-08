@@ -1,0 +1,428 @@
+Document(
+    Prefix(func <http://www.w3.org/2007/rif-builtin-function#>) 
+    Prefix(pred <http://www.w3.org/2007/rif-builtin-predicate#>) 
+    Prefix(owl <http://www.w3.org/2002/07/owl#>)
+    Prefix(deffact <http://white.gobo/crifi/resource-manager/deffacts#>)
+    Prefix(rema <http://white.gobo/crifi/resource-manager#>)
+    Prefix(cs <http://clips.script/>)
+    Prefix(crifi <http://white.gobo/>)
+    Prefix(ex <http://example.com/>)
+    Prefix(triplestordf <http://example.com/triples-to-rdf#>)
+    Prefix(rif <http://www.w3.org/2007/rif#>)
+    Prefix(entailment <http://www.w3.org/ns/entailment/>)
+    Group (
+    (* ex:transform-terms-asdf *) Group (
+      (* ex:transform-rif-variable *) Forall ?rifnode ?varname (
+        If And (
+          ?rifnode[rif:varname -> ?varname]
+        ) Then Do ((?clipsnode New())
+          Assert(?rifnode[ex:as-constraint -> ?clipsnode])
+          Assert(?rifnode[ex:as-expression -> ?clipsnode])
+          Assert(?clipsnode[cs:variable-name -> ?varname])
+          Assert(?clipsnode[ex:as-constraint-needs-additional-conditionals -> External(func:make-list())])
+        )
+      )
+
+      (* ex:transform-rif-consts *) Group (
+        (* ex:value-to-constraint *) Forall ?rifnode ?value (
+          If And(
+            ?rifnode[rif:value -> ?value]
+          ) Then Do ((?clipsnode New())
+            Assert(?rifnode[ex:as-constraint -> ?clipsnode])
+            Assert(?rifnode[ex:as-expression -> ?clipsnode])
+            Assert(?clipsnode[cs:string -> External(crifi:literal-to-clipsconstant(?value))])
+            Assert(?clipsnode[ex:as-constraint-needs-additional-conditionals -> External(func:make-list())])
+          )
+        )
+        (* ex:constIRI-to-constraint *) Forall ?rifnode ?iristring(
+          If And(
+            ?rifnode[rif:constIRI -> ?iristring]
+          ) Then Do ((?clipsnode New())
+            Assert( ?rifnode[ex:as-constraint -> ?clipsnode] )
+            Assert( ?rifnode[ex:as-expression -> ?clipsnode] )
+            Assert( ?clipsnode[cs:symbol -> External( crifi:iri-to-clipsconstant(?iristring))] )
+            Assert(?clipsnode[ex:as-constraint-needs-additional-conditionals -> External(func:make-list())])
+          )
+        )
+      )
+    )
+    (* ex:transform-rif-frame *) Group (
+      (* ex:part-frame-pattern *) Forall ?rifframe ?slotlist ?rifforall (
+        If And (
+          ?rifforall[rif:pattern -> ?rifframe]
+          ?rifframe[rif:object -> ?object]
+          ?rifframe[rif:slots -> ?slotlist]
+          External(pred:numeric-greater-than(External(func:count(?slotlist)) 1))
+        ) Then Do (
+          (?newframefirst New())
+          (?newframerest New())
+          Retract( ?rifforall[rif:pattern -> ?rifframe] )
+          Assert( ?rifforall[rif:pattern -> ?newframefirst] )
+          Assert( ?newframefirst[rdf:type -> rif:Frame] )
+          Assert( ?newframefirst[rif:object -> ?object] )
+          Assert( ?newframefirst[rif:slots -> External(func:sublist(?slotlist 0 1))] )
+          Assert( ?rifforall[rif:pattern -> ?newframerest] )
+          Assert( ?newframerest[rdf:type -> rif:Frame] )
+          Assert( ?newframerest[rif:object -> ?object] )
+          Assert( ?newframerest[rif:slots -> External(func:remove(?slotlist 0))] )
+        )
+      )
+      (* ex:as-expression-transform-rif-frame *) Forall ?rifnode ?slotlist ?slot ?currentconditionalelement ?clipsrestraint ?slotvalue ?slotkey ?constraintsubject(
+        If And (
+          ?rifnode[rdf:type -> rif:Frame]
+          ?rifnode[rif:object -> ?object]
+          ?rifnode[rif:slots -> ?slotlist]
+          ?object[ex:as-expression -> ?expressionsubject]
+          ?slot[rif:slotkey -> ?slotkey]
+          ?slotkey[ex:as-expression -> ?expressionpredicate]
+          ?slot[rif:slotvalue -> ?slotvalue]
+          ?slotvalue[ex:as-expression -> ?expressionobject]
+          External(pred:is-list(?slotlist))
+          External(pred:list-contains(?slotlist ?slot))
+        ) Then Do (
+          (?clipsnode New())
+          (?slotsubject New())
+          (?slotpredicate New())
+          (?slotobject New())
+          Assert( ?rifnode[ex:as-rhspattern -> ?clipsnode] )
+          Assert( ?clipsnode[cs:deftemplate-name -> "TripleTemplate"] )
+          Assert( ?clipsnode[cs:slot -> External(func:make-list(?slotsubject ?slotpredicate ?slotobject))] )
+          Assert( ?slotsubject[cs:slot-name -> "subject"] )
+          Assert( ?slotsubject[cs:field -> External(func:make-list(?expressionsubject))])
+          Assert( ?slotpredicate[cs:slot-name -> "predicate"] )
+          Assert( ?slotpredicate[cs:field -> External(func:make-list(?expressionpredicate))])
+          Assert( ?slotobject[cs:slot-name -> "object"] )
+          Assert( ?slotobject[cs:field -> External(func:make-list(?expressionobject))])
+        )
+      )
+    )
+    Forall ?frame (
+      If And (
+        ?frame[rdf:type -> rif:Frame]
+      ) Then Do (
+        Assert( ?frame # ex:construct-as-conditional )
+        Assert( ?frame[ex:in-as-conditional -> External(func:make-list())])
+      )
+    )
+    Forall ?rifineg ?formula ?clipsconditional (
+      If And (
+        ?rifineg[rdf:type -> rif:INeg]
+        ?rifineg[rif:formula -> ?formula]
+        ?formula[ex:as-conditional -> ?clipsconditional]
+      ) Then Do (
+        (?notCE New())
+        Assert( ?rifineg[ex:as-conditional -> External(func:make-list(?notCE))])
+        Assert( ?notCE[rdf:type -> cs:NotCE] )
+        Assert( ?notCE[cs:conditional-element -> ?clipsconditional] )
+      )
+    )
+
+    Forall ?rifnode ?slotlist ?existingconditionals(
+      If And (
+        ?rifnode[rif:slots -> ?slotlist]
+        ?rifnode[ex:in-as-conditional -> ?existingconditionals]
+        Not(Exists ?slot( And(
+          ?slot[rdf:type -> rif:Slot]
+          External(pred:list-contains(?slotlist ?slot))
+          Not(?rifnode[ex:used-slot-for-conditional -> ?slot])
+        )))
+      ) Then Do (
+        Assert( ?rifnode[ex:as-conditional -> ?existingconditionals] )
+      )
+    )
+    (* ex:add-slot-transform-rif-frame *) Forall ?rifnode ?slotlist ?slot ?currentconditionalelement ?clipsrestraint ?slotvalue ?slotkey ?constraintsubject(
+      If And (
+        ?rifnode[rdf:type -> rif:Frame]
+        ?rifnode[rif:object -> ?object]
+        ?object[ex:as-constraint -> ?constraintsubject]
+        ?rifnode[rif:slots -> ?slotlist]
+        ?slot[rif:slotkey -> ?slotkey]
+        ?slotkey[ex:as-constraint -> ?constraintpredicate]
+        ?slot[rif:slotvalue -> ?slotvalue]
+        ?slotvalue[ex:as-constraint -> ?constraintobject]
+        External(pred:is-list(?slotlist))
+        External(pred:list-contains(?slotlist ?slot))
+        ?constraintsubject[ex:as-constraint-needs-additional-conditionals -> ?additionalconditionalssubject]
+        ?constraintpredicate[ex:as-constraint-needs-additional-conditionals -> ?additionalconditionalspredicate]
+        ?constraintobject[ex:as-constraint-needs-additional-conditionals -> ?additionalconditionalsobject]
+        ?rifnode # ex:construct-as-conditional
+        Not(?rifnode[ex:used-slot-for-conditional -> ?slot])
+      ) Then Do (
+        (?clipsconditionalelement New())
+        (?slotsubject New())
+        (?slotpredicate New())
+        (?slotobject New())
+        (?existingconditionals ?rifnode[ex:in-as-conditional -> ?existingconditionals])
+
+        Assert( ?rifnode[ex:used-slot-for-conditional -> ?slot] )
+        Modify( ?rifnode[
+          ex:in-as-conditional
+          ->
+          External(func:concatenate(
+              ?existingconditionals
+              ?additionalconditionalssubject
+              ?additionalconditionalspredicate
+              ?additionalconditionalsobject
+              External(func:make-list(?clipsconditionalelement))
+              ))
+        ])
+        Assert( ?rifnode[ex:binds-variables -> List()] )
+        Assert( ?rifnode[ex:unbound-variables -> List()] )
+        Assert( ?clipsconditionalelement[rdf:type -> cs:TemplatePatternCE])
+        Assert( ?clipsconditionalelement[cs:deftemplate-name -> "TripleTemplate"] )
+        Assert( ?clipsconditionalelement[cs:slot -> External(func:make-list(?slotsubject ?slotpredicate ?slotobject))] )
+        Assert( ?slotsubject[cs:slot-name -> "subject"] )
+        Assert( ?slotsubject[cs:constraint -> ?constraintsubject])
+        Assert( ?slotpredicate[cs:slot-name -> "predicate"] )
+        Assert( ?slotpredicate[cs:constraint -> ?constraintpredicate])
+        Assert( ?slotobject[cs:slot-name -> "object"] )
+        Assert( ?slotobject[cs:constraint -> ?constraintobject])
+      )
+    )
+    (* ex:transform-assert *) Forall ?rifassert ?riftarget(
+      If And(
+        ?rifassert[rdf:type -> rif:Assert]
+        ?rifassert[rif:target -> ?riftarget]
+        ?riftarget[ex:as-rhspattern -> ?clipsfact]
+      ) Then Do (
+        (?clipsaction New())
+        Assert( ?rifassert[ex:as-action -> External(func:make-list(?clipsaction))] )
+        Assert( ?clipsaction[cs:assert -> ?clipsfact] )
+      )
+    )
+    (* ex:transform-frame-to-assert *) Forall ?rifassert ?riftarget(
+      If And(
+        ?rifframe[rdf:type -> rif:Frame]
+        ?rifframe[ex:as-rhspattern -> ?clipsfact]
+      ) Then Do (
+        (?clipsaction New())
+        Assert( ?rifframe[ex:as-action -> External(func:make-list(?clipsaction))] )
+        Assert( ?clipsaction[cs:assert -> ?clipsfact] )
+      )
+    )
+    (* ex:transform-retract-var *) Forall ?rifretract ?riftarget ?varname(
+      If And(
+        ?rifretract[rdf:type -> rif:Retract]
+        ?rifretract[rif:target -> ?riftarget]
+        ?riftarget[rif:varname -> ?varname]
+      ) Then Do (
+        (?clipsretract New())
+        (?clipsexpand New())
+        (?clipsfindfacts New())
+        (?clipsdeftemplate New())
+        (?factvariable New())
+        (?factquery New())
+        Assert( ?rifretract[ex:as-action -> External(func:make-list(?clipsretract))] )
+        Assert( ?clipsretract[cs:function-name -> "retract"] )
+        Assert( ?clipsretract[cs:function-args -> External( func:make-list(?clipsexpand))] )
+        Assert( ?clipsexpand[cs:function-name -> "expand$"] )
+        Assert( ?clipsexpand[cs:function-args -> External( func:make-list(?clipsfindfacts))] )
+        Assert( ?clipsfindfacts[cs:function-name -> "find-all-facts"])
+        Assert( ?clipsfindfacts[rdf:type -> cs:FindAllFacts] )
+        Assert( ?clipsfindfacts[cs:fact-set-template -> External(func:make-list(?clipsdeftemplate))] )
+        Assert( ?clipsfindfacts[cs:query -> ?factquery] )
+        Assert( ?clipsdeftemplate[cs:deftemplate-name -> "TripleTemplate"] )
+        Assert( ?clipsdeftemplate[cs:fact-set-member-variable -> ?factvariable] )
+        Assert( ?factvariable[cs:variable-name -> "fct"] )
+        Assert( ?factquery[cs:function-name -> "eq"] )
+        Assert( ?factquery[cs:function-args -> External(func:make-list(?factvariable ?varname))] )
+      )
+    )
+    (* ex:transform-retract-frame *) Forall ?rifretract ?riftarget(
+      If And(
+        ?rifretract[rdf:type -> rif:Retract]
+        ?rifretract[rif:target -> ?riftarget]
+        ?riftarget[rdf:type -> rif:Frame]
+      ) Then Do (
+        (?clipsretract New())
+        (?clipsexpand New())
+        Assert( ?rifretract[ex:as-action -> External(func:make-list(?clipsretract))] )
+        Assert( ?clipsretract[cs:function-name -> "retract"] )
+        Assert( ?clipsretract[cs:function-args -> External( func:make-list(?clipsexpand))] )
+        Assert( ?clipsexpand[cs:function-name -> "expand$"] )
+        Assert( ?clipsexpand[cs:function-args -> External( func:make-list())] )
+      )
+    )
+    (* ex:transform-do *) Group (
+      (* ex:init-transform-do *) Forall ?rifnode ?actionlist (
+        If And(
+          ?rifnode[rif:actions -> ?actionlist]
+          External(pred:is-list(?actionlist))
+          ) Then Do (
+            Assert( ?rifnode[ex:in-transform-do -> ?actionlist] )
+            Assert( ?rifnode[ex:out-transform-do -> External(func:make-list())] )
+          )
+      )
+
+        (* ex:end-transform-do *) Forall ?rifnode ?in ?out (
+          If And (
+            ?rifnode[ex:in-transform-do -> ?in]
+            0 = External(func:count(?in))
+            ?rifnode[ex:out-transform-do -> ?out]
+            ) Then Do (
+              Assert(?rifnode[ex:as-action -> ?out])
+              Retract( ?rifnode[ex:in-transform-do -> ?in] )
+              Retract( ?rifnode[ex:out-transform-do -> ?out] )
+              )
+          )
+
+        (* ex:iter-transform-do *) Forall ?rifnode ?in ?out ?nextactions (
+            If And (
+              ?rifnode[ex:in-transform-do -> ?in]
+              ?rifnode[ex:out-transform-do -> ?out]
+              ?firstaction[ex:as-action -> ?nextactions]
+              External( pred:numeric-not-equal(0 External(func:count(?in))) )
+              ?firstaction = External(func:get(?in 0))
+            ) Then Do (
+              Modify( ?rifnode[ex:in-transform-do -> External(func:remove(?in 0))] )
+              Modify( ?rifnode[ex:out-transform-do -> External(func:concatenate(?out ?nextactions))] )
+            )
+          )
+        )
+      (* ex:create-deffacts-for-groups *) Group (
+        (* ex:init-deffacts *) Forall ?group (
+          If And (
+            ?group[rif:sentences -> ?sentences]
+            External(pred:is-list(?sentences))
+            Exists ?factable ( And(
+              Or(
+                ?factable[rdf:type -> rif:Frame]
+                ?factable[rdf:type -> rif:Member]
+                ?factable[rdf:type -> rif:Atom]
+              )
+              External(pred:list-contains(?sentences ?factable))
+            ))
+          ) Then Do (
+            (?deffacts New())
+            Assert( ?group[ex:combine-deffacts-in -> ?deffacts] )
+            Assert( ?deffacts[rdf:type -> cs:Deffacts] )
+            Assert( ?deffacts[cs:rhs-pattern -> External(func:make-list())] )
+          )
+        )
+        (* ex:add-fact-to-deffacts *) Forall ?group ?deffacts ?factable ?newrhspattern(
+          If And (
+            ?group[rif:sentences -> ?sentences]
+            ?group[ex:combine-deffacts-in -> ?deffacts]
+            Or(
+              ?factable[rdf:type -> rif:Frame]
+              ?factable[rdf:type -> rif:Member]
+              ?factable[rdf:type -> rif:Atom]
+            )
+            External(pred:is-list(?sentences))
+            External(pred:list-contains(?sentences ?factable))
+            ?factable[ex:as-rhspattern -> ?newrhspattern]
+          ) Then Do (
+            (?rhspatternlist ?deffacts[cs:rhs-pattern -> ?rhspatternlist] )
+            Modify( ?deffacts[cs:rhs-pattern -> External(func:append(?rhspatternlist ?newrhspattern))] )
+          )
+        )
+      )
+
+      (* ex:init-defrules *) Group 10 (
+          (* ex:init-defrule-per-implies *) Forall ?group ?rule ?formula(
+            If And(
+              ?group[rif:sentences -> ?sentences]
+              ?rule[rdf:type -> rif:Implies]
+              External(pred:is-list(?sentences))
+              External(pred:list-contains(?sentences ?rule))
+              ?rule[rif:if -> ?rifcondition]
+              ?rifcondition[ex:as-conditional -> ?clipsconditions]
+              ?rule[rif:then -> ?rifaction]
+              ?rifaction[ex:as-action -> ?clipsactions]
+            ) Then Do (
+              (?defrule New())
+              (?actionlist New())
+              Assert( ?rule[ex:translate-implies-to-defrule -> ?defrule] )
+              Assert( ?defrule[rdf:type -> cs:Defrule] )
+              Assert( ?defrule[cs:conditional-element -> ?clipsconditions] )
+              Assert( ?defrule[cs:action -> ?clipsactions] )
+            )
+          )
+          (* ex:init-defrule-per-forall *) Forall ?rule ?formula(
+            If And(
+              ?rule[rdf:type -> rif:Forall]
+              ?rule[rif:formula -> ?formula]
+              Not (Exists ?outerrule (?outerrule[rif:formula -> ?rule]))
+            ) Then Do ((?defrule New()) (?actionlist New())
+              Assert( ?defrule[rdf:type -> cs:Defrule] )
+              Assert( ?defrule[ex:uses-patterns-as-conditional -> ?rule] )
+              Assert( ?defrule[ex:out-as-conditional -> List()] )
+              Assert( ?defrule[ex:uses-action-from -> ?formula])
+              Assert( ?defrule[ex:bound-variables -> List()] )
+            )
+          )
+          (* ex:add-action-to-defrule *) Forall ?rule ?formula ?actionlist(
+            If And(
+              ?rule[ex:uses-action-from -> ?formula]
+              ?formula[ex:as-action -> ?actionlist]
+            ) Then Do (
+              Assert(?rule[cs:action -> ?actionlist])
+            )
+          )
+          (* ex:add-conditional-to-defrule *) Forall ?clipsrule ?rifrule ?conditionlist(
+            If And(
+              ?clipsrule[ex:uses-as-conditional -> ?rifrule]
+              ?rifrule[ex:as-conditional -> ?conditionlist]
+            ) Then Do (
+              Assert(?clipsrule[cs:conditional-element -> ?conditionlist])
+            )
+          )
+
+
+          (* ex:combine-formulas-to-pattern *) Group (
+              Group 20 (
+                (* ex:add-formula-as-pattern-to-list *) Forall ?rule ?pattern ?defrule ?defruleconditionlist (
+                  If And (
+                    ?defrule[ex:uses-patterns-as-conditional -> ?rifrule]
+                    ?rifrule[rif:pattern -> ?pattern]
+
+                    ?pattern[ex:as-conditional -> ?patternconditions]
+                    ?pattern[ex:unbound-variables -> ?neededboundvars]
+                    ?pattern[ex:binds-variables -> ?newsuppliedboundvars]
+                    ?defrule[ex:bound-variables -> ?suppliedboundvars]
+                    List() = External( func:except(?neededboundvars ?suppliedboundvars) )
+                    Not( ?defrule[ex:added-pattern -> ?pattern] )
+                  ) Then Do (
+                    (?currentconditions ?defrule[ex:out-as-conditional -> ?currentconditions])
+                    Assert( ?defrule[ex:implemented-pattern -> ?pattern] )
+                    Modify( ?defrule[ex:out-as-conditional -> External(func:concatenate(?currentconditions ?patternconditions))])
+                    Modify( ?defrule[ex:bound-variables -> External(func:union(?suppliedboundvars ?suppliedboundvars))] )
+                    Assert( ?defrule[ex:added-pattern -> ?pattern] )
+                  )
+                )
+              ) Group 3 (
+                (* ex:complete-pattern-to-conditional *) Forall ?defrule ?conditional ?rifrule (
+                  If And (
+                    ?defrule[ex:uses-patterns-as-conditional -> ?rifrule]
+                    Not( Exists ?pattern ( And(
+                      ?rifrule[rif:pattern -> ?pattern]
+                      Not( ?defrule[ex:added-pattern -> ?pattern])
+                    )))
+                    ?defrule[ex:out-as-conditional -> ?conditional]
+                  ) Then Do (
+                    Assert(?defrule[cs:conditional-element -> ?conditional])
+                  )
+                )
+              )
+            )
+            (* ex:import-thingies *) Group (
+              Forall ?directive ?location ?profile (
+                If And (
+                  ?directive[rif:location -> ?location]
+                  ?directive[rif:profile -> ?profile]
+                ) Then Do (
+                  Execute(crifi:import(?location ?profile))
+                )
+              )
+              Forall ?directive ?location (
+                If And (
+                  ?directive[rif:location -> ?location]
+                  Not( Exists ?profile (?directive[rif:profile -> ?profile]))
+                ) Then Do (
+                  Assert( ?directive[rif:profile -> entailment:RIF] )
+                )
+              )
+            )
+          )
+  )
+)
