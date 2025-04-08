@@ -33,3 +33,15 @@ target_link_libraries(generate_builtin_model PRIVATE
 	crifi_raptor
 	crifi_graph_models
 )
+
+#include(recreate_builtin_graph_model.cmake)
+
+#set(MODELA "${CMAKE_CURRENT_BINARY_DIR}/modelA.clp")
+add_custom_target(modelA.clp ALL
+	COMMAND generate_builtin_model "--modelA" > modelA.clp
+	DEPENDS generate_builtin_model
+)
+add_custom_target(modelAchecker.clp ALL
+	COMMAND generate_builtin_model "--modelAchecker" > modelAchecker.clp
+	DEPENDS generate_builtin_model
+)
