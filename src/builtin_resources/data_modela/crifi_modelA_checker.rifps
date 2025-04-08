@@ -1,4 +1,4 @@
 Document(
-  Import(<http://white.gobo/crifi/built_resources/data_modela#rule-normalization> <http://www.w3.org/ns/entailment/RIF>)
   Import(<http://white.gobo/crifi/built_resources/data_modela#transform-list> <http://www.w3.org/ns/entailment/RIF>)
+  Import(<http://white.gobo/crifi/built_resources/data_modela#create-root-script> <http://www.w3.org/ns/entailment/RIF>)
 )

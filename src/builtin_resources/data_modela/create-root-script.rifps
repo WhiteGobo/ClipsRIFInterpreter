@@ -1,0 +1,26 @@
+Document(
+    Prefix(func <http://www.w3.org/2007/rif-builtin-function#>) 
+    Prefix(pred <http://www.w3.org/2007/rif-builtin-predicate#>) 
+    Prefix(owl <http://www.w3.org/2002/07/owl#>)
+    Prefix(deffact <http://white.gobo/crifi/resource-manager/deffacts#>)
+    Prefix(rema <http://white.gobo/crifi/resource-manager#>)
+    Prefix(cs <http://clips.script/>)
+    Prefix(crifi <http://white.gobo/>)
+    Prefix(ex <http://example.com/>)
+    Prefix(triplestordf <http://example.com/triples-to-rdf#>)
+    Prefix(rif <http://www.w3.org/2007/rif#>)
+    Prefix(entailment <http://www.w3.org/ns/entailment/>)
+    Group(
+      
+      Forall ?rifframe (
+        If And (
+          ?rifframe[rdf:type -> rif:Frame]
+        ) Then Do (
+          Assert( crifi:rootfunction[ex:brubru -> ?rifframe] )
+        )
+      )
+
+      ex:rootfunction[rdf:type -> cs:FunctionDeclaration]
+
+    )
+)

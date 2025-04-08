@@ -539,9 +539,11 @@ static void create_logic_into_memory(FILE* tmpmem_f, TestdataPET testdata, bool 
 	fprintf(stderr, "loading logic info from: %s\n", testdata.premise_uri.c_str());
 	load_from_memory_to_graph(create_logic_graph, testdata.premise_uri.c_str());
 
+	/*
 	fprintf(stderr, "information in create_logic_graph after rules run.\n");
 	//ignore error:
 	crifi_serialize_all_triples(create_logic_graph, stderr, "turtle", "");
+	*/
 
 	number_rules_run = run_rules(create_logic_graph, -1);
 	fprintf(stderr, "rules run during rule creation: %d\n", number_rules_run);
@@ -605,7 +607,7 @@ TEST_P(officialw3cPETTestCases_Test, CreateAndTestModelWithModelA) {
 	if (failed) FAIL();
 	fprintf(stderr, "<created script>:\n%s\n</created script>\n", tmpmem);
 	ASSERT_NE(strlen(tmpmem), 0) << "no logic script created";
-	
+
 	tmpcheckmem_f = fmemopen(tmpcheckmem, memory_size-1, "w");
 	ASSERT_NE(tmpcheckmem_f, nullptr) << "Couldnt open memory.broken test.";
 	create_check_into_memory(tmpcheckmem_f, testdata, &failed);

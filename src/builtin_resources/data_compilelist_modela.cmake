@@ -8,6 +8,7 @@ list(APPEND mytargets
 	rule-normalization
 	transform-list
 	rest
+	create-root-script
 )
 
 set(compilelist)

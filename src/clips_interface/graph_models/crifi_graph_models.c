@@ -22,5 +22,6 @@ crifi_graph *init_graph_modelcheckA(){
 
 crifi_graph *init_graph_model_first(){
 	crifi_graph *graph = init_graph_model_first_internal(NULL);
+	set_model_id_for_import(graph, CRIFI_IMPORT_MODEL_RIFGENERATOR);
 	return graph;
 }

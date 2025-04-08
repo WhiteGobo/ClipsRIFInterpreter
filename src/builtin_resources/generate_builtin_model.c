@@ -71,7 +71,8 @@ static int printout_generated_rules(){
 			return 1;
 	}
 	if(errorstate){
-		fprintf(stderr, "graph ended in errorstate after rules have run.");
+		fprintf(stderr, "graph ended in errorstate "
+				"after rules have run.\n");
 		return 1;
 	}
 	return 0;
@@ -103,13 +104,15 @@ static int printout_generated_rules(){
 
 static int run_imported_rules(){
 	bool errorstate;
-	run_rules(graph, -1);
+	int number_rules_run;
+	number_rules_run = run_rules(graph, -1);
 	if(graph_in_errorstate(graph, stderr)){
 		fprintf(stderr, "graph ended in errorstate after rules have run.");
 		return 1;
 	}
 	if (verbosity > 0){
-		fprintf(stderr, "printing information after rules have run\n");
+		fprintf(stderr, "printing information after %d rules have "
+				"run\n", number_rules_run);
 		crifi_serialize_all_triples(graph, stderr, "turtle", "");
 	}
 	return 0;
@@ -131,8 +134,8 @@ static int init_graph_with_import(){
 	return 0;
 }
 
-static char *cmd_import_modelA = "(<"_CRIFI_import_"> <"_CRIFI_BUILTIN_MODEL_GENERATE_MODELA_"> <"_RIFENTAIL_SIMPLE_">)";
-static char *cmd_import_modelA_checker = "(<"_CRIFI_import_"> <"_CRIFI_BUILTIN_MODEL_GENERATE_MODELA_CHECKER_"> <"_RIFENTAIL_SIMPLE_">)";
+static char *cmd_import_modelA = "(<"_CRIFI_import_"> <"_CRIFI_BUILTIN_MODEL_GENERATE_MODELA_"> <"_RIFENTAIL_RIF_">)";
+static char *cmd_import_modelA_checker = "(<"_CRIFI_import_"> <"_CRIFI_BUILTIN_MODEL_GENERATE_MODELA_CHECKER_"> <"_RIFENTAIL_RIF_">)";
 
 static int import_base_information(){
 	bool errorstate;
