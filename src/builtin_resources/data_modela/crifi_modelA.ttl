@@ -4,7 +4,7 @@
 [] a rif:Document ;
     rif:directives ( [ a rif:Import ;
                 rif:location "http://white.gobo/crifi/built_resources/data_modela#rule-normalization" ;
-                rif:profile "http://www.w3.org/ns/entailment/Simple" ] [ a rif:Import ;
+                rif:profile "http://www.w3.org/ns/entailment/RIF" ] [ a rif:Import ;
                 rif:location "http://white.gobo/crifi/built_resources/data_modela#transform-list" ;
-                rif:profile "http://www.w3.org/ns/entailment/Simple" ] ) .
+                rif:profile "http://www.w3.org/ns/entailment/RIF" ] ) .
 

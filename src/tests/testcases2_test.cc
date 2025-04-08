@@ -387,7 +387,7 @@ static void load_from_memory_to_graph(crifi_graph *graph, const char *source_uri
 	bool errorstate;
 	struct DynamicValue retval;
 	char command[300]; //300 seems like a reaonable guess
-	sprintf(command, "(<%s> <%s> <%s>)", _CRIFI_import_, source_uri, _RIFENTAIL_SIMPLE_);
+	sprintf(command, "(<%s> <%s> <%s>)", _CRIFI_import_, source_uri, _RIFENTAIL_RIF_);
 	retval = eval(graph, command);
 	errorstate = graph_in_errorstate(graph, stderr);
 	switch (retval.type){

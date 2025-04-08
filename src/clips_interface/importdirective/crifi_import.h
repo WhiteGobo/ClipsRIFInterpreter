@@ -17,6 +17,8 @@ typedef enum {
 	RET_CRIFI_IMPORT_REJECTED_PROFILE,
 	RET_CRIFI_IMPORT_COULDNT_LOCATE_SOURCE,
 	RET_CRIFI_IMPORT_PROCESS_FAILED,
+	//Return this if assert_frame failed unexpectedly.
+	RET_CRIFI_IMPORT_ASSERT_FRAME_FAILED,
 	///Return on unhandled problem
 	RET_CRIFI_IMPORT_UNKNOWN_ERROR
 	

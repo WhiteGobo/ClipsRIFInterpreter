@@ -5,6 +5,8 @@
 
 typedef enum {
 	CNTXT_NOERROR = 0,
+	//results in RET_CRIFI_IMPORT_ASSERT_FRAME_FAILED
+	CNTXT_LIBRARY_ERROR_ASSERT_FRAME,
 	CNTXT_UNKNOWN_ERROR
 } ContextError;
 
@@ -125,7 +127,9 @@ static void my_assert_triple_handler(
 				break;
 			case CRIFI_IMPORT_ASSERT_UNHANDLED_ERROR:
 			default:
-				cntxt->err = CNTXT_UNKNOWN_ERROR;
+				//no handle to used raptor_parser
+				//raptor_parser_parse_abort
+				cntxt->err = CNTXT_LIBRARY_ERROR_ASSERT_FRAME;
 		}
 	} else {
 		cntxt->err = CNTXT_UNKNOWN_ERROR;
@@ -162,6 +166,8 @@ RET_CRIFI_IMPORT import_data_from_file(crifi_graph *graph,
 	switch(cntxt.err){
 		case CNTXT_NOERROR:
 			break;
+		case CNTXT_LIBRARY_ERROR_ASSERT_FRAME:
+			return RET_CRIFI_IMPORT_ASSERT_FRAME_FAILED;
 		default:
 			return RET_CRIFI_IMPORT_UNKNOWN_ERROR;
 	}
