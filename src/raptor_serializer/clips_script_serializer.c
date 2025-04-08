@@ -37,7 +37,8 @@ typedef struct {
 	raptor_term *rdf_List;
 
 	//used when creating a callable function
-	raptor_term *clips_FunctionDeclaration;
+	//raptor_term *clips_FunctionDeclaration;
+	raptor_term *ex_rootfunction;
 
 	raptor_term *clips_Defrule;
 	raptor_term *clips_rule_name;
@@ -112,7 +113,8 @@ static MyContext* init_context(){
 	cntxt->rdf_rest = raptor_new_term_from_uri_string(world, RDF("rest"));
 	cntxt->rdf_nil = raptor_new_term_from_uri_string(world, RDF("nil"));
 
-	cntxt->clips_FunctionDeclaration = URI(world, CLIPS("FunctionDeclaration"));
+	//cntxt->clips_FunctionDeclaration = URI(world, CLIPS("FunctionDeclaration"));
+	cntxt->ex_rootfunction = URI(world, EX("rootfunction"));
 
 	cntxt->clips_Defrule = URI(world, CLIPS("Defrule"));
 	cntxt->clips_rule_name = URI(world, CLIPS("rule-name"));
@@ -158,25 +160,6 @@ static void free_context(MyContext* cntxt){
 	}
 }
 
-static CRIFI_SERIALIZE_SCRIPT_RET find_crifi_serialize_root_function(MyContext* cntxt, crifi_graph *graph){
-	
-	NodeIterator *iter_node = new_node_iterator(cntxt->nodes);
-	if (iter_node == NULL){
-		return CRIFI_SERIALIZE_SCRIPT_UNKNOWN;
-	}
-	for(Node* n = node_iterator_get(iter_node);
-			n != NULL;
-			n = node_iterator_get_next(iter_node)){
-		if (check_property(n, cntxt->rdf_type, cntxt->clips_FunctionDeclaration)){
-			fprintf(stderr, "brubru1 found rootfunction\n");
-			free_node_iterator(iter_node);
-			return CRIFI_SERIALIZE_SCRIPT_NOERROR;
-		}
-	}
-	free_node_iterator(iter_node);
-	fprintf(stderr, "brubru2 no rootfunction found\n");
-	return CRIFI_SERIALIZE_BROKEN_GRAPH;
-}
 
 static CRIFI_SERIALIZE_SCRIPT_RET add_info_to_tree_list(MyContext* cntxt, crifi_graph *graph, Fact *l){
 	int err, length;
@@ -931,6 +914,7 @@ CRIFI_SERIALIZE_SCRIPT_RET serialize_information_as_clips_script(FILE* stream, c
 
 CRIFI_SERIALIZE_SCRIPT_RET serialize_information_as_clips_function(FILE* stream, crifi_graph* graph){
 	int err = 0;
+	int serialize_err = 0;
 	if (stream == NULL || graph == NULL){
 		return CRIFI_SERIALIZE_SCRIPT_INPUT;
 	}
@@ -943,10 +927,18 @@ CRIFI_SERIALIZE_SCRIPT_RET serialize_information_as_clips_function(FILE* stream,
 		free_context(cntxt);
 		return err;
 	}
-	err = find_crifi_serialize_root_function(cntxt, graph);
-	if (err != 0){
+
+	Node *rootfunction_n = retrieve_node(cntxt->nodes,
+					cntxt->ex_rootfunction);
+	if (rootfunction_n == NULL){
 		free_context(cntxt);
-		return err;
+		return CRIFI_SERIALIZE_MALLOC_ERROR;
+	}
+	fprintf(stderr, "try to print ex:rootfunction as function\n");
+	serialize_err = fprintf_function(cntxt, stream, rootfunction_n);
+	if (serialize_err != CRIFI_SERIALIZE_SCRIPT_NOERROR){
+		free_context(cntxt);
+		return serialize_err;
 	}
 	if (err == 0){
 		err = CRIFI_SERIALIZE_SCRIPT_UNKNOWN;

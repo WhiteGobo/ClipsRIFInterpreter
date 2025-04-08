@@ -569,11 +569,11 @@ static void create_check_into_memory(FILE *tmpmem_f, TestdataPET testdata, bool 
 	fprintf(stderr, "loading check info from: %s\n", testdata.conclusion_uri.c_str());
 	load_from_memory_to_graph(create_check_graph, testdata.conclusion_uri.c_str());
 
+	number_rules_run = run_rules(create_check_graph, -1);
 	fprintf(stderr, "information in create_check_graph after rules run.\n");
 	//ignore error:
 	crifi_serialize_all_triples(create_check_graph, stderr, "turtle", "");
 
-	number_rules_run = run_rules(create_check_graph, -1);
 	fprintf(stderr, "rules run during check creation: %d\n", number_rules_run);
 	if (graph_in_errorstate(create_check_graph, stderr)){
 		*failed = true;
