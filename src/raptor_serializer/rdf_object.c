@@ -194,8 +194,10 @@ raptor_term* get_object(Node* n, raptor_term* pred){
 static void no_free(void*){}
 
 TermIterator* new_object_iterator(Node* n, raptor_term* pred){
-	PropertyPairNode searcher = {.prop=pred, .obj=NULL};
-	return raptor_new_avltree_iterator(n->properties, &searcher, no_free, FORWARDS);
+	PropertyPairNode *searcher = malloc(sizeof(PropertyPairNode));
+	searcher->prop = pred;
+       	searcher->obj = NULL;
+	return raptor_new_avltree_iterator(n->properties, searcher, free, FORWARDS);
 }
 
 raptor_term* object_iterator_get(TermIterator* iter){

@@ -11,16 +11,57 @@ Document(
     Prefix(rif <http://www.w3.org/2007/rif#>)
     Prefix(entailment <http://www.w3.org/ns/entailment/>)
     Group(
-      
-      Forall ?rifframe (
+      Forall ?rifframe ?object ?slotlist ?slotkey ?slotvalue ?subj ?pred ?obj(
         If And (
-          ?rifframe[rdf:type -> rif:Frame]
+          ex:rootfunction[cs:query -> ?query]
+          ?rifframe[rif:object -> ?object]
+          ?rifframe[rif:slots -> ?slotlist]
+          ?object[ex:as-expression -> ?subj]
+          ?slot[rif:slotkey -> ?slotkey]
+          ?slotkey[ex:as-expression -> ?pred]
+          ?slot[rif:slotvalue -> ?slotvalue]
+          ?slotvalue[ex:as-expression -> ?obj]
+          External(pred:is-list(?slotlist))
+          External(pred:list-contains(?slotlist ?slot))
+          ex:always-false()
         ) Then Do (
-          Assert( crifi:rootfunction[ex:brubru -> ?rifframe] )
+          (?factvar New())
+          (?slotsubj New())
+          (?slotpred New())
+          (?slotobj New())
+          (?funcchecksubj New())
+          (?funccheckpred New())
+          (?funccheckobj New())
+          (?querylist ?query[cs:function-args -> ?querylist])
+          Assert( ?factvar[cs:variable-name -> "fct"] )
+          Assert( ?slotsubj[cs:member-variable -> ?factvar] )
+          Assert( ?slotsubj[cs:member-slot-name -> "subject"] )
+          Assert( ?slotpred[cs:member-variable -> ?factvar] )
+          Assert( ?slotpred[cs:member-slot-name -> "predicate"] )
+          Assert( ?slotobj[cs:member-variable -> ?factvar] )
+          Assert( ?slotobj[cs:member-slot-name -> "object"] )
+
+          Assert( ?funcchecksubj[cs:function-name -> "eq"] )
+          Assert( ?funcchecksubj[cs:function-args -> External(func:make-list(?slotsubj ?subj))] )
+          Assert( ?funccheckpred[cs:function-name -> "eq"] )
+          Assert( ?funccheckpred[cs:function-args -> External(func:make-list(?slotpred ?pred))] )
+          Assert( ?funccheckobj[cs:function-name -> "eq"] )
+          Assert( ?funccheckobj[cs:function-args -> External(func:make-list(?slotobj ?obj))] )
+
+          Assert(?query[cs:function-args -> External(func:append(?querylist ?funcchecksubj ?funccheckpred ?funccheckobj))])
+
         )
       )
 
       ex:rootfunction[rdf:type -> cs:FunctionDeclaration]
+      ex:rootfunction[rdf:type -> cs:AnyFactP]
+      ex:rootfunction[cs:fact-set-template -> ex:asdf]
+      ex:asdf[cs:deftemplate-name -> "TripleTemplate"]
+      ex:asdf[cs:fact-set-member-variable -> ex:qqfactvariable]
+      ex:qqfactvariable[cs:variable-name -> "fct"]
+      ex:rootfunction[cs:query -> ex:qqfactquery]
+      ex:qqfactquery[cs:function-name -> "and"]
+      ex:qqfactquery[cs:function-args -> External(func:make-list(ex:qqfactvariable ex:qqfactvariable))]
 
     )
 )

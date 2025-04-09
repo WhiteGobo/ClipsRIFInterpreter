@@ -1,0 +1,50 @@
+Document(
+    Prefix(func <http://www.w3.org/2007/rif-builtin-function#>) 
+    Prefix(pred <http://www.w3.org/2007/rif-builtin-predicate#>) 
+    Prefix(owl <http://www.w3.org/2002/07/owl#>)
+    Prefix(deffact <http://white.gobo/crifi/resource-manager/deffacts#>)
+    Prefix(rema <http://white.gobo/crifi/resource-manager#>)
+    Prefix(cs <http://clips.script/>)
+    Prefix(crifi <http://white.gobo/>)
+    Prefix(ex <http://example.com/>)
+    Prefix(triplestordf <http://example.com/triples-to-rdf#>)
+    Prefix(rif <http://www.w3.org/2007/rif#>)
+    Prefix(entailment <http://www.w3.org/ns/entailment/>)
+    Group(
+      (* ex:transform-terms-asdf *) Group (
+        (* ex:transform-rif-variable *) Forall ?rifnode ?varname (
+          If And (
+            ?rifnode[rif:varname -> ?varname]
+          ) Then Do ((?clipsnode New())
+            Assert(?rifnode[ex:as-constraint -> ?clipsnode])
+            Assert(?rifnode[ex:as-expression -> ?clipsnode])
+            Assert(?clipsnode[cs:variable-name -> ?varname])
+            Assert(?clipsnode[ex:as-constraint-needs-additional-conditionals -> External(func:make-list())])
+          )
+        )
+      )
+
+      (* ex:transform-rif-consts *) Group (
+        (* ex:value-to-constraint *) Forall ?rifnode ?value (
+          If And(
+            ?rifnode[rif:value -> ?value]
+          ) Then Do ((?clipsnode New())
+            Assert(?rifnode[ex:as-constraint -> ?clipsnode])
+            Assert(?rifnode[ex:as-expression -> ?clipsnode])
+            Assert(?clipsnode[cs:string -> External(crifi:literal-to-clipsconstant(?value))])
+            Assert(?clipsnode[ex:as-constraint-needs-additional-conditionals -> External(func:make-list())])
+          )
+        )
+        (* ex:constIRI-to-constraint *) Forall ?rifnode ?iristring(
+          If And(
+            ?rifnode[rif:constIRI -> ?iristring]
+          ) Then Do ((?clipsnode New())
+            Assert( ?rifnode[ex:as-constraint -> ?clipsnode] )
+            Assert( ?rifnode[ex:as-expression -> ?clipsnode] )
+            Assert( ?clipsnode[cs:symbol -> External( crifi:iri-to-clipsconstant(?iristring))] )
+            Assert(?clipsnode[ex:as-constraint-needs-additional-conditionals -> External(func:make-list())])
+          )
+        )
+      )
+    )
+)

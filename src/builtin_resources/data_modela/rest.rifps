@@ -11,41 +11,6 @@ Document(
     Prefix(rif <http://www.w3.org/2007/rif#>)
     Prefix(entailment <http://www.w3.org/ns/entailment/>)
     Group (
-    (* ex:transform-terms-asdf *) Group (
-      (* ex:transform-rif-variable *) Forall ?rifnode ?varname (
-        If And (
-          ?rifnode[rif:varname -> ?varname]
-        ) Then Do ((?clipsnode New())
-          Assert(?rifnode[ex:as-constraint -> ?clipsnode])
-          Assert(?rifnode[ex:as-expression -> ?clipsnode])
-          Assert(?clipsnode[cs:variable-name -> ?varname])
-          Assert(?clipsnode[ex:as-constraint-needs-additional-conditionals -> External(func:make-list())])
-        )
-      )
-
-      (* ex:transform-rif-consts *) Group (
-        (* ex:value-to-constraint *) Forall ?rifnode ?value (
-          If And(
-            ?rifnode[rif:value -> ?value]
-          ) Then Do ((?clipsnode New())
-            Assert(?rifnode[ex:as-constraint -> ?clipsnode])
-            Assert(?rifnode[ex:as-expression -> ?clipsnode])
-            Assert(?clipsnode[cs:string -> External(crifi:literal-to-clipsconstant(?value))])
-            Assert(?clipsnode[ex:as-constraint-needs-additional-conditionals -> External(func:make-list())])
-          )
-        )
-        (* ex:constIRI-to-constraint *) Forall ?rifnode ?iristring(
-          If And(
-            ?rifnode[rif:constIRI -> ?iristring]
-          ) Then Do ((?clipsnode New())
-            Assert( ?rifnode[ex:as-constraint -> ?clipsnode] )
-            Assert( ?rifnode[ex:as-expression -> ?clipsnode] )
-            Assert( ?clipsnode[cs:symbol -> External( crifi:iri-to-clipsconstant(?iristring))] )
-            Assert(?clipsnode[ex:as-constraint-needs-additional-conditionals -> External(func:make-list())])
-          )
-        )
-      )
-    )
     (* ex:transform-rif-frame *) Group (
       (* ex:part-frame-pattern *) Forall ?rifframe ?slotlist ?rifforall (
         If And (

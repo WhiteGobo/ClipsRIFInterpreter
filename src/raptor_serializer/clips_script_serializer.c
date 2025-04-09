@@ -63,8 +63,11 @@ typedef struct {
 	raptor_term *clips_expression;
 	raptor_term *clips_assert;
 	raptor_term *clips_find_all_facts;
+	raptor_term *clips_any_factp;
 	raptor_term *clips_fact_set_template;
 	raptor_term *clips_fact_set_member_variable;
+	raptor_term *clips_member_variable;
+	raptor_term *clips_member_slot_name;
 	raptor_term *clips_query;
 
 	raptor_term *clips_deftemplate_name;
@@ -140,8 +143,11 @@ static MyContext* init_context(){
 
 	cntxt->clips_assert = URI(world, CLIPS("assert"));
 	cntxt->clips_find_all_facts = URI(world, CLIPS("FindAllFacts"));
+	cntxt->clips_any_factp = URI(world, CLIPS("AnyFactP"));
 	cntxt->clips_fact_set_template = URI(world, CLIPS("fact-set-template"));
 	cntxt->clips_fact_set_member_variable = URI(world, CLIPS("fact-set-member-variable"));
+	cntxt->clips_member_variable = URI(world, CLIPS("member-variable"));
+	cntxt->clips_member_slot_name = URI(world, CLIPS("slot-name"));
 	cntxt->clips_query = URI(world, CLIPS("query"));
 
 	//constant thingies
@@ -298,6 +304,7 @@ FUNC_DESC(fprintf_template_pattern_ce);
 FUNC_DESC(fprintf_conditional_element);
 FUNC_DESC(fprintf_not_ce);
 FUNC_DESC(fprintf_variable);
+FUNC_DESC(fprintf_variableslot);
 FUNC_DESC(fprintf_expression);
 FUNC_DESC(fprintf_action);
 FUNC_DESC(fprintf_defrule);
@@ -339,15 +346,18 @@ FUNC_DESC(fprintf_constant){
 /**
  * <term> ::= <constant> |
  * 		<single-field-variable> |
- * 		multifield-variable> |
+ * 		<multifield-variable> |
  * 		:<function-call> |
- * 		=<function-call>
+ * 		=<function-call> |
+ * 		<instance-set-member-variable>:<slot-name> #use only in query
  */
 FUNC_DESC(fprintf_term){
 	CRIFI_SERIALIZE_SCRIPT_RET err;
 	err = fprintf_constant(cntxt, stream, n);
 	if (err != CRIFI_SERIALIZE_BROKEN_GRAPH) return err;
 	err = fprintf_variable(cntxt, stream, n);
+	if (err != CRIFI_SERIALIZE_BROKEN_GRAPH) return err;
+	err = fprintf_variableslot(cntxt, stream, n);
 	if (err != CRIFI_SERIALIZE_BROKEN_GRAPH) return err;
 	return fprintf_function(cntxt, stream, n);
 }
@@ -371,7 +381,8 @@ FUNC_DESC(fprintf_function){
 	raptor_term *name, *args, *assert;
 	assert = get_object(n, cntxt->clips_assert);
 	if (assert != NULL) return fprintf_assert(cntxt, stream, n);
-	if (check_property(n, cntxt->rdf_type, cntxt->clips_find_all_facts)){
+	if (check_property(n, cntxt->rdf_type, cntxt->clips_find_all_facts)
+		|| check_property(n, cntxt->rdf_type, cntxt->clips_any_factp)){
 		return fprintf_find_facts(cntxt, stream, n);
 	}
 	name = get_object(n, cntxt->clips_function_name);
@@ -398,6 +409,7 @@ FUNC_DESC(fprintf_function){
 
 /**
  * (find-all-facts <fact-set-template> <query>)
+ * (any-factp <fact-set-template> <query>)
  * <fact-set-template> ::= (<fact-set-member-template>+)
  * <fact-set-member-template>
  * 	::= (<fact-set-member-variable> <deftemplate-restrictions>)
@@ -418,22 +430,23 @@ FUNC_DESC(fprintf_find_facts){
 	raptor_term *deftemplate_name = cntxt->clips_deftemplate_name;
 	raptor_term *query = cntxt->clips_query;
 	NodeIterator* n_iter;
+	TermIterator* t_iter;
 
 	type = get_object(n, cntxt->rdf_type);
 	if (0 != raptor_term_equals(type, find_all_facts)){
 		fprintf(stream, " (find-all-facts ");
+	} else if (0 != raptor_term_equals(type, cntxt->clips_any_factp)){
+		fprintf(stream, " (any-factp ");
 	} else {
 		return CRIFI_SERIALIZE_BROKEN_GRAPH;
 	}
-	var_templates = get_object(n, fact_set_template);
-	n_iter = new_rdflist_iterator(cntxt->rdf_cntxt, cntxt->nodes, var_templates);
-	if(n_iter == NULL){
-		fprintf(stderr, "cs:fact-set-template should target a rdf:List\n");
-		return CRIFI_SERIALIZE_BROKEN_GRAPH;
-	}
-	for(Node* x = node_iterator_get(n_iter);
-			x != NULL;
-			x=node_iterator_get_next(n_iter)){
+	fprintf(stream, "(");
+	t_iter = new_object_iterator(n, fact_set_template);
+	Node *x;
+	for(raptor_term* x_term = object_iterator_get(t_iter);
+			x_term != NULL;
+			x_term = object_iterator_get_next(t_iter)){
+		x = retrieve_node(cntxt->nodes, x_term);
 		fprintf(stream, "(");
 		tmpfactvar = get_object(x, fact_set_member_variable);
 		tmpfactvar_n = retrieve_node(cntxt->nodes, tmpfactvar);
@@ -457,6 +470,7 @@ FUNC_DESC(fprintf_find_facts){
 		}
 		fprintf(stream, ")");
 	}
+	fprintf(stream, ")");
 	free_node_iterator(n_iter);
 	n_iter = NULL;
 	if (err != CRIFI_SERIALIZE_SCRIPT_NOERROR ){
@@ -732,6 +746,29 @@ static CRIFI_SERIALIZE_SCRIPT_RET fprintf_variable(MyContext *cntxt, FILE* strea
 	return CRIFI_SERIALIZE_BROKEN_GRAPH;
 }
 
+FUNC_DESC(fprintf_variableslot){
+	CRIFI_SERIALIZE_SCRIPT_RET err;
+	Node *varnode_n;
+	raptor_term *varnode, *slotname, *varname;
+	varnode = get_object(n, cntxt->clips_member_variable);
+	slotname = get_object(n, cntxt->clips_member_slot_name);
+	if (varnode == NULL || slotname == NULL){
+		return CRIFI_SERIALIZE_BROKEN_GRAPH;
+	}
+	varnode_n = retrieve_node(cntxt->nodes, varnode);
+	varname = get_object(varnode_n, cntxt->clips_variable_name);
+	if (varname == NULL){
+		return CRIFI_SERIALIZE_BROKEN_GRAPH;
+	}
+	fprintf(stream, " ?");
+	fprintf_raptor_term(stream, varname);
+	fprintf(stream, ":");
+	fprintf_raptor_term(stream, slotname);
+	fprintf(stream, " ");
+	
+	return CRIFI_SERIALIZE_SCRIPT_NOERROR;
+}
+
 
 /**
  * <constraint> ::= ? | $? | <connected-constraint>
@@ -934,17 +971,7 @@ CRIFI_SERIALIZE_SCRIPT_RET serialize_information_as_clips_function(FILE* stream,
 		free_context(cntxt);
 		return CRIFI_SERIALIZE_MALLOC_ERROR;
 	}
-	fprintf(stderr, "try to print ex:rootfunction as function\n");
 	serialize_err = fprintf_function(cntxt, stream, rootfunction_n);
-	if (serialize_err != CRIFI_SERIALIZE_SCRIPT_NOERROR){
-		free_context(cntxt);
-		return serialize_err;
-	}
-	if (err == 0){
-		err = CRIFI_SERIALIZE_SCRIPT_UNKNOWN;
-		//fprintf(stream, "(eq 1 1)");
-		//err = fprintf_script(cntxt, stream);
-	}
 	free_context(cntxt);
-	return err;
+	return serialize_err;
 }

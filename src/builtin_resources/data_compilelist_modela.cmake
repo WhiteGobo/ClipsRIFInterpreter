@@ -9,6 +9,7 @@ list(APPEND mytargets
 	transform-list
 	rest
 	create-root-script
+	constants
 )
 
 set(compilelist)
