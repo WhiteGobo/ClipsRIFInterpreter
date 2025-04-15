@@ -9,6 +9,7 @@
 * because clips.h is included over ffi_clips_interface dont need to patch 
     clips headers anymore.
 * rename ffi_clips_interface
+* casting isnt implemented as described in `https://www.w3.org/TR/xpath-functions/#casting-from-primitive-to-primitive`_
 
 ## Basic usage.
 
