@@ -395,11 +395,11 @@
                         ( [ a rif:Var ;
                                 rif:varname "slotobject" ] [ a rif:New ] ),
                         ( [ a rif:Var ;
-                                rif:varname "slotsubject" ] [ a rif:New ] ),
-                        ( [ a rif:Var ;
                                 rif:varname "slotpredicate" ] [ a rif:New ] ),
                         ( [ a rif:Var ;
-                                rif:varname "clipsconditionalelement" ] [ a rif:New ] ) ;
+                                rif:varname "clipsconditionalelement" ] [ a rif:New ] ),
+                        ( [ a rif:Var ;
+                                rif:varname "slotsubject" ] [ a rif:New ] ) ;
                     rif:actions ( [ a rif:Assert ;
                                 rif:target [ a rif:Frame ;
                                         rif:object [ a rif:Var ;
@@ -608,11 +608,11 @@
                     rif:actionVar ( [ a rif:Var ;
                                 rif:varname "slotpredicate" ] [ a rif:New ] ),
                         ( [ a rif:Var ;
-                                rif:varname "slotsubject" ] [ a rif:New ] ),
-                        ( [ a rif:Var ;
                                 rif:varname "slotobject" ] [ a rif:New ] ),
                         ( [ a rif:Var ;
-                                rif:varname "clipsnode" ] [ a rif:New ] ) ;
+                                rif:varname "clipsnode" ] [ a rif:New ] ),
+                        ( [ a rif:Var ;
+                                rif:varname "slotsubject" ] [ a rif:New ] ) ;
                     rif:actions ( [ a rif:Assert ;
                                 rif:target [ a rif:Frame ;
                                         rif:object [ a rif:Var ;
@@ -1120,9 +1120,9 @@
                                                     rif:varname "clipsactions" ] ] ) ] ) ] ;
             rif:then [ a rif:Do ;
                     rif:actionVar ( [ a rif:Var ;
-                                rif:varname "defrule" ] [ a rif:New ] ),
+                                rif:varname "actionlist" ] [ a rif:New ] ),
                         ( [ a rif:Var ;
-                                rif:varname "actionlist" ] [ a rif:New ] ) ;
+                                rif:varname "defrule" ] [ a rif:New ] ) ;
                     rif:actions ( [ a rif:Assert ;
                                 rif:target [ a rif:Frame ;
                                         rif:object [ a rif:Var ;
@@ -1542,9 +1542,9 @@
                                                     rif:constIRI "http://www.w3.org/2007/rif#Frame"^^xsd:anyURI ] ] ) ] ) ] ;
             rif:then [ a rif:Do ;
                     rif:actionVar ( [ a rif:Var ;
-                                rif:varname "clipsexpand" ] [ a rif:New ] ),
+                                rif:varname "clipsretract" ] [ a rif:New ] ),
                         ( [ a rif:Var ;
-                                rif:varname "clipsretract" ] [ a rif:New ] ) ;
+                                rif:varname "clipsexpand" ] [ a rif:New ] ) ;
                     rif:actions ( [ a rif:Assert ;
                                 rif:target [ a rif:Frame ;
                                         rif:object [ a rif:Var ;
@@ -1628,17 +1628,17 @@
                                                     rif:varname "varname" ] ] ) ] ) ] ;
             rif:then [ a rif:Do ;
                     rif:actionVar ( [ a rif:Var ;
-                                rif:varname "factvariable" ] [ a rif:New ] ),
-                        ( [ a rif:Var ;
                                 rif:varname "clipsfindfacts" ] [ a rif:New ] ),
-                        ( [ a rif:Var ;
-                                rif:varname "clipsretract" ] [ a rif:New ] ),
                         ( [ a rif:Var ;
                                 rif:varname "clipsdeftemplate" ] [ a rif:New ] ),
                         ( [ a rif:Var ;
+                                rif:varname "factvariable" ] [ a rif:New ] ),
+                        ( [ a rif:Var ;
                                 rif:varname "factquery" ] [ a rif:New ] ),
                         ( [ a rif:Var ;
-                                rif:varname "clipsexpand" ] [ a rif:New ] ) ;
+                                rif:varname "clipsexpand" ] [ a rif:New ] ),
+                        ( [ a rif:Var ;
+                                rif:varname "clipsretract" ] [ a rif:New ] ) ;
                     rif:actions ( [ a rif:Assert ;
                                 rif:target [ a rif:Frame ;
                                         rif:object [ a rif:Var ;
@@ -1728,22 +1728,6 @@
                                                             rif:constIRI "http://clips.script/query"^^xsd:anyURI ] ;
                                                     rif:slotvalue [ a rif:Var ;
                                                             rif:varname "factquery" ] ] ) ] ] [ a rif:Assert ;
-                                rif:target [ a rif:Frame ;
-                                        rif:object [ a rif:Var ;
-                                                rif:varname "clipsdeftemplate" ] ;
-                                        rif:slots ( [ a rif:Slot ;
-                                                    rif:slotkey [ a rif:Const ;
-                                                            rif:constIRI "http://clips.script/deftemplate-name"^^xsd:anyURI ] ;
-                                                    rif:slotvalue [ a rif:Const ;
-                                                            rif:value "TripleTemplate"^^xsd:string ] ] ) ] ] [ a rif:Assert ;
-                                rif:target [ a rif:Frame ;
-                                        rif:object [ a rif:Var ;
-                                                rif:varname "clipsdeftemplate" ] ;
-                                        rif:slots ( [ a rif:Slot ;
-                                                    rif:slotkey [ a rif:Const ;
-                                                            rif:constIRI "http://clips.script/fact-set-member-variable"^^xsd:anyURI ] ;
-                                                    rif:slotvalue [ a rif:Var ;
-                                                            rif:varname "factvariable" ] ] ) ] ] [ a rif:Assert ;
                                 rif:target [ a rif:Frame ;
                                         rif:object [ a rif:Var ;
                                                 rif:varname "factvariable" ] ;

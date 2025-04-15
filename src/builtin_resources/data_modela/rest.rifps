@@ -186,8 +186,6 @@ Document(
         Assert( ?clipsfindfacts[rdf:type -> cs:FindAllFacts] )
         Assert( ?clipsfindfacts[cs:fact-set-template -> External(func:make-list(?clipsdeftemplate))] )
         Assert( ?clipsfindfacts[cs:query -> ?factquery] )
-        Assert( ?clipsdeftemplate[cs:deftemplate-name -> "TripleTemplate"] )
-        Assert( ?clipsdeftemplate[cs:fact-set-member-variable -> ?factvariable] )
         Assert( ?factvariable[cs:variable-name -> "fct"] )
         Assert( ?factquery[cs:function-name -> "eq"] )
         Assert( ?factquery[cs:function-args -> External(func:make-list(?factvariable ?varname))] )

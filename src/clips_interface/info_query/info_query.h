@@ -41,6 +41,9 @@ bool clipsvalue_is_literal(Environment *env, CLIPSValue val);
 char *extract_uri(Environment *env, TypeHeader *head);
 char *extract_bnodeid(Environment *env, TypeHeader *head);
 
+/**
+ * Cast value to xs:string and extract the value.
+ */
 char *extract_lexical(Environment *env, TypeHeader *head);
 char *extract_datatype(Environment *env, TypeHeader *head);
 char *extract_lang(Environment *env, TypeHeader *head);

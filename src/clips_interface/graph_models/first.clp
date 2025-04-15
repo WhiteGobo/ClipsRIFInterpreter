@@ -191,6 +191,10 @@
 		(retract ?fct))"
 ))
 
+(deffunction print-retractatoms (?factcondition) (str-cat
+"	(do-for-all-facts ((?fct Atom)) "?factcondition"
+		(retract ?fct))"
+))
 
 (deffunction print-retractsubject (?subject) (str-cat
 "	(do-for-all-facts ((?fct TripleTemplate)) (eq ?fct:subject "?subject")
@@ -1256,6 +1260,18 @@
 )
 
 
+(defmessage-handler RIFRetract create-action-atom ()
+	(bind ?op (send (send ?self:target get-op) as_term))
+	;(bind ?opcondition (str-cat "(eq ?fct:op "?op")"))
+	(bind ?tmp "")
+	(foreach ?slt (send (send ?self:target get-args) get-items)
+		(bind ?tmp (str-cat ?tmp" "(send ?slt as_term)))
+	)
+	(bind ?args (str-cat "(eq ?fct:args (create$ "?tmp"))"))
+	(bind ?factcondition (str-cat "(and (eq ?fct:op "?op") (eq ?fct:args "?args"))"))
+	(print-retractatoms ?factcondition)
+)
+
 (defmessage-handler RIFRetract create-action-frame ()
 	;(eq (type ?self:target) RIFFrame)
 	(bind ?frm ?self:target)
@@ -1285,7 +1301,9 @@
 		(return (print-retractsubject (send ?self:target as_term))))
 	(if (eq ?t RIFFrame) then
 		(return (send ?self create-action-frame)))
-	(set-error "create action not complete implementedin RIFRetract.")
+	(if (eq ?t RIFAtom) then
+		(return (send ?self create-action-atom)))
+	(set-error (str-cat "create action not complete implementedin RIFRetract. Missing for target of type " ?t))
 	(return "")
 )
 

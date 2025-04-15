@@ -203,7 +203,11 @@ TermIterator* new_object_iterator(Node* n, raptor_term* pred){
 raptor_term* object_iterator_get(TermIterator* iter){
 	PropertyPairNode *result;
 	result = raptor_avltree_iterator_get(iter);
-	return result->obj;
+	if (result != NULL){
+		return result->obj;
+	} else {
+		return NULL;
+	}
 }
 
 raptor_term* object_iterator_get_next(TermIterator* iter){

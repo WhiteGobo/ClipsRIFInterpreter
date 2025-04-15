@@ -11,9 +11,21 @@ Document(
     Prefix(rif <http://www.w3.org/2007/rif#>)
     Prefix(entailment <http://www.w3.org/ns/entailment/>)
     Group(
-      Forall ?rifframe ?object ?slotlist ?slotkey ?slotvalue ?subj ?pred ?obj(
+      Forall ?factvar (
         If And (
-          ex:rootfunction[cs:query -> ?query]
+          ?factvar[rdf:type -> cs:Variable]
+          ex:currentfactindex(?factindex)
+          Not (Exists ?factname ( ?factvar[cs:variable-name -> ?factname] ))
+        ) Then Do (
+          Retract( ex:currentfactindex(?factindex) )
+
+          Assert( ex:currentfactindex(External(func:numeric-add(?factindex 1))))
+          Assert( ?factvar[cs:variable-name -> External(func:concat("fct" ?factindex))] )
+
+        )
+      )
+      Forall ?rifframe ?object ?slotlist ?slotkey ?slotvalue ?subj ?pred ?obj ?factindex(
+        If And (
           ?rifframe[rif:object -> ?object]
           ?rifframe[rif:slots -> ?slotlist]
           ?object[ex:as-expression -> ?subj]
@@ -23,7 +35,6 @@ Document(
           ?slotvalue[ex:as-expression -> ?obj]
           External(pred:is-list(?slotlist))
           External(pred:list-contains(?slotlist ?slot))
-          ex:always-false()
         ) Then Do (
           (?factvar New())
           (?slotsubj New())
@@ -32,10 +43,16 @@ Document(
           (?funcchecksubj New())
           (?funccheckpred New())
           (?funccheckobj New())
-          (?querylist ?query[cs:function-args -> ?querylist])
-          Assert( ?factvar[cs:variable-name -> "fct"] )
+          (?clipsdeftemplate New())
+          (?querylist ex:qqfactquery[cs:function-args -> ?querylist] )
+          Assert( ?factvar[rdf:type -> cs:Variable] )
+          Assert( ex:rootfunction[cs:fact-set-template -> ?clipsdeftemplate] )
+          Assert( ?clipsdeftemplate[cs:deftemplate-name -> "TripleTemplate"] )
+          Assert( ?clipsdeftemplate[cs:fact-set-member-variable -> ?factvar] )
           Assert( ?slotsubj[cs:member-variable -> ?factvar] )
           Assert( ?slotsubj[cs:member-slot-name -> "subject"] )
+          Assert( ?slotsubj[<http://example.com/qq> -> "subject"] )
+
           Assert( ?slotpred[cs:member-variable -> ?factvar] )
           Assert( ?slotpred[cs:member-slot-name -> "predicate"] )
           Assert( ?slotobj[cs:member-variable -> ?factvar] )
@@ -48,20 +65,16 @@ Document(
           Assert( ?funccheckobj[cs:function-name -> "eq"] )
           Assert( ?funccheckobj[cs:function-args -> External(func:make-list(?slotobj ?obj))] )
 
-          Assert(?query[cs:function-args -> External(func:append(?querylist ?funcchecksubj ?funccheckpred ?funccheckobj))])
+          Modify(ex:qqfactquery[cs:function-args -> External(func:append(?querylist ?funcchecksubj ?funccheckpred ?funccheckobj))])
 
         )
       )
 
-      ex:rootfunction[rdf:type -> cs:FunctionDeclaration]
+      ex:currentfactindex(1)
       ex:rootfunction[rdf:type -> cs:AnyFactP]
-      ex:rootfunction[cs:fact-set-template -> ex:asdf]
-      ex:asdf[cs:deftemplate-name -> "TripleTemplate"]
-      ex:asdf[cs:fact-set-member-variable -> ex:qqfactvariable]
-      ex:qqfactvariable[cs:variable-name -> "fct"]
       ex:rootfunction[cs:query -> ex:qqfactquery]
       ex:qqfactquery[cs:function-name -> "and"]
-      ex:qqfactquery[cs:function-args -> External(func:make-list(ex:qqfactvariable ex:qqfactvariable))]
+      ex:qqfactquery[cs:function-args -> External(func:make-list())]
 
     )
 )

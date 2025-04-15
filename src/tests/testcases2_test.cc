@@ -427,7 +427,7 @@ static void load_new_logic(crifi_graph *graph,const char* config, size_t configl
 			break;
 	}
 }
-static void create_new_check(crifi_graph *create_check_graph, FILE *memory, bool *failed){
+static void create_new_check(crifi_graph *create_check_graph, FILE *memory){
 	const char *errmsg;
 	CRIFI_SERIALIZE_SCRIPT_RET err;
 	err = serialize_information_as_clips_function(memory, create_check_graph);
@@ -435,7 +435,6 @@ static void create_new_check(crifi_graph *create_check_graph, FILE *memory, bool
 		case CRIFI_SERIALIZE_SCRIPT_NOERROR:
 			return;
 		case CRIFI_SERIALIZE_BROKEN_GRAPH:
-			*failed = true;
 			FAIL() << "Graph not usable for "
 				"serialize_information_as_clips_function. "
 				"Either graph structure isnt as expected or "
@@ -451,13 +450,12 @@ static void create_new_check(crifi_graph *create_check_graph, FILE *memory, bool
 		case CRIFI_SERIALIZE_SCRIPT_INPUT:
 		case CRIFI_SERIALIZE_SCRIPT_UNKNOWN:
 		default:
-			*failed = true;
 			FAIL() << "Unhandled error during serialization of "
 				"graphinformation as clips script.";
 	}
 }
 
-static void create_new_logic(crifi_graph *create_logic_graph, FILE *memory, bool *failed){
+static void create_new_logic(crifi_graph *create_logic_graph, FILE *memory){
 	CRIFI_SERIALIZE_SCRIPT_RET err;
 	err = serialize_information_as_clips_script(memory, create_logic_graph);
 	switch(err){
@@ -475,7 +473,6 @@ static void create_new_logic(crifi_graph *create_logic_graph, FILE *memory, bool
 		case CRIFI_SERIALIZE_SCRIPT_INPUT:
 		case CRIFI_SERIALIZE_SCRIPT_UNKNOWN:
 		default:
-			*failed = true;
 			FAIL() << "Unhandled error during serialization of "
 				"graphinformation as clips script.";
 	}
@@ -528,11 +525,10 @@ static void run_and_check(crifi_graph *graph, const char* check_command, bool ex
 	}
 }
 
-static void create_logic_into_memory(FILE* tmpmem_f, TestdataPET testdata, bool *failed){
+static void create_logic_into_memory(FILE* tmpmem_f, TestdataPET testdata){
 	int number_rules_run;
 	crifi_graph *create_logic_graph = init_graph_modelA();
 	if (create_logic_graph == NULL){
-		*failed = true;
 		GTEST_SKIP() << "couldnt craete modelA graph";
 	}
 	w3ctestcases_add_importlocations(create_logic_graph);
@@ -548,22 +544,22 @@ static void create_logic_into_memory(FILE* tmpmem_f, TestdataPET testdata, bool 
 	number_rules_run = run_rules(create_logic_graph, -1);
 	fprintf(stderr, "rules run during rule creation: %d\n", number_rules_run);
 	if (graph_in_errorstate(create_logic_graph, stderr)){
-		*failed = true;
 		FAIL() << "graph ended up in errorstate, while "
 			"createing new logic";
 	}
 
-	create_new_logic(create_logic_graph, tmpmem_f, failed);
+	create_new_logic(create_logic_graph, tmpmem_f);
 	close_graph(create_logic_graph);
 	create_logic_graph = NULL;
 }
 
-static void create_check_into_memory(FILE *tmpmem_f, TestdataPET testdata, bool *failed){
+static void create_check_into_memory(FILE *tmpmem_f, TestdataPET testdata){
 	int number_rules_run;
 	crifi_graph *create_check_graph;
 	create_check_graph = init_graph_modelcheckA();
 	if (create_check_graph == NULL){
-		GTEST_SKIP() << "couldnt craete modelA graph";
+		//GTEST_SKIP
+		FAIL() << "couldnt create modelA check graph";
 	}
 	w3ctestcases_add_importlocations(create_check_graph);
 	fprintf(stderr, "loading check info from: %s\n", testdata.conclusion_uri.c_str());
@@ -576,18 +572,16 @@ static void create_check_into_memory(FILE *tmpmem_f, TestdataPET testdata, bool 
 
 	fprintf(stderr, "rules run during check creation: %d\n", number_rules_run);
 	if (graph_in_errorstate(create_check_graph, stderr)){
-		*failed = true;
 		FAIL() << "graph ended up in errorstate, while "
 			"createing check";
 	}
 
-	create_new_check(create_check_graph, tmpmem_f, failed);
+	create_new_check(create_check_graph, tmpmem_f);
 	close_graph(create_check_graph);
 }
 
 
 TEST_P(officialw3cPETTestCases_Test, CreateAndTestModelWithModelA) {
-	bool failed = false;
 	TestdataPET testdata = GetParam();
 	size_t memory_size = 1000000;
 	int number_rules_run;
@@ -602,17 +596,18 @@ TEST_P(officialw3cPETTestCases_Test, CreateAndTestModelWithModelA) {
 
 	tmpmem_f = fmemopen(tmpmem, memory_size-1, "w");
 	ASSERT_NE(tmpmem_f, nullptr) << "Couldnt open memory. broken test.";
-	create_logic_into_memory(tmpmem_f, testdata, &failed);
+	create_logic_into_memory(tmpmem_f, testdata);
 	fclose(tmpmem_f);
-	if (failed) FAIL();
+	if (HasFatalFailure()) return;
 	fprintf(stderr, "<created script>:\n%s\n</created script>\n", tmpmem);
 	ASSERT_NE(strlen(tmpmem), 0) << "no logic script created";
 
 	tmpcheckmem_f = fmemopen(tmpcheckmem, memory_size-1, "w");
 	ASSERT_NE(tmpcheckmem_f, nullptr) << "Couldnt open memory.broken test.";
-	create_check_into_memory(tmpcheckmem_f, testdata, &failed);
+	create_check_into_memory(tmpcheckmem_f, testdata);
 	fclose(tmpcheckmem_f);
-	if (failed) FAIL();
+
+	if (HasFatalFailure()) return;
 	fprintf(stderr, "check command:\n%s\n", tmpcheckmem);
 	ASSERT_NE(strlen(tmpcheckmem), 0) << "no check command created.";
 
@@ -621,7 +616,7 @@ TEST_P(officialw3cPETTestCases_Test, CreateAndTestModelWithModelA) {
 	load_new_logic(maingraph, tmpmem, strlen(tmpmem));
 	run_and_check(maingraph, tmpcheckmem, true);
 	close_graph(maingraph);
-	FAIL() << "test not complete";
+	//FAIL() << "testfail";
 }
 
 

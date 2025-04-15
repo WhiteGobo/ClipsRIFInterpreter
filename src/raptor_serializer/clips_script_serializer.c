@@ -37,7 +37,6 @@ typedef struct {
 	raptor_term *rdf_List;
 
 	//used when creating a callable function
-	//raptor_term *clips_FunctionDeclaration;
 	raptor_term *ex_rootfunction;
 
 	raptor_term *clips_Defrule;
@@ -116,7 +115,6 @@ static MyContext* init_context(){
 	cntxt->rdf_rest = raptor_new_term_from_uri_string(world, RDF("rest"));
 	cntxt->rdf_nil = raptor_new_term_from_uri_string(world, RDF("nil"));
 
-	//cntxt->clips_FunctionDeclaration = URI(world, CLIPS("FunctionDeclaration"));
 	cntxt->ex_rootfunction = URI(world, EX("rootfunction"));
 
 	cntxt->clips_Defrule = URI(world, CLIPS("Defrule"));
@@ -147,7 +145,7 @@ static MyContext* init_context(){
 	cntxt->clips_fact_set_template = URI(world, CLIPS("fact-set-template"));
 	cntxt->clips_fact_set_member_variable = URI(world, CLIPS("fact-set-member-variable"));
 	cntxt->clips_member_variable = URI(world, CLIPS("member-variable"));
-	cntxt->clips_member_slot_name = URI(world, CLIPS("slot-name"));
+	cntxt->clips_member_slot_name = URI(world, CLIPS("member-slot-name"));
 	cntxt->clips_query = URI(world, CLIPS("query"));
 
 	//constant thingies
@@ -280,7 +278,6 @@ static CRIFI_SERIALIZE_SCRIPT_RET add_info_to_tree(MyContext* cntxt,
 		//raptor_serializer_serialize_statement(my_serializer, triple);
 		//raptor_free_statement(triple);
 	}
-	fprintf(stderr, "qwertzstart lists\n");
 	for(Fact *l = get_next_list(graph, NULL);
 			l != NULL;
 			l = get_next_list(graph, l))
@@ -348,16 +345,13 @@ FUNC_DESC(fprintf_constant){
  * 		<single-field-variable> |
  * 		<multifield-variable> |
  * 		:<function-call> |
- * 		=<function-call> |
- * 		<instance-set-member-variable>:<slot-name> #use only in query
+ * 		=<function-call>
  */
 FUNC_DESC(fprintf_term){
 	CRIFI_SERIALIZE_SCRIPT_RET err;
 	err = fprintf_constant(cntxt, stream, n);
 	if (err != CRIFI_SERIALIZE_BROKEN_GRAPH) return err;
 	err = fprintf_variable(cntxt, stream, n);
-	if (err != CRIFI_SERIALIZE_BROKEN_GRAPH) return err;
-	err = fprintf_variableslot(cntxt, stream, n);
 	if (err != CRIFI_SERIALIZE_BROKEN_GRAPH) return err;
 	return fprintf_function(cntxt, stream, n);
 }
@@ -380,25 +374,40 @@ FUNC_DESC(fprintf_function){
 	NodeIterator* n_iter;
 	raptor_term *name, *args, *assert;
 	assert = get_object(n, cntxt->clips_assert);
-	if (assert != NULL) return fprintf_assert(cntxt, stream, n);
-	if (check_property(n, cntxt->rdf_type, cntxt->clips_find_all_facts)
+	if (assert != NULL){
+		return fprintf_assert(cntxt, stream, n);
+	} else if (check_property(n, cntxt->rdf_type, cntxt->clips_find_all_facts)
 		|| check_property(n, cntxt->rdf_type, cntxt->clips_any_factp)){
 		return fprintf_find_facts(cntxt, stream, n);
 	}
+	fprintf(stderr, "start fprintf_function\n");
 	name = get_object(n, cntxt->clips_function_name);
-	if (name == NULL) return CRIFI_SERIALIZE_BROKEN_GRAPH;
+	if (name == NULL){
+		fprintf(stderr, "fail missing name\n");
+		return CRIFI_SERIALIZE_BROKEN_GRAPH;
+	}
 	fprintf(stream, " (");
 	fprintf_raptor_term(stream, name);
+	fprintf(stderr, "function name:"); fprintf_raptor_term(stderr, name); fprintf(stderr, "\n");
 
 	args = get_object(n, cntxt->clips_function_args);
-	if(args == NULL) return CRIFI_SERIALIZE_BROKEN_GRAPH;
+	if(args == NULL){
+		fprintf(stderr, "missing function args\n");
+		return CRIFI_SERIALIZE_BROKEN_GRAPH;
+	}
 	n_iter = new_rdflist_iterator(cntxt->rdf_cntxt, cntxt->nodes, args);
-	if(n_iter == NULL) return CRIFI_SERIALIZE_BROKEN_GRAPH;
+	if(n_iter == NULL){
+		fprintf(stderr, "function args are not rdflist\n");
+		return CRIFI_SERIALIZE_BROKEN_GRAPH;
+	}
 	for(Node* x = node_iterator_get(n_iter);
 			x != NULL;
 			x = node_iterator_get_next(n_iter)){
 		err = fprintf_expression(cntxt, stream, x);
-		if (err != CRIFI_SERIALIZE_SCRIPT_NOERROR) break;
+		if (err != CRIFI_SERIALIZE_SCRIPT_NOERROR){
+			fprintf(stderr, "failed printing one function arg\n");
+			break;
+		}
 		fprintf(stream, " ");
 	}
 	free_node_iterator(n_iter); n_iter = NULL;
@@ -429,7 +438,6 @@ FUNC_DESC(fprintf_find_facts){
 	raptor_term *fact_set_member_variable = cntxt->clips_fact_set_member_variable;
 	raptor_term *deftemplate_name = cntxt->clips_deftemplate_name;
 	raptor_term *query = cntxt->clips_query;
-	NodeIterator* n_iter;
 	TermIterator* t_iter;
 
 	type = get_object(n, cntxt->rdf_type);
@@ -471,8 +479,7 @@ FUNC_DESC(fprintf_find_facts){
 		fprintf(stream, ")");
 	}
 	fprintf(stream, ")");
-	free_node_iterator(n_iter);
-	n_iter = NULL;
+	free_object_iterator(t_iter);
 	if (err != CRIFI_SERIALIZE_SCRIPT_NOERROR ){
 		return err;
 	}
@@ -482,7 +489,7 @@ FUNC_DESC(fprintf_find_facts){
 	if(query_facts_n == NULL){
 		return CRIFI_SERIALIZE_BROKEN_GRAPH;
 	}
-	fprintf_function(cntxt, stream, query_facts_n);
+	err = fprintf_function(cntxt, stream, query_facts_n);
 
 	fprintf(stream, ") ");
 	return err;
@@ -746,13 +753,20 @@ static CRIFI_SERIALIZE_SCRIPT_RET fprintf_variable(MyContext *cntxt, FILE* strea
 	return CRIFI_SERIALIZE_BROKEN_GRAPH;
 }
 
+/**
+ * working through CRIFI_SERIALIZE_BROKEN_GRAPH is safe.
+ */
 FUNC_DESC(fprintf_variableslot){
 	CRIFI_SERIALIZE_SCRIPT_RET err;
 	Node *varnode_n;
-	raptor_term *varnode, *slotname, *varname;
+	raptor_term *varnode, *slotname, *varname, *rt;
 	varnode = get_object(n, cntxt->clips_member_variable);
 	slotname = get_object(n, cntxt->clips_member_slot_name);
+	if (varnode == NULL) fprintf(stderr, "missing varnode\n");
+	if (slotname == NULL) fprintf(stderr, "missing slotname\n");
+
 	if (varnode == NULL || slotname == NULL){
+		fprintf(stderr, "doesnt look like a variableslot\n");
 		return CRIFI_SERIALIZE_BROKEN_GRAPH;
 	}
 	varnode_n = retrieve_node(cntxt->nodes, varnode);
@@ -794,15 +808,43 @@ FUNC_DESC(fprintf_constraint){
 /**
  * <action> ::= <expression>
  * <function-call> ::= (<function-name> <expression>*)
- * <expression> ::= <constant> || <variable> || <function-call>
+ * <expression> ::= <constant> || <variable> || <function-call> ||
+ * 		<instance-set-member-variable>:<slot-name> #use only in query
  */
 static CRIFI_SERIALIZE_SCRIPT_RET fprintf_expression(MyContext *cntxt, FILE* stream, Node* n){
 	CRIFI_SERIALIZE_SCRIPT_RET err;
 	err = fprintf_constant(cntxt, stream, n);
-	if (err != CRIFI_SERIALIZE_BROKEN_GRAPH) return err;
+	switch(err){
+		case CRIFI_SERIALIZE_BROKEN_GRAPH:
+			break; //fprintf_constant is safe to work through
+		case CRIFI_SERIALIZE_SCRIPT_NOERROR:
+		default:
+			return err;
+	}
 	err = fprintf_variable(cntxt, stream, n);
-	if (err != CRIFI_SERIALIZE_BROKEN_GRAPH) return err;
-	return fprintf_function(cntxt, stream, n);
+	switch(err){
+		case CRIFI_SERIALIZE_BROKEN_GRAPH:
+			break; //fprintf_variable is safe to work through
+		case CRIFI_SERIALIZE_SCRIPT_NOERROR:
+		default:
+			return err;
+	}
+	err = fprintf_variableslot(cntxt, stream, n);
+	switch(err){
+		case CRIFI_SERIALIZE_BROKEN_GRAPH:
+			break; //fprintf_variableslot is safe to work through
+		case CRIFI_SERIALIZE_SCRIPT_NOERROR:
+		default:
+			return err;
+	}
+	err = fprintf_function(cntxt, stream, n);
+	switch(err){
+		case CRIFI_SERIALIZE_SCRIPT_NOERROR:
+			break;
+		default:
+			fprintf(stderr, "failed function with %d\n", err);
+	}
+	return err;
 }
 
 static CRIFI_SERIALIZE_SCRIPT_RET fprintf_action(MyContext *cntxt, FILE* stream, Node* n){
