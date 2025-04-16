@@ -354,24 +354,24 @@ static auto petTestdata = testing::Values(
 				_W3C_TESTDATA_"Assert/",
 				"Assert-premise.ntriples",
 				"Assert-conclusion.ntriples"),
-		TestdataPET("PRD_PET_AssertRetract",
-				"not implemented",
-			_W3C_TESTDATA_"/",
+		TestdataPET("PRD_PET_AssertRetract1",
+				NULL, 
+				_W3C_TESTDATA_"AssertRetract/",
 				"AssertRetract-premise.ntriples",
 				"AssertRetract-conclusion.ntriples"),
 		TestdataPET("PRD_PET_AssertRetract2",
 				"not implemented",
-			_W3C_TESTDATA_"/",
+				_W3C_TESTDATA_"AssertRetract2/",
 				"AssertRetract2-premise.ntriples",
 				"AssertRetract2-conclusion.ntriples"),
 		TestdataPET("PRD_PET_Modify1",
 				"not implemented",
-			_W3C_TESTDATA_"/",
+				_W3C_TESTDATA_"Modify1/",
 				"Modify-premise.ntriples",
 				"Modify-conclusion.ntriples"),
 		TestdataPET("PRD_PET_Modify_loop",
 				"not implemented",
-			_W3C_TESTDATA_"/",
+				_W3C_TESTDATA_"Modify_loop/",
 				"Modify_loop-premise.ntriples",
 				"Modify_loop-conclusion.ntriples")
 		);
@@ -535,11 +535,9 @@ static void create_logic_into_memory(FILE* tmpmem_f, TestdataPET testdata){
 	fprintf(stderr, "loading logic info from: %s\n", testdata.premise_uri.c_str());
 	load_from_memory_to_graph(create_logic_graph, testdata.premise_uri.c_str());
 
-	/*
 	fprintf(stderr, "information in create_logic_graph after rules run.\n");
 	//ignore error:
 	crifi_serialize_all_triples(create_logic_graph, stderr, "turtle", "");
-	*/
 
 	number_rules_run = run_rules(create_logic_graph, -1);
 	fprintf(stderr, "rules run during rule creation: %d\n", number_rules_run);
