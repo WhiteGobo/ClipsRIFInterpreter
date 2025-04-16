@@ -509,7 +509,7 @@ static void run_and_check(crifi_graph *graph, const char* check_command, bool ex
 			}
 			break;
 		case CTC_DYNAMIC_BOOL:
-			ASSERT_EQ(retval.val.boolean, expect)
+			EXPECT_EQ(retval.val.boolean, expect)
 				<< "check command didnt returned expected "
 				"value. check command was:\n"
 				<< check_command;
@@ -519,6 +519,12 @@ static void run_and_check(crifi_graph *graph, const char* check_command, bool ex
 				"check command that was used:\n"
 				<< check_command;
 	}
+	///dont know why this doesnt work
+	//if (HasNonfatalFailure()) {
+		fprintf(stdout, "run and check failed? Facts after:\n");
+		eval(graph, "(facts)");
+	//}
+
 	if (errorstate){
 		FAIL() << "graph ended up in errorstate after check command:\n"
 			<< check_command;
