@@ -127,6 +127,13 @@ static MyContext* init_context(){
 	cntxt->clips_conditional_element = URI(world, CLIPS("conditional-element"));
 	cntxt->clips_action = URI(world, CLIPS("action"));
 	cntxt->clips_TemplatePatternCE = URI(world, CLIPS("TemplatePatternCE"));
+	cntxt->clips_NotCE = URI(world, CLIPS("NotCE"));
+	cntxt->clips_AndCE = URI(world, CLIPS("AndCE"));
+	cntxt->clips_OrCE = URI(world, CLIPS("OrCE"));
+	cntxt->clips_ExistsCE = URI(world, CLIPS("ExistsCE"));
+	cntxt->clips_TestCE = URI(world, CLIPS("TestCE"));
+	cntxt->clips_FunctionCall = URI(world, CLIPS("FunctionCall"));
+
 	cntxt->clips_deftemplate_name = URI(world, CLIPS("deftemplate-name"));
 	cntxt->clips_slot = URI(world, CLIPS("slot"));
 	cntxt->clips_slot_name = URI(world, CLIPS("slot-name"));
@@ -374,6 +381,7 @@ FUNC_DESC(fprintf_function){
 	NodeIterator* n_iter;
 	raptor_term *name, *args, *assert;
 	assert = get_object(n, cntxt->clips_assert);
+	raptor_term *rt = raptor_new_term_from_uri_string(cntxt->world, "http://clips.script/FindAllFacts");
 	if (assert != NULL){
 		return fprintf_assert(cntxt, stream, n);
 	} else if (check_property(n, cntxt->rdf_type, cntxt->clips_find_all_facts)
@@ -405,7 +413,9 @@ FUNC_DESC(fprintf_function){
 			x = node_iterator_get_next(n_iter)){
 		err = fprintf_expression(cntxt, stream, x);
 		if (err != CRIFI_SERIALIZE_SCRIPT_NOERROR){
-			fprintf(stderr, "failed printing one function arg\n");
+			//fprintf(stderr, "failed printing one function arg\n");
+			debug_fprintf_node(stderr, "failed printing one "
+					"function arg: ", x, "\n");
 			break;
 		}
 		fprintf(stream, " ");
@@ -430,6 +440,7 @@ FUNC_DESC(fprintf_function){
  * TODO: Missing implementation for multiple deftemplate-name-expression
  */
 FUNC_DESC(fprintf_find_facts){
+	fprintf(stderr, "print find facts\n");
 	CRIFI_SERIALIZE_SCRIPT_RET err = CRIFI_SERIALIZE_SCRIPT_NOERROR;
 	raptor_term *type, *var_templates, *query_facts, *tmpfactvar, *tmprestriction;
 	Node *tmpfactvar_n, *tmprestriction_n, *query_facts_n;
@@ -437,7 +448,6 @@ FUNC_DESC(fprintf_find_facts){
 	raptor_term *fact_set_template = cntxt->clips_fact_set_template;
 	raptor_term *fact_set_member_variable = cntxt->clips_fact_set_member_variable;
 	raptor_term *deftemplate_name = cntxt->clips_deftemplate_name;
-	raptor_term *query = cntxt->clips_query;
 	TermIterator* t_iter;
 
 	type = get_object(n, cntxt->rdf_type);
@@ -446,6 +456,7 @@ FUNC_DESC(fprintf_find_facts){
 	} else if (0 != raptor_term_equals(type, cntxt->clips_any_factp)){
 		fprintf(stream, " (any-factp ");
 	} else {
+		fprintf(stderr, "Failed find facts1\n");
 		return CRIFI_SERIALIZE_BROKEN_GRAPH;
 	}
 	fprintf(stream, "(");
@@ -459,21 +470,28 @@ FUNC_DESC(fprintf_find_facts){
 		tmpfactvar = get_object(x, fact_set_member_variable);
 		tmpfactvar_n = retrieve_node(cntxt->nodes, tmpfactvar);
 		if(tmpfactvar_n == NULL){
+			fprintf(stderr, "Failed find facts2. "
+					"Missing fact_set_member_variable\n");
 			err = CRIFI_SERIALIZE_BROKEN_GRAPH;
 			break;
 		}
 		err = fprintf_variable(cntxt, stream, tmpfactvar_n);
 		if (err != CRIFI_SERIALIZE_SCRIPT_NOERROR){
+			fprintf(stderr, "Failed find facts3. Couldnt "
+					"print fact_set_member_variable\n");
 			break;
 		}
 
 		tmprestriction = get_object(x, deftemplate_name);
 		if(tmprestriction == NULL){
+			fprintf(stderr, "Failed find facts4. "
+					"No deftemplate_name\n");
 			err = CRIFI_SERIALIZE_BROKEN_GRAPH;
 			break;
 		}
 		err = fprintf_raptor_term(stream, tmprestriction);
 		if (err != CRIFI_SERIALIZE_SCRIPT_NOERROR){
+			fprintf(stderr, "Failed find facts5.\n");
 			break;
 		}
 		fprintf(stream, ")");
@@ -487,9 +505,17 @@ FUNC_DESC(fprintf_find_facts){
 	query_facts = get_object(n, cntxt->clips_query);
 	query_facts_n = retrieve_node(cntxt->nodes, query_facts);
 	if(query_facts_n == NULL){
+		fprintf(stderr, "Failed find facts6. Missing query.\n");
 		return CRIFI_SERIALIZE_BROKEN_GRAPH;
 	}
 	err = fprintf_function(cntxt, stream, query_facts_n);
+	switch(err){
+		case CRIFI_SERIALIZE_SCRIPT_NOERROR:
+			break;
+		default:
+			fprintf(stderr, "failed query with %d\n", err);
+			debug_fprintf_node(stderr, "query element: ", query_facts_n, "\n");
+	}
 
 	fprintf(stream, ") ");
 	return err;
@@ -843,6 +869,7 @@ static CRIFI_SERIALIZE_SCRIPT_RET fprintf_expression(MyContext *cntxt, FILE* str
 			break;
 		default:
 			fprintf(stderr, "failed function with %d\n", err);
+			debug_fprintf_node(stderr, "function element: ", n, "\n");
 	}
 	return err;
 }

@@ -541,11 +541,11 @@ static void create_logic_into_memory(FILE* tmpmem_f, TestdataPET testdata){
 	fprintf(stderr, "loading logic info from: %s\n", testdata.premise_uri.c_str());
 	load_from_memory_to_graph(create_logic_graph, testdata.premise_uri.c_str());
 
+	number_rules_run = run_rules(create_logic_graph, -1);
 	fprintf(stderr, "information in create_logic_graph after rules run.\n");
 	//ignore error:
 	crifi_serialize_all_triples(create_logic_graph, stderr, "turtle", "");
 
-	number_rules_run = run_rules(create_logic_graph, -1);
 	fprintf(stderr, "rules run during rule creation: %d\n", number_rules_run);
 	if (graph_in_errorstate(create_logic_graph, stderr)){
 		FAIL() << "graph ended up in errorstate, while "

@@ -144,68 +144,6 @@ Document(
         Assert( ?slotobject[cs:constraint -> ?constraintobject])
       )
     )
-    (* ex:transform-assert *) Forall ?rifassert ?riftarget(
-      If And(
-        ?rifassert[rdf:type -> rif:Assert]
-        ?rifassert[rif:target -> ?riftarget]
-        ?riftarget[ex:as-rhspattern -> ?clipsfact]
-      ) Then Do (
-        (?clipsaction New())
-        Assert( ?rifassert[ex:as-action -> External(func:make-list(?clipsaction))] )
-        Assert( ?clipsaction[cs:assert -> ?clipsfact] )
-      )
-    )
-    (* ex:transform-frame-to-assert *) Forall ?rifassert ?riftarget(
-      If And(
-        ?rifframe[rdf:type -> rif:Frame]
-        ?rifframe[ex:as-rhspattern -> ?clipsfact]
-      ) Then Do (
-        (?clipsaction New())
-        Assert( ?rifframe[ex:as-action -> External(func:make-list(?clipsaction))] )
-        Assert( ?clipsaction[cs:assert -> ?clipsfact] )
-      )
-    )
-    (* ex:transform-retract-var *) Forall ?rifretract ?riftarget ?varname(
-      If And(
-        ?rifretract[rdf:type -> rif:Retract]
-        ?rifretract[rif:target -> ?riftarget]
-        ?riftarget[rif:varname -> ?varname]
-      ) Then Do (
-        (?clipsretract New())
-        (?clipsexpand New())
-        (?clipsfindfacts New())
-        (?clipsdeftemplate New())
-        (?factvariable New())
-        (?factquery New())
-        Assert( ?rifretract[ex:as-action -> External(func:make-list(?clipsretract))] )
-        Assert( ?clipsretract[cs:function-name -> "retract"] )
-        Assert( ?clipsretract[cs:function-args -> External( func:make-list(?clipsexpand))] )
-        Assert( ?clipsexpand[cs:function-name -> "expand$"] )
-        Assert( ?clipsexpand[cs:function-args -> External( func:make-list(?clipsfindfacts))] )
-        Assert( ?clipsfindfacts[cs:function-name -> "find-all-facts"])
-        Assert( ?clipsfindfacts[rdf:type -> cs:FindAllFacts] )
-        Assert( ?clipsfindfacts[cs:fact-set-template -> External(func:make-list(?clipsdeftemplate))] )
-        Assert( ?clipsfindfacts[cs:query -> ?factquery] )
-        Assert( ?factvariable[cs:variable-name -> "fct"] )
-        Assert( ?factquery[cs:function-name -> "eq"] )
-        Assert( ?factquery[cs:function-args -> External(func:make-list(?factvariable ?varname))] )
-      )
-    )
-    (* ex:transform-retract-frame *) Forall ?rifretract ?riftarget(
-      If And(
-        ?rifretract[rdf:type -> rif:Retract]
-        ?rifretract[rif:target -> ?riftarget]
-        ?riftarget[rdf:type -> rif:Frame]
-      ) Then Do (
-        (?clipsretract New())
-        (?clipsexpand New())
-        Assert( ?rifretract[ex:as-action -> External(func:make-list(?clipsretract))] )
-        Assert( ?clipsretract[cs:function-name -> "retract"] )
-        Assert( ?clipsretract[cs:function-args -> External( func:make-list(?clipsexpand))] )
-        Assert( ?clipsexpand[cs:function-name -> "expand$"] )
-        Assert( ?clipsexpand[cs:function-args -> External( func:make-list())] )
-      )
-    )
     (* ex:transform-do *) Group (
       (* ex:init-transform-do *) Forall ?rifnode ?actionlist (
         If And(

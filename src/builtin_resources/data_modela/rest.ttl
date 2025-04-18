@@ -384,6 +384,10 @@
                                                             rif:varname "slot" ] ] ) ] ] ) ] ;
             rif:then [ a rif:Do ;
                     rif:actionVar ( [ a rif:Var ;
+                                rif:varname "slotsubject" ] [ a rif:New ] ),
+                        ( [ a rif:Var ;
+                                rif:varname "clipsconditionalelement" ] [ a rif:New ] ),
+                        ( [ a rif:Var ;
                                 rif:varname "existingconditionals" ] [ a rif:Frame ;
                                 rif:object [ a rif:Var ;
                                         rif:varname "rifnode" ] ;
@@ -395,11 +399,7 @@
                         ( [ a rif:Var ;
                                 rif:varname "slotobject" ] [ a rif:New ] ),
                         ( [ a rif:Var ;
-                                rif:varname "slotpredicate" ] [ a rif:New ] ),
-                        ( [ a rif:Var ;
-                                rif:varname "clipsconditionalelement" ] [ a rif:New ] ),
-                        ( [ a rif:Var ;
-                                rif:varname "slotsubject" ] [ a rif:New ] ) ;
+                                rif:varname "slotpredicate" ] [ a rif:New ] ) ;
                     rif:actions ( [ a rif:Assert ;
                                 rif:target [ a rif:Frame ;
                                         rif:object [ a rif:Var ;
@@ -606,11 +606,11 @@
                                                 rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#list-contains"^^xsd:anyURI ] ] ] ) ] ;
             rif:then [ a rif:Do ;
                     rif:actionVar ( [ a rif:Var ;
-                                rif:varname "slotpredicate" ] [ a rif:New ] ),
-                        ( [ a rif:Var ;
                                 rif:varname "slotobject" ] [ a rif:New ] ),
                         ( [ a rif:Var ;
                                 rif:varname "clipsnode" ] [ a rif:New ] ),
+                        ( [ a rif:Var ;
+                                rif:varname "slotpredicate" ] [ a rif:New ] ),
                         ( [ a rif:Var ;
                                 rif:varname "slotsubject" ] [ a rif:New ] ) ;
                     rif:actions ( [ a rif:Assert ;
@@ -1013,9 +1013,9 @@
                                                     rif:varname "outerrule" ] ) ] ] ) ] ;
             rif:then [ a rif:Do ;
                     rif:actionVar ( [ a rif:Var ;
-                                rif:varname "actionlist" ] [ a rif:New ] ),
+                                rif:varname "defrule" ] [ a rif:New ] ),
                         ( [ a rif:Var ;
-                                rif:varname "defrule" ] [ a rif:New ] ) ;
+                                rif:varname "actionlist" ] [ a rif:New ] ) ;
                     rif:actions ( [ a rif:Assert ;
                                 rif:target [ a rif:Frame ;
                                         rif:object [ a rif:Var ;
@@ -1321,9 +1321,9 @@
                                                 rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#numeric-greater-than"^^xsd:anyURI ] ] ] ) ] ;
             rif:then [ a rif:Do ;
                     rif:actionVar ( [ a rif:Var ;
-                                rif:varname "newframefirst" ] [ a rif:New ] ),
+                                rif:varname "newframerest" ] [ a rif:New ] ),
                         ( [ a rif:Var ;
-                                rif:varname "newframerest" ] [ a rif:New ] ) ;
+                                rif:varname "newframefirst" ] [ a rif:New ] ) ;
                     rif:actions ( [ a rif:Retract ;
                                 rif:target [ a rif:Frame ;
                                         rif:object [ a rif:Var ;
@@ -1413,354 +1413,8 @@
                 rif:varname "slotlist" ] [ a rif:Var ;
                 rif:varname "rifforall" ] ) .
 
-<http://example.com/transform-assert> a rif:Forall ;
-    rif:formula [ a rif:Implies ;
-            rif:if [ a rif:And ;
-                    rif:formulas ( [ a rif:Frame ;
-                                rif:object [ a rif:Var ;
-                                        rif:varname "rifassert" ] ;
-                                rif:slots ( [ a rif:Slot ;
-                                            rif:slotkey [ a rif:Const ;
-                                                    rif:constIRI "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"^^xsd:anyURI ] ;
-                                            rif:slotvalue [ a rif:Const ;
-                                                    rif:constIRI "http://www.w3.org/2007/rif#Assert"^^xsd:anyURI ] ] ) ] [ a rif:Frame ;
-                                rif:object [ a rif:Var ;
-                                        rif:varname "rifassert" ] ;
-                                rif:slots ( [ a rif:Slot ;
-                                            rif:slotkey [ a rif:Const ;
-                                                    rif:constIRI "http://www.w3.org/2007/rif#target"^^xsd:anyURI ] ;
-                                            rif:slotvalue [ a rif:Var ;
-                                                    rif:varname "riftarget" ] ] ) ] [ a rif:Frame ;
-                                rif:object [ a rif:Var ;
-                                        rif:varname "riftarget" ] ;
-                                rif:slots ( [ a rif:Slot ;
-                                            rif:slotkey [ a rif:Const ;
-                                                    rif:constIRI "http://example.com/as-rhspattern"^^xsd:anyURI ] ;
-                                            rif:slotvalue [ a rif:Var ;
-                                                    rif:varname "clipsfact" ] ] ) ] ) ] ;
-            rif:then [ a rif:Do ;
-                    rif:actionVar ( [ a rif:Var ;
-                                rif:varname "clipsaction" ] [ a rif:New ] ) ;
-                    rif:actions ( [ a rif:Assert ;
-                                rif:target [ a rif:Frame ;
-                                        rif:object [ a rif:Var ;
-                                                rif:varname "rifassert" ] ;
-                                        rif:slots ( [ a rif:Slot ;
-                                                    rif:slotkey [ a rif:Const ;
-                                                            rif:constIRI "http://example.com/as-action"^^xsd:anyURI ] ;
-                                                    rif:slotvalue [ a rif:External ;
-                                                            rif:content [ a rif:Expr ;
-                                                                    rif:args ( [ a rif:Var ;
-                                                                                rif:varname "clipsaction" ] ) ;
-                                                                    rif:op [ a rif:Const ;
-                                                                            rif:constIRI "http://www.w3.org/2007/rif-builtin-function#make-list"^^xsd:anyURI ] ] ] ] ) ] ] [ a rif:Assert ;
-                                rif:target [ a rif:Frame ;
-                                        rif:object [ a rif:Var ;
-                                                rif:varname "clipsaction" ] ;
-                                        rif:slots ( [ a rif:Slot ;
-                                                    rif:slotkey [ a rif:Const ;
-                                                            rif:constIRI "http://clips.script/assert"^^xsd:anyURI ] ;
-                                                    rif:slotvalue [ a rif:Var ;
-                                                            rif:varname "clipsfact" ] ] ) ] ] ) ] ] ;
-    rif:vars ( [ a rif:Var ;
-                rif:varname "rifassert" ] [ a rif:Var ;
-                rif:varname "riftarget" ] ) .
-
 <http://example.com/transform-do> a rif:Group ;
     rif:sentences ( <http://example.com/init-transform-do> <http://example.com/end-transform-do> <http://example.com/iter-transform-do> ) .
-
-<http://example.com/transform-frame-to-assert> a rif:Forall ;
-    rif:formula [ a rif:Implies ;
-            rif:if [ a rif:And ;
-                    rif:formulas ( [ a rif:Frame ;
-                                rif:object [ a rif:Var ;
-                                        rif:varname "rifframe" ] ;
-                                rif:slots ( [ a rif:Slot ;
-                                            rif:slotkey [ a rif:Const ;
-                                                    rif:constIRI "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"^^xsd:anyURI ] ;
-                                            rif:slotvalue [ a rif:Const ;
-                                                    rif:constIRI "http://www.w3.org/2007/rif#Frame"^^xsd:anyURI ] ] ) ] [ a rif:Frame ;
-                                rif:object [ a rif:Var ;
-                                        rif:varname "rifframe" ] ;
-                                rif:slots ( [ a rif:Slot ;
-                                            rif:slotkey [ a rif:Const ;
-                                                    rif:constIRI "http://example.com/as-rhspattern"^^xsd:anyURI ] ;
-                                            rif:slotvalue [ a rif:Var ;
-                                                    rif:varname "clipsfact" ] ] ) ] ) ] ;
-            rif:then [ a rif:Do ;
-                    rif:actionVar ( [ a rif:Var ;
-                                rif:varname "clipsaction" ] [ a rif:New ] ) ;
-                    rif:actions ( [ a rif:Assert ;
-                                rif:target [ a rif:Frame ;
-                                        rif:object [ a rif:Var ;
-                                                rif:varname "rifframe" ] ;
-                                        rif:slots ( [ a rif:Slot ;
-                                                    rif:slotkey [ a rif:Const ;
-                                                            rif:constIRI "http://example.com/as-action"^^xsd:anyURI ] ;
-                                                    rif:slotvalue [ a rif:External ;
-                                                            rif:content [ a rif:Expr ;
-                                                                    rif:args ( [ a rif:Var ;
-                                                                                rif:varname "clipsaction" ] ) ;
-                                                                    rif:op [ a rif:Const ;
-                                                                            rif:constIRI "http://www.w3.org/2007/rif-builtin-function#make-list"^^xsd:anyURI ] ] ] ] ) ] ] [ a rif:Assert ;
-                                rif:target [ a rif:Frame ;
-                                        rif:object [ a rif:Var ;
-                                                rif:varname "clipsaction" ] ;
-                                        rif:slots ( [ a rif:Slot ;
-                                                    rif:slotkey [ a rif:Const ;
-                                                            rif:constIRI "http://clips.script/assert"^^xsd:anyURI ] ;
-                                                    rif:slotvalue [ a rif:Var ;
-                                                            rif:varname "clipsfact" ] ] ) ] ] ) ] ] ;
-    rif:vars ( [ a rif:Var ;
-                rif:varname "rifassert" ] [ a rif:Var ;
-                rif:varname "riftarget" ] ) .
-
-<http://example.com/transform-retract-frame> a rif:Forall ;
-    rif:formula [ a rif:Implies ;
-            rif:if [ a rif:And ;
-                    rif:formulas ( [ a rif:Frame ;
-                                rif:object [ a rif:Var ;
-                                        rif:varname "rifretract" ] ;
-                                rif:slots ( [ a rif:Slot ;
-                                            rif:slotkey [ a rif:Const ;
-                                                    rif:constIRI "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"^^xsd:anyURI ] ;
-                                            rif:slotvalue [ a rif:Const ;
-                                                    rif:constIRI "http://www.w3.org/2007/rif#Retract"^^xsd:anyURI ] ] ) ] [ a rif:Frame ;
-                                rif:object [ a rif:Var ;
-                                        rif:varname "rifretract" ] ;
-                                rif:slots ( [ a rif:Slot ;
-                                            rif:slotkey [ a rif:Const ;
-                                                    rif:constIRI "http://www.w3.org/2007/rif#target"^^xsd:anyURI ] ;
-                                            rif:slotvalue [ a rif:Var ;
-                                                    rif:varname "riftarget" ] ] ) ] [ a rif:Frame ;
-                                rif:object [ a rif:Var ;
-                                        rif:varname "riftarget" ] ;
-                                rif:slots ( [ a rif:Slot ;
-                                            rif:slotkey [ a rif:Const ;
-                                                    rif:constIRI "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"^^xsd:anyURI ] ;
-                                            rif:slotvalue [ a rif:Const ;
-                                                    rif:constIRI "http://www.w3.org/2007/rif#Frame"^^xsd:anyURI ] ] ) ] ) ] ;
-            rif:then [ a rif:Do ;
-                    rif:actionVar ( [ a rif:Var ;
-                                rif:varname "clipsretract" ] [ a rif:New ] ),
-                        ( [ a rif:Var ;
-                                rif:varname "clipsexpand" ] [ a rif:New ] ) ;
-                    rif:actions ( [ a rif:Assert ;
-                                rif:target [ a rif:Frame ;
-                                        rif:object [ a rif:Var ;
-                                                rif:varname "rifretract" ] ;
-                                        rif:slots ( [ a rif:Slot ;
-                                                    rif:slotkey [ a rif:Const ;
-                                                            rif:constIRI "http://example.com/as-action"^^xsd:anyURI ] ;
-                                                    rif:slotvalue [ a rif:External ;
-                                                            rif:content [ a rif:Expr ;
-                                                                    rif:args ( [ a rif:Var ;
-                                                                                rif:varname "clipsretract" ] ) ;
-                                                                    rif:op [ a rif:Const ;
-                                                                            rif:constIRI "http://www.w3.org/2007/rif-builtin-function#make-list"^^xsd:anyURI ] ] ] ] ) ] ] [ a rif:Assert ;
-                                rif:target [ a rif:Frame ;
-                                        rif:object [ a rif:Var ;
-                                                rif:varname "clipsretract" ] ;
-                                        rif:slots ( [ a rif:Slot ;
-                                                    rif:slotkey [ a rif:Const ;
-                                                            rif:constIRI "http://clips.script/function-name"^^xsd:anyURI ] ;
-                                                    rif:slotvalue [ a rif:Const ;
-                                                            rif:value "retract"^^xsd:string ] ] ) ] ] [ a rif:Assert ;
-                                rif:target [ a rif:Frame ;
-                                        rif:object [ a rif:Var ;
-                                                rif:varname "clipsretract" ] ;
-                                        rif:slots ( [ a rif:Slot ;
-                                                    rif:slotkey [ a rif:Const ;
-                                                            rif:constIRI "http://clips.script/function-args"^^xsd:anyURI ] ;
-                                                    rif:slotvalue [ a rif:External ;
-                                                            rif:content [ a rif:Expr ;
-                                                                    rif:args ( [ a rif:Var ;
-                                                                                rif:varname "clipsexpand" ] ) ;
-                                                                    rif:op [ a rif:Const ;
-                                                                            rif:constIRI "http://www.w3.org/2007/rif-builtin-function#make-list"^^xsd:anyURI ] ] ] ] ) ] ] [ a rif:Assert ;
-                                rif:target [ a rif:Frame ;
-                                        rif:object [ a rif:Var ;
-                                                rif:varname "clipsexpand" ] ;
-                                        rif:slots ( [ a rif:Slot ;
-                                                    rif:slotkey [ a rif:Const ;
-                                                            rif:constIRI "http://clips.script/function-name"^^xsd:anyURI ] ;
-                                                    rif:slotvalue [ a rif:Const ;
-                                                            rif:value "expand$"^^xsd:string ] ] ) ] ] [ a rif:Assert ;
-                                rif:target [ a rif:Frame ;
-                                        rif:object [ a rif:Var ;
-                                                rif:varname "clipsexpand" ] ;
-                                        rif:slots ( [ a rif:Slot ;
-                                                    rif:slotkey [ a rif:Const ;
-                                                            rif:constIRI "http://clips.script/function-args"^^xsd:anyURI ] ;
-                                                    rif:slotvalue [ a rif:External ;
-                                                            rif:content [ a rif:Expr ;
-                                                                    rif:args () ;
-                                                                    rif:op [ a rif:Const ;
-                                                                            rif:constIRI "http://www.w3.org/2007/rif-builtin-function#make-list"^^xsd:anyURI ] ] ] ] ) ] ] ) ] ] ;
-    rif:vars ( [ a rif:Var ;
-                rif:varname "rifretract" ] [ a rif:Var ;
-                rif:varname "riftarget" ] ) .
-
-<http://example.com/transform-retract-var> a rif:Forall ;
-    rif:formula [ a rif:Implies ;
-            rif:if [ a rif:And ;
-                    rif:formulas ( [ a rif:Frame ;
-                                rif:object [ a rif:Var ;
-                                        rif:varname "rifretract" ] ;
-                                rif:slots ( [ a rif:Slot ;
-                                            rif:slotkey [ a rif:Const ;
-                                                    rif:constIRI "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"^^xsd:anyURI ] ;
-                                            rif:slotvalue [ a rif:Const ;
-                                                    rif:constIRI "http://www.w3.org/2007/rif#Retract"^^xsd:anyURI ] ] ) ] [ a rif:Frame ;
-                                rif:object [ a rif:Var ;
-                                        rif:varname "rifretract" ] ;
-                                rif:slots ( [ a rif:Slot ;
-                                            rif:slotkey [ a rif:Const ;
-                                                    rif:constIRI "http://www.w3.org/2007/rif#target"^^xsd:anyURI ] ;
-                                            rif:slotvalue [ a rif:Var ;
-                                                    rif:varname "riftarget" ] ] ) ] [ a rif:Frame ;
-                                rif:object [ a rif:Var ;
-                                        rif:varname "riftarget" ] ;
-                                rif:slots ( [ a rif:Slot ;
-                                            rif:slotkey [ a rif:Const ;
-                                                    rif:constIRI "http://www.w3.org/2007/rif#varname"^^xsd:anyURI ] ;
-                                            rif:slotvalue [ a rif:Var ;
-                                                    rif:varname "varname" ] ] ) ] ) ] ;
-            rif:then [ a rif:Do ;
-                    rif:actionVar ( [ a rif:Var ;
-                                rif:varname "clipsfindfacts" ] [ a rif:New ] ),
-                        ( [ a rif:Var ;
-                                rif:varname "clipsdeftemplate" ] [ a rif:New ] ),
-                        ( [ a rif:Var ;
-                                rif:varname "factvariable" ] [ a rif:New ] ),
-                        ( [ a rif:Var ;
-                                rif:varname "factquery" ] [ a rif:New ] ),
-                        ( [ a rif:Var ;
-                                rif:varname "clipsexpand" ] [ a rif:New ] ),
-                        ( [ a rif:Var ;
-                                rif:varname "clipsretract" ] [ a rif:New ] ) ;
-                    rif:actions ( [ a rif:Assert ;
-                                rif:target [ a rif:Frame ;
-                                        rif:object [ a rif:Var ;
-                                                rif:varname "rifretract" ] ;
-                                        rif:slots ( [ a rif:Slot ;
-                                                    rif:slotkey [ a rif:Const ;
-                                                            rif:constIRI "http://example.com/as-action"^^xsd:anyURI ] ;
-                                                    rif:slotvalue [ a rif:External ;
-                                                            rif:content [ a rif:Expr ;
-                                                                    rif:args ( [ a rif:Var ;
-                                                                                rif:varname "clipsretract" ] ) ;
-                                                                    rif:op [ a rif:Const ;
-                                                                            rif:constIRI "http://www.w3.org/2007/rif-builtin-function#make-list"^^xsd:anyURI ] ] ] ] ) ] ] [ a rif:Assert ;
-                                rif:target [ a rif:Frame ;
-                                        rif:object [ a rif:Var ;
-                                                rif:varname "clipsretract" ] ;
-                                        rif:slots ( [ a rif:Slot ;
-                                                    rif:slotkey [ a rif:Const ;
-                                                            rif:constIRI "http://clips.script/function-name"^^xsd:anyURI ] ;
-                                                    rif:slotvalue [ a rif:Const ;
-                                                            rif:value "retract"^^xsd:string ] ] ) ] ] [ a rif:Assert ;
-                                rif:target [ a rif:Frame ;
-                                        rif:object [ a rif:Var ;
-                                                rif:varname "clipsretract" ] ;
-                                        rif:slots ( [ a rif:Slot ;
-                                                    rif:slotkey [ a rif:Const ;
-                                                            rif:constIRI "http://clips.script/function-args"^^xsd:anyURI ] ;
-                                                    rif:slotvalue [ a rif:External ;
-                                                            rif:content [ a rif:Expr ;
-                                                                    rif:args ( [ a rif:Var ;
-                                                                                rif:varname "clipsexpand" ] ) ;
-                                                                    rif:op [ a rif:Const ;
-                                                                            rif:constIRI "http://www.w3.org/2007/rif-builtin-function#make-list"^^xsd:anyURI ] ] ] ] ) ] ] [ a rif:Assert ;
-                                rif:target [ a rif:Frame ;
-                                        rif:object [ a rif:Var ;
-                                                rif:varname "clipsexpand" ] ;
-                                        rif:slots ( [ a rif:Slot ;
-                                                    rif:slotkey [ a rif:Const ;
-                                                            rif:constIRI "http://clips.script/function-name"^^xsd:anyURI ] ;
-                                                    rif:slotvalue [ a rif:Const ;
-                                                            rif:value "expand$"^^xsd:string ] ] ) ] ] [ a rif:Assert ;
-                                rif:target [ a rif:Frame ;
-                                        rif:object [ a rif:Var ;
-                                                rif:varname "clipsexpand" ] ;
-                                        rif:slots ( [ a rif:Slot ;
-                                                    rif:slotkey [ a rif:Const ;
-                                                            rif:constIRI "http://clips.script/function-args"^^xsd:anyURI ] ;
-                                                    rif:slotvalue [ a rif:External ;
-                                                            rif:content [ a rif:Expr ;
-                                                                    rif:args ( [ a rif:Var ;
-                                                                                rif:varname "clipsfindfacts" ] ) ;
-                                                                    rif:op [ a rif:Const ;
-                                                                            rif:constIRI "http://www.w3.org/2007/rif-builtin-function#make-list"^^xsd:anyURI ] ] ] ] ) ] ] [ a rif:Assert ;
-                                rif:target [ a rif:Frame ;
-                                        rif:object [ a rif:Var ;
-                                                rif:varname "clipsfindfacts" ] ;
-                                        rif:slots ( [ a rif:Slot ;
-                                                    rif:slotkey [ a rif:Const ;
-                                                            rif:constIRI "http://clips.script/function-name"^^xsd:anyURI ] ;
-                                                    rif:slotvalue [ a rif:Const ;
-                                                            rif:value "find-all-facts"^^xsd:string ] ] ) ] ] [ a rif:Assert ;
-                                rif:target [ a rif:Frame ;
-                                        rif:object [ a rif:Var ;
-                                                rif:varname "clipsfindfacts" ] ;
-                                        rif:slots ( [ a rif:Slot ;
-                                                    rif:slotkey [ a rif:Const ;
-                                                            rif:constIRI "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"^^xsd:anyURI ] ;
-                                                    rif:slotvalue [ a rif:Const ;
-                                                            rif:constIRI "http://clips.script/FindAllFacts"^^xsd:anyURI ] ] ) ] ] [ a rif:Assert ;
-                                rif:target [ a rif:Frame ;
-                                        rif:object [ a rif:Var ;
-                                                rif:varname "clipsfindfacts" ] ;
-                                        rif:slots ( [ a rif:Slot ;
-                                                    rif:slotkey [ a rif:Const ;
-                                                            rif:constIRI "http://clips.script/fact-set-template"^^xsd:anyURI ] ;
-                                                    rif:slotvalue [ a rif:External ;
-                                                            rif:content [ a rif:Expr ;
-                                                                    rif:args ( [ a rif:Var ;
-                                                                                rif:varname "clipsdeftemplate" ] ) ;
-                                                                    rif:op [ a rif:Const ;
-                                                                            rif:constIRI "http://www.w3.org/2007/rif-builtin-function#make-list"^^xsd:anyURI ] ] ] ] ) ] ] [ a rif:Assert ;
-                                rif:target [ a rif:Frame ;
-                                        rif:object [ a rif:Var ;
-                                                rif:varname "clipsfindfacts" ] ;
-                                        rif:slots ( [ a rif:Slot ;
-                                                    rif:slotkey [ a rif:Const ;
-                                                            rif:constIRI "http://clips.script/query"^^xsd:anyURI ] ;
-                                                    rif:slotvalue [ a rif:Var ;
-                                                            rif:varname "factquery" ] ] ) ] ] [ a rif:Assert ;
-                                rif:target [ a rif:Frame ;
-                                        rif:object [ a rif:Var ;
-                                                rif:varname "factvariable" ] ;
-                                        rif:slots ( [ a rif:Slot ;
-                                                    rif:slotkey [ a rif:Const ;
-                                                            rif:constIRI "http://clips.script/variable-name"^^xsd:anyURI ] ;
-                                                    rif:slotvalue [ a rif:Const ;
-                                                            rif:value "fct"^^xsd:string ] ] ) ] ] [ a rif:Assert ;
-                                rif:target [ a rif:Frame ;
-                                        rif:object [ a rif:Var ;
-                                                rif:varname "factquery" ] ;
-                                        rif:slots ( [ a rif:Slot ;
-                                                    rif:slotkey [ a rif:Const ;
-                                                            rif:constIRI "http://clips.script/function-name"^^xsd:anyURI ] ;
-                                                    rif:slotvalue [ a rif:Const ;
-                                                            rif:value "eq"^^xsd:string ] ] ) ] ] [ a rif:Assert ;
-                                rif:target [ a rif:Frame ;
-                                        rif:object [ a rif:Var ;
-                                                rif:varname "factquery" ] ;
-                                        rif:slots ( [ a rif:Slot ;
-                                                    rif:slotkey [ a rif:Const ;
-                                                            rif:constIRI "http://clips.script/function-args"^^xsd:anyURI ] ;
-                                                    rif:slotvalue [ a rif:External ;
-                                                            rif:content [ a rif:Expr ;
-                                                                    rif:args ( [ a rif:Var ;
-                                                                                rif:varname "factvariable" ] [ a rif:Var ;
-                                                                                rif:varname "varname" ] ) ;
-                                                                    rif:op [ a rif:Const ;
-                                                                            rif:constIRI "http://www.w3.org/2007/rif-builtin-function#make-list"^^xsd:anyURI ] ] ] ] ) ] ] ) ] ] ;
-    rif:vars ( [ a rif:Var ;
-                rif:varname "rifretract" ] [ a rif:Var ;
-                rif:varname "riftarget" ] [ a rif:Var ;
-                rif:varname "varname" ] ) .
 
 <http://example.com/transform-rif-frame> a rif:Group ;
     rif:sentences ( <http://example.com/part-frame-pattern> <http://example.com/as-expression-transform-rif-frame> ) .
@@ -1914,5 +1568,5 @@
                         rif:vars ( [ a rif:Var ;
                                     rif:varname "rifnode" ] [ a rif:Var ;
                                     rif:varname "slotlist" ] [ a rif:Var ;
-                                    rif:varname "existingconditionals" ] ) ] <http://example.com/add-slot-transform-rif-frame> <http://example.com/transform-assert> <http://example.com/transform-frame-to-assert> <http://example.com/transform-retract-var> <http://example.com/transform-retract-frame> <http://example.com/transform-do> <http://example.com/create-deffacts-for-groups> <http://example.com/init-defrules> ) ] .
+                                    rif:varname "existingconditionals" ] ) ] <http://example.com/add-slot-transform-rif-frame> <http://example.com/transform-do> <http://example.com/create-deffacts-for-groups> <http://example.com/init-defrules> ) ] .
 

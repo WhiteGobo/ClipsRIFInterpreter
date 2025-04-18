@@ -10,6 +10,7 @@ list(APPEND mytargets
 	rest
 	create-root-script
 	constants
+	transform-actionblock
 )
 
 set(compilelist)
