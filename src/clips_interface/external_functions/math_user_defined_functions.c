@@ -6,17 +6,18 @@
 #include "info_query.h"
 #include <math.h>
 #include "math_user_defined_functions.h"
+#include <crifi_numeric.h>
 
 
 typedef enum {
-	NT_RATIONAL,
-	NT_FLOAT,
-	NT_ERROR,
-	NT_NAN
-} NUMERIC_TYPE;
+	NT_RATIONAL_H,
+	NT_FLOAT_H,
+	NT_ERROR_H,
+	NT_NAN_H
+} NUMERIC_TYPE_H;
 
 typedef struct {
-	NUMERIC_TYPE t;
+	NUMERIC_TYPE_H t;
 	union {
 		float f;
 		long int dividend;
@@ -31,9 +32,12 @@ typedef struct {
 	};
 } numeric_value;
 
+//typedef numeric_value Calculation(numeric_value val1, numeric_value val2);
+typedef NumericValue* Calculation(Environment *env, NumericValue *val1, NumericValue *val2);
+
 static numeric_value normal_rational(long int dividend, long int divisor){
 	numeric_value ret;
-	ret.t = NT_RATIONAL;
+	ret.t = NT_RATIONAL_H;
 	if (divisor < 0){
 		ret.dividend = -dividend;
 		ret.divisor = -divisor;
@@ -120,7 +124,7 @@ static bool castable_as_long(char *x, size_t xl){
 }
 
 static numeric_value toNumeric_cant_transform_plainliteral = {
-	.t = NT_ERROR,
+	.t = NT_ERROR_H,
 	.error_description = "Cant transform plain literal to numeric value"
 };
 static const char default_err_toNumeric[]\
@@ -132,7 +136,7 @@ static const char default_err_toNumeric[]\
 static numeric_value UDFValueToNumericValue(UDFValue val) {
 	char *valueString, *endptr;
 	numeric_value q;
-	q.t = NT_ERROR;
+	q.t = NT_ERROR_H;
 	q.error_description = default_err_toNumeric;
 	switch (val.header->type){
 		//case FLOAT_TYPE:
@@ -151,15 +155,15 @@ static numeric_value UDFValueToNumericValue(UDFValue val) {
 			valueString = clipslexeme_to_value(val.lexemeValue);
 			if (castable_as_long(dt_pos, dt_length)) {
 				//q = normal_rational(atol(valueString), 1);
-				q.t = NT_RATIONAL;
+				q.t = NT_RATIONAL_H;
 				q.dividend = atol(valueString);
 				q.divisor = 1;
 			} else if (castable_as_double(dt_pos, dt_length)){
-				q.t = NT_FLOAT;
+				q.t = NT_FLOAT_H;
 				q.f = strtod(valueString, &endptr);
 				q.precision = find_precision_float(valueString, q.f);
 			} else if (castable_as_hexadecimal(dt_pos, dt_length)){
-				q.t = NT_RATIONAL;
+				q.t = NT_RATIONAL_H;
 				q.dividend = strtol(valueString, &endptr, 16);
 				q.divisor = 1;
 			}
@@ -177,21 +181,21 @@ static numeric_value numeric_add(numeric_value val1, numeric_value val2){
 	long int x, y;
 	float tmp;
 	numeric_value q;
-	if (val1.t == NT_ERROR) return val1;
-	if (val2.t == NT_ERROR) return val2;
-	q.t = NT_ERROR;
+	if (val1.t == NT_ERROR_H) return val1;
+	if (val2.t == NT_ERROR_H) return val2;
+	q.t = NT_ERROR_H;
 	q.error_description = default_error_numeric_add;
 	switch (val1.t){
-		case NT_RATIONAL:
+		case NT_RATIONAL_H:
 			switch (val2.t){
-				case NT_RATIONAL:
+				case NT_RATIONAL_H:
 					x = (val1.dividend * val2.divisor)\
 						     + (val2.dividend * val1.divisor);
 					y = val1.divisor * val2.divisor;
 					return normal_rational(x, y);
 					break;
-				case NT_FLOAT:
-					q.t = NT_FLOAT;
+				case NT_FLOAT_H:
+					q.t = NT_FLOAT_H;
 					tmp = val1.dividend / val1.divisor;
 					q.f = tmp + val2.f;
 					q.precision = val2.precision;
@@ -199,17 +203,17 @@ static numeric_value numeric_add(numeric_value val1, numeric_value val2){
 					break;
 			}
 			break;
-		case NT_FLOAT:
+		case NT_FLOAT_H:
 			switch (val2.t){
-				case NT_RATIONAL:
-					q.t = NT_FLOAT;
+				case NT_RATIONAL_H:
+					q.t = NT_FLOAT_H;
 					tmp = val2.dividend / val2.divisor;
 					q.f = tmp + val1.f;
 					q.precision = val1.precision;
 					return q;
 					break;
-				case NT_FLOAT:
-					q.t = NT_FLOAT;
+				case NT_FLOAT_H:
+					q.t = NT_FLOAT_H;
 					q.f = val1.f + val2.f;
 					q.precision = val1.precision\
 						      + val2.precision;
@@ -228,21 +232,21 @@ static numeric_value numeric_subtract(numeric_value val1, numeric_value val2){
 	long int x, y;
 	float tmp, tmpp;
 	numeric_value q;
-	if (val1.t == NT_ERROR) return val1;
-	if (val2.t == NT_ERROR) return val2;
-	q.t = NT_ERROR;
+	if (val1.t == NT_ERROR_H) return val1;
+	if (val2.t == NT_ERROR_H) return val2;
+	q.t = NT_ERROR_H;
 	q.error_description = default_error_numeric_add;
 	switch (val1.t){
-		case NT_RATIONAL:
+		case NT_RATIONAL_H:
 			switch (val2.t){
-				case NT_RATIONAL:
+				case NT_RATIONAL_H:
 					x = (val1.dividend * val2.divisor)\
 						     - (val2.dividend * val1.divisor);
 					y = val1.divisor * val2.divisor;
 					return normal_rational(x, y);
 					break;
-				case NT_FLOAT:
-					q.t = NT_FLOAT;
+				case NT_FLOAT_H:
+					q.t = NT_FLOAT_H;
 					tmp = val1.dividend / val1.divisor;
 					tmpp = 1 / val1.divisor;
 					q.f = tmp - val2.f;
@@ -256,10 +260,10 @@ static numeric_value numeric_subtract(numeric_value val1, numeric_value val2){
 					break;
 			}
 			break;
-		case NT_FLOAT:
+		case NT_FLOAT_H:
 			switch (val2.t){
-				case NT_RATIONAL:
-					q.t = NT_FLOAT;
+				case NT_RATIONAL_H:
+					q.t = NT_FLOAT_H;
 					tmp = val2.dividend / val2.divisor;
 					tmpp = 1 / val2.divisor;
 					q.f = val2.f - tmp;
@@ -269,8 +273,8 @@ static numeric_value numeric_subtract(numeric_value val1, numeric_value val2){
 						q.precision = val1.precision;
 					}
 					return q;
-				case NT_FLOAT:
-					q.t = NT_FLOAT;
+				case NT_FLOAT_H:
+					q.t = NT_FLOAT_H;
 					q.f = val1.f - val2.f;
 					if (val1.precision < val2.precision){
 						q.precision = val1.precision;
@@ -292,20 +296,20 @@ static numeric_value numeric_multiply(numeric_value val1, numeric_value val2){
 	long int x, y;
 	float tmp;
 	numeric_value q;
-	if (val1.t == NT_ERROR) return val1;
-	if (val2.t == NT_ERROR) return val2;
-	q.t = NT_ERROR;
+	if (val1.t == NT_ERROR_H) return val1;
+	if (val2.t == NT_ERROR_H) return val2;
+	q.t = NT_ERROR_H;
 	q.error_description = default_error_numeric_add;
 	switch (val1.t){
-		case NT_RATIONAL:
+		case NT_RATIONAL_H:
 			switch (val2.t){
-				case NT_RATIONAL:
+				case NT_RATIONAL_H:
 					x = val1.dividend * val2.dividend;
 					y = val1.divisor * val2.divisor;
 					return normal_rational(x, y);
 					break;
-				case NT_FLOAT:
-					q.t = NT_FLOAT;
+				case NT_FLOAT_H:
+					q.t = NT_FLOAT_H;
 					tmp = val1.dividend / val1.divisor;
 					q.f = tmp * val2.f;
 					q.precision = tmp * val2.precision;
@@ -313,17 +317,17 @@ static numeric_value numeric_multiply(numeric_value val1, numeric_value val2){
 					break;
 			}
 			break;
-		case NT_FLOAT:
+		case NT_FLOAT_H:
 			switch (val2.t){
-				case NT_RATIONAL:
-					q.t = NT_FLOAT;
+				case NT_RATIONAL_H:
+					q.t = NT_FLOAT_H;
 					tmp = val2.dividend / val2.divisor;
 					q.f = tmp * val1.f;
 					q.precision = tmp * val1.precision;
 					return q;
 					break;
-				case NT_FLOAT:
-					q.t = NT_FLOAT;
+				case NT_FLOAT_H:
+					q.t = NT_FLOAT_H;
 					q.f = val1.f * val2.f;
 					q.precision = (val1.precision * val2.f)\
 						      +(val2.precision*val1.f);
@@ -342,20 +346,20 @@ static numeric_value numeric_divide(numeric_value val1, numeric_value val2){
 	long int x, y;
 	float tmp1, tmp2;
 	numeric_value q;
-	if (val1.t == NT_ERROR) return val1;
-	if (val2.t == NT_ERROR) return val2;
-	q.t = NT_ERROR;
+	if (val1.t == NT_ERROR_H) return val1;
+	if (val2.t == NT_ERROR_H) return val2;
+	q.t = NT_ERROR_H;
 	q.error_description = default_error_numeric_add;
 	switch (val1.t){
-		case NT_RATIONAL:
+		case NT_RATIONAL_H:
 			switch (val2.t){
-				case NT_RATIONAL:
+				case NT_RATIONAL_H:
 					x = val1.dividend * val2.divisor;
 					y = val2.dividend * val1.divisor;
 					return normal_rational(x, y);
 					break;
-				case NT_FLOAT:
-					q.t = NT_FLOAT;
+				case NT_FLOAT_H:
+					q.t = NT_FLOAT_H;
 					tmp1 = val1.dividend / val1.divisor;
 					q.f = tmp1 / val2.f;
 					q.precision\
@@ -364,18 +368,18 @@ static numeric_value numeric_divide(numeric_value val1, numeric_value val2){
 					break;
 			}
 			break;
-		case NT_FLOAT:
+		case NT_FLOAT_H:
 			switch (val2.t){
-				case NT_RATIONAL:
-					q.t = NT_FLOAT;
+				case NT_RATIONAL_H:
+					q.t = NT_FLOAT_H;
 					tmp2 = val2.dividend / val2.divisor;
 					q.f = tmp2 / val1.f;
 					q.precision\
 						= q.f * (val1.precision/val1.f);
 					return q;
 					break;
-				case NT_FLOAT:
-					q.t = NT_FLOAT;
+				case NT_FLOAT_H:
+					q.t = NT_FLOAT_H;
 					q.f = val1.f / val2.f;
 					q.precision = q.f * (\
 						(val1.precision / val1.f)
@@ -394,15 +398,15 @@ static numeric_value numeric_integer_divide(numeric_value val1, numeric_value va
 	float tmp1, tmp2;
 	numeric_value q;
 	long long tmp3;
-	if (val1.t == NT_ERROR) return val1;
-	if (val2.t == NT_ERROR) return val2;
-	q.t = NT_ERROR;
+	if (val1.t == NT_ERROR_H) return val1;
+	if (val2.t == NT_ERROR_H) return val2;
+	q.t = NT_ERROR_H;
 	q.error_description = default_error_numeric_add;
 	switch (val1.t){
-		case NT_RATIONAL:
+		case NT_RATIONAL_H:
 			switch (val2.t){
-				case NT_RATIONAL:
-					q.t = NT_RATIONAL;
+				case NT_RATIONAL_H:
+					q.t = NT_RATIONAL_H;
 					tmp1 = val1.dividend / val1.divisor;
 					tmp2 = val2.dividend / val2.divisor;
 					tmp3 = tmp1 / tmp2;
@@ -410,8 +414,8 @@ static numeric_value numeric_integer_divide(numeric_value val1, numeric_value va
 					q.divisor = 1;
 					return q;
 					break;
-				case NT_FLOAT:
-					q.t = NT_RATIONAL;
+				case NT_FLOAT_H:
+					q.t = NT_RATIONAL_H;
 					tmp1 = val1.dividend / val1.divisor;
 					tmp3 = tmp1 / val2.f;
 					q.dividend = tmp3;
@@ -420,18 +424,18 @@ static numeric_value numeric_integer_divide(numeric_value val1, numeric_value va
 					break;
 			}
 			break;
-		case NT_FLOAT:
+		case NT_FLOAT_H:
 			switch (val2.t){
-				case NT_RATIONAL:
-					q.t = NT_RATIONAL;
+				case NT_RATIONAL_H:
+					q.t = NT_RATIONAL_H;
 					tmp2 = val2.dividend / val2.divisor;
 					tmp3 = val1.f / tmp2;
 					q.dividend = tmp3;
 					q.divisor = 1;
 					return q;
 					break;
-				case NT_FLOAT:
-					q.t = NT_RATIONAL;
+				case NT_FLOAT_H:
+					q.t = NT_RATIONAL_H;
 					tmp3 = val1.f / val2.f;
 					q.dividend = tmp3;
 					q.divisor = 1;
@@ -451,23 +455,23 @@ static numeric_value numeric_integer_mod(numeric_value val1, numeric_value val2)
 	long long dividend;
 	unsigned long long divisor;
 	numeric_value q;
-	if (val1.t == NT_ERROR) return val1;
-	if (val2.t == NT_ERROR) return val2;
-	q.t = NT_ERROR;
+	if (val1.t == NT_ERROR_H) return val1;
+	if (val2.t == NT_ERROR_H) return val2;
+	q.t = NT_ERROR_H;
 	q.error_description = default_error_numeric_add;
 	switch (val1.t){
-		case NT_RATIONAL:
+		case NT_RATIONAL_H:
 			switch (val2.t){
-				case NT_RATIONAL:
-					q.t = NT_RATIONAL;
+				case NT_RATIONAL_H:
+					q.t = NT_RATIONAL_H;
 					dividend = val1.dividend * val2.divisor;
 					divisor = val2.dividend * val1.divisor;
 					q.dividend = dividend % divisor;
 					q.divisor = 1;
 					return q;
 					break;
-				case NT_FLOAT:
-					q.t = NT_FLOAT;
+				case NT_FLOAT_H:
+					q.t = NT_FLOAT_H;
 					tmp = val1.dividend / val1.divisor;
 					q.dividend = fmod(tmp, val2.f);
 					q.precision = val2.precision;
@@ -475,17 +479,17 @@ static numeric_value numeric_integer_mod(numeric_value val1, numeric_value val2)
 					break;
 			}
 			break;
-		case NT_FLOAT:
+		case NT_FLOAT_H:
 			switch (val2.t){
-				case NT_RATIONAL:
-					q.t = NT_RATIONAL;
+				case NT_RATIONAL_H:
+					q.t = NT_RATIONAL_H;
 					tmp = val2.dividend / val2.divisor;
 					q.dividend = fmod(tmp, val1.f);
 					q.precision = val1.precision;
 					return q;
 					break;
-				case NT_FLOAT:
-					q.t = NT_FLOAT;
+				case NT_FLOAT_H:
+					q.t = NT_FLOAT_H;
 					q.dividend = fmod(val1.f, val2.f);
 					q.precision = val2.precision;
 					return q;
@@ -502,30 +506,30 @@ static numeric_value numeric_integer_mod(numeric_value val1, numeric_value val2)
 static bool numeric_equal(numeric_value val1, numeric_value val2){
 	float tmp;
 	numeric_value q;
-	if (val1.t == NT_ERROR) return false;
-	if (val2.t == NT_ERROR) return false;
-	q.t = NT_ERROR;
+	if (val1.t == NT_ERROR_H) return false;
+	if (val2.t == NT_ERROR_H) return false;
+	q.t = NT_ERROR_H;
 	q.error_description = default_error_numeric_add;
 	switch (val1.t){
-		case NT_RATIONAL:
+		case NT_RATIONAL_H:
 			switch (val2.t){
-				case NT_RATIONAL:
+				case NT_RATIONAL_H:
 					return (val1.dividend * val2.divisor)\
 						== (val2.dividend*val1.divisor);
 					break;
-				case NT_FLOAT:
+				case NT_FLOAT_H:
 					tmp = val1.dividend / val1.divisor;
 					return tmp == val2.f;
 					break;
 			}
 			break;
-		case NT_FLOAT:
+		case NT_FLOAT_H:
 			switch (val2.t){
-				case NT_RATIONAL:
+				case NT_RATIONAL_H:
 					tmp = val2.dividend / val2.divisor;
 					return tmp == val1.f;
 					break;
-				case NT_FLOAT:
+				case NT_FLOAT_H:
 					return val1.f == val2.f;
 					break;
 			}
@@ -545,31 +549,31 @@ static bool numeric_less_than(numeric_value val1, numeric_value val2){
 	long int x, y;
 	float tmp;
 	numeric_value q;
-	if (val1.t == NT_ERROR) return false;
-	if (val2.t == NT_ERROR) return false;
-	q.t = NT_ERROR;
+	if (val1.t == NT_ERROR_H) return false;
+	if (val2.t == NT_ERROR_H) return false;
+	q.t = NT_ERROR_H;
 	q.error_description = default_error_numeric_add;
 	switch (val1.t){
-		case NT_RATIONAL:
+		case NT_RATIONAL_H:
 			switch (val2.t){
-				case NT_RATIONAL:
+				case NT_RATIONAL_H:
 					x =val1.dividend * val2.divisor;
 					y =val2.dividend*val1.divisor;
 					return x < y;
 					break;
-				case NT_FLOAT:
+				case NT_FLOAT_H:
 					tmp = val1.dividend / val1.divisor;
 					return tmp < val2.f;
 					break;
 			}
 			break;
-		case NT_FLOAT:
+		case NT_FLOAT_H:
 			switch (val2.t){
-				case NT_RATIONAL:
+				case NT_RATIONAL_H:
 					tmp = val2.dividend / val2.divisor;
 					return tmp < val1.f;
 					break;
-				case NT_FLOAT:
+				case NT_FLOAT_H:
 					return val1.f < val2.f;
 					break;
 			}
@@ -596,7 +600,7 @@ static bool numeric_value_to_n3(Environment *env, numeric_value val, UDFValue *o
 	long r, q, tmpl;
 	double x;
 	switch (val.t){
-		case NT_RATIONAL:
+		case NT_RATIONAL_H:
 			i = 0;
 			q = val.divisor;
 			r = val.dividend;
@@ -617,8 +621,8 @@ static bool numeric_value_to_n3(Environment *env, numeric_value val, UDFValue *o
 			out->lexemeValue = CreateString(env, tmpx);
 			return true;
 			break;
-		case NT_ERROR:
-		case NT_NAN:
+		case NT_ERROR_H:
+		case NT_NAN_H:
 		default:
 			return false;
 	}
@@ -638,7 +642,7 @@ static bool numeric_value_to_n3(Environment *env, numeric_value val, UDFValue *o
 		return;\
 	}\
 	val1 = UDFValueToNumericValue(myval);\
-	if (val1.t == NT_ERROR){\
+	if (val1.t == NT_ERROR_H){\
 		/*WriteUDFValue(env, STDOUT, &myval);*/\
 		Write(env, " cant be transformed to numeric value. ");\
 		Writeln(env, val1.error_description);\
@@ -656,7 +660,7 @@ static bool numeric_value_to_n3(Environment *env, numeric_value val, UDFValue *o
 		val2 = UDFValueToNumericValue(myval);\
 		val1 = action(val1, val2);\
 	}\
-	if (val1.t == NT_ERROR){\
+	if (val1.t == NT_ERROR_H){\
 		Writeln(env, val1.error_description);\
 		UDFThrowError(udfc);\
 		SetErrorValue(env, &(CreateString(env, val1.error_description)->header));\
@@ -669,8 +673,69 @@ static bool numeric_value_to_n3(Environment *env, numeric_value val, UDFValue *o
 		return;\
 	}
 
+static int numeric_list_calculator(Environment *env, UDFContext *udfc, UDFValue *out, Calculation *action){
+	//const char* argerr = "Argument Error for "actionname;
+	NumericValue val1, val2, val3;
+	NumericValue *val_in, *val_out, *val_h;
+	UDFValue myval;
+	CLIPSValue myval_h;
+	unsigned int l = UDFArgumentCount(udfc);
+	if (!UDFFirstArgument(udfc, STRING_BIT, &myval) || l==0){
+		//Writeln(env, argerr);
+		UDFThrowError(udfc);
+		//SetErrorValue(env, &(CreateString(env, argerr)->header));
+		SetErrorValue(env, &(CreateString(env, "failed numeric function")->header));
+		return 1;
+	}
+	myval_h.value = myval.value;
+	if(!clipsvalue_as_numeric_value(env, myval_h, &val1)){
+		SetErrorValue(env, &(CreateString(env, "failed numeric function")->header));
+		UDFThrowError(udfc);
+		return 2;
+	}
+	val_in = &val1;
+	val_out = &val3;
+	for (int i=1; i<l; i++){
+		if(!UDFNextArgument(udfc, ANY_TYPE_BITS, &myval)){
+			//Writeln(env, argerr);
+			UDFThrowError(udfc);
+			//SetErrorValue(env, &(CreateString(env, argerr)->header));
+			SetErrorValue(env, &(CreateString(env, "failed numeric function")->header));
+			return 3;
+		}
+		myval_h.value = myval.value;
+		if(!clipsvalue_as_numeric_value(env, myval_h, &val2)){
+			SetErrorValue(env, &(CreateString(env, "failed numeric function")->header));
+			UDFThrowError(udfc);
+			return 2;
+		}
+		val_out = action(env, val_in, &val2);
+		if (val_out == NULL){
+			SetErrorValue(env, &(CreateString(env, "failed numeric function")->header));
+			UDFThrowError(udfc);
+			return 2;
+		}
+		val_h = val_in;
+		val_in = val_out;
+		val_out = val_h;
+	}
+
+	myval_h = crifi_numeric_to_clipsvalue2(env, val_in);
+	out->value = myval_h.value;
+	return 0;
+}
+
 void rif_numeric_add(Environment *env, UDFContext *udfc, UDFValue *out) {
-	NUMERICLISTCALCULATOR(numeric_add, "numeric_add");
+	//NUMERICLISTCALCULATOR(numeric_add, "numeric_add");
+	numeric_list_calculator(env, udfc, out, crifi_numeric_add);
+	fprintf(stderr, "numeric add: ");
+	switch (out->header->type){
+		case STRING_TYPE:
+			fprintf(stderr, "%s\n", out->lexemeValue->contents);
+			break;
+		default:
+			fprintf(stderr, "cant print type\n");
+	}
 }
 
 void rif_numeric_subtract(Environment *env, UDFContext *udfc, UDFValue *out){
@@ -707,7 +772,7 @@ void rif_numeric_integer_mod(Environment *env, UDFContext *udfc, UDFValue *out){
 		return;\
 	}\
 	val1 = UDFValueToNumericValue(myval);\
-	if (val1.t == NT_ERROR){\
+	if (val1.t == NT_ERROR_H){\
 		/*WriteUDFValue(env, STDOUT, &myval);*/\
 		Write(env, " cant be transformed to numeric value. ");\
 		Writeln(env, val1.error_description);\
@@ -723,7 +788,7 @@ void rif_numeric_integer_mod(Environment *env, UDFContext *udfc, UDFValue *out){
 			return;\
 		}\
 		val2 = UDFValueToNumericValue(myval);\
-		if (val2.t == NT_ERROR){\
+		if (val2.t == NT_ERROR_H){\
 			Writeln(env, val1.error_description);\
 			UDFThrowError(udfc);\
 			SetErrorValue(env, &(CreateString(env, val1.error_description)->header));\
@@ -777,7 +842,7 @@ void rif_is_literal_double(Environment *env, UDFContext *udfc, UDFValue *out){
 		return;
 	}
 	val1 = UDFValueToNumericValue(myval);
-	truth = (val1.t == NT_FLOAT) || (val1.t == NT_RATIONAL);
+	truth = (val1.t == NT_FLOAT_H) || (val1.t == NT_RATIONAL_H);
 	if (invert) truth = !truth;
 	out->lexemeValue = CreateBoolean(env, truth);
 }
@@ -794,7 +859,7 @@ void rif_is_literal_float(Environment *env, UDFContext *udfc, UDFValue *out){
 		return;
 	}
 	val1 = UDFValueToNumericValue(myval);
-	truth = val1.t == NT_FLOAT || val1.t == NT_RATIONAL;
+	truth = val1.t == NT_FLOAT_H || val1.t == NT_RATIONAL_H;
 	if (invert) truth = !truth;
 	out->lexemeValue = CreateBoolean(env, truth);
 }
@@ -810,7 +875,7 @@ void rif_is_literal_hexBinary(Environment *env, UDFContext *udfc, UDFValue *out)
 		return;
 	}
 	val1 = UDFValueToNumericValue(myval);
-	truth = val1.t == NT_FLOAT || val1.t == NT_RATIONAL;
+	truth = val1.t == NT_FLOAT_H || val1.t == NT_RATIONAL_H;
 	if (invert) truth = !truth;
 	out->lexemeValue = CreateBoolean(env, truth);
 }
@@ -826,7 +891,7 @@ void rif_is_literal_decimal(Environment *env, UDFContext *udfc, UDFValue *out){
 		return;
 	}
 	val1 = UDFValueToNumericValue(myval);
-	truth = val1.t == NT_FLOAT || val1.t == NT_RATIONAL;
+	truth = val1.t == NT_FLOAT_H || val1.t == NT_RATIONAL_H;
 	if (invert) truth = !truth;
 	out->lexemeValue = CreateBoolean(env, truth);
 }
@@ -841,7 +906,7 @@ void rif_is_literal_integer(Environment *env, UDFContext *udfc, UDFValue *out){
 		return;
 	}
 	val1 = UDFValueToNumericValue(myval);
-	truth = val1.t == NT_FLOAT || val1.t == NT_RATIONAL;
+	truth = val1.t == NT_FLOAT_H || val1.t == NT_RATIONAL_H;
 	if (invert) truth = !truth;
 	out->lexemeValue = CreateBoolean(env, truth);
 }
@@ -856,7 +921,7 @@ void rif_is_literal_long(Environment *env, UDFContext *udfc, UDFValue *out){
 		return;
 	}
 	val1 = UDFValueToNumericValue(myval);
-	truth = val1.t == NT_FLOAT || val1.t == NT_RATIONAL;
+	truth = val1.t == NT_FLOAT_H || val1.t == NT_RATIONAL_H;
 	if (invert) truth = !truth;
 	out->lexemeValue = CreateBoolean(env, truth);
 }
@@ -871,7 +936,7 @@ void rif_is_literal_int(Environment *env, UDFContext *udfc, UDFValue *out){
 		return;
 	}
 	val1 = UDFValueToNumericValue(myval);
-	truth = val1.t == NT_FLOAT || val1.t == NT_RATIONAL;
+	truth = val1.t == NT_FLOAT_H || val1.t == NT_RATIONAL_H;
 	if (invert) truth = !truth;
 	out->lexemeValue = CreateBoolean(env, truth);
 }
@@ -886,7 +951,7 @@ void rif_is_literal_short(Environment *env, UDFContext *udfc, UDFValue *out){
 		return;
 	}
 	val1 = UDFValueToNumericValue(myval);
-	truth = val1.t == NT_FLOAT || val1.t == NT_RATIONAL;
+	truth = val1.t == NT_FLOAT_H || val1.t == NT_RATIONAL_H;
 	if (invert) truth = !truth;
 	out->lexemeValue = CreateBoolean(env, truth);
 }
@@ -901,7 +966,7 @@ void rif_is_literal_byte(Environment *env, UDFContext *udfc, UDFValue *out){
 		return;
 	}
 	val1 = UDFValueToNumericValue(myval);
-	truth = val1.t == NT_FLOAT || val1.t == NT_RATIONAL;
+	truth = val1.t == NT_FLOAT_H || val1.t == NT_RATIONAL_H;
 	if (invert) truth = !truth;
 	out->lexemeValue = CreateBoolean(env, truth);
 }
@@ -916,7 +981,7 @@ void rif_is_literal_nonNegativeInteger(Environment *env, UDFContext *udfc, UDFVa
 		return;
 	}
 	val1 = UDFValueToNumericValue(myval);
-	truth = val1.t == NT_FLOAT || val1.t == NT_RATIONAL;
+	truth = val1.t == NT_FLOAT_H || val1.t == NT_RATIONAL_H;
 	if (invert) truth = !truth;
 	out->lexemeValue = CreateBoolean(env, truth);
 }
@@ -931,7 +996,7 @@ void rif_is_literal_positiveInteger(Environment *env, UDFContext *udfc, UDFValue
 		return;
 	}
 	val1 = UDFValueToNumericValue(myval);
-	truth = val1.t == NT_FLOAT || val1.t == NT_RATIONAL;
+	truth = val1.t == NT_FLOAT_H || val1.t == NT_RATIONAL_H;
 	if (invert) truth = !truth;
 	out->lexemeValue = CreateBoolean(env, truth);
 }
@@ -946,7 +1011,7 @@ void rif_is_literal_unsignedLong(Environment *env, UDFContext *udfc, UDFValue *o
 		return;
 	}
 	val1 = UDFValueToNumericValue(myval);
-	truth = val1.t == NT_FLOAT || val1.t == NT_RATIONAL;
+	truth = val1.t == NT_FLOAT_H || val1.t == NT_RATIONAL_H;
 	if (invert) truth = !truth;
 	out->lexemeValue = CreateBoolean(env, truth);
 }
@@ -961,7 +1026,7 @@ void rif_is_literal_unsignedInt(Environment *env, UDFContext *udfc, UDFValue *ou
 		return;
 	}
 	val1 = UDFValueToNumericValue(myval);
-	truth = val1.t == NT_FLOAT || val1.t == NT_RATIONAL;
+	truth = val1.t == NT_FLOAT_H || val1.t == NT_RATIONAL_H;
 	if (invert) truth = !truth;
 	out->lexemeValue = CreateBoolean(env, truth);
 }
@@ -976,7 +1041,7 @@ void rif_is_literal_unsignedShort(Environment *env, UDFContext *udfc, UDFValue *
 		return;
 	}
 	val1 = UDFValueToNumericValue(myval);
-	truth = val1.t == NT_FLOAT || val1.t == NT_RATIONAL;
+	truth = val1.t == NT_FLOAT_H || val1.t == NT_RATIONAL_H;
 	if (invert) truth = !truth;
 	out->lexemeValue = CreateBoolean(env, truth);
 }
@@ -991,7 +1056,7 @@ void rif_is_literal_unsignedByte(Environment *env, UDFContext *udfc, UDFValue *o
 		return;
 	}
 	val1 = UDFValueToNumericValue(myval);
-	truth = val1.t == NT_FLOAT || val1.t == NT_RATIONAL;
+	truth = val1.t == NT_FLOAT_H || val1.t == NT_RATIONAL_H;
 	if (invert) truth = !truth;
 	out->lexemeValue = CreateBoolean(env, truth);
 }
@@ -1006,7 +1071,7 @@ void rif_is_literal_nonPositiveInteger(Environment *env, UDFContext *udfc, UDFVa
 		return;
 	}
 	val1 = UDFValueToNumericValue(myval);
-	truth = val1.t == NT_FLOAT || val1.t == NT_RATIONAL;
+	truth = val1.t == NT_FLOAT_H || val1.t == NT_RATIONAL_H;
 	if (invert) truth = !truth;
 	out->lexemeValue = CreateBoolean(env, truth);
 }
@@ -1021,7 +1086,7 @@ void rif_is_literal_negativeInteger(Environment *env, UDFContext *udfc, UDFValue
 		return;
 	}
 	val1 = UDFValueToNumericValue(myval);
-	truth = (val1.t == NT_FLOAT) || (val1.t == NT_RATIONAL);
+	truth = (val1.t == NT_FLOAT_H) || (val1.t == NT_RATIONAL_H);
 	if (invert) truth = !truth;
 	out->lexemeValue = CreateBoolean(env, truth);
 }

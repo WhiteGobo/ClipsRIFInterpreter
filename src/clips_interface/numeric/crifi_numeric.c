@@ -225,14 +225,18 @@ double nv_as_float(NumericValue val){
 }
 
 CLIPSValue crifi_numeric_to_clipsvalue(Environment *env, NumericValue val){
+	return crifi_numeric_to_clipsvalue2(env, &val);
+}
+
+CLIPSValue crifi_numeric_to_clipsvalue2(Environment *env, NumericValue *val){
 	CLIPSValue ret;
 	char tmpout[30+sizeof(_XS_decimal_)];
-	switch (val.t){
+	switch (val->t){
 		case NT_RATIONAL:
-			return crifi_create_rational(env, val.dividend, val.divisor);
+			return crifi_create_rational(env, val->dividend, val->divisor);
 			break;
 		case NT_FLOAT:
-			return crifi_create_float(env, val.f);
+			return crifi_create_float(env, val->f);
 			break;
 		case NT_NAN:
     			//"-INF"^^xs:float //alternativly

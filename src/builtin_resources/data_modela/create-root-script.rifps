@@ -20,10 +20,27 @@ Document(
           Retract( ex:currentfactindex(?factindex) )
 
           Assert( ex:currentfactindex(External(func:numeric-add(?factindex 1))))
+          Assert( ex:brubru[ex:brubru-> External(func:numeric-add(?factindex 1))])
           Assert( ?factvar[cs:variable-name -> External(func:concat("fct" ?factindex))] )
 
         )
       )
+
+      Forall ?rifatom (
+        If And (
+          ?rifatom[rif:op -> ?op]
+          ?rifatom[rif:args -> ?arglist]
+        ) Then Do (
+          (?clipsdeftemplate New())
+          (?factvar New())
+          (?querylist ex:qqfactquery[cs:function-args -> ?querylist] )
+          Assert( ex:rootfunction[cs:fact-set-template -> ?clipsdeftemplate] )
+          Assert( ?clipsdeftemplate[cs:deftemplate-name -> "Atom"] )
+          Assert( ?clipsdeftemplate[cs:fact-set-member-variable -> ?factvar] )
+          Assert( ?factvar[rdf:type -> cs:Variable] )
+        )
+      )
+
       Forall ?rifframe ?object ?slotlist ?slotkey ?slotvalue ?subj ?pred ?obj ?factindex(
         If And (
           ?rifframe[rif:object -> ?object]
@@ -71,6 +88,7 @@ Document(
       )
 
       ex:currentfactindex(1)
+      ex:brubru()
       ex:rootfunction[rdf:type -> cs:AnyFactP]
       ex:rootfunction[cs:query -> ex:qqfactquery]
       ex:qqfactquery[cs:function-name -> "and"]

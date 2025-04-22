@@ -1,6 +1,7 @@
 add_library(crifi_numeric STATIC
 	crifi_numeric.c
 	crifi_numeric.h
+	base_calculations.c
 )
 
 target_include_directories(crifi_numeric PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")

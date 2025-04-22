@@ -29,8 +29,12 @@ CLIPSValue crifi_create_integer(Environment *env, long long value);
 CLIPSValue crifi_create_rational(Environment *env, long long dividend, long long divisor);
 
 CLIPSValue crifi_numeric_to_clipsvalue(Environment *env, NumericValue val);
+CLIPSValue crifi_numeric_to_clipsvalue2(Environment *env, NumericValue *val);
 
 bool clipsvalue_as_numeric_value(Environment *env, CLIPSValue val, NumericValue *out);
 double nv_as_float(NumericValue val);
 
 bool clipsvalue_as_integer(Environment *env, CLIPSValue val, long long *value);
+
+NumericValue* crifi_numeric_create_rational(long int dividend, long int divisor);
+NumericValue* crifi_numeric_add(Environment *env, NumericValue *val1, NumericValue *val2);
