@@ -1,3 +1,5 @@
+set(CRIFI_RECREATE_BUILTIN_MODELS TRUE CACHE BOOL "recreate builtin models in build directory")
+
 set(MODELDATA_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/")
 set(MODELDATA_AS_HEADER_MODELA
 	"${MODELDATA_DIRECTORY}/modeldata_as_header_modelA.h")
@@ -37,11 +39,14 @@ target_link_libraries(generate_builtin_model PRIVATE
 #include(recreate_builtin_graph_model.cmake)
 
 #set(MODELA "${CMAKE_CURRENT_BINARY_DIR}/modelA.clp")
-add_custom_target(modelA.clp ALL
-	COMMAND generate_builtin_model "--modelA" > modelA.clp
-	DEPENDS generate_builtin_model
-)
-add_custom_target(modelAchecker.clp ALL
-	COMMAND generate_builtin_model "--modelAchecker" > modelAchecker.clp
-	DEPENDS generate_builtin_model
-)
+
+if(CRIFI_RECREATE_BUILTIN_MODELS)
+	add_custom_target(modelA.clp ALL
+		COMMAND generate_builtin_model "--modelA" > modelA.clp
+		DEPENDS generate_builtin_model
+	)
+	add_custom_target(modelAchecker.clp ALL
+		COMMAND generate_builtin_model "--modelAchecker" > modelAchecker.clp
+		DEPENDS generate_builtin_model
+	)
+endif()

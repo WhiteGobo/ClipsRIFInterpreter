@@ -84,7 +84,7 @@ class officialw3cPETTestCases_Test : public testing::TestWithParam<TestdataPET> 
 
 static auto petTestdata = testing::Values(
 		TestdataPET("Core_PET_Builtin_literal-not-identical",
-			SC_All,
+			SC_ModelA,
 			"SKIP",
 			_W3C_TESTDATA_"Builtin_literal-not-identical/",
 			"Builtin_literal-not-identical-premise.ntriples",
@@ -632,7 +632,7 @@ static void fprintf_model_first_created_rules(FILE* out_f, crifi_graph *graph){
 			if (0 == strcmp(retval.val.string, "")) {
 				FAIL() << "not output from create-script-rif-logic";
 			}
-			fprintf(out_f, retval.val.string);
+			fprintf(out_f, "%s", retval.val.string);
 			break;
 		case CTC_DYNAMIC_ERROR:
 			FAIL() << "oops something went wrong";
