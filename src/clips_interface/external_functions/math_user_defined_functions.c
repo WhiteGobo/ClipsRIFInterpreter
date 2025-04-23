@@ -728,14 +728,6 @@ static int numeric_list_calculator(Environment *env, UDFContext *udfc, UDFValue 
 void rif_numeric_add(Environment *env, UDFContext *udfc, UDFValue *out) {
 	//NUMERICLISTCALCULATOR(numeric_add, "numeric_add");
 	numeric_list_calculator(env, udfc, out, crifi_numeric_add);
-	fprintf(stderr, "numeric add: ");
-	switch (out->header->type){
-		case STRING_TYPE:
-			fprintf(stderr, "%s\n", out->lexemeValue->contents);
-			break;
-		default:
-			fprintf(stderr, "cant print type\n");
-	}
 }
 
 void rif_numeric_subtract(Environment *env, UDFContext *udfc, UDFValue *out){

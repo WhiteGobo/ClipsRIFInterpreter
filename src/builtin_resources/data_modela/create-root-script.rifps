@@ -20,24 +20,78 @@ Document(
           Retract( ex:currentfactindex(?factindex) )
 
           Assert( ex:currentfactindex(External(func:numeric-add(?factindex 1))))
-          Assert( ex:brubru[ex:brubru-> External(func:numeric-add(?factindex 1))])
           Assert( ?factvar[cs:variable-name -> External(func:concat("fct" ?factindex))] )
 
         )
       )
 
-      Forall ?rifatom (
+      Forall ?rifatom ?rifop ?op (
         If And (
-          ?rifatom[rif:op -> ?op]
-          ?rifatom[rif:args -> ?arglist]
+          ?rifatom[rif:op -> ?rifop]
+          ?rifop[ex:as-expression -> ?op]
+          Not( Exists ?arglist ( ?rifatom[rif:args -> ?arglist] ))
         ) Then Do (
           (?clipsdeftemplate New())
           (?factvar New())
+          (?varop New())
+          (?varargs New())
+          (?funccheckop New())
+          (?funccheckargs New())
+          (?generateargscompare New())
           (?querylist ex:qqfactquery[cs:function-args -> ?querylist] )
           Assert( ex:rootfunction[cs:fact-set-template -> ?clipsdeftemplate] )
           Assert( ?clipsdeftemplate[cs:deftemplate-name -> "Atom"] )
           Assert( ?clipsdeftemplate[cs:fact-set-member-variable -> ?factvar] )
           Assert( ?factvar[rdf:type -> cs:Variable] )
+
+          Assert( ?varop[cs:member-variable -> ?factvar] )
+          Assert( ?varop[cs:member-slot-name -> "op"] )
+          Assert( ?varargs[cs:member-variable -> ?factvar] )
+          Assert( ?varargs[cs:member-slot-name -> "args"] )
+          Assert( ?funccheckop[cs:function-name -> "eq"] )
+          Assert( ?funccheckop[cs:function-args -> External(func:make-list(?varop ?op))] )
+          Assert( ?funccheckargs[cs:function-name -> "eq"] )
+          Assert( ?funccheckargs[cs:function-args -> External(func:make-list(?varargs ?generateargscompare))] )
+
+          Assert( ?generateargscompare[cs:function-name -> "create$"] )
+          Assert( ?generateargscompare[cs:function-args -> External(func:make-list())] )
+
+          Modify(ex:qqfactquery[cs:function-args -> External(func:append(?querylist ?funccheckop ?funccheckargs))])
+        )
+      )
+
+      Forall ?rifatom ?rifop ?op (
+        If And (
+          ?rifatom[rif:op -> ?rifop]
+          ?rifop[ex:as-expression -> ?op]
+          ?rifatom[rif:args -> ?arglist]
+        ) Then Do (
+          (?clipsdeftemplate New())
+          (?factvar New())
+          (?varop New())
+          (?varargs New())
+          (?funccheckop New())
+          (?funccheckargs New())
+          (?generateargscompare New())
+          (?querylist ex:qqfactquery[cs:function-args -> ?querylist] )
+          Assert( ex:rootfunction[cs:fact-set-template -> ?clipsdeftemplate] )
+          Assert( ?clipsdeftemplate[cs:deftemplate-name -> "Atom"] )
+          Assert( ?clipsdeftemplate[cs:fact-set-member-variable -> ?factvar] )
+          Assert( ?factvar[rdf:type -> cs:Variable] )
+
+          Assert( ?varop[cs:member-variable -> ?factvar] )
+          Assert( ?varop[cs:member-slot-name -> "op"] )
+          Assert( ?varargs[cs:member-variable -> ?factvar] )
+          Assert( ?varargs[cs:member-slot-name -> "args"] )
+          Assert( ?funccheckop[cs:function-name -> "eq"] )
+          Assert( ?funccheckop[cs:function-args -> External(func:make-list(?varop ?op))] )
+          Assert( ?funccheckargs[cs:function-name -> "eq"] )
+          Assert( ?funccheckargs[cs:function-args -> External(func:make-list(?varargs ?generateargscompare))] )
+
+          Assert( ?generateargscompare[cs:function-name -> "create$"] )
+          Assert( ?generateargscompare[cs:function-args -> External(func:make-list())] )
+
+          Modify(ex:qqfactquery[cs:function-args -> External(func:append(?querylist ?funccheckop ?funccheckargs))])
         )
       )
 
@@ -88,7 +142,6 @@ Document(
       )
 
       ex:currentfactindex(1)
-      ex:brubru()
       ex:rootfunction[rdf:type -> cs:AnyFactP]
       ex:rootfunction[cs:query -> ex:qqfactquery]
       ex:qqfactquery[cs:function-name -> "and"]
