@@ -60,6 +60,8 @@
 #define _XS_yearMonthDuration_ "http://www.w3.org/2001/XMLSchema#yearMonthDuration"
 #define _XS_normalizedString_ "http://www.w3.org/2001/XMLSchema#normalizedString"
 
+#define _RDF_XMLLiteral_ _RDF_ "XMLLiteral"
+
 #define _RDF_PlainLiteral_ "http://www.w3.org/1999/02/22-rdf-syntax-ns#PlainLiteral"
 
 #define _PRED_literal_not_identical_ "http://www.w3.org/2007/rif-builtin-predicate#literal-not-identical"
@@ -135,6 +137,12 @@
 #define _PRED_is_literal_NMTOKEN_ "http://www.w3.org/2007/rif-builtin-predicate#is-literal-NMTOKEN"
 #define _PRED_is_literal_not_NMTOKEN_ "http://www.w3.org/2007/rif-builtin-predicate#is-literal-not-NMTOKEN"
 
+
+#define _PRED_is_literal_XMLLiteral_ _PRED_ "is-literal-XMLLiteral"
+#define _PRED_is_literal_not_XMLLiteral_ _PRED_ "is-literal-not-XMLLiteral"
+
+#define _PRED_is_literal_anyURI_ _PRED_ "is-literal-anyURI"
+#define _PRED_is_literal_not_anyURI_ _PRED_ "is-literal-not-anyURI"
 
 #define _PRED_is_list_ "http://www.w3.org/2007/rif-builtin-predicate#is-list"
 #define _PRED_list_contains_ "http://www.w3.org/2007/rif-builtin-predicate#list-contains"

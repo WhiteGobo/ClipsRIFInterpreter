@@ -352,8 +352,8 @@ void rif_substring(Environment *env, UDFContext *udfc, UDFValue *out){
 	if (start < 1){
 		length -= 1 - start;
 		start = 0;
-	} else {
-		start -= 1; //xpath string starts with 1
+	//} else {
+	//	start -= 1; //xpath string starts with 1
 	}
 	if (length > source_length - start){
 		length = source_length - start;

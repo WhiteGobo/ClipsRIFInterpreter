@@ -176,6 +176,7 @@ static auto petTestdata = testing::Values(
 			"Builtins_PlainLiteral-conclusion.ntriples",
 			NULL),
 		TestdataPET("Core_PET_Builtins_String",
+				"?dont know why",
 			"Builtins_String-premise.ntriples",
 			"Builtins_String-conclusion.ntriples",
 			NULL),

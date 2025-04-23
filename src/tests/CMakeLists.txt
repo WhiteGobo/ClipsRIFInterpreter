@@ -49,3 +49,4 @@ include(GoogleTest)
 gtest_discover_tests(hello_test)
 
 add_subdirectory(info_query)
+add_subdirectory(external_functions)
