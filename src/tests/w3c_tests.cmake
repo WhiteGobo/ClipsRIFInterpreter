@@ -99,7 +99,7 @@ list(APPEND mytargets
 	YoungParentDiscount_1
 )
 set(compilelist)
-list(APPEND targetendings "-conclusion.ntriples" "-premise.ntriples" "-import001.ntriples" "-nonconclusion.ntriples" "-input.ntriples")
+list(APPEND targetendings "-conclusion.ntriples" "-premise.ntriples" "-import001.ntriples" "-nonconclusion.ntriples" "-input.ntriples" "-conclusion.ttl" "-premise.ttl")
 foreach(base ${mytargets})
 	foreach(ending ${targetendings})
 		unset(targetfile)

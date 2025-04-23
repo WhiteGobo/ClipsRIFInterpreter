@@ -105,8 +105,8 @@ static auto petTestdata = testing::Values(
 			SC_ModelA,
 			"SKIP",
 			_W3C_TESTDATA_"Builtins_Numeric/",
-			"Builtins_Numeric-premise.ntriples",
-			"Builtins_Numeric-conclusion.ntriples"),
+			"Builtins_Numeric-premise.ttl",
+			"Builtins_Numeric-conclusion.ttl"),
 		TestdataPET("Core_PET_Builtins_PlainLiteral",
 			SC_All,
 			"SKIP",
@@ -545,7 +545,7 @@ static void create_new_logic(crifi_graph *create_logic_graph, FILE *memory){
 static void run_and_check(crifi_graph *graph, const char* check_command, bool expect){
 	bool errorstate;
 	struct DynamicValue retval;
-	int number_rules_run = run_rules(graph, -1);
+	int number_rules_run = run_rules(graph, 10000);
 	fprintf(stderr, "numer of rules during logic: %d\n", number_rules_run);
 	if (graph_in_errorstate(graph, stderr)){
 		FAIL() << "graph ended up in errorstate, while running logic.";
@@ -605,7 +605,7 @@ static void create_logic_into_memory(FILE* tmpmem_f, TestdataPET testdata, Graph
 	fprintf(stderr, "loading logic info from: %s\n", testdata.premise_uri.c_str());
 	load_from_memory_to_graph(create_logic_graph, testdata.premise_uri.c_str());
 
-	number_rules_run = run_rules(create_logic_graph, -1);
+	number_rules_run = run_rules(create_logic_graph, 10000);
 	fprintf(stderr, "information in create_logic_graph after rules run.\n");
 	//ignore error:
 	crifi_serialize_all_triples(create_logic_graph, stderr, "turtle", "");
@@ -654,7 +654,7 @@ static void create_logic_into_memory_model_first(FILE* tmpmem_f, TestdataPET tes
 	fprintf(stderr, "loading logic info from: %s\n", testdata.premise_uri.c_str());
 	load_from_memory_to_graph(create_logic_graph, testdata.premise_uri.c_str());
 
-	number_rules_run = run_rules(create_logic_graph, -1);
+	number_rules_run = run_rules(create_logic_graph, 10000);
 	fprintf(stderr, "information in create_logic_graph after rules run.\n");
 	//ignore error:
 	crifi_serialize_all_triples(create_logic_graph, stderr, "turtle", "");
@@ -682,7 +682,7 @@ static void create_check_into_memory(FILE *tmpmem_f, TestdataPET testdata, Graph
 	fprintf(stderr, "loading check info from: %s\n", testdata.conclusion_uri.c_str());
 	load_from_memory_to_graph(create_check_graph, testdata.conclusion_uri.c_str());
 
-	number_rules_run = run_rules(create_check_graph, -1);
+	number_rules_run = run_rules(create_check_graph, 10000);
 	fprintf(stderr, "information in create_check_graph after rules run.\n");
 	//ignore error:
 	crifi_serialize_all_triples(create_check_graph, stderr, "turtle", "");
