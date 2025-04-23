@@ -92,11 +92,9 @@
                                                                         rif:varname "arglist" ] ) ] ] ) ] ;
                                 rif:then [ a rif:Do ;
                                         rif:actionVar ( [ a rif:Var ;
-                                                    rif:varname "funccheckop" ] [ a rif:New ] ),
+                                                    rif:varname "clipsdeftemplate" ] [ a rif:New ] ),
                                             ( [ a rif:Var ;
                                                     rif:varname "varop" ] [ a rif:New ] ),
-                                            ( [ a rif:Var ;
-                                                    rif:varname "varargs" ] [ a rif:New ] ),
                                             ( [ a rif:Var ;
                                                     rif:varname "querylist" ] [ a rif:Frame ;
                                                     rif:object [ a rif:Const ;
@@ -107,13 +105,15 @@
                                                                 rif:slotvalue [ a rif:Var ;
                                                                         rif:varname "querylist" ] ] ) ] ),
                                             ( [ a rif:Var ;
-                                                    rif:varname "funccheckargs" ] [ a rif:New ] ),
+                                                    rif:varname "funccheckop" ] [ a rif:New ] ),
+                                            ( [ a rif:Var ;
+                                                    rif:varname "varargs" ] [ a rif:New ] ),
                                             ( [ a rif:Var ;
                                                     rif:varname "factvar" ] [ a rif:New ] ),
                                             ( [ a rif:Var ;
-                                                    rif:varname "generateargscompare" ] [ a rif:New ] ),
+                                                    rif:varname "funccheckargs" ] [ a rif:New ] ),
                                             ( [ a rif:Var ;
-                                                    rif:varname "clipsdeftemplate" ] [ a rif:New ] ) ;
+                                                    rif:varname "generateargscompare" ] [ a rif:New ] ) ;
                                         rif:actions ( [ a rif:Assert ;
                                                     rif:target [ a rif:Frame ;
                                                             rif:object [ a rif:Const ;
@@ -284,20 +284,6 @@
                                                                         rif:varname "arglist" ] ] ) ] ) ] ;
                                 rif:then [ a rif:Do ;
                                         rif:actionVar ( [ a rif:Var ;
-                                                    rif:varname "funccheckargs" ] [ a rif:New ] ),
-                                            ( [ a rif:Var ;
-                                                    rif:varname "generateargscompare" ] [ a rif:New ] ),
-                                            ( [ a rif:Var ;
-                                                    rif:varname "varargs" ] [ a rif:New ] ),
-                                            ( [ a rif:Var ;
-                                                    rif:varname "funccheckop" ] [ a rif:New ] ),
-                                            ( [ a rif:Var ;
-                                                    rif:varname "varop" ] [ a rif:New ] ),
-                                            ( [ a rif:Var ;
-                                                    rif:varname "clipsdeftemplate" ] [ a rif:New ] ),
-                                            ( [ a rif:Var ;
-                                                    rif:varname "factvar" ] [ a rif:New ] ),
-                                            ( [ a rif:Var ;
                                                     rif:varname "querylist" ] [ a rif:Frame ;
                                                     rif:object [ a rif:Const ;
                                                             rif:constIRI "http://example.com/qqfactquery"^^xsd:anyURI ] ;
@@ -305,7 +291,21 @@
                                                                 rif:slotkey [ a rif:Const ;
                                                                         rif:constIRI "http://clips.script/function-args"^^xsd:anyURI ] ;
                                                                 rif:slotvalue [ a rif:Var ;
-                                                                        rif:varname "querylist" ] ] ) ] ) ;
+                                                                        rif:varname "querylist" ] ] ) ] ),
+                                            ( [ a rif:Var ;
+                                                    rif:varname "generateargscompare" ] [ a rif:New ] ),
+                                            ( [ a rif:Var ;
+                                                    rif:varname "factvar" ] [ a rif:New ] ),
+                                            ( [ a rif:Var ;
+                                                    rif:varname "funccheckargs" ] [ a rif:New ] ),
+                                            ( [ a rif:Var ;
+                                                    rif:varname "funccheckop" ] [ a rif:New ] ),
+                                            ( [ a rif:Var ;
+                                                    rif:varname "varargs" ] [ a rif:New ] ),
+                                            ( [ a rif:Var ;
+                                                    rif:varname "varop" ] [ a rif:New ] ),
+                                            ( [ a rif:Var ;
+                                                    rif:varname "clipsdeftemplate" ] [ a rif:New ] ) ;
                                         rif:actions ( [ a rif:Assert ;
                                                     rif:target [ a rif:Frame ;
                                                             rif:object [ a rif:Const ;
@@ -431,7 +431,15 @@
                                                                                 rif:content [ a rif:Expr ;
                                                                                         rif:args () ;
                                                                                         rif:op [ a rif:Const ;
-                                                                                                rif:constIRI "http://www.w3.org/2007/rif-builtin-function#make-list"^^xsd:anyURI ] ] ] ] ) ] ] [ a rif:Modify ;
+                                                                                                rif:constIRI "http://www.w3.org/2007/rif-builtin-function#make-list"^^xsd:anyURI ] ] ] ] ) ] ] [ a rif:Assert ;
+                                                    rif:target [ a rif:Frame ;
+                                                            rif:object [ a rif:Var ;
+                                                                    rif:varname "generateargscompare" ] ;
+                                                            rif:slots ( [ a rif:Slot ;
+                                                                        rif:slotkey [ a rif:Const ;
+                                                                                rif:constIRI "http://example.com/add-expressions-as-args"^^xsd:anyURI ] ;
+                                                                        rif:slotvalue [ a rif:Var ;
+                                                                                rif:varname "arglist" ] ] ) ] ] [ a rif:Modify ;
                                                     rif:target [ a rif:Frame ;
                                                             rif:object [ a rif:Const ;
                                                                     rif:constIRI "http://example.com/qqfactquery"^^xsd:anyURI ] ;
@@ -450,6 +458,89 @@
                                     rif:varname "rifatom" ] [ a rif:Var ;
                                     rif:varname "rifop" ] [ a rif:Var ;
                                     rif:varname "op" ] ) ] [ a rif:Forall ;
+                        rif:formula [ a rif:Implies ;
+                                rif:if [ a rif:And ;
+                                        rif:formulas ( [ a rif:Frame ;
+                                                    rif:object [ a rif:Var ;
+                                                            rif:varname "clipsfunction" ] ;
+                                                    rif:slots ( [ a rif:Slot ;
+                                                                rif:slotkey [ a rif:Const ;
+                                                                        rif:constIRI "http://example.com/add-expressions-as-args"^^xsd:anyURI ] ;
+                                                                rif:slotvalue [ a rif:Var ;
+                                                                        rif:varname "rifrestargs" ] ] ) ] [ a rif:External ;
+                                                    rif:content [ a rif:Atom ;
+                                                            rif:args ( [ a rif:Var ;
+                                                                        rif:varname "rifrestargs" ] ) ;
+                                                            rif:op [ a rif:Const ;
+                                                                    rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#is-list"^^xsd:anyURI ] ] ] [ a rif:External ;
+                                                    rif:content [ a rif:Atom ;
+                                                            rif:args ( [ a rif:Const ;
+                                                                        rif:value 0 ] [ a rif:External ;
+                                                                        rif:content [ a rif:Expr ;
+                                                                                rif:args ( [ a rif:Var ;
+                                                                                            rif:varname "rifrestargs" ] ) ;
+                                                                                rif:op [ a rif:Const ;
+                                                                                        rif:constIRI "http://www.w3.org/2007/rif-builtin-function#count"^^xsd:anyURI ] ] ] ) ;
+                                                            rif:op [ a rif:Const ;
+                                                                    rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#numeric-not-equal"^^xsd:anyURI ] ] ] [ a rif:Frame ;
+                                                    rif:object [ a rif:Var ;
+                                                            rif:varname "firstaction" ] ;
+                                                    rif:slots ( [ a rif:Slot ;
+                                                                rif:slotkey [ a rif:Const ;
+                                                                        rif:constIRI "http://example.com/as-expression"^^xsd:anyURI ] ;
+                                                                rif:slotvalue [ a rif:Var ;
+                                                                        rif:varname "nextarg" ] ] ) ] [ a rif:Equal ;
+                                                    rif:left [ a rif:Var ;
+                                                            rif:varname "firstaction" ] ;
+                                                    rif:right [ a rif:External ;
+                                                            rif:content [ a rif:Expr ;
+                                                                    rif:args ( [ a rif:Var ;
+                                                                                rif:varname "rifrestargs" ] [ a rif:Const ;
+                                                                                rif:value 0 ] ) ;
+                                                                    rif:op [ a rif:Const ;
+                                                                            rif:constIRI "http://www.w3.org/2007/rif-builtin-function#get"^^xsd:anyURI ] ] ] ] ) ] ;
+                                rif:then [ a rif:Do ;
+                                        rif:actionVar ( [ a rif:Var ;
+                                                    rif:varname "currentargs" ] [ a rif:Frame ;
+                                                    rif:object [ a rif:Var ;
+                                                            rif:varname "clipsfunction" ] ;
+                                                    rif:slots ( [ a rif:Slot ;
+                                                                rif:slotkey [ a rif:Const ;
+                                                                        rif:constIRI "http://clips.script/function-args"^^xsd:anyURI ] ;
+                                                                rif:slotvalue [ a rif:Var ;
+                                                                        rif:varname "currentargs" ] ] ) ] ) ;
+                                        rif:actions ( [ a rif:Modify ;
+                                                    rif:target [ a rif:Frame ;
+                                                            rif:object [ a rif:Var ;
+                                                                    rif:varname "clipsfunction" ] ;
+                                                            rif:slots ( [ a rif:Slot ;
+                                                                        rif:slotkey [ a rif:Const ;
+                                                                                rif:constIRI "http://example.com/add-expressions-as-args"^^xsd:anyURI ] ;
+                                                                        rif:slotvalue [ a rif:External ;
+                                                                                rif:content [ a rif:Expr ;
+                                                                                        rif:args ( [ a rif:Var ;
+                                                                                                    rif:varname "rifrestargs" ] [ a rif:Const ;
+                                                                                                    rif:value 0 ] ) ;
+                                                                                        rif:op [ a rif:Const ;
+                                                                                                rif:constIRI "http://www.w3.org/2007/rif-builtin-function#remove"^^xsd:anyURI ] ] ] ] ) ] ] [ a rif:Modify ;
+                                                    rif:target [ a rif:Frame ;
+                                                            rif:object [ a rif:Var ;
+                                                                    rif:varname "clipsfunction" ] ;
+                                                            rif:slots ( [ a rif:Slot ;
+                                                                        rif:slotkey [ a rif:Const ;
+                                                                                rif:constIRI "http://clips.script/function-args"^^xsd:anyURI ] ;
+                                                                        rif:slotvalue [ a rif:External ;
+                                                                                rif:content [ a rif:Expr ;
+                                                                                        rif:args ( [ a rif:Var ;
+                                                                                                    rif:varname "currentargs" ] [ a rif:Var ;
+                                                                                                    rif:varname "nextarg" ] ) ;
+                                                                                        rif:op [ a rif:Const ;
+                                                                                                rif:constIRI "http://www.w3.org/2007/rif-builtin-function#append"^^xsd:anyURI ] ] ] ] ) ] ] ) ] ] ;
+                        rif:vars ( [ a rif:Var ;
+                                    rif:varname "clipsfunction" ] [ a rif:Var ;
+                                    rif:varname "rifrestargs" ] [ a rif:Var ;
+                                    rif:varname "nextarg" ] [ a rif:Var ;
+                                    rif:varname "firstaction" ] ) ] [ a rif:Forall ;
                         rif:formula [ a rif:Implies ;
                                 rif:if [ a rif:And ;
                                         rif:formulas ( [ a rif:Frame ;
@@ -515,6 +606,10 @@
                                                                     rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#list-contains"^^xsd:anyURI ] ] ] ) ] ;
                                 rif:then [ a rif:Do ;
                                         rif:actionVar ( [ a rif:Var ;
+                                                    rif:varname "clipsdeftemplate" ] [ a rif:New ] ),
+                                            ( [ a rif:Var ;
+                                                    rif:varname "funccheckpred" ] [ a rif:New ] ),
+                                            ( [ a rif:Var ;
                                                     rif:varname "querylist" ] [ a rif:Frame ;
                                                     rif:object [ a rif:Const ;
                                                             rif:constIRI "http://example.com/qqfactquery"^^xsd:anyURI ] ;
@@ -524,21 +619,17 @@
                                                                 rif:slotvalue [ a rif:Var ;
                                                                         rif:varname "querylist" ] ] ) ] ),
                                             ( [ a rif:Var ;
+                                                    rif:varname "funccheckobj" ] [ a rif:New ] ),
+                                            ( [ a rif:Var ;
+                                                    rif:varname "factvar" ] [ a rif:New ] ),
+                                            ( [ a rif:Var ;
                                                     rif:varname "slotpred" ] [ a rif:New ] ),
                                             ( [ a rif:Var ;
                                                     rif:varname "slotobj" ] [ a rif:New ] ),
                                             ( [ a rif:Var ;
-                                                    rif:varname "funcchecksubj" ] [ a rif:New ] ),
-                                            ( [ a rif:Var ;
-                                                    rif:varname "factvar" ] [ a rif:New ] ),
-                                            ( [ a rif:Var ;
-                                                    rif:varname "funccheckpred" ] [ a rif:New ] ),
-                                            ( [ a rif:Var ;
                                                     rif:varname "slotsubj" ] [ a rif:New ] ),
                                             ( [ a rif:Var ;
-                                                    rif:varname "funccheckobj" ] [ a rif:New ] ),
-                                            ( [ a rif:Var ;
-                                                    rif:varname "clipsdeftemplate" ] [ a rif:New ] ) ;
+                                                    rif:varname "funcchecksubj" ] [ a rif:New ] ) ;
                                         rif:actions ( [ a rif:Assert ;
                                                     rif:target [ a rif:Frame ;
                                                             rif:object [ a rif:Var ;

@@ -90,8 +90,22 @@ Document(
 
           Assert( ?generateargscompare[cs:function-name -> "create$"] )
           Assert( ?generateargscompare[cs:function-args -> External(func:make-list())] )
+          Assert( ?generateargscompare[ex:add-expressions-as-args -> ?arglist] )
 
           Modify(ex:qqfactquery[cs:function-args -> External(func:append(?querylist ?funccheckop ?funccheckargs))])
+        )
+      )
+      Forall ?clipsfunction ?rifrestargs ?nextarg ?firstaction(
+        If And (
+          ?clipsfunction[ex:add-expressions-as-args -> ?rifrestargs]
+          External(pred:is-list(?rifrestargs))
+          External( pred:numeric-not-equal(0 External(func:count(?rifrestargs))) )
+          ?firstaction[ex:as-expression -> ?nextarg]
+          ?firstaction = External(func:get(?rifrestargs 0))
+        ) Then Do (
+          (?currentargs ?clipsfunction[cs:function-args -> ?currentargs])
+          Modify( ?clipsfunction[ex:add-expressions-as-args -> External(func:remove(?rifrestargs 0))] )
+          Modify(?clipsfunction[cs:function-args -> External(func:append(?currentargs ?nextarg))])
         )
       )
 

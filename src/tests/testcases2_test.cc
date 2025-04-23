@@ -775,7 +775,7 @@ TEST_P(officialw3cPETTestCases_Test, CreateAndTestModelWithModelFirst) {
 	load_new_logic(maingraph, tmpmem, strlen(tmpmem));
 	run_and_check(maingraph, tmpcheckmem, true);
 	close_graph(maingraph);
-	//FAIL() << "testfail";
+	FAIL() << "testfail";
 }
 
 
