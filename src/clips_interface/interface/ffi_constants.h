@@ -300,6 +300,7 @@
 #define _RIF_value_ _RIF_ "value"
 #define _RIF_Var_ _RIF_ "Var"
 #define _RIF_varname_ _RIF_ "varname"
+#define _RIF_local_ _RIF_ "local"
 
 
 #define _SYNTAX_ "http://www.w3.org/ns/formats/"

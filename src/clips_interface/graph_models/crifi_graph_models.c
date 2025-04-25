@@ -19,7 +19,7 @@ crifi_graph *init_graph_modelA(){
 crifi_graph *init_graph_modelcheckA(){
 	crifi_graph *graph = init_graph_modelcheckA_internal(NULL);
 	if (graph != NULL){
-	set_model_id_for_import(graph, CRIFI_IMPORT_MODEL_RIFGENERATOR);
+		set_model_id_for_import(graph, CRIFI_IMPORT_MODEL_RIFGENERATOR);
 	}
 	return graph;
 }
@@ -27,7 +27,7 @@ crifi_graph *init_graph_modelcheckA(){
 crifi_graph *init_graph_model_first(){
 	crifi_graph *graph = init_graph_model_first_internal(NULL);
 	if (graph != NULL){
-	set_model_id_for_import(graph, CRIFI_IMPORT_MODEL_RIFGENERATOR);
+		set_model_id_for_import(graph, CRIFI_IMPORT_MODEL_RIFGENERATOR);
 	}
 	return graph;
 }

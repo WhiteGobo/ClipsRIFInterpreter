@@ -53,6 +53,11 @@ CrifiAssertTripleError assert_triple(Environment *env, CLIPSValue *subject, CLIP
 char* genclipscode_iri(Environment *env, char* iri);
 char* genclipscode_lexical(Environment *env, char* value, char* datatype);
 
+
+/*
+int local_blanknode(Environment *env, CLIPSValue* location, CLIPSValue* id, CLIPSValue* result);
+*/
+
 #ifdef __cplusplus
 } //extern "C"
 #endif

@@ -99,9 +99,11 @@ void crifi_import(Environment *env, UDFContext *udfc, UDFValue *out){
 					&entailment_regime);
 			break;
 		case RET_CRIFI_IMPORT_ASSERT_FRAME_FAILED:
-			SETERROR("crifi:import failed because broken library. "
-					"assert_frame unexpectedly thrown "
-					"error.");
+			set_error_string_uri(env, "crifi:import failed because "
+					"broken library. assert_frame "
+					"unexpectedly thrown error "
+					"with entailment regime: ",
+					&entailment_regime);
 			break;
 		case RET_CRIFI_IMPORT_INVALIDCONTEXT:
 		case RET_CRIFI_IMPORT_PROCESS_FAILED:

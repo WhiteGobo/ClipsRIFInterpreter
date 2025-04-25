@@ -47,7 +47,10 @@ static char *extract_import_location(crifi_graph *graph, CLIPSValue *import_loca
 	return extract_lexical(graph, import_location->header);
 }
 
-RET_CRIFI_IMPORT crifi_execute_import(crifi_graph *graph, CLIPSValue *import_location, CLIPSValue *entailment_regime, CLIPSValue *values, int number_values){
+RET_CRIFI_IMPORT crifi_execute_import(crifi_graph *graph,
+		CLIPSValue *import_location, CLIPSValue *entailment_regime,
+		CLIPSValue *values, int number_values)
+{
 	int process_err;
 	char *import_location_str;
 

@@ -1,6 +1,7 @@
 add_library(info_query STATIC
 	info_query.h
 	info_query.c
+	blanknodes.c
 	genclipscode.c
 	internal_fact_interface.c
 )

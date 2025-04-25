@@ -200,8 +200,16 @@ static CRIFI_IMPORT_ASSERT_RET assert_term(ImportProcess *process,
 			ASSERT_TRIPLE_OR_FAIL(process, ret, &rif_value, &value_cv);
 			break;
 		case CRIFI_IMPORT_TERM_BNODE:
-			//TODO: missing use exrternal create bnode
-			return CRIFI_IMPORT_ASSERT_UNHANDLED_ERROR;
+			err = value_and_datatype_to_clipsvalue(process->graph,
+						value, strlen(value),
+						_RIF_local_, strlen(_RIF_local_),
+						&value_cv);
+			if (err != 0){
+				return CRIFI_IMPORT_ASSERT_UNHANDLED_ERROR;
+			}
+			ASSERT_TRIPLE_OR_FAIL(process, ret, &rdf_type, &rif_Const);
+			ASSERT_TRIPLE_OR_FAIL(process, ret, &rif_value, &value_cv);
+			break;
 		case CRIFI_IMPORT_TERM_UNKNOWN:
 		default:
 			return CRIFI_IMPORT_ASSERT_UNHANDLED_ERROR;
