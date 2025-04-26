@@ -89,7 +89,7 @@ typedef struct {
 static int fprintf_raptor_term(FILE* stream, raptor_term* term){
 	switch(term->type){
 		case RAPTOR_TERM_TYPE_LITERAL:
-			fprintf(stream, term->value.literal.string);
+			fprintf(stream, "%s", term->value.literal.string);
 			break;
 		default:
 			fprintf(stderr, "Missing support in fprinf_term "
