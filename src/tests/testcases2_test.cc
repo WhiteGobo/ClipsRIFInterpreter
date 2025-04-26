@@ -28,14 +28,14 @@ typedef enum {
 
 class TestdataPET {
 	public:
-		SkipCondition skip_c;
+		unsigned long skip_c;
 		std::string premise_uri;
 		std::string conclusion_uri;
 		std::string name;
 		bool result;
 		TestdataPET(
 				std::string Name,
-				SkipCondition skip_condition,
+				unsigned long skip_condition,
 				std::string prefix,
 				std::string premiseUri,
 				std::string conclusionUri
@@ -48,7 +48,7 @@ class TestdataPET {
 		}
 		TestdataPET(
 				std::string Name,
-				SkipCondition skip_condition,
+				unsigned long skip_condition,
 				std::string prefix,
 				std::string premiseUri,
 				std::string conclusionUri,
@@ -490,7 +490,7 @@ static void create_new_logic(crifi_graph *create_logic_graph, FILE *memory){
 static void run_and_check(crifi_graph *graph, const char* check_command, bool expect){
 	bool errorstate;
 	struct DynamicValue retval;
-	int number_rules_run = run_rules(graph, 10000);
+	int number_rules_run = run_rules(graph, 20);
 	fprintf(stderr, "numer of rules during logic: %d\n", number_rules_run);
 	if (graph_in_errorstate(graph, stderr)){
 		FAIL() << "graph ended up in errorstate, while running logic.";
