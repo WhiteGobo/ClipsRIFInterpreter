@@ -176,15 +176,12 @@ Document(
         )
       )
 
-      Forall ?rifframe ?object ?slotlist ?slotkey ?slotvalue ?subj ?pred ?obj ?factindex(
+      Forall ?rifframe ?object ?slotlist ?slotkey ?slotvalue ?factindex(
         If And (
           ?rifframe[rif:object -> ?object]
           ?rifframe[rif:slots -> ?slotlist]
-          ?object[ex:as-expression -> ?subj]
           ?slot[rif:slotkey -> ?slotkey]
-          ?slotkey[ex:as-expression -> ?pred]
           ?slot[rif:slotvalue -> ?slotvalue]
-          ?slotvalue[ex:as-expression -> ?obj]
           External(pred:is-list(?slotlist))
           External(pred:list-contains(?slotlist ?slot))
         ) Then Do (
@@ -214,6 +211,7 @@ Document(
           Assert( ?checktriple[ex:checktripleobject -> ?slotvalue] )
           Assert( ?checktriple[ex:triplevariable -> ?factvar] )
           Assert( ?checktriple[ex:addchecktoquery -> ?query] )
+          Assert( ?rifframe[ex:as-expression -> ?factvar])
 
         )
       )

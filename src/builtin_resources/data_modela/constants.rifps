@@ -113,12 +113,91 @@ Document(
             ?rifvar[rif:varname -> ?varname]
             External(pred:list-contains(?varlist ?rifvar))
           ) Then Do (
+            Assert( ?rifvar[ex:inherits-data -> ?rifforall] )
+          )
+        )
+        Forall ?rifforall ?varlist ?rifvar ?varname (
+          If And (
+            ?rifforall[rdf:type -> rif:Forall]
+            ?rifforall[rif:vars -> ?varlist]
+            External(pred:is-list(?varlist))
+            ?rifvar[rif:varname -> ?varname]
+            External(pred:list-contains(?varlist ?rifvar))
+          ) Then Do (
             (?clipsnode New())
             Assert(?rifvar[ex:as-constraint -> ?clipsnode])
             Assert(?rifvar[ex:as-expression -> ?clipsnode])
             Assert(?clipsnode[cs:variable-name -> ?varname])
             Assert(?clipsnode[ex:as-constraint-needs-additional-conditionals -> External(func:make-list())])
-            Assert( ?rifvar[ex:inherits-data -> ?rifforall] )
+          )
+        )
+        Forall ?rifforall ?varlist ?rifvar ?varname ?rifvarchild(
+          If And (
+            ?rifexists[rdf:type -> rif:Exists]
+            ?rifexists[rif:vars -> ?varlist]
+            External(pred:is-list(?varlist))
+            ?rifvar[rif:varname -> ?varname]
+            External(pred:list-contains(?varlist ?rifvar))
+            Not( Exists ?expr (?rifvar[ex:as-expression -> ?expr]))
+            ?rifvarchild[rif:varname -> ?varname]
+            ?rifvar[ex:inherits-data -> ?rifvarchild]
+            ?rifframe[rif:object -> ?rifvarchild]
+            ?rifframe[ex:as-expression -> ?factvar]
+          ) Then Do (
+            (?clipsnode New())
+            Assert(?rifvar[ex:as-constraint -> ?clipsnode])
+            Assert(?rifvar[ex:as-expression -> ?clipsnode])
+            Assert( ?clipsnode[cs:member-variable -> ?factvar] )
+            Assert( ?clipsnode[cs:member-slot-name -> "subject"] )
+            Assert( ?clipsnode[ex:as-constraint-needs-additional-conditionals -> External(func:make-list())])
+          )
+        )
+        Forall ?rifforall ?varlist ?rifvar ?varname ?rifvarchild ?slotlist ?rifslot(
+          If And (
+            ?rifexists[rdf:type -> rif:Exists]
+            ?rifexists[rif:vars -> ?varlist]
+            External(pred:is-list(?varlist))
+            ?rifvar[rif:varname -> ?varname]
+            External(pred:list-contains(?varlist ?rifvar))
+            Not( Exists ?expr (?rifvar[ex:as-expression -> ?expr]))
+            ?rifvarchild[rif:varname -> ?varname]
+            ?rifvar[ex:inherits-data -> ?rifvarchild]
+            ?rifframe[rif:slots -> ?slotlist]
+            External(pred:is-list(?slotlist))
+            ?rifslot[rif:slotkey -> ?rifvarchild]
+            External(pred:list-contains(?slotlist ?rifslot))
+            ?rifframe[ex:as-expression -> ?factvar]
+          ) Then Do (
+            (?clipsnode New())
+            Assert(?rifvar[ex:as-constraint -> ?clipsnode])
+            Assert(?rifvar[ex:as-expression -> ?clipsnode])
+            Assert( ?clipsnode[cs:member-variable -> ?factvar] )
+            Assert( ?clipsnode[cs:member-slot-name -> "predicate"] )
+            Assert( ?clipsnode[ex:as-constraint-needs-additional-conditionals -> External(func:make-list())])
+          )
+        )
+        Forall ?rifforall ?varlist ?rifvar ?varname ?rifvarchild ?slotlist ?rifslot(
+          If And (
+            ?rifexists[rdf:type -> rif:Exists]
+            ?rifexists[rif:vars -> ?varlist]
+            External(pred:is-list(?varlist))
+            ?rifvar[rif:varname -> ?varname]
+            External(pred:list-contains(?varlist ?rifvar))
+            Not( Exists ?expr (?rifvar[ex:as-expression -> ?expr]))
+            ?rifvarchild[rif:varname -> ?varname]
+            ?rifvar[ex:inherits-data -> ?rifvarchild]
+            ?rifframe[rif:slots -> ?slotlist]
+            External(pred:is-list(?slotlist))
+            ?rifslot[rif:slotvalue -> ?rifvarchild]
+            External(pred:list-contains(?slotlist ?rifslot))
+            ?rifframe[ex:as-expression -> ?factvar]
+          ) Then Do (
+            (?clipsnode New())
+            Assert(?rifvar[ex:as-constraint -> ?clipsnode])
+            Assert(?rifvar[ex:as-expression -> ?clipsnode])
+            Assert( ?clipsnode[cs:member-variable -> ?factvar] )
+            Assert( ?clipsnode[cs:member-slot-name -> "object"] )
+            Assert( ?clipsnode[ex:as-constraint-needs-additional-conditionals -> External(func:make-list())])
           )
         )
         Forall ?varchild ?varparent ?varname ?clipsvar(

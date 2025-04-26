@@ -2,8 +2,8 @@
 @prefix rif: <http://www.w3.org/2007/rif#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-[] a rif:Exists ;
-    rif:formula [ a rif:Frame ;
+_:nexists a rif:Exists ;
+    rif:formula [ a rif:Frame ; <http://example.com/qq> _:nexists ;
             rif:object [ a rif:Var ;
                     rif:varname "z" ] ;
             rif:slots ( [ a rif:Slot ;

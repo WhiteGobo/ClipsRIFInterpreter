@@ -210,7 +210,7 @@ static auto petTestdata = testing::Values(
 			"Positional_Arguments-premise",
 			"Positional_Arguments-conclusion"),
 		TestdataPET("Core_PET_RDF_Combination_Blank_Node",
-			SC_All,
+			SC_ModelA,
 
 			"not implemented",
 			_W3C_TESTDATA_"RDF_Combination_Blank_Node/",
@@ -720,6 +720,7 @@ TEST_P(officialw3cPETTestCases_Test, CreateAndTestModelWithModelA) {
 	create_logic_into_memory(tmpmem_f, testdata, init_graph_modelA);
 	fclose(tmpmem_f);
 	if (HasFatalFailure()) return;
+	if (HasFailure()) return;
 	fprintf(stderr, "<created script>:\n%s\n</created script>\n", tmpmem);
 	ASSERT_NE(strlen(tmpmem), 0) << "no logic script created";
 
@@ -775,7 +776,7 @@ TEST_P(officialw3cPETTestCases_Test, CreateAndTestModelWithModelFirst) {
 	load_new_logic(maingraph, tmpmem, strlen(tmpmem));
 	run_and_check(maingraph, tmpcheckmem, true);
 	close_graph(maingraph);
-	//FAIL() << "testfail";
+	FAIL() << "testfail";
 }
 
 

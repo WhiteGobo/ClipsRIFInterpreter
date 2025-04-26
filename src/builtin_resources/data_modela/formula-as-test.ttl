@@ -94,21 +94,21 @@
                                         rif:actionVar ( [ a rif:Var ;
                                                     rif:varname "funccheckargs" ] [ a rif:New ] ),
                                             ( [ a rif:Var ;
-                                                    rif:varname "generateargscompare" ] [ a rif:New ] ),
+                                                    rif:varname "query" ] [ a rif:New ] ),
                                             ( [ a rif:Var ;
-                                                    rif:varname "funccheckop" ] [ a rif:New ] ),
+                                                    rif:varname "clipsdeftemplate" ] [ a rif:New ] ),
+                                            ( [ a rif:Var ;
+                                                    rif:varname "factvar" ] [ a rif:New ] ),
                                             ( [ a rif:Var ;
                                                     rif:varname "varargs" ] [ a rif:New ] ),
                                             ( [ a rif:Var ;
                                                     rif:varname "varop" ] [ a rif:New ] ),
                                             ( [ a rif:Var ;
-                                                    rif:varname "factvar" ] [ a rif:New ] ),
+                                                    rif:varname "funccheckop" ] [ a rif:New ] ),
                                             ( [ a rif:Var ;
-                                                    rif:varname "clipsdeftemplate" ] [ a rif:New ] ),
+                                                    rif:varname "generateargscompare" ] [ a rif:New ] ),
                                             ( [ a rif:Var ;
-                                                    rif:varname "anyfactp" ] [ a rif:New ] ),
-                                            ( [ a rif:Var ;
-                                                    rif:varname "query" ] [ a rif:New ] ) ;
+                                                    rif:varname "anyfactp" ] [ a rif:New ] ) ;
                                         rif:actions ( [ a rif:Assert ;
                                                     rif:target [ a rif:Frame ;
                                                             rif:object [ a rif:Var ;
@@ -318,23 +318,23 @@
                                                                         rif:varname "arglist" ] ] ) ] ) ] ;
                                 rif:then [ a rif:Do ;
                                         rif:actionVar ( [ a rif:Var ;
-                                                    rif:varname "varargs" ] [ a rif:New ] ),
-                                            ( [ a rif:Var ;
-                                                    rif:varname "funccheckop" ] [ a rif:New ] ),
-                                            ( [ a rif:Var ;
                                                     rif:varname "factvar" ] [ a rif:New ] ),
+                                            ( [ a rif:Var ;
+                                                    rif:varname "anyfactp" ] [ a rif:New ] ),
                                             ( [ a rif:Var ;
                                                     rif:varname "generateargscompare" ] [ a rif:New ] ),
                                             ( [ a rif:Var ;
-                                                    rif:varname "varop" ] [ a rif:New ] ),
-                                            ( [ a rif:Var ;
                                                     rif:varname "clipsdeftemplate" ] [ a rif:New ] ),
-                                            ( [ a rif:Var ;
-                                                    rif:varname "funccheckargs" ] [ a rif:New ] ),
                                             ( [ a rif:Var ;
                                                     rif:varname "query" ] [ a rif:New ] ),
                                             ( [ a rif:Var ;
-                                                    rif:varname "anyfactp" ] [ a rif:New ] ) ;
+                                                    rif:varname "varop" ] [ a rif:New ] ),
+                                            ( [ a rif:Var ;
+                                                    rif:varname "funccheckargs" ] [ a rif:New ] ),
+                                            ( [ a rif:Var ;
+                                                    rif:varname "funccheckop" ] [ a rif:New ] ),
+                                            ( [ a rif:Var ;
+                                                    rif:varname "varargs" ] [ a rif:New ] ) ;
                                         rif:actions ( [ a rif:Assert ;
                                                     rif:target [ a rif:Frame ;
                                                             rif:object [ a rif:Var ;
@@ -858,6 +858,8 @@
                                                                         rif:varname "obj" ] ] ) ] ) ] ;
                                 rif:then [ a rif:Do ;
                                         rif:actionVar ( [ a rif:Var ;
+                                                    rif:varname "slotobj" ] [ a rif:New ] ),
+                                            ( [ a rif:Var ;
                                                     rif:varname "querylist" ] [ a rif:Frame ;
                                                     rif:object [ a rif:Var ;
                                                             rif:varname "query" ] ;
@@ -867,9 +869,7 @@
                                                                 rif:slotvalue [ a rif:Var ;
                                                                         rif:varname "querylist" ] ] ) ] ),
                                             ( [ a rif:Var ;
-                                                    rif:varname "funccheck" ] [ a rif:New ] ),
-                                            ( [ a rif:Var ;
-                                                    rif:varname "slotobj" ] [ a rif:New ] ) ;
+                                                    rif:varname "funccheck" ] [ a rif:New ] ) ;
                                         rif:actions ( [ a rif:Assert ;
                                                     rif:target [ a rif:Frame ;
                                                             rif:object [ a rif:Var ;
@@ -951,13 +951,6 @@
                                                                 rif:slotvalue [ a rif:Var ;
                                                                         rif:varname "slotlist" ] ] ) ] [ a rif:Frame ;
                                                     rif:object [ a rif:Var ;
-                                                            rif:varname "object" ] ;
-                                                    rif:slots ( [ a rif:Slot ;
-                                                                rif:slotkey [ a rif:Const ;
-                                                                        rif:constIRI "http://example.com/as-expression"^^xsd:anyURI ] ;
-                                                                rif:slotvalue [ a rif:Var ;
-                                                                        rif:varname "subj" ] ] ) ] [ a rif:Frame ;
-                                                    rif:object [ a rif:Var ;
                                                             rif:varname "slot" ] ;
                                                     rif:slots ( [ a rif:Slot ;
                                                                 rif:slotkey [ a rif:Const ;
@@ -965,26 +958,12 @@
                                                                 rif:slotvalue [ a rif:Var ;
                                                                         rif:varname "slotkey" ] ] ) ] [ a rif:Frame ;
                                                     rif:object [ a rif:Var ;
-                                                            rif:varname "slotkey" ] ;
-                                                    rif:slots ( [ a rif:Slot ;
-                                                                rif:slotkey [ a rif:Const ;
-                                                                        rif:constIRI "http://example.com/as-expression"^^xsd:anyURI ] ;
-                                                                rif:slotvalue [ a rif:Var ;
-                                                                        rif:varname "pred" ] ] ) ] [ a rif:Frame ;
-                                                    rif:object [ a rif:Var ;
                                                             rif:varname "slot" ] ;
                                                     rif:slots ( [ a rif:Slot ;
                                                                 rif:slotkey [ a rif:Const ;
                                                                         rif:constIRI "http://www.w3.org/2007/rif#slotvalue"^^xsd:anyURI ] ;
                                                                 rif:slotvalue [ a rif:Var ;
-                                                                        rif:varname "slotvalue" ] ] ) ] [ a rif:Frame ;
-                                                    rif:object [ a rif:Var ;
-                                                            rif:varname "slotvalue" ] ;
-                                                    rif:slots ( [ a rif:Slot ;
-                                                                rif:slotkey [ a rif:Const ;
-                                                                        rif:constIRI "http://example.com/as-expression"^^xsd:anyURI ] ;
-                                                                rif:slotvalue [ a rif:Var ;
-                                                                        rif:varname "obj" ] ] ) ] [ a rif:External ;
+                                                                        rif:varname "slotvalue" ] ] ) ] [ a rif:External ;
                                                     rif:content [ a rif:Atom ;
                                                             rif:args ( [ a rif:Var ;
                                                                         rif:varname "slotlist" ] ) ;
@@ -998,19 +977,19 @@
                                                                     rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#list-contains"^^xsd:anyURI ] ] ] ) ] ;
                                 rif:then [ a rif:Do ;
                                         rif:actionVar ( [ a rif:Var ;
-                                                    rif:varname "query" ] [ a rif:New ] ),
+                                                    rif:varname "slotpred" ] [ a rif:New ] ),
                                             ( [ a rif:Var ;
                                                     rif:varname "anyfactp" ] [ a rif:New ] ),
                                             ( [ a rif:Var ;
-                                                    rif:varname "factvar" ] [ a rif:New ] ),
-                                            ( [ a rif:Var ;
-                                                    rif:varname "slotobj" ] [ a rif:New ] ),
+                                                    rif:varname "slotsubj" ] [ a rif:New ] ),
                                             ( [ a rif:Var ;
                                                     rif:varname "checktriple" ] [ a rif:New ] ),
                                             ( [ a rif:Var ;
-                                                    rif:varname "slotsubj" ] [ a rif:New ] ),
+                                                    rif:varname "slotobj" ] [ a rif:New ] ),
                                             ( [ a rif:Var ;
-                                                    rif:varname "slotpred" ] [ a rif:New ] ),
+                                                    rif:varname "query" ] [ a rif:New ] ),
+                                            ( [ a rif:Var ;
+                                                    rif:varname "factvar" ] [ a rif:New ] ),
                                             ( [ a rif:Var ;
                                                     rif:varname "clipsdeftemplate" ] [ a rif:New ] ) ;
                                         rif:actions ( [ a rif:Assert ;
@@ -1128,16 +1107,21 @@
                                                                         rif:slotkey [ a rif:Const ;
                                                                                 rif:constIRI "http://example.com/addchecktoquery"^^xsd:anyURI ] ;
                                                                         rif:slotvalue [ a rif:Var ;
-                                                                                rif:varname "query" ] ] ) ] ] ) ] ] ;
+                                                                                rif:varname "query" ] ] ) ] ] [ a rif:Assert ;
+                                                    rif:target [ a rif:Frame ;
+                                                            rif:object [ a rif:Var ;
+                                                                    rif:varname "rifframe" ] ;
+                                                            rif:slots ( [ a rif:Slot ;
+                                                                        rif:slotkey [ a rif:Const ;
+                                                                                rif:constIRI "http://example.com/as-expression"^^xsd:anyURI ] ;
+                                                                        rif:slotvalue [ a rif:Var ;
+                                                                                rif:varname "factvar" ] ] ) ] ] ) ] ] ;
                         rif:vars ( [ a rif:Var ;
                                     rif:varname "rifframe" ] [ a rif:Var ;
                                     rif:varname "object" ] [ a rif:Var ;
                                     rif:varname "slotlist" ] [ a rif:Var ;
                                     rif:varname "slotkey" ] [ a rif:Var ;
                                     rif:varname "slotvalue" ] [ a rif:Var ;
-                                    rif:varname "subj" ] [ a rif:Var ;
-                                    rif:varname "pred" ] [ a rif:Var ;
-                                    rif:varname "obj" ] [ a rif:Var ;
                                     rif:varname "factindex" ] ) ] [ a rif:Forall ;
                         rif:formula [ a rif:Implies ;
                                 rif:if [ a rif:And ;
