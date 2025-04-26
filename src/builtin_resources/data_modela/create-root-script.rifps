@@ -11,155 +11,35 @@ Document(
     Prefix(rif <http://www.w3.org/2007/rif#>)
     Prefix(entailment <http://www.w3.org/ns/entailment/>)
     Group(
-      Forall ?factvar (
+      Forall ?rootformula (
         If And (
-          ?factvar[rdf:type -> cs:Variable]
-          ex:currentfactindex(?factindex)
-          Not (Exists ?factname ( ?factvar[cs:variable-name -> ?factname] ))
+          Or (
+            ?rootformula[rdf:type -> rif:Frame]
+            ?rootformula[rdf:type -> rif:Atom]
+            ?rootformula[rdf:type -> rif:Exists]
+          )
+          Not (Exists ?deeperroot (Or(
+            ?deeperroot[rif:formula -> ?rootformula]
+          )))
         ) Then Do (
-          Retract( ex:currentfactindex(?factindex) )
+          Assert( ?rootformula[rdf:type -> ex:rootformula] )
+        )
+      )
 
-          Assert( ex:currentfactindex(External(func:numeric-add(?factindex 1))))
-          Assert( ?factvar[cs:variable-name -> External(func:concat("fct" ?factindex))] )
+      Forall ?rootformula (
+        If And(
+          ?rootformula[rdf:type -> ex:rootformula]
+          ?rootformula[ex:as-test-action -> ?anyfactp]
+        ) Then Do (
+          (?rootfunctionargs ex:rootfunction[cs:function-args -> ?rootfunctionargs])
+          Modify( ex:rootfunction[cs:function-args -> External(func:append(?rootfunctionargs ?anyfactp))] )
 
         )
       )
 
-      Forall ?rifatom ?rifop ?op (
-        If And (
-          ?rifatom[rif:op -> ?rifop]
-          ?rifop[ex:as-expression -> ?op]
-          Not( Exists ?arglist ( ?rifatom[rif:args -> ?arglist] ))
-        ) Then Do (
-          (?clipsdeftemplate New())
-          (?factvar New())
-          (?varop New())
-          (?varargs New())
-          (?funccheckop New())
-          (?funccheckargs New())
-          (?generateargscompare New())
-          (?querylist ex:qqfactquery[cs:function-args -> ?querylist] )
-          Assert( ex:rootfunction[cs:fact-set-template -> ?clipsdeftemplate] )
-          Assert( ?clipsdeftemplate[cs:deftemplate-name -> "Atom"] )
-          Assert( ?clipsdeftemplate[cs:fact-set-member-variable -> ?factvar] )
-          Assert( ?factvar[rdf:type -> cs:Variable] )
-
-          Assert( ?varop[cs:member-variable -> ?factvar] )
-          Assert( ?varop[cs:member-slot-name -> "op"] )
-          Assert( ?varargs[cs:member-variable -> ?factvar] )
-          Assert( ?varargs[cs:member-slot-name -> "args"] )
-          Assert( ?funccheckop[cs:function-name -> "eq"] )
-          Assert( ?funccheckop[cs:function-args -> External(func:make-list(?varop ?op))] )
-          Assert( ?funccheckargs[cs:function-name -> "eq"] )
-          Assert( ?funccheckargs[cs:function-args -> External(func:make-list(?varargs ?generateargscompare))] )
-
-          Assert( ?generateargscompare[cs:function-name -> "create$"] )
-          Assert( ?generateargscompare[cs:function-args -> External(func:make-list())] )
-
-          Modify(ex:qqfactquery[cs:function-args -> External(func:append(?querylist ?funccheckop ?funccheckargs))])
-        )
-      )
-
-      Forall ?rifatom ?rifop ?op (
-        If And (
-          ?rifatom[rif:op -> ?rifop]
-          ?rifop[ex:as-expression -> ?op]
-          ?rifatom[rif:args -> ?arglist]
-        ) Then Do (
-          (?clipsdeftemplate New())
-          (?factvar New())
-          (?varop New())
-          (?varargs New())
-          (?funccheckop New())
-          (?funccheckargs New())
-          (?generateargscompare New())
-          (?querylist ex:qqfactquery[cs:function-args -> ?querylist] )
-          Assert( ex:rootfunction[cs:fact-set-template -> ?clipsdeftemplate] )
-          Assert( ?clipsdeftemplate[cs:deftemplate-name -> "Atom"] )
-          Assert( ?clipsdeftemplate[cs:fact-set-member-variable -> ?factvar] )
-          Assert( ?factvar[rdf:type -> cs:Variable] )
-
-          Assert( ?varop[cs:member-variable -> ?factvar] )
-          Assert( ?varop[cs:member-slot-name -> "op"] )
-          Assert( ?varargs[cs:member-variable -> ?factvar] )
-          Assert( ?varargs[cs:member-slot-name -> "args"] )
-          Assert( ?funccheckop[cs:function-name -> "eq"] )
-          Assert( ?funccheckop[cs:function-args -> External(func:make-list(?varop ?op))] )
-          Assert( ?funccheckargs[cs:function-name -> "eq"] )
-          Assert( ?funccheckargs[cs:function-args -> External(func:make-list(?varargs ?generateargscompare))] )
-
-          Assert( ?generateargscompare[cs:function-name -> "create$"] )
-          Assert( ?generateargscompare[cs:function-args -> External(func:make-list())] )
-          Assert( ?generateargscompare[ex:add-expressions-as-args -> ?arglist] )
-
-          Modify(ex:qqfactquery[cs:function-args -> External(func:append(?querylist ?funccheckop ?funccheckargs))])
-        )
-      )
-      Forall ?clipsfunction ?rifrestargs ?nextarg ?firstaction(
-        If And (
-          ?clipsfunction[ex:add-expressions-as-args -> ?rifrestargs]
-          External(pred:is-list(?rifrestargs))
-          External( pred:numeric-not-equal(0 External(func:count(?rifrestargs))) )
-          ?firstaction[ex:as-expression -> ?nextarg]
-          ?firstaction = External(func:get(?rifrestargs 0))
-        ) Then Do (
-          (?currentargs ?clipsfunction[cs:function-args -> ?currentargs])
-          Modify( ?clipsfunction[ex:add-expressions-as-args -> External(func:remove(?rifrestargs 0))] )
-          Modify(?clipsfunction[cs:function-args -> External(func:append(?currentargs ?nextarg))])
-        )
-      )
-
-      Forall ?rifframe ?object ?slotlist ?slotkey ?slotvalue ?subj ?pred ?obj ?factindex(
-        If And (
-          ?rifframe[rif:object -> ?object]
-          ?rifframe[rif:slots -> ?slotlist]
-          ?object[ex:as-expression -> ?subj]
-          ?slot[rif:slotkey -> ?slotkey]
-          ?slotkey[ex:as-expression -> ?pred]
-          ?slot[rif:slotvalue -> ?slotvalue]
-          ?slotvalue[ex:as-expression -> ?obj]
-          External(pred:is-list(?slotlist))
-          External(pred:list-contains(?slotlist ?slot))
-        ) Then Do (
-          (?factvar New())
-          (?slotsubj New())
-          (?slotpred New())
-          (?slotobj New())
-          (?funcchecksubj New())
-          (?funccheckpred New())
-          (?funccheckobj New())
-          (?clipsdeftemplate New())
-          (?querylist ex:qqfactquery[cs:function-args -> ?querylist] )
-          Assert( ?factvar[rdf:type -> cs:Variable] )
-          Assert( ex:rootfunction[cs:fact-set-template -> ?clipsdeftemplate] )
-          Assert( ?clipsdeftemplate[cs:deftemplate-name -> "TripleTemplate"] )
-          Assert( ?clipsdeftemplate[cs:fact-set-member-variable -> ?factvar] )
-          Assert( ?slotsubj[cs:member-variable -> ?factvar] )
-          Assert( ?slotsubj[cs:member-slot-name -> "subject"] )
-          Assert( ?slotsubj[<http://example.com/qq> -> "subject"] )
-
-          Assert( ?slotpred[cs:member-variable -> ?factvar] )
-          Assert( ?slotpred[cs:member-slot-name -> "predicate"] )
-          Assert( ?slotobj[cs:member-variable -> ?factvar] )
-          Assert( ?slotobj[cs:member-slot-name -> "object"] )
-
-          Assert( ?funcchecksubj[cs:function-name -> "eq"] )
-          Assert( ?funcchecksubj[cs:function-args -> External(func:make-list(?slotsubj ?subj))] )
-          Assert( ?funccheckpred[cs:function-name -> "eq"] )
-          Assert( ?funccheckpred[cs:function-args -> External(func:make-list(?slotpred ?pred))] )
-          Assert( ?funccheckobj[cs:function-name -> "eq"] )
-          Assert( ?funccheckobj[cs:function-args -> External(func:make-list(?slotobj ?obj))] )
-
-          Modify(ex:qqfactquery[cs:function-args -> External(func:append(?querylist ?funcchecksubj ?funccheckpred ?funccheckobj))])
-
-        )
-      )
-
-      ex:currentfactindex(1)
-      ex:rootfunction[rdf:type -> cs:AnyFactP]
-      ex:rootfunction[cs:query -> ex:qqfactquery]
-      ex:qqfactquery[cs:function-name -> "and"]
-      ex:qqfactquery[cs:function-args -> External(func:make-list())]
+      ex:rootfunction[cs:function-name -> "and"]
+      ex:rootfunction[cs:function-args -> External(func:make-list(ex:basetrue))]
+      ex:basetrue[cs:symbol -> "TRUE"]
 
     )
 )

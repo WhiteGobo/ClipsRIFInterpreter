@@ -210,7 +210,7 @@ static auto petTestdata = testing::Values(
 			"Positional_Arguments-premise",
 			"Positional_Arguments-conclusion"),
 		TestdataPET("Core_PET_RDF_Combination_Blank_Node",
-			SC_ModelA,
+			SC_All,
 
 			"not implemented",
 			_W3C_TESTDATA_"RDF_Combination_Blank_Node/",

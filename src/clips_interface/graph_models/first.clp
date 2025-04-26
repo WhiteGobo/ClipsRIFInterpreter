@@ -1495,7 +1495,7 @@
 
 	(bind ?tmp (send ?self:op as_term_on_lhs))
 	(if (get-error) then (return ""))
-	(if (neq PatternTerm (type ?tmp)) then (set-error "qwertz") (return))
+	(if (neq PatternTerm (type ?tmp)) then (set-error "create-pattern of rifatom failed because operant is no patternterm") (return))
 	(bind ?op (send ?tmp get-term))
 	(bind ?checks (append$ ?checks (send ?tmp get-checks)))
 	(unmake-instance ?tmp)
@@ -1596,7 +1596,6 @@
 (defmessage-handler RIFImport create-rules ()
 	(return "")
 	;(return (<http://white.gobo/ResourceManager/import> ?self:location ?self:profile))
-	;(set-error (str-cat "brubru1 " ?self:location " qwertz " ?self:profile))
 	;(return "")
 	(if (not (<http://white.gobo/import> ?self:location ?self:profile ))
 		then

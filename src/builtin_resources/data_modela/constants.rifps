@@ -11,15 +11,125 @@ Document(
     Prefix(rif <http://www.w3.org/2007/rif#>)
     Prefix(entailment <http://www.w3.org/ns/entailment/>)
     Group(
-      (* ex:transform-terms-asdf *) Group (
-        (* ex:transform-rif-variable *) Forall ?rifnode ?varname (
+      (* ex:rif-inheritance *) Group (
+        Forall ?parent ?child (
           If And (
-            ?rifnode[rif:varname -> ?varname]
-          ) Then Do ((?clipsnode New())
-            Assert(?rifnode[ex:as-constraint -> ?clipsnode])
-            Assert(?rifnode[ex:as-expression -> ?clipsnode])
+            Or (
+              ?parent[rif:formula -> ?child]
+              ?parent[rif:object -> ?child]
+              ?parent[rif:if -> ?child]
+              ?parent[rif:then -> ?child]
+              ?parent[rif:target -> ?child]
+              ?parent[rif:content -> ?child]
+              ?parent[rif:op -> ?child]
+              ?parent[rif:payload -> ?child]
+              ?parent[rif:pattern -> ?child]
+            )
+          ) Then Do (
+            Assert( ?parent[ex:inherits-data -> ?child] )
+          )
+        )
+        Forall ?parent ?slotlist ?slot ?childkey ?childvalue (
+          If And (
+            ?parent[rif:slots -> ?slotlist]
+            External(pred:is-list(?slotlist))
+            ?slot[rif:slotkey -> ?childkey]
+            ?slot[rif:slotvalue -> ?childvalue]
+            External(pred:list-contains(?slotlist ?slot))
+          ) Then Do (
+            Assert( ?parent[ex:inherits-data -> ?childkey] )
+            Assert( ?parent[ex:inherits-data -> ?childvalue] )
+          )
+        )
+        Forall ?parent ?childlist ?child (
+          If And (
+            Or (
+              ?parent[rif:sentences -> ?childlist]
+              ?parent[rif:formulas -> ?childlist]
+              ?parent[rif:actions -> ?childlist]
+            )
+            External(pred:is-list(?childlist))
+            Or (
+              ?child[rdf:type -> rif:Group]
+              ?child[rdf:type -> rif:Forall]
+              ?child[rdf:type -> rif:Frame]
+              ?child[rdf:type -> rif:Atom]
+              ?child[rdf:type -> rif:Assert]
+              ?child[rdf:type -> rif:Retract]
+              ?child[rdf:type -> rif:Do]
+              ?child[rdf:type -> rif:Modify]
+              ?child[rdf:type -> rif:Subclass]
+              ?child[rdf:type -> rif:Equal]
+              ?child[rdf:type -> rif:Member]
+            )
+            External(pred:list-contains(?childlist ?child))
+          ) Then Do (
+            Assert( ?parent[ex:inherits-data -> ?child] )
+          )
+        )
+        Forall ?rifdo ?actionvar ?rifvar ?varname ?rifframe(
+          If And (
+            ?rifdo[rif:actionVar -> ?actionvar]
+            External(pred:is-list(?actionvar))
+            ?rifvar[rif:varname -> ?varname]
+            ?rifframe[rdf:type -> rif:Frame]
+            External(pred:list-contains(?actionvar ?rifvar))
+            External(pred:list-contains(?actionvar ?rifframe))
+          ) Then Do (
+            Assert( ?rifvar[ex:inherits-data -> ?rifframe] )
+            Assert( ?rifvar[ex:inherits-data -> ?rifdo] )
+          )
+        )
+
+        Forall ?parent ?child ?grandchild (
+          If And (
+            ?parent[ex:inherits-data -> ?child]
+            ?child[ex:inherits-data -> ?grandchild]
+          ) Then Do (
+            Assert( ?parent[ex:inherits-data -> ?grandchild])
+          )
+        )
+      )
+      (* ex:transform-terms-asdf *) Group (
+        Forall ?rifdo ?actionvar ?rifvar ?varname (
+          If And (
+            ?rifdo[rif:actionVar -> ?actionvar]
+            External(pred:is-list(?actionvar))
+            ?rifvar[rif:varname -> ?varname]
+            External(pred:list-contains(?actionvar ?rifvar))
+          ) Then Do (
+            (?clipsnode New())
+            Assert(?rifvar[ex:as-constraint -> ?clipsnode])
+            Assert(?rifvar[ex:as-expression -> ?clipsnode])
             Assert(?clipsnode[cs:variable-name -> ?varname])
             Assert(?clipsnode[ex:as-constraint-needs-additional-conditionals -> External(func:make-list())])
+            Assert( ?rifvar[ex:inherits-data -> ?rifdo] )
+          )
+        )
+        Forall ?rifforall ?varlist ?rifvar ?varname (
+          If And (
+            ?rifforall[rif:vars -> ?varlist]
+            External(pred:is-list(?varlist))
+            ?rifvar[rif:varname -> ?varname]
+            External(pred:list-contains(?varlist ?rifvar))
+          ) Then Do (
+            (?clipsnode New())
+            Assert(?rifvar[ex:as-constraint -> ?clipsnode])
+            Assert(?rifvar[ex:as-expression -> ?clipsnode])
+            Assert(?clipsnode[cs:variable-name -> ?varname])
+            Assert(?clipsnode[ex:as-constraint-needs-additional-conditionals -> External(func:make-list())])
+            Assert( ?rifvar[ex:inherits-data -> ?rifforall] )
+          )
+        )
+        Forall ?varchild ?varparent ?varname ?clipsvar(
+          If And (
+            ?varparent[ex:inherits-data -> ?varchild]
+            ?varparent[rif:varname -> ?varname]
+            ?varchild[rif:varname -> ?varname]
+            ?varparent[ex:as-expression -> ?clipsvar]
+          ) Then Do (
+            Assert(?varchild[ex:as-expression -> ?clipsvar])
+            Assert(?varchild[ex:as-constraint -> ?clipsvar])
           )
         )
       )

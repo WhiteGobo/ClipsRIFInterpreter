@@ -1,0 +1,233 @@
+Document(
+    Prefix(func <http://www.w3.org/2007/rif-builtin-function#>) 
+    Prefix(pred <http://www.w3.org/2007/rif-builtin-predicate#>) 
+    Prefix(owl <http://www.w3.org/2002/07/owl#>)
+    Prefix(deffact <http://white.gobo/crifi/resource-manager/deffacts#>)
+    Prefix(rema <http://white.gobo/crifi/resource-manager#>)
+    Prefix(cs <http://clips.script/>)
+    Prefix(crifi <http://white.gobo/>)
+    Prefix(ex <http://example.com/>)
+    Prefix(triplestordf <http://example.com/triples-to-rdf#>)
+    Prefix(rif <http://www.w3.org/2007/rif#>)
+    Prefix(entailment <http://www.w3.org/ns/entailment/>)
+    Group(
+      Forall ?factvar (
+        If And (
+          ?factvar[rdf:type -> cs:Variable]
+          ex:currentfactindex(?factindex)
+          Not (Exists ?factname ( ?factvar[cs:variable-name -> ?factname] ))
+        ) Then Do (
+          Retract( ex:currentfactindex(?factindex) )
+
+          Assert( ex:currentfactindex(External(func:numeric-add(?factindex 1))))
+          Assert( ?factvar[cs:variable-name -> External(func:concat("fct" ?factindex))] )
+
+        )
+      )
+
+      Forall ?rifatom ?rifop ?op (
+        If And (
+          ?rifatom[rif:op -> ?rifop]
+          ?rifop[ex:as-expression -> ?op]
+          Not( Exists ?arglist ( ?rifatom[rif:args -> ?arglist] ))
+        ) Then Do (
+          (?clipsdeftemplate New())
+          (?factvar New())
+          (?varop New())
+          (?varargs New())
+          (?funccheckop New())
+          (?funccheckargs New())
+          (?generateargscompare New())
+          (?anyfactp New())
+          (?query New())
+          Assert( ?rifatom[ex:as-test-action -> ?anyfactp] )
+          Assert( ex:rootfunction[cs:fact-set-template -> ?clipsdeftemplate] )
+          Assert( ?clipsdeftemplate[cs:deftemplate-name -> "Atom"] )
+          Assert( ?clipsdeftemplate[cs:fact-set-member-variable -> ?factvar] )
+          Assert( ?factvar[rdf:type -> cs:Variable] )
+
+          Assert( ?varop[cs:member-variable -> ?factvar] )
+          Assert( ?varop[cs:member-slot-name -> "op"] )
+          Assert( ?varargs[cs:member-variable -> ?factvar] )
+          Assert( ?varargs[cs:member-slot-name -> "args"] )
+          Assert( ?funccheckop[cs:function-name -> "eq"] )
+          Assert( ?funccheckop[cs:function-args -> External(func:make-list(?varop ?op))] )
+          Assert( ?funccheckargs[cs:function-name -> "eq"] )
+          Assert( ?funccheckargs[cs:function-args -> External(func:make-list(?varargs ?generateargscompare))] )
+
+          Assert( ?generateargscompare[cs:function-name -> "create$"] )
+          Assert( ?generateargscompare[cs:function-args -> External(func:make-list())] )
+          Assert( ?anyfactp[rdf:type -> cs:AnyFactP] )
+          Assert( ?anyfactp[cs:query -> ?query])
+          Assert( ?anyfactp[cs:fact-set-template -> ?clipsdeftemplate] )
+          Assert( ?query[cs:function-name -> "and"] )
+          Assert( ?query[cs:function-args -> External(func:make-list(?funccheckop ?funccheckargs))])
+
+        )
+      )
+
+      Forall ?rifatom ?rifop ?op (
+        If And (
+          ?rifatom[rif:op -> ?rifop]
+          ?rifop[ex:as-expression -> ?op]
+          ?rifatom[rif:args -> ?arglist]
+        ) Then Do (
+          (?clipsdeftemplate New())
+          (?factvar New())
+          (?varop New())
+          (?varargs New())
+          (?funccheckop New())
+          (?funccheckargs New())
+          (?generateargscompare New())
+          (?anyfactp New())
+          (?query New())
+          Assert( ?rifatom[ex:as-test-action -> ?anyfactp] )
+          Assert( ex:rootfunction[cs:fact-set-template -> ?clipsdeftemplate] )
+          Assert( ?clipsdeftemplate[cs:deftemplate-name -> "Atom"] )
+          Assert( ?clipsdeftemplate[cs:fact-set-member-variable -> ?factvar] )
+          Assert( ?factvar[rdf:type -> cs:Variable] )
+
+          Assert( ?varop[cs:member-variable -> ?factvar] )
+          Assert( ?varop[cs:member-slot-name -> "op"] )
+          Assert( ?varargs[cs:member-variable -> ?factvar] )
+          Assert( ?varargs[cs:member-slot-name -> "args"] )
+          Assert( ?funccheckop[cs:function-name -> "eq"] )
+          Assert( ?funccheckop[cs:function-args -> External(func:make-list(?varop ?op))] )
+          Assert( ?funccheckargs[cs:function-name -> "eq"] )
+          Assert( ?funccheckargs[cs:function-args -> External(func:make-list(?varargs ?generateargscompare))] )
+
+          Assert( ?generateargscompare[cs:function-name -> "create$"] )
+          Assert( ?generateargscompare[cs:function-args -> External(func:make-list())] )
+          Assert( ?generateargscompare[ex:add-expressions-as-args -> ?arglist] )
+
+          Assert( ?anyfactp[rdf:type -> cs:AnyFactP] )
+          Assert( ?anyfactp[cs:query -> ?query])
+          Assert( ?anyfactp[cs:fact-set-template -> ?clipsdeftemplate] )
+          Assert( ?query[cs:function-name -> "and"] )
+          Assert( ?query[cs:function-args -> External(func:make-list(?funccheckop ?funccheckargs))])
+        )
+      )
+      Forall ?clipsfunction ?rifrestargs ?nextarg ?firstaction(
+        If And (
+          ?clipsfunction[ex:add-expressions-as-args -> ?rifrestargs]
+          External(pred:is-list(?rifrestargs))
+          External( pred:numeric-not-equal(0 External(func:count(?rifrestargs))) )
+          ?firstaction[ex:as-expression -> ?nextarg]
+          ?firstaction = External(func:get(?rifrestargs 0))
+        ) Then Do (
+          (?currentargs ?clipsfunction[cs:function-args -> ?currentargs])
+          Modify( ?clipsfunction[ex:add-expressions-as-args -> External(func:remove(?rifrestargs 0))] )
+          Modify(?clipsfunction[cs:function-args -> External(func:append(?currentargs ?nextarg))])
+        )
+      )
+
+      Forall ?checktriple ?factvar ?checktriple (
+        If And (
+          ?checktriple[ex:checktriplesubject -> ?rifsubject]
+          ?checktriple[ex:triplevariable -> ?factvar]
+          ?checktriple[ex:addchecktoquery -> ?query]
+          ?rifsubject[ex:as-expression -> ?subj]
+        ) Then Do (
+          (?funccheck New())
+          (?slotsubj New())
+          (?querylist ?query[cs:function-args -> ?querylist] )
+          Assert( ?slotsubj[cs:member-variable -> ?factvar] )
+          Assert( ?slotsubj[cs:member-slot-name -> "subject"] )
+          Assert( ?funccheck[cs:function-name -> "eq"] )
+          Assert( ?funccheck[cs:function-args -> External(func:make-list(?slotsubj ?subj))] )
+          Modify( ?query[cs:function-args -> External(func:append(?querylist ?funccheck))] )
+          Retract( ?checktriple[ex:checktriplesubject -> ?rifsubject] )
+        )
+      )
+      Forall ?checktriple ?factvar ?checktriple (
+        If And (
+          ?checktriple[ex:checktriplepredicate -> ?rifpredicate]
+          ?checktriple[ex:triplevariable -> ?factvar]
+          ?checktriple[ex:addchecktoquery -> ?query]
+          ?rifpredicate[ex:as-expression -> ?pred]
+        ) Then Do (
+          (?funccheck New())
+          (?slotpred New())
+          (?querylist ?query[cs:function-args -> ?querylist] )
+          Assert( ?slotpred[cs:member-variable -> ?factvar] )
+          Assert( ?slotpred[cs:member-slot-name -> "predicate"] )
+          Assert( ?funccheck[cs:function-name -> "eq"] )
+          Assert( ?funccheck[cs:function-args -> External(func:make-list(?slotpred ?pred))] )
+          Modify( ?query[cs:function-args -> External(func:append(?querylist ?funccheck))] )
+          Retract( ?checktriple[ex:checktriplesubject -> ?rifpredicate] )
+        )
+      )
+      Forall ?checktriple ?factvar ?checktriple (
+        If And (
+          ?checktriple[ex:checktripleobject -> ?rifobject]
+          ?checktriple[ex:triplevariable -> ?factvar]
+          ?checktriple[ex:addchecktoquery -> ?query]
+          ?rifobject[ex:as-expression -> ?obj]
+        ) Then Do (
+          (?funccheck New())
+          (?slotobj New())
+          (?querylist ?query[cs:function-args -> ?querylist] )
+          Assert( ?slotobj[cs:member-variable -> ?factvar] )
+          Assert( ?slotobj[cs:member-slot-name -> "object"] )
+          Assert( ?funccheck[cs:function-name -> "eq"] )
+          Assert( ?funccheck[cs:function-args -> External(func:make-list(?slotobj ?obj))] )
+          Modify( ?query[cs:function-args -> External(func:append(?querylist ?funccheck))] )
+          Retract( ?checktriple[ex:checktriplesubject -> ?rifobject] )
+        )
+      )
+
+      Forall ?rifframe ?object ?slotlist ?slotkey ?slotvalue ?subj ?pred ?obj ?factindex(
+        If And (
+          ?rifframe[rif:object -> ?object]
+          ?rifframe[rif:slots -> ?slotlist]
+          ?object[ex:as-expression -> ?subj]
+          ?slot[rif:slotkey -> ?slotkey]
+          ?slotkey[ex:as-expression -> ?pred]
+          ?slot[rif:slotvalue -> ?slotvalue]
+          ?slotvalue[ex:as-expression -> ?obj]
+          External(pred:is-list(?slotlist))
+          External(pred:list-contains(?slotlist ?slot))
+        ) Then Do (
+          (?factvar New())
+          (?slotsubj New())
+          (?slotpred New())
+          (?slotobj New())
+          (?checktriple New())
+
+          (?clipsdeftemplate New())
+          (?anyfactp New())
+          (?query New())
+
+          Assert( ?rifframe[ex:as-test-action -> ?anyfactp] )
+          Assert( ?factvar[rdf:type -> cs:Variable] )
+          Assert( ?clipsdeftemplate[cs:deftemplate-name -> "TripleTemplate"] )
+          Assert( ?clipsdeftemplate[cs:fact-set-member-variable -> ?factvar] )
+
+          Assert( ?anyfactp[rdf:type -> cs:AnyFactP] )
+          Assert( ?anyfactp[cs:query -> ?query])
+          Assert( ?anyfactp[cs:fact-set-template -> ?clipsdeftemplate] )
+          Assert( ?query[cs:function-name -> "and"] )
+          Assert( ?query[cs:function-args -> External(func:make-list())] )
+
+          Assert( ?checktriple[ex:checktriplesubject -> ?object] )
+          Assert( ?checktriple[ex:checktriplepredicate -> ?slotkey] )
+          Assert( ?checktriple[ex:checktripleobject -> ?slotvalue] )
+          Assert( ?checktriple[ex:triplevariable -> ?factvar] )
+          Assert( ?checktriple[ex:addchecktoquery -> ?query] )
+
+        )
+      )
+
+      Forall ?rifexists ?hastestaction ?testaction (
+        If And (
+          ?rifexists[rdf:type -> rif:Exists]
+          ?rifexists[rif:formula -> ?hastestaction]
+          ?hastestaction[ex:as-test-action -> ?testaction]
+        ) Then Do (
+          Assert( ?rifexists[ex:as-test-action -> ?testaction] )
+        )
+      )
+
+      ex:currentfactindex(1)
+    )
+)

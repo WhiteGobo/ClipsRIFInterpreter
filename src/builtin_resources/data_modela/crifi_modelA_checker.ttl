@@ -7,6 +7,8 @@
                 rif:profile "http://www.w3.org/ns/entailment/RIF" ] [ a rif:Import ;
                 rif:location "http://white.gobo/crifi/built_resources/data_modela#create-root-script" ;
                 rif:profile "http://www.w3.org/ns/entailment/RIF" ] [ a rif:Import ;
+                rif:location "http://white.gobo/crifi/built_resources/data_modela#formula-as-test" ;
+                rif:profile "http://www.w3.org/ns/entailment/RIF" ] [ a rif:Import ;
                 rif:location "http://white.gobo/crifi/built_resources/data_modela#constants" ;
                 rif:profile "http://www.w3.org/ns/entailment/RIF" ] ) .
 

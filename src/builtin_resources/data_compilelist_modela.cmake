@@ -11,6 +11,7 @@ list(APPEND mytargets
 	create-root-script
 	constants
 	transform-actionblock
+	formula-as-test
 )
 
 set(compilelist)

@@ -1483,7 +1483,7 @@
 
 	(bind ?tmp (send ?self:op as_term_on_lhs))
 	(if (get-error) then (return ""))
-	(if (neq PatternTerm (type ?tmp)) then (set-error "qwertz") (return))
+	(if (neq PatternTerm (type ?tmp)) then (set-error "qwertzz") (return))
 	(bind ?op (send ?tmp get-term))
 	(bind ?checks (append$ ?checks (send ?tmp get-checks)))
 	(unmake-instance ?tmp)

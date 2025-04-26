@@ -163,12 +163,10 @@ static int serialize_all_triples(raptor_world *world, crifi_graph* graph, raptor
 			return SAT_SERIALIZEFAILED;
 		}
 	}
-	//fprintf(stderr, "qwertzstart lists\n");
 	for(Fact *l = get_next_list(graph, NULL);
 			l != NULL;
 			l = get_next_list(graph, l))
 	{
-		//fprintf(stderr, "convert list:\n");
 		err = serialize_list(world, graph, l, my_serializer);
 		if (err != SAT_NOERROR){
 			fprintf(stderr, "convert list failed\n");
@@ -182,6 +180,7 @@ CRIFI_SERIALIZE_RET crifi_serialize_all_triples(crifi_graph* graph,
 					FILE *filehandle,
 					const char* format, const char* base)
 {
+	raptor_term *rif_ns, *clips_ns, *ex_ns, *xs_ns;
 	if (format == NULL) return CRIFI_SERIALIZE_MISSING_FORMAT;
 	if (base == NULL) return CRIFI_SERIALIZE_MISSING_BASE;
 	int err;
@@ -190,6 +189,15 @@ CRIFI_SERIALIZE_RET crifi_serialize_all_triples(crifi_graph* graph,
 	raptor_world *world = raptor_new_world();
 	raptor_uri *uri= raptor_new_uri(world, base);
 	rdf_serializer = raptor_new_serializer(world, format);
+	rif_ns = raptor_new_term_from_uri_string(world, _RIF_);
+	clips_ns = raptor_new_term_from_uri_string(world, "http://clips.script/");
+	ex_ns = raptor_new_term_from_uri_string(world, "http://example.com/");
+	xs_ns = raptor_new_term_from_uri_string(world, _XML_);
+	raptor_serializer_set_namespace(rdf_serializer, rif_ns->value.uri, "rif");
+	raptor_serializer_set_namespace(rdf_serializer, clips_ns->value.uri, "cs");
+	raptor_serializer_set_namespace(rdf_serializer, ex_ns->value.uri, "ex");
+	raptor_serializer_set_namespace(rdf_serializer, xs_ns->value.uri, "xs");
+
 
 	raptor_serializer_start_to_file_handle(rdf_serializer, uri, filehandle);
 	err = serialize_all_triples(world, graph, rdf_serializer);

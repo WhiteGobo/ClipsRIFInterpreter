@@ -5,7 +5,7 @@ message(INFO "Use ${name}_add_importlocations to add import capabilities "
 
 #CMAKE_CURRENT_SOURCE_DIR and CMAKE_CURRENT_BINARY_DIR will be transferred
 #from where the script is called
-message(WARNING "qwertz ${outputfile}")
+message(WARNING "Current outputfile ${outputfile}")
 if(IS_ABSOLUTE "${outputfile}")
 else()
 	message(FATAL_ERROR "outputfile has to be absolute")
