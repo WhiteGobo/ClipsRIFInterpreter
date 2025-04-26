@@ -12,7 +12,6 @@ target_link_libraries(external_functions_test PRIVATE
 	ffi_clips_interface
 	ntriplesParser
 	clipsrif_resource_manager
-	crifi_test::rc
 	crifi_raptor
 	crifi_import
 	crifi_import_implementations
