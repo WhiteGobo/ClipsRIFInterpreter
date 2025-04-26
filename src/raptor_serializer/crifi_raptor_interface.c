@@ -1,5 +1,6 @@
 #include "crifi_raptor_interface.h"
 #include "info_query.h"
+#include "ffi_constants.h"
 
 raptor_term* clipsvalue_to_raptorterm(raptor_world *world, crifi_graph* graph, CLIPSValue val)
 {
@@ -33,7 +34,11 @@ raptor_term* clipsvalue_to_raptorterm(raptor_world *world, crifi_graph* graph, C
 				free(lexical);
 				return NULL;
 			}
-			dt_uri = raptor_new_uri(world, datatype);
+			if (0 == strcmp(datatype, _XS_string_)){
+				dt_uri = NULL;
+			} else {
+				dt_uri = raptor_new_uri(world, datatype);
+			}
 			retval = raptor_new_term_from_literal(world, lexical,
 								dt_uri, NULL);
 			raptor_free_uri(dt_uri);
