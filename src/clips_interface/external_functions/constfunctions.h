@@ -81,7 +81,7 @@ static UDFDescription builtinFunctionList[] = {
 		rif_numeric_greater_than_or_equal, "rif_numeric_greater_than_or_equal", CT_static, NULL},
 
 
-	{"<"_PRED_literal_not_identical_">", "*", 0, 2, NULL,
+	{"<"_PRED_literal_not_identical_">", "*", 2, 2, NULL,
 		pred_literal_not_identical, "pred_literal_not_identical", CT_static, NULL},
 
 

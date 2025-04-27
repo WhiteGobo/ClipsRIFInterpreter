@@ -2,6 +2,12 @@
 #include "pred_user_defined_functions.h"
 #include "info_query.h"
 
+#define RETURNFAIL(failure) \
+		Writeln(env, failure);\
+		SetErrorValue(env, &(CreateString(env, failure)->header));\
+		out->voidValue = VoidConstant(env);\
+		return;
+
 /**
  * Compares two literal strings on equality.
  * No checks for correct arguments.
@@ -10,10 +16,10 @@ void pred_literal_not_identical(Environment *env, UDFContext *udfc, UDFValue *ou
 	unsigned long l;
 	UDFValue val1, val2;
 	if (!UDFFirstArgument(udfc, STRING_BIT, &val1)){
-		UDFThrowError(udfc);
+		RETURNFAIL("pred:literal-not-identical needs 2 arguments.")
 	}
 	if(!UDFNextArgument(udfc, STRING_BIT, &val2)){
-		UDFThrowError(udfc);
+		RETURNFAIL("pred:literal-not-identical needs 2 arguments.")
 	}
 	l = strlen(val1.lexemeValue->contents);
 	if (l != strlen(val2.lexemeValue->contents)){
