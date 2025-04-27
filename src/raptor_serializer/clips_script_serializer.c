@@ -655,10 +655,11 @@ static CRIFI_SERIALIZE_SCRIPT_RET fprintf_rhs_slot(MyContext *cntxt, FILE* strea
 		err = fprintf_rhs_field(cntxt, stream, x);
 		if (err != CRIFI_SERIALIZE_SCRIPT_NOERROR) break;
 	}
+	/*
 	if (i == 0){
 		fprintf(stderr, "list for cs:field must be non empty.\n");
 		return CRIFI_SERIALIZE_BROKEN_GRAPH;
-	}
+	}*/
 	free_node_iterator(n_iter);
 	fprintf(stream, ")");
 	return err;

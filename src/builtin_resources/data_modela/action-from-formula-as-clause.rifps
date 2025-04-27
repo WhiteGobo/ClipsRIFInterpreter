@@ -1,0 +1,88 @@
+Document(
+    Prefix(func <http://www.w3.org/2007/rif-builtin-function#>) 
+    Prefix(pred <http://www.w3.org/2007/rif-builtin-predicate#>) 
+    Prefix(owl <http://www.w3.org/2002/07/owl#>)
+    Prefix(deffact <http://white.gobo/crifi/resource-manager/deffacts#>)
+    Prefix(rema <http://white.gobo/crifi/resource-manager#>)
+    Prefix(cs <http://clips.script/>)
+    Prefix(crifi <http://white.gobo/>)
+    Prefix(ex <http://example.com/>)
+    Prefix(triplestordf <http://example.com/triples-to-rdf#>)
+    Prefix(rif <http://www.w3.org/2007/rif#>)
+    Prefix(entailment <http://www.w3.org/ns/entailment/>)
+    Group (
+      Forall ?rifrule ?clause (
+        If And (
+          Or (
+            ?rifrule[rif:then -> ?clause]
+            ?rifrule[rif:formula -> ?clause]
+          )
+          Or (
+            ?clause[rdf:type -> rif:Frame]
+            ?clause[rdf:type -> rif:Atom]
+            ?clause[rdf:type -> rif:SubClass]
+            ?clause[rdf:type -> rif:Member]
+          )
+        ) Then Do (
+          (?clipsaction New())
+          Assert( ?clause[ex:as-action -> External(func:make-list(?clipsaction))] )
+          Assert( ?clipsaction[ex:assert-uses-pattern-from -> ?clause] )
+        )
+      )
+
+      Forall ?clipsassert ?rifformula ?rhspattern (
+        If And (
+          ?clipsassert[ex:assert-uses-pattern-from -> ?rifformula]
+          ?rifformula[ex:as-rhspattern -> ?rhspattern]
+        ) Then Do (
+          Assert( ?clipsassert[cs:assert -> ?rhspattern] )
+        )
+      )
+
+      Forall ?rifatom ?op ?expressionop(
+        If And (
+          ?rifatom[rif:op -> ?op]
+          ?op[ex:as-expression -> ?expressionop]
+        ) Then Do (
+          (?rhspattern New())
+          (?slotop New())
+          (?slotargs New())
+          Assert( ?rifatom[ex:as-rhspattern -> ?rhspattern] )
+          Assert( ?rhspattern[cs:deftemplate-name -> "Atom"] )
+          Assert( ?rhspattern[cs:slot -> External(func:make-list(?slotop ?slotargs))] )
+          Assert( ?slotop[cs:slot-name -> "op"] )
+          Assert( ?slotop[cs:field -> External(func:make-list(?expressionop))] )
+          Assert( ?slotargs[cs:slot-name -> "args"] )
+          Assert( ?slotargs[cs:field -> External(func:make-list())] )
+        )
+      )
+
+      (* ex:as-expression-transform-rif-frame *) Forall ?rifnode ?slotlist ?slot ?currentconditionalelement ?clipsrestraint ?slotvalue ?slotkey ?constraintsubject (
+        If And (
+          ?rifnode[rif:object -> ?object]
+          ?rifnode[rif:slots -> ?slotlist]
+          ?slot[rif:slotkey -> ?slotkey]
+          ?slot[rif:slotvalue -> ?slotvalue]
+          External(pred:is-list(?slotlist))
+          External(pred:list-contains(?slotlist ?slot))
+          ?object[ex:as-expression -> ?expressionsubject]
+          ?slotkey[ex:as-expression -> ?expressionpredicate]
+          ?slotvalue[ex:as-expression -> ?expressionobject]
+        ) Then Do (
+          (?rhspattern New())
+          (?slotsubject New())
+          (?slotpredicate New())
+          (?slotobject New())
+          Assert( ?rifnode[ex:as-rhspattern -> ?rhspattern] )
+          Assert( ?rhspattern[cs:deftemplate-name -> "TripleTemplate"] )
+          Assert( ?rhspattern[cs:slot -> External(func:make-list(?slotsubject ?slotpredicate ?slotobject))] )
+          Assert( ?slotsubject[cs:slot-name -> "subject"] )
+          Assert( ?slotsubject[cs:field -> External(func:make-list(?expressionsubject))])
+          Assert( ?slotpredicate[cs:slot-name -> "predicate"] )
+          Assert( ?slotpredicate[cs:field -> External(func:make-list(?expressionpredicate))])
+          Assert( ?slotobject[cs:slot-name -> "object"] )
+          Assert( ?slotobject[cs:field -> External(func:make-list(?expressionobject))])
+        )
+      )
+    )
+)

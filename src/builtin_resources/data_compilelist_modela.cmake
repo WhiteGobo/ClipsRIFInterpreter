@@ -15,6 +15,7 @@ list(APPEND mytargets
 	import-rules
 	init-defrules
 	add-as-pattern
+	action-from-formula-as-clause
 )
 
 set(compilelist)

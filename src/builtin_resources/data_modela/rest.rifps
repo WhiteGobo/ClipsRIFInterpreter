@@ -11,36 +11,6 @@ Document(
     Prefix(rif <http://www.w3.org/2007/rif#>)
     Prefix(entailment <http://www.w3.org/ns/entailment/>)
     Group (
-    (* ex:transform-rif-frame *) Group (
-      (* ex:as-expression-transform-rif-frame *) Forall ?rifnode ?slotlist ?slot ?currentconditionalelement ?clipsrestraint ?slotvalue ?slotkey ?constraintsubject(
-        If And (
-          ?rifnode[rdf:type -> rif:Frame]
-          ?rifnode[rif:object -> ?object]
-          ?rifnode[rif:slots -> ?slotlist]
-          ?object[ex:as-expression -> ?expressionsubject]
-          ?slot[rif:slotkey -> ?slotkey]
-          ?slotkey[ex:as-expression -> ?expressionpredicate]
-          ?slot[rif:slotvalue -> ?slotvalue]
-          ?slotvalue[ex:as-expression -> ?expressionobject]
-          External(pred:is-list(?slotlist))
-          External(pred:list-contains(?slotlist ?slot))
-        ) Then Do (
-          (?clipsnode New())
-          (?slotsubject New())
-          (?slotpredicate New())
-          (?slotobject New())
-          Assert( ?rifnode[ex:as-rhspattern -> ?clipsnode] )
-          Assert( ?clipsnode[cs:deftemplate-name -> "TripleTemplate"] )
-          Assert( ?clipsnode[cs:slot -> External(func:make-list(?slotsubject ?slotpredicate ?slotobject))] )
-          Assert( ?slotsubject[cs:slot-name -> "subject"] )
-          Assert( ?slotsubject[cs:field -> External(func:make-list(?expressionsubject))])
-          Assert( ?slotpredicate[cs:slot-name -> "predicate"] )
-          Assert( ?slotpredicate[cs:field -> External(func:make-list(?expressionpredicate))])
-          Assert( ?slotobject[cs:slot-name -> "object"] )
-          Assert( ?slotobject[cs:field -> External(func:make-list(?expressionobject))])
-        )
-      )
-    )
     Forall ?frame (
       If And (
         ?frame[rdf:type -> rif:Frame]

@@ -7,4 +7,5 @@ Document(
   Import(<http://white.gobo/crifi/built_resources/data_modela#import-rules> <http://www.w3.org/ns/entailment/RIF>)
   Import(<http://white.gobo/crifi/built_resources/data_modela#init-defrules> <http://www.w3.org/ns/entailment/RIF>)
   Import(<http://white.gobo/crifi/built_resources/data_modela#add-as-pattern> <http://www.w3.org/ns/entailment/RIF>)
+  Import(<http://white.gobo/crifi/built_resources/data_modela#action-from-formula-as-clause> <http://www.w3.org/ns/entailment/RIF>)
 )
