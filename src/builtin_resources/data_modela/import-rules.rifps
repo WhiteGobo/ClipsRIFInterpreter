@@ -1,0 +1,31 @@
+Document(
+    Prefix(func <http://www.w3.org/2007/rif-builtin-function#>) 
+    Prefix(pred <http://www.w3.org/2007/rif-builtin-predicate#>) 
+    Prefix(owl <http://www.w3.org/2002/07/owl#>)
+    Prefix(deffact <http://white.gobo/crifi/resource-manager/deffacts#>)
+    Prefix(rema <http://white.gobo/crifi/resource-manager#>)
+    Prefix(cs <http://clips.script/>)
+    Prefix(crifi <http://white.gobo/>)
+    Prefix(ex <http://example.com/>)
+    Prefix(triplestordf <http://example.com/triples-to-rdf#>)
+    Prefix(rif <http://www.w3.org/2007/rif#>)
+    Prefix(entailment <http://www.w3.org/ns/entailment/>)
+    Group (
+      Forall ?directive ?location ?profile (
+        If And (
+          ?directive[rif:location -> ?location]
+          ?directive[rif:profile -> ?profile]
+        ) Then Do (
+          Execute(crifi:import(?location ?profile))
+        )
+      )
+      Forall ?directive ?location (
+        If And (
+          ?directive[rif:location -> ?location]
+          Not( Exists ?profile (?directive[rif:profile -> ?profile]))
+        ) Then Do (
+          Assert( ?directive[rif:profile -> entailment:RIF] )
+        )
+      )
+    )
+)

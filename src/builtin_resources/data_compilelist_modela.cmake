@@ -12,6 +12,8 @@ list(APPEND mytargets
 	constants
 	transform-actionblock
 	formula-as-test
+	import-rules
+	init-defrules
 )
 
 set(compilelist)

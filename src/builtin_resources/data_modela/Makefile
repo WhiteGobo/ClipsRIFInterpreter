@@ -1,3 +1,3 @@
-default: crifi_modelA.ttl crifi_modelA_checker.ttl rule-normalization.ttl transform-list.ttl rest.ttl create-root-script.ttl constants.ttl transform-actionblock.ttl formula-as-test.ttl
+default: crifi_modelA.ttl crifi_modelA_checker.ttl rule-normalization.ttl transform-list.ttl rest.ttl create-root-script.ttl constants.ttl transform-actionblock.ttl formula-as-test.ttl import-rules.ttl init-defrules.ttl
 %.ttl: %.rifps
 	rdfpipe -i rifps -o ttl $< > $@

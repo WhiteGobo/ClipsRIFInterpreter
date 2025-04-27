@@ -1,0 +1,63 @@
+Document(
+    Prefix(func <http://www.w3.org/2007/rif-builtin-function#>) 
+    Prefix(pred <http://www.w3.org/2007/rif-builtin-predicate#>) 
+    Prefix(owl <http://www.w3.org/2002/07/owl#>)
+    Prefix(deffact <http://white.gobo/crifi/resource-manager/deffacts#>)
+    Prefix(rema <http://white.gobo/crifi/resource-manager#>)
+    Prefix(cs <http://clips.script/>)
+    Prefix(crifi <http://white.gobo/>)
+    Prefix(ex <http://example.com/>)
+    Prefix(triplestordf <http://example.com/triples-to-rdf#>)
+    Prefix(rif <http://www.w3.org/2007/rif#>)
+    Prefix(entailment <http://www.w3.org/ns/entailment/>)
+    (* ex:init-defrules *) Group 10 (
+      (* ex:init-defrule-per-implies *) Forall ?group ?rule ?formula(
+        If And(
+          ?group[rif:sentences -> ?sentences]
+          ?rule[rdf:type -> rif:Implies]
+          External(pred:is-list(?sentences))
+          External(pred:list-contains(?sentences ?rule))
+          ?rule[rif:if -> ?rifcondition]
+          ?rifcondition[ex:as-conditional -> ?clipsconditions]
+          ?rule[rif:then -> ?rifaction]
+          ?rifaction[ex:as-action -> ?clipsactions]
+        ) Then Do (
+          (?defrule New())
+          (?actionlist New())
+          Assert( ?rule[ex:translate-implies-to-defrule -> ?defrule] )
+          Assert( ?defrule[rdf:type -> cs:Defrule] )
+          Assert( ?defrule[cs:conditional-element -> ?clipsconditions] )
+          Assert( ?defrule[cs:action -> ?clipsactions] )
+        )
+      )
+      (* ex:init-defrule-per-forall *) Forall ?rule ?formula(
+        If And(
+          ?rule[rdf:type -> rif:Forall]
+          ?rule[rif:formula -> ?formula]
+          Not (Exists ?outerrule (?outerrule[rif:formula -> ?rule]))
+        ) Then Do ((?defrule New()) (?actionlist New())
+          Assert( ?defrule[rdf:type -> cs:Defrule] )
+          Assert( ?defrule[ex:uses-patterns-as-conditional -> ?rule] )
+          Assert( ?defrule[ex:out-as-conditional -> List()] )
+          Assert( ?defrule[ex:uses-action-from -> ?formula])
+          Assert( ?defrule[ex:bound-variables -> List()] )
+        )
+      )
+      (* ex:add-action-to-defrule *) Forall ?rule ?formula ?actionlist(
+        If And(
+          ?rule[ex:uses-action-from -> ?formula]
+          ?formula[ex:as-action -> ?actionlist]
+        ) Then Do (
+          Assert(?rule[cs:action -> ?actionlist])
+        )
+      )
+      (* ex:add-conditional-to-defrule *) Forall ?clipsrule ?rifrule ?conditionlist(
+        If And(
+          ?clipsrule[ex:uses-as-conditional -> ?rifrule]
+          ?rifrule[ex:as-conditional -> ?conditionlist]
+        ) Then Do (
+          Assert(?clipsrule[cs:conditional-element -> ?conditionlist])
+        )
+      )
+    )
+)

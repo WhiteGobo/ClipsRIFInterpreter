@@ -1,0 +1,71 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rif: <http://www.w3.org/2007/rif#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+[] a rif:Document ;
+    rif:payload [ a rif:Group ;
+            rif:sentences ( [ a rif:Forall ;
+                        rif:formula [ a rif:Implies ;
+                                rif:if [ a rif:And ;
+                                        rif:formulas ( [ a rif:Frame ;
+                                                    rif:object [ a rif:Var ;
+                                                            rif:varname "directive" ] ;
+                                                    rif:slots ( [ a rif:Slot ;
+                                                                rif:slotkey [ a rif:Const ;
+                                                                        rif:constIRI "http://www.w3.org/2007/rif#location"^^xsd:anyURI ] ;
+                                                                rif:slotvalue [ a rif:Var ;
+                                                                        rif:varname "location" ] ] ) ] [ a rif:Frame ;
+                                                    rif:object [ a rif:Var ;
+                                                            rif:varname "directive" ] ;
+                                                    rif:slots ( [ a rif:Slot ;
+                                                                rif:slotkey [ a rif:Const ;
+                                                                        rif:constIRI "http://www.w3.org/2007/rif#profile"^^xsd:anyURI ] ;
+                                                                rif:slotvalue [ a rif:Var ;
+                                                                        rif:varname "profile" ] ] ) ] ) ] ;
+                                rif:then [ a rif:Do ;
+                                        rif:actions ( [ a rif:Execute ;
+                                                    rif:target [ a rif:Atom ;
+                                                            rif:args ( [ a rif:Var ;
+                                                                        rif:varname "location" ] [ a rif:Var ;
+                                                                        rif:varname "profile" ] ) ;
+                                                            rif:op [ a rif:Const ;
+                                                                    rif:constIRI "http://white.gobo/import"^^xsd:anyURI ] ] ] ) ] ] ;
+                        rif:vars ( [ a rif:Var ;
+                                    rif:varname "directive" ] [ a rif:Var ;
+                                    rif:varname "location" ] [ a rif:Var ;
+                                    rif:varname "profile" ] ) ] [ a rif:Forall ;
+                        rif:formula [ a rif:Implies ;
+                                rif:if [ a rif:And ;
+                                        rif:formulas ( [ a rif:Frame ;
+                                                    rif:object [ a rif:Var ;
+                                                            rif:varname "directive" ] ;
+                                                    rif:slots ( [ a rif:Slot ;
+                                                                rif:slotkey [ a rif:Const ;
+                                                                        rif:constIRI "http://www.w3.org/2007/rif#location"^^xsd:anyURI ] ;
+                                                                rif:slotvalue [ a rif:Var ;
+                                                                        rif:varname "location" ] ] ) ] [ a rif:INeg ;
+                                                    rif:formula [ a rif:Exists ;
+                                                            rif:formula [ a rif:Frame ;
+                                                                    rif:object [ a rif:Var ;
+                                                                            rif:varname "directive" ] ;
+                                                                    rif:slots ( [ a rif:Slot ;
+                                                                                rif:slotkey [ a rif:Const ;
+                                                                                        rif:constIRI "http://www.w3.org/2007/rif#profile"^^xsd:anyURI ] ;
+                                                                                rif:slotvalue [ a rif:Var ;
+                                                                                        rif:varname "profile" ] ] ) ] ;
+                                                            rif:vars ( [ a rif:Var ;
+                                                                        rif:varname "profile" ] ) ] ] ) ] ;
+                                rif:then [ a rif:Do ;
+                                        rif:actions ( [ a rif:Assert ;
+                                                    rif:target [ a rif:Frame ;
+                                                            rif:object [ a rif:Var ;
+                                                                    rif:varname "directive" ] ;
+                                                            rif:slots ( [ a rif:Slot ;
+                                                                        rif:slotkey [ a rif:Const ;
+                                                                                rif:constIRI "http://www.w3.org/2007/rif#profile"^^xsd:anyURI ] ;
+                                                                        rif:slotvalue [ a rif:Const ;
+                                                                                rif:constIRI "http://www.w3.org/ns/entailment/RIF"^^xsd:anyURI ] ] ) ] ] ) ] ] ;
+                        rif:vars ( [ a rif:Var ;
+                                    rif:varname "directive" ] [ a rif:Var ;
+                                    rif:varname "location" ] ) ] ) ] .
+

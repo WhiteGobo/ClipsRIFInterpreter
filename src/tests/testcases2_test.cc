@@ -83,7 +83,7 @@ class officialw3cPETTestCases_Test : public testing::TestWithParam<TestdataPET> 
 
 static auto petTestdata = testing::Values(
 		TestdataPET("Core_PET_Builtin_literal-not-identical",
-			SC_ModelA,
+			SC_NoCondition,
 			_W3C_TESTDATA_"Builtin_literal-not-identical/",
 			"Builtin_literal-not-identical-premise",
 			"Builtin_literal-not-identical-conclusion"),
