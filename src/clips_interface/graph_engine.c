@@ -62,7 +62,18 @@ static const char *baserules[] = {
 		"	(assert (Member (instance ?x) (class ?extracls)))\n"
 		")",
 	
-	//"(defrule remove-unneeded atomlists)"
+	"(defrule remove-unneeded atomlists\n"
+	"	?list <- (AtomList)\n"
+	"	(not (exists (or\n"
+	"		(TripleTemplate (subject ?list))\n"
+	"		(TripleTemplate (predicate ?list))\n"
+	"		(TripleTemplate (object ?list))\n"
+	"		(Atom (op ?list))\n"
+	"		(Atom (args $? ?list $?))\n"
+	"	)))\n"
+	"	=>\n"
+	"	(retract ?list)\n"
+	")",
 
 	NULL
 };
