@@ -103,7 +103,7 @@ static auto petTestdata = testing::Values(
 			"Builtins_Numeric-premise",
 			"Builtins_Numeric-conclusion"),
 		TestdataPET("Core_PET_Builtins_PlainLiteral",
-			SC_NoCondition,
+			SC_ModelA,
 			_W3C_TESTDATA_"Builtins_PlainLiteral/",
 			"Builtins_PlainLiteral-premise",
 			"Builtins_PlainLiteral-conclusion"),
@@ -133,12 +133,12 @@ static auto petTestdata = testing::Values(
 			"Builtins_boolean-premise",
 			"Builtins_boolean-conclusion"),
 		TestdataPET("Core_PET_Chaining_strategy_numeric-add_1",
-			SC_ModelA,
+			SC_NoCondition,
 			_W3C_TESTDATA_"Chaining_strategy_numeric-add_1/",
 			"Chaining_strategy_numeric-add_1-premise",
 			"Chaining_strategy_numeric-add_1-conclusion"),
 		TestdataPET("Core_PET_Chaining_strategy_numeric-subtract_2",
-			SC_ModelA,
+			SC_NoCondition,
 			_W3C_TESTDATA_"Chaining_strategy_numeric-subtract_2/",
 			"Chaining_strategy_numeric-subtract_2-premise",
 			"Chaining_strategy_numeric-subtract_2-conclusion"),
@@ -153,12 +153,12 @@ static auto petTestdata = testing::Values(
 			"Factorial_Forward_Chaining-premise",
 			"Factorial_Forward_Chaining-conclusion"),
 		TestdataPET("Core_PET_Frame_slots_are_independent",
-			SC_ModelA,
+			SC_NoCondition,
 			_W3C_TESTDATA_"Frame_slots_are_independent/",
 			"Frame_slots_are_independent-premise",
 			"Frame_slots_are_independent-conclusion"),
 		TestdataPET("Core_PET_Frames",
-			SC_ModelA,
+			SC_NoCondition,
 			_W3C_TESTDATA_"Frames/",
 			"Frames-premise",
 			"Frames-conclusion"),
@@ -190,17 +190,17 @@ static auto petTestdata = testing::Values(
 			"Positional_Arguments-conclusion"),
 			*/
 		TestdataPET("Core_PET_RDF_Combination_Blank_Node",
-			SC_ModelA,
+			SC_NoCondition,
 			_W3C_TESTDATA_"RDF_Combination_Blank_Node/",
 			"RDF_Combination_Blank_Node-premise",
 			"RDF_Combination_Blank_Node-conclusion"),
 		TestdataPET("Core_PET_RDF_Combination_Constant_Equivalence_1",
-			SC_ModelA,
+			SC_NoCondition,
 			_W3C_TESTDATA_"RDF_Combination_Constant_Equivalence_1/",
 			"RDF_Combination_Constant_Equivalence_1-premise",
 			"RDF_Combination_Constant_Equivalence_1-conclusion"),
 		TestdataPET("Core_PET_RDF_Combination_Constant_Equivalence_2",
-			SC_ModelA,
+			SC_NoCondition,
 			_W3C_TESTDATA_"RDF_Combination_Constant_Equivalence_2/",
 			"RDF_Combination_Constant_Equivalence_2-premise",
 			"RDF_Combination_Constant_Equivalence_2-conclusion"),
@@ -210,7 +210,7 @@ static auto petTestdata = testing::Values(
 			"RDF_Combination_Constant_Equivalence_3-premise",
 			"RDF_Combination_Constant_Equivalence_3-conclusion"),
 		TestdataPET("Core_PET_RDF_Combination_Constant_Equivalence_4",
-			SC_ModelA,
+			SC_NoCondition,
 			"",
 			W3C_PREMISE("RDF_Combination_Constant_Equivalence_4"),
 			W3C_CONCLUSION("RDF_Combination_Constant_Equivalence_4")),
@@ -367,17 +367,17 @@ static auto petTestdata = testing::Values(
 			"AssertRetract-premise",
 			"AssertRetract-conclusion"),
 		TestdataPET("PRD_PET_AssertRetract2",
-			SC_ModelA,
+			SC_NoCondition,
 			_W3C_TESTDATA_"AssertRetract2/",
 			"AssertRetract2-premise",
 			"AssertRetract2-conclusion"),
 		TestdataPET("PRD_PET_Modify1",
-			SC_ModelA,
+			SC_NoCondition,
 			_W3C_TESTDATA_"Modify/",
 			"Modify-premise",
 			"Modify-conclusion"),
 		TestdataPET("PRD_PET_Modify_loop",
-			SC_ModelA,
+			SC_NoCondition,
 			_W3C_TESTDATA_"Modify_loop/",
 			"Modify_loop-premise",
 			"Modify_loop-conclusion"),
@@ -396,11 +396,15 @@ static void add_import_function(crifi_graph *graph){
 	}
 }
 
-static void load_from_memory_to_graph(crifi_graph *graph, const char *source_uri){
+static void load_from_memory_to_graph(crifi_graph *graph,
+					const char *source_uri)
+{
 	bool errorstate;
 	struct DynamicValue retval;
-	char command[300]; //300 seems like a reaonable guess
-	sprintf(command, "(<%s> <%s> <%s>)", _CRIFI_import_, source_uri, _RIFENTAIL_RIF_);
+	char command[30 + strlen(_CRIFI_import_)
+			+ strlen(source_uri) + strlen(_RIFENTAIL_RIF_)];
+	sprintf(command, "(<%s> <%s> <%s>)",
+			_CRIFI_import_, source_uri, _RIFENTAIL_RIF_);
 	retval = eval(graph, command);
 	errorstate = graph_in_errorstate(graph, stderr);
 	switch (retval.type){
@@ -433,17 +437,21 @@ static void load_from_memory_to_graph(crifi_graph *graph, const char *source_uri
 		FAIL() << "graph ended up in errorstate after import\n";
 	}
 }
-static void load_new_logic(crifi_graph *graph,const char* config, size_t configlength){
+static void load_new_logic(crifi_graph *graph,
+				const char* config, size_t configlength)
+{
 	RET_LOADCONFIG err = load_config_mem(graph, config, configlength);
 	switch (err){
 		default:
 			break;
 	}
 }
+
 static void create_new_check(crifi_graph *create_check_graph, FILE *memory){
 	const char *errmsg;
 	CRIFI_SERIALIZE_SCRIPT_RET err;
-	err = serialize_information_as_clips_function(memory, create_check_graph);
+	err = serialize_information_as_clips_function(memory,
+							create_check_graph);
 	switch(err){
 		case CRIFI_SERIALIZE_SCRIPT_NOERROR:
 			return;
@@ -491,7 +499,8 @@ static void create_new_logic(crifi_graph *create_logic_graph, FILE *memory){
 	}
 }
 
-static void run_and_check(crifi_graph *graph, const char* check_command, bool expect){
+static void run_and_check(crifi_graph *graph, const char* check_command,
+				bool expect){
 	bool errorstate;
 	struct DynamicValue retval;
 	int number_rules_run = run_rules(graph, 20);
@@ -544,22 +553,27 @@ static void run_and_check(crifi_graph *graph, const char* check_command, bool ex
 	}
 }
 
-static void create_logic_into_memory(FILE* tmpmem_f, TestdataPET testdata, GraphGenerator *graph_generator){
+static void create_logic_into_memory(FILE* tmpmem_f, TestdataPET testdata,
+					GraphGenerator *graph_generator)
+{
 	int number_rules_run;
 	crifi_graph *create_logic_graph = graph_generator();
 	if (create_logic_graph == NULL){
 		GTEST_SKIP() << "couldnt craete modelA graph";
 	}
 	w3ctestcases_add_importlocations(create_logic_graph);
-	fprintf(stderr, "loading logic info from: %s\n", testdata.premise_uri.c_str());
-	load_from_memory_to_graph(create_logic_graph, testdata.premise_uri.c_str());
+	fprintf(stderr, "loading logic info from: %s\n",
+					testdata.premise_uri.c_str());
+	load_from_memory_to_graph(create_logic_graph,
+					testdata.premise_uri.c_str());
 
 	number_rules_run = run_rules(create_logic_graph, 10000);
 	fprintf(stderr, "information in create_logic_graph after rules run.\n");
 	//ignore error:
 	crifi_serialize_all_triples(create_logic_graph, stderr, "turtle", "");
 
-	fprintf(stderr, "rules run during rule creation: %d\n", number_rules_run);
+	fprintf(stderr, "rules run during rule creation: %d\n",
+					number_rules_run);
 	if (graph_in_errorstate(create_logic_graph, stderr)){
 		FAIL() << "graph ended up in errorstate, while "
 			"createing new logic";
@@ -579,7 +593,8 @@ static void fprintf_model_first_created_rules(FILE* out_f, crifi_graph *graph){
 	switch(retval.type){
 		case CTC_DYNAMIC_STRING:
 			if (0 == strcmp(retval.val.string, "")) {
-				FAIL() << "not output from create-script-rif-logic";
+				FAIL() << "not output from "
+					"create-script-rif-logic";
 			}
 			fprintf(out_f, "%s", retval.val.string);
 			break;
@@ -593,22 +608,27 @@ static void fprintf_model_first_created_rules(FILE* out_f, crifi_graph *graph){
 	}
 }
 
-static void create_logic_into_memory_model_first(FILE* tmpmem_f, TestdataPET testdata){
+static void create_logic_into_memory_model_first(
+		FILE* tmpmem_f, TestdataPET testdata)
+{
 	int number_rules_run;
 	crifi_graph *create_logic_graph = init_graph_model_first();
 	if (create_logic_graph == NULL){
 		GTEST_SKIP() << "couldnt create model first graph";
 	}
 	w3ctestcases_add_importlocations(create_logic_graph);
-	fprintf(stderr, "loading logic info from: %s\n", testdata.premise_uri.c_str());
-	load_from_memory_to_graph(create_logic_graph, testdata.premise_uri.c_str());
+	fprintf(stderr, "loading logic info from: %s\n",
+				testdata.premise_uri.c_str());
+	load_from_memory_to_graph(create_logic_graph,
+				testdata.premise_uri.c_str());
 
 	number_rules_run = run_rules(create_logic_graph, 10000);
 	fprintf(stderr, "information in create_logic_graph after rules run.\n");
 	//ignore error:
 	crifi_serialize_all_triples(create_logic_graph, stderr, "turtle", "");
 
-	fprintf(stderr, "rules run during rule creation: %d\n", number_rules_run);
+	fprintf(stderr, "rules run during rule creation: %d\n",
+				number_rules_run);
 	if (graph_in_errorstate(create_logic_graph, stderr)){
 		FAIL() << "graph ended up in errorstate, while "
 			"createing new logic";
@@ -619,7 +639,9 @@ static void create_logic_into_memory_model_first(FILE* tmpmem_f, TestdataPET tes
 	create_logic_graph = NULL;
 }
 
-static void create_check_into_memory(FILE *tmpmem_f, TestdataPET testdata, GraphGenerator *graph_generator){
+static void create_check_into_memory(FILE *tmpmem_f, TestdataPET testdata,
+					GraphGenerator *graph_generator)
+{
 	int number_rules_run;
 	crifi_graph *create_check_graph;
 	create_check_graph = graph_generator();
@@ -628,15 +650,18 @@ static void create_check_into_memory(FILE *tmpmem_f, TestdataPET testdata, Graph
 		FAIL() << "couldnt create modelA check graph";
 	}
 	w3ctestcases_add_importlocations(create_check_graph);
-	fprintf(stderr, "loading check info from: %s\n", testdata.conclusion_uri.c_str());
-	load_from_memory_to_graph(create_check_graph, testdata.conclusion_uri.c_str());
+	fprintf(stderr, "loading check info from: %s\n",
+					testdata.conclusion_uri.c_str());
+	load_from_memory_to_graph(create_check_graph,
+					testdata.conclusion_uri.c_str());
 
 	number_rules_run = run_rules(create_check_graph, 10000);
 	fprintf(stderr, "information in create_check_graph after rules run.\n");
 	//ignore error:
 	crifi_serialize_all_triples(create_check_graph, stderr, "turtle", "");
 
-	fprintf(stderr, "rules run during check creation: %d\n", number_rules_run);
+	fprintf(stderr, "rules run during check creation: %d\n",
+						number_rules_run);
 	if (graph_in_errorstate(create_check_graph, stderr)){
 		FAIL() << "graph ended up in errorstate, while "
 			"createing check";
@@ -675,7 +700,8 @@ TEST_P(officialw3cPETTestCases_Test, CreateAndTestModelWithModelA) {
 
 	tmpcheckmem_f = fmemopen(tmpcheckmem, memory_size-1, "w");
 	ASSERT_NE(tmpcheckmem_f, nullptr) << "Couldnt open memory.broken test.";
-	create_check_into_memory(tmpcheckmem_f, testdata, init_graph_modelcheckA);
+	create_check_into_memory(tmpcheckmem_f, testdata,
+				init_graph_modelcheckA);
 	fclose(tmpcheckmem_f);
 
 	if (HasFatalFailure()) return;
@@ -713,7 +739,8 @@ TEST_P(officialw3cPETTestCases_Test, CreateAndTestModelWithModelFirst) {
 
 	tmpcheckmem_f = fmemopen(tmpcheckmem, memory_size-1, "w");
 	ASSERT_NE(tmpcheckmem_f, nullptr) << "Couldnt open memory.broken test.";
-	create_check_into_memory(tmpcheckmem_f, testdata, init_graph_modelcheckA);
+	create_check_into_memory(tmpcheckmem_f, testdata,
+				init_graph_modelcheckA);
 	fclose(tmpcheckmem_f);
 
 	if (HasFatalFailure()) return;
