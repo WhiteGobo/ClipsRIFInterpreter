@@ -65,6 +65,26 @@ Document(
           Assert(?pattern[cs:function-call -> ?action])
         )
       )
+
+      Forall ?rifequal ?action ?defrule ?left ?right ?leftexpr ?rightexpr (
+        If And (
+          ?rifequal[ex:add-as-pattern -> ?defrule]
+          ?rifequal[rif:left -> ?left]
+          ?rifequal[rif:right -> ?right]
+          ?left[ex:as-expression -> ?leftexpr]
+          ?right[ex:as-expression -> ?rightexpr]
+        ) Then Do (
+          (?pattern New())
+          (?action New())
+          (?oldpatternlist ?defrule[cs:conditional-element -> ?oldpatternlist])
+          Assert( ?pattern[rdf:type -> cs:TestCE] )
+          Modify( ?defrule[cs:conditional-element -> External(func:append(?oldpatternlist ?pattern))] )
+          Assert(?pattern[cs:function-call -> ?action])
+          Assert(?action[cs:function-name -> "eq"])
+          Assert(?action[cs:function-args -> External(func:make-list( ?leftexpr ?rightexpr))])
+        )
+      )
+
       Forall ?rifframe ?slot ?defrule ?slotkey ?slotvalue (
         If And (
           ?rifframe[ex:add-as-pattern -> ?defrule]
