@@ -14,6 +14,7 @@ list(APPEND mytargets
 	formula-as-test
 	import-rules
 	init-defrules
+	add-as-pattern
 )
 
 set(compilelist)

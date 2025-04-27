@@ -1,5 +1,4 @@
 Document(
-  Import(<http://white.gobo/crifi/built_resources/data_modela#rule-normalization> <http://www.w3.org/ns/entailment/RIF>)
   Import(<http://white.gobo/crifi/built_resources/data_modela#transform-list> <http://www.w3.org/ns/entailment/RIF>)
   Import(<http://white.gobo/crifi/built_resources/data_modela#rest> <http://www.w3.org/ns/entailment/RIF>)
   Import(<http://white.gobo/crifi/built_resources/data_modela#constants> <http://www.w3.org/ns/entailment/RIF>)
@@ -7,5 +6,5 @@ Document(
 
   Import(<http://white.gobo/crifi/built_resources/data_modela#import-rules> <http://www.w3.org/ns/entailment/RIF>)
   Import(<http://white.gobo/crifi/built_resources/data_modela#init-defrules> <http://www.w3.org/ns/entailment/RIF>)
-
+  Import(<http://white.gobo/crifi/built_resources/data_modela#add-as-pattern> <http://www.w3.org/ns/entailment/RIF>)
 )

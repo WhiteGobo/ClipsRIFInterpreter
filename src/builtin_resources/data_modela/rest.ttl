@@ -318,8 +318,6 @@
                                                             rif:varname "slot" ] ] ) ] ] ) ] ;
             rif:then [ a rif:Do ;
                     rif:actionVar ( [ a rif:Var ;
-                                rif:varname "slotsubject" ] [ a rif:New ] ),
-                        ( [ a rif:Var ;
                                 rif:varname "clipsconditionalelement" ] [ a rif:New ] ),
                         ( [ a rif:Var ;
                                 rif:varname "slotpredicate" ] [ a rif:New ] ),
@@ -333,7 +331,9 @@
                                             rif:slotvalue [ a rif:Var ;
                                                     rif:varname "existingconditionals" ] ] ) ] ),
                         ( [ a rif:Var ;
-                                rif:varname "slotobject" ] [ a rif:New ] ) ;
+                                rif:varname "slotobject" ] [ a rif:New ] ),
+                        ( [ a rif:Var ;
+                                rif:varname "slotsubject" ] [ a rif:New ] ) ;
                     rif:actions ( [ a rif:Assert ;
                                 rif:target [ a rif:Frame ;
                                         rif:object [ a rif:Var ;
@@ -540,13 +540,13 @@
                                                 rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#list-contains"^^xsd:anyURI ] ] ] ) ] ;
             rif:then [ a rif:Do ;
                     rif:actionVar ( [ a rif:Var ;
-                                rif:varname "slotobject" ] [ a rif:New ] ),
-                        ( [ a rif:Var ;
-                                rif:varname "clipsnode" ] [ a rif:New ] ),
-                        ( [ a rif:Var ;
                                 rif:varname "slotpredicate" ] [ a rif:New ] ),
                         ( [ a rif:Var ;
-                                rif:varname "slotsubject" ] [ a rif:New ] ) ;
+                                rif:varname "slotsubject" ] [ a rif:New ] ),
+                        ( [ a rif:Var ;
+                                rif:varname "slotobject" ] [ a rif:New ] ),
+                        ( [ a rif:Var ;
+                                rif:varname "clipsnode" ] [ a rif:New ] ) ;
                     rif:actions ( [ a rif:Assert ;
                                 rif:target [ a rif:Frame ;
                                         rif:object [ a rif:Var ;
@@ -969,140 +969,11 @@
                 rif:varname "out" ] [ a rif:Var ;
                 rif:varname "nextactions" ] ) .
 
-<http://example.com/part-frame-pattern> a rif:Forall ;
-    rif:formula [ a rif:Implies ;
-            rif:if [ a rif:And ;
-                    rif:formulas ( [ a rif:Frame ;
-                                rif:object [ a rif:Var ;
-                                        rif:varname "rifforall" ] ;
-                                rif:slots ( [ a rif:Slot ;
-                                            rif:slotkey [ a rif:Const ;
-                                                    rif:constIRI "http://www.w3.org/2007/rif#pattern"^^xsd:anyURI ] ;
-                                            rif:slotvalue [ a rif:Var ;
-                                                    rif:varname "rifframe" ] ] ) ] [ a rif:Frame ;
-                                rif:object [ a rif:Var ;
-                                        rif:varname "rifframe" ] ;
-                                rif:slots ( [ a rif:Slot ;
-                                            rif:slotkey [ a rif:Const ;
-                                                    rif:constIRI "http://www.w3.org/2007/rif#object"^^xsd:anyURI ] ;
-                                            rif:slotvalue [ a rif:Var ;
-                                                    rif:varname "object" ] ] ) ] [ a rif:Frame ;
-                                rif:object [ a rif:Var ;
-                                        rif:varname "rifframe" ] ;
-                                rif:slots ( [ a rif:Slot ;
-                                            rif:slotkey [ a rif:Const ;
-                                                    rif:constIRI "http://www.w3.org/2007/rif#slots"^^xsd:anyURI ] ;
-                                            rif:slotvalue [ a rif:Var ;
-                                                    rif:varname "slotlist" ] ] ) ] [ a rif:External ;
-                                rif:content [ a rif:Atom ;
-                                        rif:args ( [ a rif:External ;
-                                                    rif:content [ a rif:Expr ;
-                                                            rif:args ( [ a rif:Var ;
-                                                                        rif:varname "slotlist" ] ) ;
-                                                            rif:op [ a rif:Const ;
-                                                                    rif:constIRI "http://www.w3.org/2007/rif-builtin-function#count"^^xsd:anyURI ] ] ] [ a rif:Const ;
-                                                    rif:value 1 ] ) ;
-                                        rif:op [ a rif:Const ;
-                                                rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#numeric-greater-than"^^xsd:anyURI ] ] ] ) ] ;
-            rif:then [ a rif:Do ;
-                    rif:actionVar ( [ a rif:Var ;
-                                rif:varname "newframerest" ] [ a rif:New ] ),
-                        ( [ a rif:Var ;
-                                rif:varname "newframefirst" ] [ a rif:New ] ) ;
-                    rif:actions ( [ a rif:Retract ;
-                                rif:target [ a rif:Frame ;
-                                        rif:object [ a rif:Var ;
-                                                rif:varname "rifforall" ] ;
-                                        rif:slots ( [ a rif:Slot ;
-                                                    rif:slotkey [ a rif:Const ;
-                                                            rif:constIRI "http://www.w3.org/2007/rif#pattern"^^xsd:anyURI ] ;
-                                                    rif:slotvalue [ a rif:Var ;
-                                                            rif:varname "rifframe" ] ] ) ] ] [ a rif:Assert ;
-                                rif:target [ a rif:Frame ;
-                                        rif:object [ a rif:Var ;
-                                                rif:varname "rifforall" ] ;
-                                        rif:slots ( [ a rif:Slot ;
-                                                    rif:slotkey [ a rif:Const ;
-                                                            rif:constIRI "http://www.w3.org/2007/rif#pattern"^^xsd:anyURI ] ;
-                                                    rif:slotvalue [ a rif:Var ;
-                                                            rif:varname "newframefirst" ] ] ) ] ] [ a rif:Assert ;
-                                rif:target [ a rif:Frame ;
-                                        rif:object [ a rif:Var ;
-                                                rif:varname "newframefirst" ] ;
-                                        rif:slots ( [ a rif:Slot ;
-                                                    rif:slotkey [ a rif:Const ;
-                                                            rif:constIRI "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"^^xsd:anyURI ] ;
-                                                    rif:slotvalue [ a rif:Const ;
-                                                            rif:constIRI "http://www.w3.org/2007/rif#Frame"^^xsd:anyURI ] ] ) ] ] [ a rif:Assert ;
-                                rif:target [ a rif:Frame ;
-                                        rif:object [ a rif:Var ;
-                                                rif:varname "newframefirst" ] ;
-                                        rif:slots ( [ a rif:Slot ;
-                                                    rif:slotkey [ a rif:Const ;
-                                                            rif:constIRI "http://www.w3.org/2007/rif#object"^^xsd:anyURI ] ;
-                                                    rif:slotvalue [ a rif:Var ;
-                                                            rif:varname "object" ] ] ) ] ] [ a rif:Assert ;
-                                rif:target [ a rif:Frame ;
-                                        rif:object [ a rif:Var ;
-                                                rif:varname "newframefirst" ] ;
-                                        rif:slots ( [ a rif:Slot ;
-                                                    rif:slotkey [ a rif:Const ;
-                                                            rif:constIRI "http://www.w3.org/2007/rif#slots"^^xsd:anyURI ] ;
-                                                    rif:slotvalue [ a rif:External ;
-                                                            rif:content [ a rif:Expr ;
-                                                                    rif:args ( [ a rif:Var ;
-                                                                                rif:varname "slotlist" ] [ a rif:Const ;
-                                                                                rif:value 0 ] [ a rif:Const ;
-                                                                                rif:value 1 ] ) ;
-                                                                    rif:op [ a rif:Const ;
-                                                                            rif:constIRI "http://www.w3.org/2007/rif-builtin-function#sublist"^^xsd:anyURI ] ] ] ] ) ] ] [ a rif:Assert ;
-                                rif:target [ a rif:Frame ;
-                                        rif:object [ a rif:Var ;
-                                                rif:varname "rifforall" ] ;
-                                        rif:slots ( [ a rif:Slot ;
-                                                    rif:slotkey [ a rif:Const ;
-                                                            rif:constIRI "http://www.w3.org/2007/rif#pattern"^^xsd:anyURI ] ;
-                                                    rif:slotvalue [ a rif:Var ;
-                                                            rif:varname "newframerest" ] ] ) ] ] [ a rif:Assert ;
-                                rif:target [ a rif:Frame ;
-                                        rif:object [ a rif:Var ;
-                                                rif:varname "newframerest" ] ;
-                                        rif:slots ( [ a rif:Slot ;
-                                                    rif:slotkey [ a rif:Const ;
-                                                            rif:constIRI "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"^^xsd:anyURI ] ;
-                                                    rif:slotvalue [ a rif:Const ;
-                                                            rif:constIRI "http://www.w3.org/2007/rif#Frame"^^xsd:anyURI ] ] ) ] ] [ a rif:Assert ;
-                                rif:target [ a rif:Frame ;
-                                        rif:object [ a rif:Var ;
-                                                rif:varname "newframerest" ] ;
-                                        rif:slots ( [ a rif:Slot ;
-                                                    rif:slotkey [ a rif:Const ;
-                                                            rif:constIRI "http://www.w3.org/2007/rif#object"^^xsd:anyURI ] ;
-                                                    rif:slotvalue [ a rif:Var ;
-                                                            rif:varname "object" ] ] ) ] ] [ a rif:Assert ;
-                                rif:target [ a rif:Frame ;
-                                        rif:object [ a rif:Var ;
-                                                rif:varname "newframerest" ] ;
-                                        rif:slots ( [ a rif:Slot ;
-                                                    rif:slotkey [ a rif:Const ;
-                                                            rif:constIRI "http://www.w3.org/2007/rif#slots"^^xsd:anyURI ] ;
-                                                    rif:slotvalue [ a rif:External ;
-                                                            rif:content [ a rif:Expr ;
-                                                                    rif:args ( [ a rif:Var ;
-                                                                                rif:varname "slotlist" ] [ a rif:Const ;
-                                                                                rif:value 0 ] ) ;
-                                                                    rif:op [ a rif:Const ;
-                                                                            rif:constIRI "http://www.w3.org/2007/rif-builtin-function#remove"^^xsd:anyURI ] ] ] ] ) ] ] ) ] ] ;
-    rif:vars ( [ a rif:Var ;
-                rif:varname "rifframe" ] [ a rif:Var ;
-                rif:varname "slotlist" ] [ a rif:Var ;
-                rif:varname "rifforall" ] ) .
-
 <http://example.com/transform-do> a rif:Group ;
     rif:sentences ( <http://example.com/init-transform-do> <http://example.com/end-transform-do> <http://example.com/iter-transform-do> ) .
 
 <http://example.com/transform-rif-frame> a rif:Group ;
-    rif:sentences ( <http://example.com/part-frame-pattern> <http://example.com/as-expression-transform-rif-frame> ) .
+    rif:sentences ( <http://example.com/as-expression-transform-rif-frame> ) .
 
 [] a rif:Document ;
     rif:payload [ a rif:Group ;

@@ -34,6 +34,26 @@ Document(
           Retract(?innerrule)
         )
       )
+      (* ex:part-frame-pattern *) Forall ?rifframe ?slotlist ?rifforall (
+        If And (
+          ?rifforall[rif:pattern -> ?rifframe]
+          ?rifframe[rif:object -> ?object]
+          ?rifframe[rif:slots -> ?slotlist]
+          External(pred:numeric-greater-than(External(func:count(?slotlist)) 1))
+        ) Then Do (
+          (?newframefirst New())
+          (?newframerest New())
+          Retract( ?rifforall[rif:pattern -> ?rifframe] )
+          Assert( ?rifforall[rif:pattern -> ?newframefirst] )
+          Assert( ?newframefirst[rdf:type -> rif:Frame] )
+          Assert( ?newframefirst[rif:object -> ?object] )
+          Assert( ?newframefirst[rif:slots -> External(func:sublist(?slotlist 0 1))] )
+          Assert( ?rifforall[rif:pattern -> ?newframerest] )
+          Assert( ?newframerest[rdf:type -> rif:Frame] )
+          Assert( ?newframerest[rif:object -> ?object] )
+          Assert( ?newframerest[rif:slots -> External(func:remove(?slotlist 0))] )
+        )
+      )
       (* ex:expand-implies *) Forall ?implies ?outerrule ?pattern ?action(
         If And(
           ?outerrule[rdf:type -> rif:Forall]

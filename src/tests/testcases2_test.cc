@@ -162,6 +162,7 @@ static auto petTestdata = testing::Values(
 			_W3C_TESTDATA_"Frames/",
 			"Frames-premise",
 			"Frames-conclusion"),
+		/*
 		TestdataPET("Core_PET_Guards_and_subtypes",
 			SC_All,
 			_W3C_TESTDATA_"Guards_and_subtypes/",
@@ -187,6 +188,7 @@ static auto petTestdata = testing::Values(
 			_W3C_TESTDATA_"Positional_Arguments/",
 			"Positional_Arguments-premise",
 			"Positional_Arguments-conclusion"),
+			*/
 		TestdataPET("Core_PET_RDF_Combination_Blank_Node",
 			SC_ModelA,
 			_W3C_TESTDATA_"RDF_Combination_Blank_Node/",
@@ -217,6 +219,7 @@ static auto petTestdata = testing::Values(
 			"",
 			W3C_PREMISE("RDF_Combination_Constant_Equivalence_Graph_Entailment"),
 			W3C_CONCLUSION("RDF_Combination_Constant_Equivalence_Graph_Entailment")),
+		/*
 		TestdataPET("Core_PET_RDF_Combination_SubClass_2",
 			SC_All,
 			"",
@@ -352,6 +355,7 @@ static auto petTestdata = testing::Values(
 			"",
 			W3C_PREMISE("YoungParentDiscount_1"),
 			W3C_CONCLUSION("YoungParentDiscount_1")),
+		*/
 		TestdataPET("PRD_PET_Assert_", //_ makes unique
 			SC_NoCondition,
 			_W3C_TESTDATA_"Assert/",

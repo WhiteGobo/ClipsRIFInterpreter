@@ -68,6 +68,7 @@ typedef struct {
 	raptor_term *clips_member_variable;
 	raptor_term *clips_member_slot_name;
 	raptor_term *clips_query;
+	raptor_term *clips_function_call;
 
 	raptor_term *clips_deftemplate_name;
 	raptor_term *clips_slot;
@@ -154,6 +155,7 @@ static MyContext* init_context(){
 	cntxt->clips_member_variable = URI(world, CLIPS("member-variable"));
 	cntxt->clips_member_slot_name = URI(world, CLIPS("member-slot-name"));
 	cntxt->clips_query = URI(world, CLIPS("query"));
+	cntxt->clips_function_call = URI(world, CLIPS("function-call"));
 
 	//constant thingies
 	cntxt->clips_symbol = URI(world, CLIPS("symbol"));
@@ -323,6 +325,7 @@ FUNC_DESC(fprintf_find_facts);
 FUNC_DESC(fprintf_template_rhs_pattern);
 FUNC_DESC(fprintf_rhs_slot);
 FUNC_DESC(fprintf_rhs_field);
+FUNC_DESC(fprintf_test_ce);
 
 
 /**
@@ -424,6 +427,18 @@ FUNC_DESC(fprintf_function){
 	fprintf(stream, ")");
 	return err;
 
+}
+
+FUNC_DESC(fprintf_test_ce){
+	CRIFI_SERIALIZE_SCRIPT_RET err;
+	raptor_term *call;
+	Node *call_n;
+	call = get_object(n, cntxt->clips_function_call);
+	call_n = retrieve_node(cntxt->nodes, call);
+	fprintf(stream, "(test");
+	err = fprintf_function(cntxt, stream, call_n);
+	fprintf(stream, ")\n");
+	return err;
 }
 
 /**
@@ -714,6 +729,8 @@ static CRIFI_SERIALIZE_SCRIPT_RET fprintf_template_pattern_ce(MyContext *cntxt, 
 static CRIFI_SERIALIZE_SCRIPT_RET fprintf_conditional_element(MyContext *cntxt, FILE* stream, Node* n){
 	if (check_property(n, cntxt->rdf_type, cntxt->clips_TemplatePatternCE)){
 		return fprintf_template_pattern_ce(cntxt, stream, n);
+	} else if (check_property(n, cntxt->rdf_type, cntxt->clips_TestCE)){
+		return fprintf_test_ce(cntxt, stream, n);
 	} else if (check_property(n, cntxt->rdf_type, cntxt->clips_NotCE)){
 		return fprintf_not_ce(cntxt, stream, n);
 	}
@@ -906,6 +923,10 @@ static CRIFI_SERIALIZE_SCRIPT_RET fprintf_defrule(MyContext *cntxt, FILE* stream
 	}
 	fprintf(stream, "\n");
 	condition = get_object(n, cntxt->clips_conditional_element);
+	if(condition == NULL){
+		fprintf(stderr, "Missing cs:conditional-element.\n");
+		return CRIFI_SERIALIZE_BROKEN_GRAPH;
+	}
 	n_iter = new_rdflist_iterator(cntxt->rdf_cntxt, cntxt->nodes, condition);
 	if(n_iter == NULL){
 		fprintf(stderr, "cs:conditional-element should target a rdf:List\n");

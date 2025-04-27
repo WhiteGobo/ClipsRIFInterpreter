@@ -14,49 +14,88 @@ Document(
       (* ex:init-defrule-per-implies *) Forall ?group ?rule ?formula(
         If And(
           ?group[rif:sentences -> ?sentences]
-          ?rule[rdf:type -> rif:Implies]
+          Or (
+            ?rule[rdf:type -> rif:Implies]
+            ?rule[rdf:type -> rif:Forall]
+          )
           External(pred:is-list(?sentences))
           External(pred:list-contains(?sentences ?rule))
-          ?rule[rif:if -> ?rifcondition]
-          ?rifcondition[ex:as-conditional -> ?clipsconditions]
-          ?rule[rif:then -> ?rifaction]
-          ?rifaction[ex:as-action -> ?clipsactions]
         ) Then Do (
           (?defrule New())
           (?actionlist New())
-          Assert( ?rule[ex:translate-implies-to-defrule -> ?defrule] )
+          Assert( ?rule[ex:as-defrule -> ?defrule] )
+          Assert( ?rule[ex:add-rule-info -> ?defrule] )
           Assert( ?defrule[rdf:type -> cs:Defrule] )
-          Assert( ?defrule[cs:conditional-element -> ?clipsconditions] )
-          Assert( ?defrule[cs:action -> ?clipsactions] )
+          Assert( ?defrule[cs:conditional-element -> External(func:make-list())])
         )
       )
-      (* ex:init-defrule-per-forall *) Forall ?rule ?formula(
-        If And(
-          ?rule[rdf:type -> rif:Forall]
-          ?rule[rif:formula -> ?formula]
-          Not (Exists ?outerrule (?outerrule[rif:formula -> ?rule]))
-        ) Then Do ((?defrule New()) (?actionlist New())
-          Assert( ?defrule[rdf:type -> cs:Defrule] )
-          Assert( ?defrule[ex:uses-patterns-as-conditional -> ?rule] )
-          Assert( ?defrule[ex:out-as-conditional -> List()] )
-          Assert( ?defrule[ex:uses-action-from -> ?formula])
-          Assert( ?defrule[ex:bound-variables -> List()] )
-        )
-      )
-      (* ex:add-action-to-defrule *) Forall ?rule ?formula ?actionlist(
-        If And(
-          ?rule[ex:uses-action-from -> ?formula]
-          ?formula[ex:as-action -> ?actionlist]
+      Forall ?rifrule ?defrule ?action (
+        If And (
+          ?rifrule[ex:add-rule-info -> ?defrule]
+          ?rifrule[rif:then -> ?rifaction]
+          ?rifaction[ex:as-action -> ?action]
         ) Then Do (
-          Assert(?rule[cs:action -> ?actionlist])
+          Assert( ?defrule[cs:action -> ?action] )
         )
       )
-      (* ex:add-conditional-to-defrule *) Forall ?clipsrule ?rifrule ?conditionlist(
-        If And(
-          ?clipsrule[ex:uses-as-conditional -> ?rifrule]
-          ?rifrule[ex:as-conditional -> ?conditionlist]
+      Forall ?rifrule ?defrule ?action (
+        If And (
+          ?rifrule[ex:add-rule-info -> ?defrule]
+          ?rifrule[rif:formula -> ?rifaction]
+          ?rifaction[ex:as-action -> ?action]
         ) Then Do (
-          Assert(?clipsrule[cs:conditional-element -> ?conditionlist])
+          Assert( ?defrule[cs:action -> ?action] )
+        )
+      )
+      Forall ?rifrule ?defrule ?rifclause (
+        If And (
+          ?rifrule[ex:add-rule-info -> ?defrule]
+          ?rifrule[rif:formula -> ?rifclause]
+          Or (
+            ?rifclause[rdf:type -> rif:Forall]
+            ?rifclause[rdf:type -> rif:Implies]
+          )
+        ) Then Do (
+          Assert( ?rifclause[ex:add-rule-info -> ?defrule] )
+        )
+      )
+      Forall ?rifrule ?defrule ?condition ?clipspattern (
+        If And (
+          ?rifrule[ex:add-rule-info -> ?defrule]
+          ?rifrule[rif:if -> ?rifcondition]
+        ) Then Do (
+          Assert( ?rifcondition[ex:add-as-pattern -> ?defrule] )
+        )
+      )
+      Forall ?rifrule ?defrule ?condition ?clipspattern ?formulalist(
+        If And (
+          ?rifcondition[ex:add-as-pattern -> ?defrule]
+          ?rifcondition[rdf:type -> rif:And]
+          ?rifcondition[rif:formulas -> ?formulalist]
+          External(pred:is-list(?formulalist))
+          Or (
+            ?formula[rdf:type -> rif:And]
+            ?formula[rdf:type -> rif:Or]
+            ?formula[rdf:type -> rif:Exists]
+            ?formula[rdf:type -> rif:External]
+            ?formula[rdf:type -> rif:INeg]
+            ?formula[rdf:type -> rif:Frame]
+            ?formula[rdf:type -> rif:Atom]
+            ?formula[rdf:type -> rif:SubClass]
+            ?formula[rdf:type -> rif:Equal]
+          )
+          External(pred:list-contains(?formulalist ?formula))
+        ) Then Do (
+          Assert( ?formula[ex:add-as-pattern -> ?defrule] )
+        )
+      )
+      Forall ?rifrule ?defrule ?rifclause (
+        If And (
+          ?rifrule[ex:add-rule-info -> ?defrule]
+          ?rifrule[rif:then -> ?rifclause]
+          ?rifclause[rdf:type -> rif:Implies]
+        ) Then Do (
+          Assert( ?rifclause[ex:add-rule-info -> ?defrule] )
         )
       )
     )

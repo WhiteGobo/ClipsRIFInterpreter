@@ -11,6 +11,22 @@ Document(
     Prefix(rif <http://www.w3.org/2007/rif#>)
     Prefix(entailment <http://www.w3.org/ns/entailment/>)
     Group(
+      Group (
+        Forall ?factvar (
+          If And (
+            ?factvar[rdf:type -> cs:Variable]
+            ex:currentfactindex(?factindex)
+            Not (Exists ?factname ( ?factvar[cs:variable-name -> ?factname] ))
+          ) Then Do (
+            Retract( ex:currentfactindex(?factindex) )
+
+            Assert( ex:currentfactindex(External(func:numeric-add(?factindex 1))))
+            Assert( ?factvar[cs:variable-name -> External(func:concat("fct" ?factindex))] )
+
+          )
+        )
+        ex:currentfactindex(1)
+      )
       (* ex:rif-inheritance *) Group (
         Forall ?parent ?child (
           If And (
