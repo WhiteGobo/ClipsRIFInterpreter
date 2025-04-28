@@ -93,6 +93,65 @@ Document(
           Assert( ?tmpvar[rdf:type -> cs:Variable] )
         )
       )
+      Forall ?rifmodify ?clause (
+        If And (
+          ?rifmodify[rdf:type -> rif:Modify]
+          ?rifmodify[rif:target -> ?clause]
+          ?clause[rdf:type -> rif:Frame]
+          ?clause[rif:object -> ?rifobject]
+          ?rifobject[ex:as-expression -> ?subjterm]
+        ) Then Do (
+          (?clipsretractall New())
+          (?clipsretractvar New())
+          (?tmpvar New())
+          (?clipsassert New())
+          (?tripletemplate New())
+          (?comparesubjectandpredicate New())
+          (?comparepredicate New())
+          (?comparesubject New())
+          (?slotsubj New())
+          Assert( ?tmpvar[rdf:type -> cs:Variable] )
+          Assert( ?rifmodify[ex:as-action -> External(func:make-list(?clipsretractall ?clipsassert))] )
+          Assert( ?clipsretractall[rdf:type -> cs:DoForAllFacts] )
+          Assert( ?clipsretractall[cs:fact-set-template -> ?tripletemplate] )
+          Assert( ?tripletemplate[cs:deftemplate-name -> "TripleTemplate"] )
+          Assert( ?tripletemplate[cs:fact-set-member-variable -> ?tmpvar] )
+          Assert( ?clipsretractall[cs:query -> ?comparesubjectandpredicate])
+          Assert( ?comparesubjectandpredicate[cs:function-name -> "and"] )
+          Assert( ?comparesubjectandpredicate[cs:function-args -> External(func:make-list(?comparesubject ?comparepredicate))] )
+          Assert( ?comparesubject[cs:function-name -> "eq"] )
+          Assert( ?comparesubject[cs:function-args -> External(func:make-list(?slotsubj ?subjterm))] )
+          Assert( ?slotsubj[cs:member-variable -> ?tmpvar] )
+          Assert( ?slotsubj[cs:member-slot-name -> "subject"] )
+          Assert( ?comparepredicate[cs:function-name -> "or"] )
+          Assert( ?comparepredicate[cs:function-args -> External(func:make-list())] )
+          Assert( ?comparepredicate[ex:compare-slotkeys-varpredicate-rifframe -> ?clause] )
+          Assert( ?comparepredicate[ex:compare-slotkeys-varpredicate-tmpvar -> ?tmpvar] )
+          Assert( ?comparepredicate[ex:add-compare-predicate-from -> ?clause] )
+          Assert( ?clipsretractall[cs:action -> External(func:make-list(?clipsretractvar))])
+          Assert( ?clipsretractvar[cs:function-name -> "retract"] )
+          Assert( ?clipsretractvar[cs:function-args -> External(func:make-list(?tmpvar))] )
+          Assert( ?clipsassert[ex:assert-uses-pattern-from -> ?clause] )
+        )
+      )
+      Forall ?comparepredicate ?tmpvar ?rifframe ?slotlist ?slot ?slotkey ?slotkeyterm (
+        If And (
+          ?comparepredicate[ex:compare-slotkeys-varpredicate-rifframe -> ?rifframe]
+          ?comparepredicate[ex:compare-slotkeys-varpredicate-tmpvar -> ?tmpvar]
+          ?rifframe[rif:slots -> ?slotlist]
+          External(pred:is-list(?slotlist))
+          1 = External(func:count(?slotlist))
+          ?slot[rif:slotkey -> ?slotkey]
+          External(pred:list-contains(?slotlist ?slot))
+          ?slotkey[ex:as-expression -> ?slotkeyterm]
+        ) Then Do (
+          (?slotpred New())
+          Assert( ?slotpred[cs:member-variable -> ?tmpvar] )
+          Assert( ?slotpred[cs:member-slot-name -> "predicate"] )
+          Modify( ?comparepredicate[cs:function-name -> "eq"] )
+          Modify( ?comparepredicate[cs:function-args -> External(func:make-list(?slotpred ?slotkeyterm))] )
+        )
+      )
 
       Forall ?clipsassert ?rifformula ?rhspattern (
         If And (
