@@ -63,6 +63,7 @@ typedef struct {
 	raptor_term *clips_assert;
 	raptor_term *clips_find_all_facts;
 	raptor_term *clips_any_factp;
+	raptor_term *clips_do_for_all_facts;
 	raptor_term *clips_fact_set_template;
 	raptor_term *clips_fact_set_member_variable;
 	raptor_term *clips_member_variable;
@@ -150,6 +151,7 @@ static MyContext* init_context(){
 	cntxt->clips_assert = URI(world, CLIPS("assert"));
 	cntxt->clips_find_all_facts = URI(world, CLIPS("FindAllFacts"));
 	cntxt->clips_any_factp = URI(world, CLIPS("AnyFactP"));
+	cntxt->clips_do_for_all_facts = URI(world, CLIPS("DoForAllFacts"));
 	cntxt->clips_fact_set_template = URI(world, CLIPS("fact-set-template"));
 	cntxt->clips_fact_set_member_variable = URI(world, CLIPS("fact-set-member-variable"));
 	cntxt->clips_member_variable = URI(world, CLIPS("member-variable"));
@@ -390,6 +392,8 @@ FUNC_DESC(fprintf_function){
 	} else if (check_property(n, cntxt->rdf_type, cntxt->clips_find_all_facts)
 		|| check_property(n, cntxt->rdf_type, cntxt->clips_any_factp)){
 		return fprintf_find_facts(cntxt, stream, n);
+	} else if (check_property(n, cntxt->rdf_type, cntxt->clips_do_for_all_facts)) {
+		return fprintf_find_facts(cntxt, stream, n);
 	}
 	fprintf(stderr, "start fprintf_function\n");
 	name = get_object(n, cntxt->clips_function_name);
@@ -470,6 +474,8 @@ FUNC_DESC(fprintf_find_facts){
 		fprintf(stream, " (find-all-facts ");
 	} else if (0 != raptor_term_equals(type, cntxt->clips_any_factp)){
 		fprintf(stream, " (any-factp ");
+	} else if (0 != raptor_term_equals(type, cntxt->clips_do_for_all_facts)) {
+		fprintf(stream, " (do-for-all-facts ");
 	} else {
 		fprintf(stderr, "Failed find facts1\n");
 		return CRIFI_SERIALIZE_BROKEN_GRAPH;
@@ -530,6 +536,33 @@ FUNC_DESC(fprintf_find_facts){
 		default:
 			fprintf(stderr, "failed query with %d\n", err);
 			debug_fprintf_node(stderr, "query element: ", query_facts_n, "\n");
+	}
+
+	NodeIterator* n_iter;
+	raptor_term *actions;
+	if (0 != raptor_term_equals(type, cntxt->clips_do_for_all_facts)) {
+		actions = get_object(n, cntxt->clips_action);
+		if(actions == NULL){
+			fprintf(stderr, "missing cs:action.\n");
+			return CRIFI_SERIALIZE_BROKEN_GRAPH;
+		}
+		n_iter = new_rdflist_iterator(cntxt->rdf_cntxt, cntxt->nodes, actions);
+		if(n_iter == NULL){
+			fprintf(stderr, "cs:action should target rdflist\n");
+			return CRIFI_SERIALIZE_BROKEN_GRAPH;
+		}
+		for(Node* x = node_iterator_get(n_iter);
+				x != NULL;
+				x = node_iterator_get_next(n_iter)){
+			err = fprintf_function(cntxt, stream, x);
+			if (err != CRIFI_SERIALIZE_SCRIPT_NOERROR){
+				debug_fprintf_node(stderr, "failed printing "
+						"one action: ", x, "\n");
+				break;
+			}
+			fprintf(stream, " ");
+		}
+		free_node_iterator(n_iter);
 	}
 
 	fprintf(stream, ") ");
