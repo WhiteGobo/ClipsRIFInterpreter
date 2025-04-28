@@ -248,8 +248,6 @@
                                                                         rif:varname "var" ] ) ] ] ) ] ;
                                 rif:then [ a rif:Do ;
                                         rif:actionVar ( [ a rif:Var ;
-                                                    rif:varname "pattern" ] [ a rif:New ] ),
-                                            ( [ a rif:Var ;
                                                     rif:varname "oldpatternlist" ] [ a rif:Frame ;
                                                     rif:object [ a rif:Var ;
                                                             rif:varname "defrule" ] ;
@@ -257,7 +255,9 @@
                                                                 rif:slotkey [ a rif:Const ;
                                                                         rif:constIRI "http://clips.script/conditional-element"^^xsd:anyURI ] ;
                                                                 rif:slotvalue [ a rif:Var ;
-                                                                        rif:varname "oldpatternlist" ] ] ) ] ) ;
+                                                                        rif:varname "oldpatternlist" ] ] ) ] ),
+                                            ( [ a rif:Var ;
+                                                    rif:varname "pattern" ] [ a rif:New ] ) ;
                                         rif:actions ( [ a rif:Assert ;
                                                     rif:target [ a rif:Frame ;
                                                             rif:object [ a rif:Var ;
@@ -332,10 +332,6 @@
                                                                         rif:varname "rightexpr" ] ] ) ] ) ] ;
                                 rif:then [ a rif:Do ;
                                         rif:actionVar ( [ a rif:Var ;
-                                                    rif:varname "pattern" ] [ a rif:New ] ),
-                                            ( [ a rif:Var ;
-                                                    rif:varname "action" ] [ a rif:New ] ),
-                                            ( [ a rif:Var ;
                                                     rif:varname "oldpatternlist" ] [ a rif:Frame ;
                                                     rif:object [ a rif:Var ;
                                                             rif:varname "defrule" ] ;
@@ -343,7 +339,11 @@
                                                                 rif:slotkey [ a rif:Const ;
                                                                         rif:constIRI "http://clips.script/conditional-element"^^xsd:anyURI ] ;
                                                                 rif:slotvalue [ a rif:Var ;
-                                                                        rif:varname "oldpatternlist" ] ] ) ] ) ;
+                                                                        rif:varname "oldpatternlist" ] ] ) ] ),
+                                            ( [ a rif:Var ;
+                                                    rif:varname "pattern" ] [ a rif:New ] ),
+                                            ( [ a rif:Var ;
+                                                    rif:varname "action" ] [ a rif:New ] ) ;
                                         rif:actions ( [ a rif:Assert ;
                                                     rif:target [ a rif:Frame ;
                                                             rif:object [ a rif:Var ;
@@ -508,6 +508,8 @@
                                                                         rif:varname "z" ] ) ] ] ) ] ;
                                 rif:then [ a rif:Do ;
                                         rif:actionVar ( [ a rif:Var ;
+                                                    rif:varname "slotpredicate" ] [ a rif:New ] ),
+                                            ( [ a rif:Var ;
                                                     rif:varname "oldpatternlist" ] [ a rif:Frame ;
                                                     rif:object [ a rif:Var ;
                                                             rif:varname "defrule" ] ;
@@ -517,13 +519,11 @@
                                                                 rif:slotvalue [ a rif:Var ;
                                                                         rif:varname "oldpatternlist" ] ] ) ] ),
                                             ( [ a rif:Var ;
-                                                    rif:varname "pattern" ] [ a rif:New ] ),
+                                                    rif:varname "slotsubject" ] [ a rif:New ] ),
                                             ( [ a rif:Var ;
                                                     rif:varname "slotobject" ] [ a rif:New ] ),
                                             ( [ a rif:Var ;
-                                                    rif:varname "slotsubject" ] [ a rif:New ] ),
-                                            ( [ a rif:Var ;
-                                                    rif:varname "slotpredicate" ] [ a rif:New ] ) ;
+                                                    rif:varname "pattern" ] [ a rif:New ] ) ;
                                         rif:actions ( [ a rif:Assert ;
                                                     rif:target [ a rif:Frame ;
                                                             rif:object [ a rif:Var ;

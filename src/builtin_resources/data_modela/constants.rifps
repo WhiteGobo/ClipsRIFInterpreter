@@ -63,6 +63,7 @@ Document(
               ?parent[rif:sentences -> ?childlist]
               ?parent[rif:formulas -> ?childlist]
               ?parent[rif:actions -> ?childlist]
+              ?parent[rif:args -> ?childlist]
             )
             External(pred:is-list(?childlist))
             Or (
@@ -77,6 +78,14 @@ Document(
               ?child[rdf:type -> rif:Subclass]
               ?child[rdf:type -> rif:Equal]
               ?child[rdf:type -> rif:Member]
+              ?child[rdf:type -> rif:Var]
+              ?child[rdf:type -> rif:Const]
+              ?child[rdf:type -> rif:And]
+              ?child[rdf:type -> rif:Or]
+              ?child[rdf:type -> rif:Not]
+              ?child[rdf:type -> rif:Exists]
+              ?child[rdf:type -> rif:External]
+              ?child[rdf:type -> rif:Execute]
             )
             External(pred:list-contains(?childlist ?child))
           ) Then Do (
