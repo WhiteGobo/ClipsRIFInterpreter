@@ -11,27 +11,6 @@ Document(
     Prefix(rif <http://www.w3.org/2007/rif#>)
     Prefix(entailment <http://www.w3.org/ns/entailment/>)
     Group (
-      (* ex:transform-assert *) Forall ?rifassert ?riftarget(
-        If And(
-          ?rifassert[rdf:type -> rif:Assert]
-          ?rifassert[rif:target -> ?riftarget]
-          ?riftarget[ex:as-rhspattern -> ?clipsfact]
-        ) Then Do (
-          (?clipsaction New())
-          Assert( ?rifassert[ex:as-action -> External(func:make-list(?clipsaction))] )
-          Assert( ?clipsaction[cs:assert -> ?clipsfact] )
-        )
-      )
-      (* ex:transform-frame-to-assert *) Forall ?rifassert ?riftarget(
-        If And(
-          ?rifframe[rdf:type -> rif:Frame]
-          ?rifframe[ex:as-rhspattern -> ?clipsfact]
-        ) Then Do (
-          (?clipsaction New())
-          Assert( ?rifframe[ex:as-action -> External(func:make-list(?clipsaction))] )
-          Assert( ?clipsaction[cs:assert -> ?clipsfact] )
-        )
-      )
       (* ex:transform-retract-var *) Forall ?rifretract ?riftarget ?subj(
         If And(
           ?rifretract[rdf:type -> rif:Retract]
