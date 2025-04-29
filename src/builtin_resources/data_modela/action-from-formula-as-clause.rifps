@@ -93,7 +93,7 @@ Document(
           Assert( ?tmpvar[rdf:type -> cs:Variable] )
         )
       )
-      Forall ?rifmodify ?clause (
+      Forall ?rifmodify ?clause ?rifobject ?subjterm (
         If And (
           ?rifmodify[rdf:type -> rif:Modify]
           ?rifmodify[rif:target -> ?clause]

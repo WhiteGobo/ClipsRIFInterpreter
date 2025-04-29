@@ -34,6 +34,11 @@ void clipsudf_equal(Environment *env, UDFContext *udfc, UDFValue *out){
 	}
 }
 
+void clipsudf_set_graph_in_errorstate(Environment *env, UDFContext *udfc, UDFValue *out){
+	UDFValue input;
+	if (!UDFFirstArgument(udfc, ANY_TYPE_BITS, &input)) return;
+	SetErrorValue(env, input.header);
+}
 
 void clipsudf_import(Environment *env, UDFContext *udfc, UDFValue *out){
 	char *qq = (char*) udfc->context;

@@ -24,6 +24,7 @@
 #define _CRIFI_iri_to_clipsconstant_ _CRIFI_ "iri-to-clipsconstant"
 #define _CRIFI_literal_to_clipsconstant_ _CRIFI_ "literal-to-clipsconstant"
 #define _CRIFI_import_ _CRIFI_ "import"
+#define _CRIFI_set_graph_in_errorstate_ _CRIFI_ "set-graph-in-errorstate"
 
 #define _XS_anyURI_ "http://www.w3.org/2001/XMLSchema#anyURI"
 #define _XS_base64Binary_ "http://www.w3.org/2001/XMLSchema#base64Binary"

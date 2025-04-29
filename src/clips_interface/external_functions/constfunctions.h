@@ -43,6 +43,8 @@ static UDFDescription builtinFunctionList[] = {
 		clipsudf_equal, "clipsudf_equal", CT_static, NULL},
 	{"<"_CRIFI_percent_encode_">", "s", 1, 1, "s",
 		_clipsudf_percent_encoding, "_clipsudf_percent_encoding",  CT_static, NULL},
+	{"<"_CRIFI_set_graph_in_errorstate_">", "*", 1, 1, "*",
+		clipsudf_set_graph_in_errorstate, "clipsudf_set_graph_in_errorstate", CT_static, NULL},
 	{"<"_CRIFI_new_blanknode_">", "*", 0, 0, "*",
 		clipsudf_new_blanknode, "clipsudf_new_blanknode", CT_static, NULL},
 	{"<"_CRIFI_iri_to_clipsconstant_">", "*", 1, 1, "*",
