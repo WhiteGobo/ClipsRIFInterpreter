@@ -398,7 +398,8 @@ FUNC_DESC(fprintf_function){
 	fprintf(stderr, "start fprintf_function\n");
 	name = get_object(n, cntxt->clips_function_name);
 	if (name == NULL){
-		fprintf(stderr, "fail missing name\n");
+		debug_fprintf_node(stderr, "tried as function but is "
+				"missing name: ", n, "\n");
 		return CRIFI_SERIALIZE_BROKEN_GRAPH;
 	}
 	fprintf(stream, " (");
@@ -656,6 +657,7 @@ static CRIFI_SERIALIZE_SCRIPT_RET fprintf_template_rhs_pattern(MyContext *cntxt,
  * <multifield-RHS-slot> ::= (<slot-name> <RHS-field>*)
  */
 static CRIFI_SERIALIZE_SCRIPT_RET fprintf_rhs_slot(MyContext *cntxt, FILE* stream, Node* n){
+	debug_fprintf_node(stderr, "start fprintf_rhs_slot ", n, "\n");
 	CRIFI_SERIALIZE_SCRIPT_RET err = CRIFI_SERIALIZE_SCRIPT_NOERROR;
 	int i = 0;
 	raptor_term *name, *field, *fields;
@@ -695,6 +697,7 @@ static CRIFI_SERIALIZE_SCRIPT_RET fprintf_rhs_slot(MyContext *cntxt, FILE* strea
 	}*/
 	free_node_iterator(n_iter);
 	fprintf(stream, ")");
+	debug_fprintf_node(stderr, "end fprintf_rhs_slot ", n, "\n");
 	return err;
 }
 
@@ -839,11 +842,13 @@ FUNC_DESC(fprintf_variableslot){
 	raptor_term *varnode, *slotname, *varname, *rt;
 	varnode = get_object(n, cntxt->clips_member_variable);
 	slotname = get_object(n, cntxt->clips_member_slot_name);
-	if (varnode == NULL) fprintf(stderr, "missing varnode\n");
-	if (slotname == NULL) fprintf(stderr, "missing slotname\n");
+	//if (varnode == NULL) fprintf(stderr, "missing varnode\n");
+	//if (slotname == NULL) fprintf(stderr, "missing slotname\n");
 
 	if (varnode == NULL || slotname == NULL){
-		fprintf(stderr, "doesnt look like a variableslot\n");
+		if (varnode != NULL || slotname != NULL){
+			debug_fprintf_node(stderr, "variable slot is missing information: ", n, "\n");
+		}
 		return CRIFI_SERIALIZE_BROKEN_GRAPH;
 	}
 	varnode_n = retrieve_node(cntxt->nodes, varnode);

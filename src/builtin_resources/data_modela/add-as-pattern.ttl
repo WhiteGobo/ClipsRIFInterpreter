@@ -365,8 +365,6 @@
                                                                                     rif:varname "var" ] ) ] ] ) ] ;
                                             rif:then [ a rif:Do ;
                                                     rif:actionVar ( [ a rif:Var ;
-                                                                rif:varname "pattern" ] [ a rif:New ] ),
-                                                        ( [ a rif:Var ;
                                                                 rif:varname "oldpatternlist" ] [ a rif:Frame ;
                                                                 rif:object [ a rif:Var ;
                                                                         rif:varname "defrule" ] ;
@@ -374,7 +372,9 @@
                                                                             rif:slotkey [ a rif:Const ;
                                                                                     rif:constIRI "http://clips.script/conditional-element"^^xsd:anyURI ] ;
                                                                             rif:slotvalue [ a rif:Var ;
-                                                                                    rif:varname "oldpatternlist" ] ] ) ] ) ;
+                                                                                    rif:varname "oldpatternlist" ] ] ) ] ),
+                                                        ( [ a rif:Var ;
+                                                                rif:varname "pattern" ] [ a rif:New ] ) ;
                                                     rif:actions ( [ a rif:Assert ;
                                                                 rif:target [ a rif:Frame ;
                                                                         rif:object [ a rif:Var ;
@@ -471,10 +471,6 @@
                                                                                     rif:varname "varname" ] ) ] ] ) ] ;
                                             rif:then [ a rif:Do ;
                                                     rif:actionVar ( [ a rif:Var ;
-                                                                rif:varname "action" ] [ a rif:New ] ),
-                                                        ( [ a rif:Var ;
-                                                                rif:varname "pattern" ] [ a rif:New ] ),
-                                                        ( [ a rif:Var ;
                                                                 rif:varname "oldpatternlist" ] [ a rif:Frame ;
                                                                 rif:object [ a rif:Var ;
                                                                         rif:varname "defrule" ] ;
@@ -482,7 +478,11 @@
                                                                             rif:slotkey [ a rif:Const ;
                                                                                     rif:constIRI "http://clips.script/conditional-element"^^xsd:anyURI ] ;
                                                                             rif:slotvalue [ a rif:Var ;
-                                                                                    rif:varname "oldpatternlist" ] ] ) ] ) ;
+                                                                                    rif:varname "oldpatternlist" ] ] ) ] ),
+                                                        ( [ a rif:Var ;
+                                                                rif:varname "action" ] [ a rif:New ] ),
+                                                        ( [ a rif:Var ;
+                                                                rif:varname "pattern" ] [ a rif:New ] ) ;
                                                     rif:actions ( [ a rif:Assert ;
                                                                 rif:target [ a rif:Frame ;
                                                                         rif:object [ a rif:Var ;
@@ -580,9 +580,9 @@
                                                                                     rif:varname "constraintop" ] ] ) ] ) ] ;
                                             rif:then [ a rif:Do ;
                                                     rif:actionVar ( [ a rif:Var ;
-                                                                rif:varname "pattern" ] [ a rif:New ] ),
-                                                        ( [ a rif:Var ;
                                                                 rif:varname "slotop" ] [ a rif:New ] ),
+                                                        ( [ a rif:Var ;
+                                                                rif:varname "pattern" ] [ a rif:New ] ),
                                                         ( [ a rif:Var ;
                                                                 rif:varname "slotargs" ] [ a rif:New ] ) ;
                                                     rif:actions ( [ a rif:Assert ;
@@ -760,15 +760,7 @@
                                                                                                 rif:slotkey [ a rif:Const ;
                                                                                                         rif:constIRI "http://example.com/add-atom-args"^^xsd:anyURI ] ;
                                                                                                 rif:slotvalue [ a rif:List ;
-                                                                                                        rif:items () ] ] ) ] ] [ a rif:Assert ;
-                                                                            rif:target [ a rif:Frame ;
-                                                                                    rif:object [ a rif:Var ;
-                                                                                            rif:varname "slotargs" ] ;
-                                                                                    rif:slots ( [ a rif:Slot ;
-                                                                                                rif:slotkey [ a rif:Const ;
-                                                                                                        rif:constIRI "http://example.com/brubru"^^xsd:anyURI ] ;
-                                                                                                rif:slotvalue [ a rif:Const ;
-                                                                                                        rif:constIRI "http://example.com/brubru1"^^xsd:anyURI ] ] ) ] ] ) ] ] ;
+                                                                                                        rif:items () ] ] ) ] ] ) ] ] ;
                                                 rif:vars ( [ a rif:Var ;
                                                             rif:varname "slotargs" ] ) ] ) ] [ a rif:Forall ;
                                     rif:formula [ a rif:Implies ;
@@ -1010,9 +1002,9 @@
                                                                                     rif:varname "z" ] ) ] ] ) ] ;
                                             rif:then [ a rif:Do ;
                                                     rif:actionVar ( [ a rif:Var ;
-                                                                rif:varname "slotsubject" ] [ a rif:New ] ),
-                                                        ( [ a rif:Var ;
                                                                 rif:varname "slotpredicate" ] [ a rif:New ] ),
+                                                        ( [ a rif:Var ;
+                                                                rif:varname "slotsubject" ] [ a rif:New ] ),
                                                         ( [ a rif:Var ;
                                                                 rif:varname "oldpatternlist" ] [ a rif:Frame ;
                                                                 rif:object [ a rif:Var ;
