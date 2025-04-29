@@ -318,8 +318,6 @@
                                                             rif:varname "slot" ] ] ) ] ] ) ] ;
             rif:then [ a rif:Do ;
                     rif:actionVar ( [ a rif:Var ;
-                                rif:varname "slotpredicate" ] [ a rif:New ] ),
-                        ( [ a rif:Var ;
                                 rif:varname "clipsconditionalelement" ] [ a rif:New ] ),
                         ( [ a rif:Var ;
                                 rif:varname "slotsubject" ] [ a rif:New ] ),
@@ -333,7 +331,9 @@
                                             rif:slotvalue [ a rif:Var ;
                                                     rif:varname "existingconditionals" ] ] ) ] ),
                         ( [ a rif:Var ;
-                                rif:varname "slotobject" ] [ a rif:New ] ) ;
+                                rif:varname "slotobject" ] [ a rif:New ] ),
+                        ( [ a rif:Var ;
+                                rif:varname "slotpredicate" ] [ a rif:New ] ) ;
                     rif:actions ( [ a rif:Assert ;
                                 rif:target [ a rif:Frame ;
                                         rif:object [ a rif:Var ;
