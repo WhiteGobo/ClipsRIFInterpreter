@@ -36,6 +36,10 @@ void clipsudf_equal(Environment *env, UDFContext *udfc, UDFValue *out){
 
 void clipsudf_set_graph_in_errorstate(Environment *env, UDFContext *udfc, UDFValue *out){
 	UDFValue input;
+	if(0 == UDFArgumentCount(udfc)){
+		SetErrorValue(env, &(CreateString(env, "Undescribed error.")->header));
+		return;
+	}
 	if (!UDFFirstArgument(udfc, ANY_TYPE_BITS, &input)) return;
 	SetErrorValue(env, input.header);
 }

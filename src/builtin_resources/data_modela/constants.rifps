@@ -11,6 +11,16 @@ Document(
     Prefix(rif <http://www.w3.org/2007/rif#>)
     Prefix(entailment <http://www.w3.org/ns/entailment/>)
     Group(
+      Group -100 (
+        Forall ?rifvar ?varname (
+          If And (
+            ?rifvar[rif:varname -> ?varname]
+            Not( Exists ?clipsnode (?rifvar[ex:as-expression -> ?clipsnode]))
+          ) Then Do (
+            Execute(crifi:set-graph-in-errorstate())
+          )
+        )
+      )
       Group (
         Forall ?factvar (
           If And (

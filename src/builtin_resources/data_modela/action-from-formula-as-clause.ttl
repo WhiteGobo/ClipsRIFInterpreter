@@ -68,13 +68,13 @@
                                                     rif:varname "expressionobject" ] ] ) ] ) ] ;
             rif:then [ a rif:Do ;
                     rif:actionVar ( [ a rif:Var ;
-                                rif:varname "slotsubject" ] [ a rif:New ] ),
+                                rif:varname "slotpredicate" ] [ a rif:New ] ),
                         ( [ a rif:Var ;
                                 rif:varname "rhspattern" ] [ a rif:New ] ),
                         ( [ a rif:Var ;
-                                rif:varname "slotobject" ] [ a rif:New ] ),
+                                rif:varname "slotsubject" ] [ a rif:New ] ),
                         ( [ a rif:Var ;
-                                rif:varname "slotpredicate" ] [ a rif:New ] ) ;
+                                rif:varname "slotobject" ] [ a rif:New ] ) ;
                     rif:actions ( [ a rif:Assert ;
                                 rif:target [ a rif:Frame ;
                                         rif:object [ a rif:Var ;
@@ -444,17 +444,17 @@
                                                                         rif:varname "clipsterm" ] ] ) ] ) ] ;
                                 rif:then [ a rif:Do ;
                                         rif:actionVar ( [ a rif:Var ;
-                                                    rif:varname "tmpvar" ] [ a rif:New ] ),
-                                            ( [ a rif:Var ;
-                                                    rif:varname "expandtriples" ] [ a rif:New ] ),
-                                            ( [ a rif:Var ;
                                                     rif:varname "slotsubj" ] [ a rif:New ] ),
                                             ( [ a rif:Var ;
                                                     rif:varname "triplequery" ] [ a rif:New ] ),
                                             ( [ a rif:Var ;
-                                                    rif:varname "findtriples" ] [ a rif:New ] ),
+                                                    rif:varname "tmpvar" ] [ a rif:New ] ),
+                                            ( [ a rif:Var ;
+                                                    rif:varname "expandtriples" ] [ a rif:New ] ),
                                             ( [ a rif:Var ;
                                                     rif:varname "tripletemplate" ] [ a rif:New ] ),
+                                            ( [ a rif:Var ;
+                                                    rif:varname "findtriples" ] [ a rif:New ] ),
                                             ( [ a rif:Var ;
                                                     rif:varname "clipsretract" ] [ a rif:New ] ) ;
                                         rif:actions ( [ a rif:Assert ;
@@ -639,23 +639,23 @@
                                                                         rif:varname "subjterm" ] ] ) ] ) ] ;
                                 rif:then [ a rif:Do ;
                                         rif:actionVar ( [ a rif:Var ;
-                                                    rif:varname "comparepredicate" ] [ a rif:New ] ),
+                                                    rif:varname "tmpvar" ] [ a rif:New ] ),
                                             ( [ a rif:Var ;
                                                     rif:varname "comparesubject" ] [ a rif:New ] ),
+                                            ( [ a rif:Var ;
+                                                    rif:varname "comparesubjectandpredicate" ] [ a rif:New ] ),
+                                            ( [ a rif:Var ;
+                                                    rif:varname "comparepredicate" ] [ a rif:New ] ),
                                             ( [ a rif:Var ;
                                                     rif:varname "clipsassert" ] [ a rif:New ] ),
                                             ( [ a rif:Var ;
                                                     rif:varname "clipsretractall" ] [ a rif:New ] ),
                                             ( [ a rif:Var ;
-                                                    rif:varname "slotsubj" ] [ a rif:New ] ),
-                                            ( [ a rif:Var ;
                                                     rif:varname "tripletemplate" ] [ a rif:New ] ),
                                             ( [ a rif:Var ;
-                                                    rif:varname "tmpvar" ] [ a rif:New ] ),
+                                                    rif:varname "clipsretractvar" ] [ a rif:New ] ),
                                             ( [ a rif:Var ;
-                                                    rif:varname "comparesubjectandpredicate" ] [ a rif:New ] ),
-                                            ( [ a rif:Var ;
-                                                    rif:varname "clipsretractvar" ] [ a rif:New ] ) ;
+                                                    rif:varname "slotsubj" ] [ a rif:New ] ) ;
                                         rif:actions ( [ a rif:Assert ;
                                                     rif:target [ a rif:Frame ;
                                                             rif:object [ a rif:Var ;
@@ -861,7 +861,9 @@
                                                                                 rif:varname "clause" ] ] ) ] ] ) ] ] ;
                         rif:vars ( [ a rif:Var ;
                                     rif:varname "rifmodify" ] [ a rif:Var ;
-                                    rif:varname "clause" ] ) ] [ a rif:Forall ;
+                                    rif:varname "clause" ] [ a rif:Var ;
+                                    rif:varname "rifobject" ] [ a rif:Var ;
+                                    rif:varname "subjterm" ] ) ] [ a rif:Forall ;
                         rif:formula [ a rif:Implies ;
                                 rif:if [ a rif:And ;
                                         rif:formulas ( [ a rif:Frame ;
@@ -1087,9 +1089,9 @@
                                         rif:actionVar ( [ a rif:Var ;
                                                     rif:varname "rhspattern" ] [ a rif:New ] ),
                                             ( [ a rif:Var ;
-                                                    rif:varname "slotop" ] [ a rif:New ] ),
+                                                    rif:varname "slotargs" ] [ a rif:New ] ),
                                             ( [ a rif:Var ;
-                                                    rif:varname "slotargs" ] [ a rif:New ] ) ;
+                                                    rif:varname "slotop" ] [ a rif:New ] ) ;
                                         rif:actions ( [ a rif:Assert ;
                                                     rif:target [ a rif:Frame ;
                                                             rif:object [ a rif:Var ;
@@ -1210,11 +1212,11 @@
                                                                         rif:varname "arglist" ] ) ] ] ) ] ;
                                 rif:then [ a rif:Do ;
                                         rif:actionVar ( [ a rif:Var ;
-                                                    rif:varname "rhspattern" ] [ a rif:New ] ),
+                                                    rif:varname "slotop" ] [ a rif:New ] ),
                                             ( [ a rif:Var ;
                                                     rif:varname "slotargs" ] [ a rif:New ] ),
                                             ( [ a rif:Var ;
-                                                    rif:varname "slotop" ] [ a rif:New ] ) ;
+                                                    rif:varname "rhspattern" ] [ a rif:New ] ) ;
                                         rif:actions ( [ a rif:Assert ;
                                                     rif:target [ a rif:Frame ;
                                                             rif:object [ a rif:Var ;
