@@ -5,6 +5,8 @@ add_library(crifi_tools STATIC
 	xpath_replace.h
 	check_datatype.c
 	check_datatype.h
+	debug.c
+	debug.h
 )
 
 set_target_properties(crifi_tools PROPERTIES
@@ -14,5 +16,10 @@ set_target_properties(crifi_tools PROPERTIES
 
 target_include_directories(crifi_tools
 	PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/")
+
+target_link_libraries(crifi_tools PRIVATE
+	clips
+)
+target_include_directories(crifi_tools PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
 
 target_include_directories(crifi_tools PRIVATE ${CRIFI_SHARED_HEADER})

@@ -437,6 +437,8 @@ static void load_from_memory_to_graph(crifi_graph *graph,
 		FAIL() << "graph ended up in errorstate after import\n";
 	}
 }
+
+
 static void load_new_logic(crifi_graph *graph,
 				const char* config, size_t configlength)
 {
@@ -504,7 +506,7 @@ static void run_and_check(crifi_graph *graph, const char* check_command,
 	bool errorstate;
 	struct DynamicValue retval;
 	int number_rules_run = run_rules(graph, 20);
-	fprintf(stderr, "numer of rules during logic: %d\n", number_rules_run);
+	fprintf(stderr, "number of rules during logic: %d\n", number_rules_run);
 	if (graph_in_errorstate(graph, stderr)){
 		FAIL() << "graph ended up in errorstate, while running logic.";
 		return;
@@ -659,6 +661,7 @@ static void create_check_into_memory(FILE *tmpmem_f, TestdataPET testdata,
 	fprintf(stderr, "information in create_check_graph after rules run.\n");
 	//ignore error:
 	crifi_serialize_all_triples(create_check_graph, stderr, "turtle", "");
+	//eval(create_check_graph, "(facts)");
 
 	fprintf(stderr, "rules run during check creation: %d\n",
 						number_rules_run);

@@ -4,6 +4,7 @@
 
 #include "direct_interpretation.h"
 #include "rdf_to_rif_interpretation.h"
+#include "simple_to_owl_interpretation.h"
 
 
 static CRIFI_IMPORT_INTERPRETER_ID get_interpreter(crifi_graph *graph, CLIPSValue *input_entailment){
@@ -20,34 +21,34 @@ static CRIFI_IMPORT_INTERPRETER_ID get_interpreter(crifi_graph *graph, CLIPSValu
 	model = LoadingCRIFIImportData(graph)->model_id;
 	//err = get_interpretation_id(graph, &graph_interpretation_id);
 	//model = extract_uri(graph, graph_interpretation_id.header);
-	if (0 == strcmp(entailment, _RIFENTAIL_SIMPLE_)){
-		switch (model){
-			case CRIFI_IMPORT_MODEL_SIMPLE:
-				ret = CRIFI_IMPORT_IP_DIRECT;
-				break;
-			case CRIFI_IMPORT_MODEL_RIFGENERATOR:
-				ret = CRIFI_IMPORT_IP_SIMPLE_TO_RIF;
-				break;
-		}
-	} else if (
+	if (
 			0 == strcmp(entailment, _RIFENTAIL_RDF_)
-			|| 0 == strcmp(entailment, _RIFENTAIL_RDFS_))
+			|| 0 == strcmp(entailment, _RIFENTAIL_RDFS_)
+			|| 0 == strcmp(entailment, _RIFENTAIL_SIMPLE_))
 	{
 		switch (model){
 			case CRIFI_IMPORT_MODEL_SIMPLE:
 				ret = CRIFI_IMPORT_IP_DIRECT;
 				break;
 			case CRIFI_IMPORT_MODEL_RIFGENERATOR:
+			case CRIFI_IMPORT_MODEL_RIFGENERATOR_SIMPLE:
 				ret = CRIFI_IMPORT_IP_SIMPLE_TO_RIF;
 				break;
+			default:
+				ret = CRIFI_IMPORT_IP_UNKNOWN;
 		}
 	} else if (0 == strcmp(entailment, _RIFENTAIL_RIF_)){
 		switch (model){
-			case CRIFI_IMPORT_MODEL_SIMPLE:
-				ret = CRIFI_IMPORT_IP_UNKNOWN;
-				break;
 			case CRIFI_IMPORT_MODEL_RIFGENERATOR:
+				//ret = CRIFI_IMPORT_IP_SIMPLE_TO_OWL;
 				ret = CRIFI_IMPORT_IP_DIRECT;
+				break;
+			case CRIFI_IMPORT_MODEL_RIFGENERATOR_SIMPLE:
+				ret = CRIFI_IMPORT_IP_DIRECT;
+				break;
+			case CRIFI_IMPORT_MODEL_SIMPLE:
+			default:
+				ret = CRIFI_IMPORT_IP_UNKNOWN;
 				break;
 		}
 	}
@@ -62,6 +63,9 @@ ImportProcess *start_import_process(crifi_graph *graph, CLIPSValue *input_interp
 	switch (interpreter_id){
 		case CRIFI_IMPORT_IP_DIRECT:
 			ret = start_import_process_direct_interpretation(graph);
+			break;
+		case CRIFI_IMPORT_IP_SIMPLE_TO_OWL:
+			ret = start_import_process_simple_to_owl_interpretation(graph);
 			break;
 		case CRIFI_IMPORT_IP_SIMPLE_TO_RIF:
 			ret = start_import_process_rdf_to_rif_interpretation(graph, interpreter_id);
@@ -83,6 +87,8 @@ int end_import_process(ImportProcess *process){
 	switch (process->interpreter_id){
 		case CRIFI_IMPORT_IP_DIRECT:
 			return end_import_process_direct_interpretation(process);
+		case CRIFI_IMPORT_IP_SIMPLE_TO_OWL:
+			return end_import_process_simple_to_owl_interpretation(process);
 		case CRIFI_IMPORT_IP_SIMPLE_TO_RIF:
 			return end_import_process_rdf_to_rif_interpretation(process);
 		case CRIFI_IMPORT_IP_UNKNOWN:
@@ -104,6 +110,12 @@ CRIFI_IMPORT_ASSERT_RET assert_frame(ImportProcess *process,
 	switch (process->interpreter_id){
 		case CRIFI_IMPORT_IP_DIRECT:
 			return assert_frame_direct(process,
+					object, object_suffix, object_type,
+					slotkey, slotkey_suffix, slotkey_type,
+					slotvalue, slotvalue_suffix,
+					slotvalue_type);
+		case CRIFI_IMPORT_IP_SIMPLE_TO_OWL:
+			return assert_frame_simple_to_owl(process,
 					object, object_suffix, object_type,
 					slotkey, slotkey_suffix, slotkey_type,
 					slotvalue, slotvalue_suffix,

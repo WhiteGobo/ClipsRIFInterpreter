@@ -93,9 +93,11 @@ RET_CRIFI_IMPORT crifi_execute_import(crifi_graph *graph,
 int set_model_id_for_import(crifi_graph *graph, CRIFI_IMPORT_MODEL_ID model_id){
 	CRIFIImportData *import_data = LoadingCRIFIImportData(graph);
 	if (import_data == NULL) return 1;
+
 	switch (model_id){
 		case CRIFI_IMPORT_MODEL_SIMPLE:
 		case CRIFI_IMPORT_MODEL_RIFGENERATOR:
+		case CRIFI_IMPORT_MODEL_RIFGENERATOR_SIMPLE:
 			import_data->model_id = model_id;
 			break;
 		default:

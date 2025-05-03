@@ -67,7 +67,8 @@ static int new_bnode_entry(BNodeLookup *bnode_lookup, const char *id,
 }
 
 int retrieve_blanknode(crifi_graph *graph, const char *bnode_id,
-			BNodeLookup *bnode_lookup, CLIPSValue* retval){
+			BNodeLookup *bnode_lookup, CLIPSValue* retval)
+{
 	int err;
 	BNodeEntry searcher = {.id = bnode_id};
 	BNodeEntry* existing;

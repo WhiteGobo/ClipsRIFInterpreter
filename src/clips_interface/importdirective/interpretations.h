@@ -5,6 +5,7 @@
 typedef enum {
 	CRIFI_IMPORT_IP_DIRECT,
 	CRIFI_IMPORT_IP_SIMPLE_TO_RIF,
+	CRIFI_IMPORT_IP_SIMPLE_TO_OWL,
 	CRIFI_IMPORT_IP_UNKNOWN
 } CRIFI_IMPORT_INTERPRETER_ID;
 
@@ -35,11 +36,16 @@ struct rdfToRifInfo {
 	CLIPSValue rif_object;
 };
 
+typedef struct simpleToOwlInfo SimpleToOwlInfo;
+typedef struct directInterpretationInfo DirectInterpretationInfo;
+
 typedef struct importProcess {
 	crifi_graph *graph;
 	CRIFI_IMPORT_INTERPRETER_ID interpreter_id;
 	BNodeLookup *bnode_lookup;
 	union {
+		DirectInterpretationInfo* direct_info;
 		struct rdfToRifInfo rdf_to_rif_info;
+		SimpleToOwlInfo *simple_to_owl_info;
 	};
 } ImportProcess;

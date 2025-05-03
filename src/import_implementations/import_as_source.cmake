@@ -22,7 +22,7 @@ function(compile_resources name outputfile)
 	endif()
 	list(LENGTH arg_TARGETS length)
 	math(EXPR qq "${length} % 2")
-	message(WARNING "compile_resources with name: ${name} (${length} ${arg_TARGETS})")
+	#message(WARNING "compile_resources with name: ${name} (${length} ${arg_TARGETS})")
 	if(qq EQUAL 1)
 		message(FATAL_ERROR "compile_resources expects pairs of "
 					"identifier and file as input")

@@ -2,442 +2,570 @@
 @prefix rif: <http://www.w3.org/2007/rif#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
+<http://example.org/example#test-cast-byte> a rif:External ;
+    rif:content [ a rif:Atom ;
+            rif:args ( [ a rif:External ;
+                        rif:content [ a rif:Expr ;
+                                rif:args ( [ a rif:Const ;
+                                            rif:value "1"^^xsd:string ] ) ;
+                                rif:op [ a rif:Const ;
+                                        rif:constIRI "http://www.w3.org/2001/XMLSchema#byte"^^xsd:anyURI ] ] ] ) ;
+            rif:op [ a rif:Const ;
+                    rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#is-literal-byte"^^xsd:anyURI ] ] .
+
+<http://example.org/example#test-cast-decimal> a rif:External ;
+    rif:content [ a rif:Atom ;
+            rif:args ( [ a rif:External ;
+                        rif:content [ a rif:Expr ;
+                                rif:args ( [ a rif:Const ;
+                                            rif:value "1"^^xsd:string ] ) ;
+                                rif:op [ a rif:Const ;
+                                        rif:constIRI "http://www.w3.org/2001/XMLSchema#decimal"^^xsd:anyURI ] ] ] ) ;
+            rif:op [ a rif:Const ;
+                    rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#is-literal-decimal"^^xsd:anyURI ] ] .
+
+<http://example.org/example#test-cast-double> a rif:External ;
+    rif:content [ a rif:Atom ;
+            rif:args ( [ a rif:External ;
+                        rif:content [ a rif:Expr ;
+                                rif:args ( [ a rif:Const ;
+                                            rif:value "1.2E34"^^xsd:string ] ) ;
+                                rif:op [ a rif:Const ;
+                                        rif:constIRI "http://www.w3.org/2001/XMLSchema#double"^^xsd:anyURI ] ] ] ) ;
+            rif:op [ a rif:Const ;
+                    rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#is-literal-double"^^xsd:anyURI ] ] .
+
+<http://example.org/example#test-cast-float> a rif:External ;
+    rif:content [ a rif:Atom ;
+            rif:args ( [ a rif:External ;
+                        rif:content [ a rif:Expr ;
+                                rif:args ( [ a rif:Const ;
+                                            rif:value "-1"^^xsd:string ] ) ;
+                                rif:op [ a rif:Const ;
+                                        rif:constIRI "http://www.w3.org/2001/XMLSchema#float"^^xsd:anyURI ] ] ] ) ;
+            rif:op [ a rif:Const ;
+                    rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#is-literal-float"^^xsd:anyURI ] ] .
+
+<http://example.org/example#test-cast-hexBinary> a rif:External ;
+    rif:content [ a rif:Atom ;
+            rif:args ( [ a rif:External ;
+                        rif:content [ a rif:Expr ;
+                                rif:args ( [ a rif:Const ;
+                                            rif:value "aabb"^^xsd:string ] ) ;
+                                rif:op [ a rif:Const ;
+                                        rif:constIRI "http://www.w3.org/2001/XMLSchema#hexBinary"^^xsd:anyURI ] ] ] ) ;
+            rif:op [ a rif:Const ;
+                    rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#is-literal-hexBinary"^^xsd:anyURI ] ] .
+
+<http://example.org/example#test-cast-int> a rif:External ;
+    rif:content [ a rif:Atom ;
+            rif:args ( [ a rif:External ;
+                        rif:content [ a rif:Expr ;
+                                rif:args ( [ a rif:Const ;
+                                            rif:value "1"^^xsd:string ] ) ;
+                                rif:op [ a rif:Const ;
+                                        rif:constIRI "http://www.w3.org/2001/XMLSchema#int"^^xsd:anyURI ] ] ] ) ;
+            rif:op [ a rif:Const ;
+                    rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#is-literal-int"^^xsd:anyURI ] ] .
+
+<http://example.org/example#test-cast-integer> a rif:External ;
+    rif:content [ a rif:Atom ;
+            rif:args ( [ a rif:External ;
+                        rif:content [ a rif:Expr ;
+                                rif:args ( [ a rif:Const ;
+                                            rif:value "1"^^xsd:string ] ) ;
+                                rif:op [ a rif:Const ;
+                                        rif:constIRI "http://www.w3.org/2001/XMLSchema#integer"^^xsd:anyURI ] ] ] ) ;
+            rif:op [ a rif:Const ;
+                    rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#is-literal-integer"^^xsd:anyURI ] ] .
+
+<http://example.org/example#test-cast-long> a rif:External ;
+    rif:content [ a rif:Atom ;
+            rif:args ( [ a rif:External ;
+                        rif:content [ a rif:Expr ;
+                                rif:args ( [ a rif:Const ;
+                                            rif:value "1"^^xsd:string ] ) ;
+                                rif:op [ a rif:Const ;
+                                        rif:constIRI "http://www.w3.org/2001/XMLSchema#long"^^xsd:anyURI ] ] ] ) ;
+            rif:op [ a rif:Const ;
+                    rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#is-literal-long"^^xsd:anyURI ] ] .
+
+<http://example.org/example#test-cast-negativeInteger> a rif:External ;
+    rif:content [ a rif:Atom ;
+            rif:args ( [ a rif:External ;
+                        rif:content [ a rif:Expr ;
+                                rif:args ( [ a rif:Const ;
+                                            rif:value "-1"^^xsd:string ] ) ;
+                                rif:op [ a rif:Const ;
+                                        rif:constIRI "http://www.w3.org/2001/XMLSchema#negativeInteger"^^xsd:anyURI ] ] ] ) ;
+            rif:op [ a rif:Const ;
+                    rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#is-literal-negativeInteger"^^xsd:anyURI ] ] .
+
+<http://example.org/example#test-cast-nonNegativeInteger> a rif:External ;
+    rif:content [ a rif:Atom ;
+            rif:args ( [ a rif:External ;
+                        rif:content [ a rif:Expr ;
+                                rif:args ( [ a rif:Const ;
+                                            rif:value "1"^^xsd:string ] ) ;
+                                rif:op [ a rif:Const ;
+                                        rif:constIRI "http://www.w3.org/2001/XMLSchema#nonNegativeInteger"^^xsd:anyURI ] ] ] ) ;
+            rif:op [ a rif:Const ;
+                    rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#is-literal-nonNegativeInteger"^^xsd:anyURI ] ] .
+
+<http://example.org/example#test-cast-nonPositiveInteger> a rif:External ;
+    rif:content [ a rif:Atom ;
+            rif:args ( [ a rif:External ;
+                        rif:content [ a rif:Expr ;
+                                rif:args ( [ a rif:Const ;
+                                            rif:value "-1"^^xsd:string ] ) ;
+                                rif:op [ a rif:Const ;
+                                        rif:constIRI "http://www.w3.org/2001/XMLSchema#nonPositiveInteger"^^xsd:anyURI ] ] ] ) ;
+            rif:op [ a rif:Const ;
+                    rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#is-literal-nonPositiveInteger"^^xsd:anyURI ] ] .
+
+<http://example.org/example#test-cast-positiveInteger> a rif:External ;
+    rif:content [ a rif:Atom ;
+            rif:args ( [ a rif:External ;
+                        rif:content [ a rif:Expr ;
+                                rif:args ( [ a rif:Const ;
+                                            rif:value "1"^^xsd:string ] ) ;
+                                rif:op [ a rif:Const ;
+                                        rif:constIRI "http://www.w3.org/2001/XMLSchema#positiveInteger"^^xsd:anyURI ] ] ] ) ;
+            rif:op [ a rif:Const ;
+                    rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#is-literal-positiveInteger"^^xsd:anyURI ] ] .
+
+<http://example.org/example#test-cast-short> a rif:External ;
+    rif:content [ a rif:Atom ;
+            rif:args ( [ a rif:External ;
+                        rif:content [ a rif:Expr ;
+                                rif:args ( [ a rif:Const ;
+                                            rif:value "1"^^xsd:string ] ) ;
+                                rif:op [ a rif:Const ;
+                                        rif:constIRI "http://www.w3.org/2001/XMLSchema#short"^^xsd:anyURI ] ] ] ) ;
+            rif:op [ a rif:Const ;
+                    rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#is-literal-short"^^xsd:anyURI ] ] .
+
+<http://example.org/example#test-cast-unsignedByte> a rif:External ;
+    rif:content [ a rif:Atom ;
+            rif:args ( [ a rif:External ;
+                        rif:content [ a rif:Expr ;
+                                rif:args ( [ a rif:Const ;
+                                            rif:value "1"^^xsd:string ] ) ;
+                                rif:op [ a rif:Const ;
+                                        rif:constIRI "http://www.w3.org/2001/XMLSchema#unsignedByte"^^xsd:anyURI ] ] ] ) ;
+            rif:op [ a rif:Const ;
+                    rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#is-literal-unsignedByte"^^xsd:anyURI ] ] .
+
+<http://example.org/example#test-cast-unsignedInt> a rif:External ;
+    rif:content [ a rif:Atom ;
+            rif:args ( [ a rif:External ;
+                        rif:content [ a rif:Expr ;
+                                rif:args ( [ a rif:Const ;
+                                            rif:value "1"^^xsd:string ] ) ;
+                                rif:op [ a rif:Const ;
+                                        rif:constIRI "http://www.w3.org/2001/XMLSchema#unsignedInt"^^xsd:anyURI ] ] ] ) ;
+            rif:op [ a rif:Const ;
+                    rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#is-literal-unsignedInt"^^xsd:anyURI ] ] .
+
+<http://example.org/example#test-cast-unsignedLong> a rif:External ;
+    rif:content [ a rif:Atom ;
+            rif:args ( [ a rif:External ;
+                        rif:content [ a rif:Expr ;
+                                rif:args ( [ a rif:Const ;
+                                            rif:value "1"^^xsd:string ] ) ;
+                                rif:op [ a rif:Const ;
+                                        rif:constIRI "http://www.w3.org/2001/XMLSchema#unsignedLong"^^xsd:anyURI ] ] ] ) ;
+            rif:op [ a rif:Const ;
+                    rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#is-literal-unsignedLong"^^xsd:anyURI ] ] .
+
+<http://example.org/example#test-cast-unsignedShort> a rif:External ;
+    rif:content [ a rif:Atom ;
+            rif:args ( [ a rif:External ;
+                        rif:content [ a rif:Expr ;
+                                rif:args ( [ a rif:Const ;
+                                            rif:value "1"^^xsd:string ] ) ;
+                                rif:op [ a rif:Const ;
+                                        rif:constIRI "http://www.w3.org/2001/XMLSchema#unsignedShort"^^xsd:anyURI ] ] ] ) ;
+            rif:op [ a rif:Const ;
+                    rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#is-literal-unsignedShort"^^xsd:anyURI ] ] .
+
+<http://example.org/example#test-guard-is-literal-byte> a rif:External ;
+    rif:content [ a rif:Atom ;
+            rif:args ( [ a rif:Const ;
+                        rif:value 1 ] ) ;
+            rif:op [ a rif:Const ;
+                    rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#is-literal-byte"^^xsd:anyURI ] ] .
+
+<http://example.org/example#test-guard-is-literal-decimal> a rif:External ;
+    rif:content [ a rif:Atom ;
+            rif:args ( [ a rif:Const ;
+                        rif:value 1 ] ) ;
+            rif:op [ a rif:Const ;
+                    rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#is-literal-decimal"^^xsd:anyURI ] ] .
+
+<http://example.org/example#test-guard-is-literal-double> a rif:External ;
+    rif:content [ a rif:Atom ;
+            rif:args ( [ a rif:Const ;
+                        rif:value 1.2e+34 ] ) ;
+            rif:op [ a rif:Const ;
+                    rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#is-literal-double"^^xsd:anyURI ] ] .
+
+<http://example.org/example#test-guard-is-literal-float> a rif:External ;
+    rif:content [ a rif:Atom ;
+            rif:args ( [ a rif:Const ;
+                        rif:value "-INF"^^xsd:float ] ) ;
+            rif:op [ a rif:Const ;
+                    rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#is-literal-float"^^xsd:anyURI ] ] .
+
+<http://example.org/example#test-guard-is-literal-int> a rif:External ;
+    rif:content [ a rif:Atom ;
+            rif:args ( [ a rif:Const ;
+                        rif:value 1 ] ) ;
+            rif:op [ a rif:Const ;
+                    rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#is-literal-int"^^xsd:anyURI ] ] .
+
+<http://example.org/example#test-guard-is-literal-integer> a rif:External ;
+    rif:content [ a rif:Atom ;
+            rif:args ( [ a rif:Const ;
+                        rif:value 1 ] ) ;
+            rif:op [ a rif:Const ;
+                    rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#is-literal-integer"^^xsd:anyURI ] ] .
+
+<http://example.org/example#test-guard-is-literal-long> a rif:External ;
+    rif:content [ a rif:Atom ;
+            rif:args ( [ a rif:Const ;
+                        rif:value 1 ] ) ;
+            rif:op [ a rif:Const ;
+                    rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#is-literal-long"^^xsd:anyURI ] ] .
+
+<http://example.org/example#test-guard-is-literal-negativeInteger> a rif:External ;
+    rif:content [ a rif:Atom ;
+            rif:args ( [ a rif:Const ;
+                        rif:value -1 ] ) ;
+            rif:op [ a rif:Const ;
+                    rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#is-literal-negativeInteger"^^xsd:anyURI ] ] .
+
+<http://example.org/example#test-guard-is-literal-nonNegativeInteger> a rif:External ;
+    rif:content [ a rif:Atom ;
+            rif:args ( [ a rif:Const ;
+                        rif:value 1 ] ) ;
+            rif:op [ a rif:Const ;
+                    rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#is-literal-nonNegativeInteger"^^xsd:anyURI ] ] .
+
+<http://example.org/example#test-guard-is-literal-nonPositiveInteger> a rif:External ;
+    rif:content [ a rif:Atom ;
+            rif:args ( [ a rif:Const ;
+                        rif:value -1 ] ) ;
+            rif:op [ a rif:Const ;
+                    rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#is-literal-nonPositiveInteger"^^xsd:anyURI ] ] .
+
+<http://example.org/example#test-guard-is-literal-not-byte> a rif:External ;
+    rif:content [ a rif:Atom ;
+            rif:args ( [ a rif:Const ;
+                        rif:value "foo"^^xsd:string ] ) ;
+            rif:op [ a rif:Const ;
+                    rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#is-literal-not-byte"^^xsd:anyURI ] ] .
+
+<http://example.org/example#test-guard-is-literal-not-decimal> a rif:External ;
+    rif:content [ a rif:Atom ;
+            rif:args ( [ a rif:Const ;
+                        rif:value "foo"^^xsd:string ] ) ;
+            rif:op [ a rif:Const ;
+                    rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#is-literal-not-decimal"^^xsd:anyURI ] ] .
+
+<http://example.org/example#test-guard-is-literal-not-double> a rif:External ;
+    rif:content [ a rif:Atom ;
+            rif:args ( [ a rif:Const ;
+                        rif:value "foo"^^xsd:string ] ) ;
+            rif:op [ a rif:Const ;
+                    rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#is-literal-not-double"^^xsd:anyURI ] ] .
+
+<http://example.org/example#test-guard-is-literal-not-float> a rif:External ;
+    rif:content [ a rif:Atom ;
+            rif:args ( [ a rif:Const ;
+                        rif:value "foo"^^xsd:string ] ) ;
+            rif:op [ a rif:Const ;
+                    rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#is-literal-not-float"^^xsd:anyURI ] ] .
+
+<http://example.org/example#test-guard-is-literal-not-hexBinary> a rif:External ;
+    rif:content [ a rif:Atom ;
+            rif:args ( [ a rif:Const ;
+                        rif:value "foo"^^xsd:string ] ) ;
+            rif:op [ a rif:Const ;
+                    rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#is-literal-not-hexBinary"^^xsd:anyURI ] ] .
+
+<http://example.org/example#test-guard-is-literal-not-int> a rif:External ;
+    rif:content [ a rif:Atom ;
+            rif:args ( [ a rif:Const ;
+                        rif:value "foo"^^xsd:string ] ) ;
+            rif:op [ a rif:Const ;
+                    rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#is-literal-not-int"^^xsd:anyURI ] ] .
+
+<http://example.org/example#test-guard-is-literal-not-integer> a rif:External ;
+    rif:content [ a rif:Atom ;
+            rif:args ( [ a rif:Const ;
+                        rif:value "foo"^^xsd:string ] ) ;
+            rif:op [ a rif:Const ;
+                    rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#is-literal-not-integer"^^xsd:anyURI ] ] .
+
+<http://example.org/example#test-guard-is-literal-not-long> a rif:External ;
+    rif:content [ a rif:Atom ;
+            rif:args ( [ a rif:Const ;
+                        rif:value "foo"^^xsd:string ] ) ;
+            rif:op [ a rif:Const ;
+                    rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#is-literal-not-long"^^xsd:anyURI ] ] .
+
+<http://example.org/example#test-guard-is-literal-not-negativeInteger> a rif:External ;
+    rif:content [ a rif:Atom ;
+            rif:args ( [ a rif:Const ;
+                        rif:value "foo"^^xsd:string ] ) ;
+            rif:op [ a rif:Const ;
+                    rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#is-literal-not-negativeInteger"^^xsd:anyURI ] ] .
+
+<http://example.org/example#test-guard-is-literal-not-nonNegativeInteger> a rif:External ;
+    rif:content [ a rif:Atom ;
+            rif:args ( [ a rif:Const ;
+                        rif:value "foo"^^xsd:string ] ) ;
+            rif:op [ a rif:Const ;
+                    rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#is-literal-not-nonNegativeInteger"^^xsd:anyURI ] ] .
+
+<http://example.org/example#test-guard-is-literal-not-nonPositiveInteger> a rif:External ;
+    rif:content [ a rif:Atom ;
+            rif:args ( [ a rif:Const ;
+                        rif:value "foo"^^xsd:string ] ) ;
+            rif:op [ a rif:Const ;
+                    rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#is-literal-not-nonPositiveInteger"^^xsd:anyURI ] ] .
+
+<http://example.org/example#test-guard-is-literal-not-positiveInteger> a rif:External ;
+    rif:content [ a rif:Atom ;
+            rif:args ( [ a rif:Const ;
+                        rif:value "foo"^^xsd:string ] ) ;
+            rif:op [ a rif:Const ;
+                    rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#is-literal-not-positiveInteger"^^xsd:anyURI ] ] .
+
+<http://example.org/example#test-guard-is-literal-not-short> a rif:External ;
+    rif:content [ a rif:Atom ;
+            rif:args ( [ a rif:Const ;
+                        rif:value "foo"^^xsd:string ] ) ;
+            rif:op [ a rif:Const ;
+                    rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#is-literal-not-short"^^xsd:anyURI ] ] .
+
+<http://example.org/example#test-guard-is-literal-not-unsignedByte> a rif:External ;
+    rif:content [ a rif:Atom ;
+            rif:args ( [ a rif:Const ;
+                        rif:value "foo"^^xsd:string ] ) ;
+            rif:op [ a rif:Const ;
+                    rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#is-literal-not-unsignedByte"^^xsd:anyURI ] ] .
+
+<http://example.org/example#test-guard-is-literal-not-unsignedInt> a rif:External ;
+    rif:content [ a rif:Atom ;
+            rif:args ( [ a rif:Const ;
+                        rif:value "foo"^^xsd:string ] ) ;
+            rif:op [ a rif:Const ;
+                    rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#is-literal-not-unsignedInt"^^xsd:anyURI ] ] .
+
+<http://example.org/example#test-guard-is-literal-not-unsignedLong> a rif:External ;
+    rif:content [ a rif:Atom ;
+            rif:args ( [ a rif:Const ;
+                        rif:value "foo"^^xsd:string ] ) ;
+            rif:op [ a rif:Const ;
+                    rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#is-literal-not-unsignedLong"^^xsd:anyURI ] ] .
+
+<http://example.org/example#test-guard-is-literal-not-unsignedShort> a rif:External ;
+    rif:content [ a rif:Atom ;
+            rif:args ( [ a rif:Const ;
+                        rif:value "foo"^^xsd:string ] ) ;
+            rif:op [ a rif:Const ;
+                    rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#is-literal-not-unsignedShort"^^xsd:anyURI ] ] .
+
+<http://example.org/example#test-guard-is-literal-positiveInteger> a rif:External ;
+    rif:content [ a rif:Atom ;
+            rif:args ( [ a rif:Const ;
+                        rif:value 1 ] ) ;
+            rif:op [ a rif:Const ;
+                    rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#is-literal-positiveInteger"^^xsd:anyURI ] ] .
+
+<http://example.org/example#test-guard-is-literal-short> a rif:External ;
+    rif:content [ a rif:Atom ;
+            rif:args ( [ a rif:Const ;
+                        rif:value 1 ] ) ;
+            rif:op [ a rif:Const ;
+                    rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#is-literal-short"^^xsd:anyURI ] ] .
+
+<http://example.org/example#test-guard-is-literal-unsignedByte> a rif:External ;
+    rif:content [ a rif:Atom ;
+            rif:args ( [ a rif:Const ;
+                        rif:value 1 ] ) ;
+            rif:op [ a rif:Const ;
+                    rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#is-literal-unsignedByte"^^xsd:anyURI ] ] .
+
+<http://example.org/example#test-guard-is-literal-unsignedInt> a rif:External ;
+    rif:content [ a rif:Atom ;
+            rif:args ( [ a rif:Const ;
+                        rif:value 1 ] ) ;
+            rif:op [ a rif:Const ;
+                    rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#is-literal-unsignedInt"^^xsd:anyURI ] ] .
+
+<http://example.org/example#test-guard-is-literal-unsignedLong> a rif:External ;
+    rif:content [ a rif:Atom ;
+            rif:args ( [ a rif:Const ;
+                        rif:value 1 ] ) ;
+            rif:op [ a rif:Const ;
+                    rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#is-literal-unsignedLong"^^xsd:anyURI ] ] .
+
+<http://example.org/example#test-guard-is-literal-unsignedShort> a rif:External ;
+    rif:content [ a rif:Atom ;
+            rif:args ( [ a rif:Const ;
+                        rif:value 1 ] ) ;
+            rif:op [ a rif:Const ;
+                    rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#is-literal-unsignedShort"^^xsd:anyURI ] ] .
+
+<http://example.org/example#test-numeric-add> a rif:Equal ;
+    rif:left [ a rif:Const ;
+            rif:value 2 ] ;
+    rif:right [ a rif:External ;
+            rif:content [ a rif:Expr ;
+                    rif:args ( [ a rif:Const ;
+                                rif:value 1 ] [ a rif:Const ;
+                                rif:value 1 ] ) ;
+                    rif:op [ a rif:Const ;
+                            rif:constIRI "http://www.w3.org/2007/rif-builtin-function#numeric-add"^^xsd:anyURI ] ] ] .
+
+<http://example.org/example#test-numeric-divide> a rif:Equal ;
+    rif:left [ a rif:Const ;
+            rif:value 2 ] ;
+    rif:right [ a rif:External ;
+            rif:content [ a rif:Expr ;
+                    rif:args ( [ a rif:Const ;
+                                rif:value 6 ] [ a rif:Const ;
+                                rif:value 3 ] ) ;
+                    rif:op [ a rif:Const ;
+                            rif:constIRI "http://www.w3.org/2007/rif-builtin-function#numeric-divide"^^xsd:anyURI ] ] ] .
+
+<http://example.org/example#test-numeric-equal> a rif:External ;
+    rif:content [ a rif:Atom ;
+            rif:args ( [ a rif:Const ;
+                        rif:value 0e+00 ] [ a rif:External ;
+                        rif:content [ a rif:Expr ;
+                                rif:args ( [ a rif:Const ;
+                                            rif:value 1 ] [ a rif:Const ;
+                                            rif:value 1 ] ) ;
+                                rif:op [ a rif:Const ;
+                                        rif:constIRI "http://www.w3.org/2007/rif-builtin-function#numeric-subtract"^^xsd:anyURI ] ] ] ) ;
+            rif:op [ a rif:Const ;
+                    rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#numeric-equal"^^xsd:anyURI ] ] .
+
+<http://example.org/example#test-numeric-greater-than> a rif:External ;
+    rif:content [ a rif:Atom ;
+            rif:args ( [ a rif:Const ;
+                        rif:value 2 ] [ a rif:Const ;
+                        rif:value -1 ] ) ;
+            rif:op [ a rif:Const ;
+                    rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#numeric-greater-than"^^xsd:anyURI ] ] .
+
+<http://example.org/example#test-numeric-greater-than-or-equal1> a rif:External ;
+    rif:content [ a rif:Atom ;
+            rif:args ( [ a rif:Const ;
+                        rif:value 2 ] [ a rif:Const ;
+                        rif:value -1 ] ) ;
+            rif:op [ a rif:Const ;
+                    rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#numeric-greater-than-or-equal"^^xsd:anyURI ] ] .
+
+<http://example.org/example#test-numeric-greater-than-or-equal2> a rif:External ;
+    rif:content [ a rif:Atom ;
+            rif:args ( [ a rif:Const ;
+                        rif:value 2 ] [ a rif:Const ;
+                        rif:value 2 ] ) ;
+            rif:op [ a rif:Const ;
+                    rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#numeric-greater-than-or-equal"^^xsd:anyURI ] ] .
+
+<http://example.org/example#test-numeric-integer-divide> a rif:Equal ;
+    rif:left [ a rif:Const ;
+            rif:value 1 ] ;
+    rif:right [ a rif:External ;
+            rif:content [ a rif:Expr ;
+                    rif:args ( [ a rif:Const ;
+                                rif:value 5 ] [ a rif:Const ;
+                                rif:value 3 ] ) ;
+                    rif:op [ a rif:Const ;
+                            rif:constIRI "http://www.w3.org/2007/rif-builtin-function#numeric-integer-divide"^^xsd:anyURI ] ] ] .
+
+<http://example.org/example#test-numeric-integer-mod> a rif:Equal ;
+    rif:left [ a rif:Const ;
+            rif:value 2 ] ;
+    rif:right [ a rif:External ;
+            rif:content [ a rif:Expr ;
+                    rif:args ( [ a rif:Const ;
+                                rif:value 5 ] [ a rif:Const ;
+                                rif:value 3 ] ) ;
+                    rif:op [ a rif:Const ;
+                            rif:constIRI "http://www.w3.org/2007/rif-builtin-function#numeric-integer-mod"^^xsd:anyURI ] ] ] .
+
+<http://example.org/example#test-numeric-less-than> a rif:External ;
+    rif:content [ a rif:Atom ;
+            rif:args ( [ a rif:Const ;
+                        rif:value 1 ] [ a rif:Const ;
+                        rif:value 2 ] ) ;
+            rif:op [ a rif:Const ;
+                    rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#numeric-less-than"^^xsd:anyURI ] ] .
+
+<http://example.org/example#test-numeric-less-than-or-equal1> a rif:External ;
+    rif:content [ a rif:Atom ;
+            rif:args ( [ a rif:Const ;
+                        rif:value 1 ] [ a rif:Const ;
+                        rif:value 2 ] ) ;
+            rif:op [ a rif:Const ;
+                    rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#numeric-less-than-or-equal"^^xsd:anyURI ] ] .
+
+<http://example.org/example#test-numeric-less-than-or-equal2> a rif:External ;
+    rif:content [ a rif:Atom ;
+            rif:args ( [ a rif:Const ;
+                        rif:value 1 ] [ a rif:Const ;
+                        rif:value 1 ] ) ;
+            rif:op [ a rif:Const ;
+                    rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#numeric-less-than-or-equal"^^xsd:anyURI ] ] .
+
+<http://example.org/example#test-numeric-multiply> a rif:Equal ;
+    rif:left [ a rif:Const ;
+            rif:value 6 ] ;
+    rif:right [ a rif:External ;
+            rif:content [ a rif:Expr ;
+                    rif:args ( [ a rif:Const ;
+                                rif:value 2 ] [ a rif:Const ;
+                                rif:value 3 ] ) ;
+                    rif:op [ a rif:Const ;
+                            rif:constIRI "http://www.w3.org/2007/rif-builtin-function#numeric-multiply"^^xsd:anyURI ] ] ] .
+
+<http://example.org/example#test-numeric-subtract> a rif:Equal ;
+    rif:left [ a rif:Const ;
+            rif:value 1 ] ;
+    rif:right [ a rif:External ;
+            rif:content [ a rif:Expr ;
+                    rif:args ( [ a rif:Const ;
+                                rif:value 2 ] [ a rif:Const ;
+                                rif:value 1 ] ) ;
+                    rif:op [ a rif:Const ;
+                            rif:constIRI "http://www.w3.org/2007/rif-builtin-function#numeric-subtract"^^xsd:anyURI ] ] ] .
+
+<http://example.org/example#test-numeric-not-equal> a rif:External ;
+    rif:content [ a rif:Atom ;
+            rif:args ( [ a rif:Const ;
+                        rif:value 0 ] [ a rif:Const ;
+                        rif:value 1 ] ) ;
+            rif:op [ a rif:Const ;
+                    rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#numeric-not-equal"^^xsd:anyURI ] ],
+        [ a rif:Atom ;
+            rif:args ( [ a rif:Const ;
+                        rif:value 0 ] [ a rif:Const ;
+                        rif:value 1 ] ) ;
+            rif:op [ a rif:Const ;
+                    rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#numeric-not-equal"^^xsd:anyURI ] ] .
+
 [] a rif:Document ;
     rif:payload [ a rif:Group ;
             rif:sentences ( [ a rif:Implies ;
                         rif:if [ a rif:And ;
-                                rif:formulas ( [ a rif:External ;
-                                            rif:content [ a rif:Atom ;
-                                                    rif:args ( [ a rif:Const ;
-                                                                rif:value 1.2e+34 ] ) ;
-                                                    rif:op [ a rif:Const ;
-                                                            rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#is-literal-double"^^xsd:anyURI ] ] ] [ a rif:External ;
-                                            rif:content [ a rif:Atom ;
-                                                    rif:args ( [ a rif:Const ;
-                                                                rif:value "-INF"^^xsd:float ] ) ;
-                                                    rif:op [ a rif:Const ;
-                                                            rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#is-literal-float"^^xsd:anyURI ] ] ] [ a rif:External ;
-                                            rif:content [ a rif:Atom ;
-                                                    rif:args ( [ a rif:Const ;
-                                                                rif:value 1 ] ) ;
-                                                    rif:op [ a rif:Const ;
-                                                            rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#is-literal-decimal"^^xsd:anyURI ] ] ] [ a rif:External ;
-                                            rif:content [ a rif:Atom ;
-                                                    rif:args ( [ a rif:Const ;
-                                                                rif:value 1 ] ) ;
-                                                    rif:op [ a rif:Const ;
-                                                            rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#is-literal-integer"^^xsd:anyURI ] ] ] [ a rif:External ;
-                                            rif:content [ a rif:Atom ;
-                                                    rif:args ( [ a rif:Const ;
-                                                                rif:value 1 ] ) ;
-                                                    rif:op [ a rif:Const ;
-                                                            rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#is-literal-long"^^xsd:anyURI ] ] ] [ a rif:External ;
-                                            rif:content [ a rif:Atom ;
-                                                    rif:args ( [ a rif:Const ;
-                                                                rif:value 1 ] ) ;
-                                                    rif:op [ a rif:Const ;
-                                                            rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#is-literal-int"^^xsd:anyURI ] ] ] [ a rif:External ;
-                                            rif:content [ a rif:Atom ;
-                                                    rif:args ( [ a rif:Const ;
-                                                                rif:value 1 ] ) ;
-                                                    rif:op [ a rif:Const ;
-                                                            rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#is-literal-short"^^xsd:anyURI ] ] ] [ a rif:External ;
-                                            rif:content [ a rif:Atom ;
-                                                    rif:args ( [ a rif:Const ;
-                                                                rif:value 1 ] ) ;
-                                                    rif:op [ a rif:Const ;
-                                                            rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#is-literal-byte"^^xsd:anyURI ] ] ] [ a rif:External ;
-                                            rif:content [ a rif:Atom ;
-                                                    rif:args ( [ a rif:Const ;
-                                                                rif:value 1 ] ) ;
-                                                    rif:op [ a rif:Const ;
-                                                            rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#is-literal-nonNegativeInteger"^^xsd:anyURI ] ] ] [ a rif:External ;
-                                            rif:content [ a rif:Atom ;
-                                                    rif:args ( [ a rif:Const ;
-                                                                rif:value 1 ] ) ;
-                                                    rif:op [ a rif:Const ;
-                                                            rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#is-literal-positiveInteger"^^xsd:anyURI ] ] ] [ a rif:External ;
-                                            rif:content [ a rif:Atom ;
-                                                    rif:args ( [ a rif:Const ;
-                                                                rif:value 1 ] ) ;
-                                                    rif:op [ a rif:Const ;
-                                                            rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#is-literal-unsignedLong"^^xsd:anyURI ] ] ] [ a rif:External ;
-                                            rif:content [ a rif:Atom ;
-                                                    rif:args ( [ a rif:Const ;
-                                                                rif:value 1 ] ) ;
-                                                    rif:op [ a rif:Const ;
-                                                            rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#is-literal-unsignedInt"^^xsd:anyURI ] ] ] [ a rif:External ;
-                                            rif:content [ a rif:Atom ;
-                                                    rif:args ( [ a rif:Const ;
-                                                                rif:value 1 ] ) ;
-                                                    rif:op [ a rif:Const ;
-                                                            rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#is-literal-unsignedShort"^^xsd:anyURI ] ] ] [ a rif:External ;
-                                            rif:content [ a rif:Atom ;
-                                                    rif:args ( [ a rif:Const ;
-                                                                rif:value 1 ] ) ;
-                                                    rif:op [ a rif:Const ;
-                                                            rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#is-literal-unsignedByte"^^xsd:anyURI ] ] ] [ a rif:External ;
-                                            rif:content [ a rif:Atom ;
-                                                    rif:args ( [ a rif:Const ;
-                                                                rif:value -1 ] ) ;
-                                                    rif:op [ a rif:Const ;
-                                                            rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#is-literal-nonPositiveInteger"^^xsd:anyURI ] ] ] [ a rif:External ;
-                                            rif:content [ a rif:Atom ;
-                                                    rif:args ( [ a rif:Const ;
-                                                                rif:value -1 ] ) ;
-                                                    rif:op [ a rif:Const ;
-                                                            rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#is-literal-negativeInteger"^^xsd:anyURI ] ] ] [ a rif:External ;
-                                            rif:content [ a rif:Atom ;
-                                                    rif:args ( [ a rif:Const ;
-                                                                rif:value "foo"^^xsd:string ] ) ;
-                                                    rif:op [ a rif:Const ;
-                                                            rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#is-literal-not-double"^^xsd:anyURI ] ] ] [ a rif:External ;
-                                            rif:content [ a rif:Atom ;
-                                                    rif:args ( [ a rif:Const ;
-                                                                rif:value "foo"^^xsd:string ] ) ;
-                                                    rif:op [ a rif:Const ;
-                                                            rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#is-literal-not-float"^^xsd:anyURI ] ] ] [ a rif:External ;
-                                            rif:content [ a rif:Atom ;
-                                                    rif:args ( [ a rif:Const ;
-                                                                rif:value "foo"^^xsd:string ] ) ;
-                                                    rif:op [ a rif:Const ;
-                                                            rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#is-literal-not-hexBinary"^^xsd:anyURI ] ] ] [ a rif:External ;
-                                            rif:content [ a rif:Atom ;
-                                                    rif:args ( [ a rif:Const ;
-                                                                rif:value "foo"^^xsd:string ] ) ;
-                                                    rif:op [ a rif:Const ;
-                                                            rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#is-literal-not-decimal"^^xsd:anyURI ] ] ] [ a rif:External ;
-                                            rif:content [ a rif:Atom ;
-                                                    rif:args ( [ a rif:Const ;
-                                                                rif:value "foo"^^xsd:string ] ) ;
-                                                    rif:op [ a rif:Const ;
-                                                            rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#is-literal-not-integer"^^xsd:anyURI ] ] ] [ a rif:External ;
-                                            rif:content [ a rif:Atom ;
-                                                    rif:args ( [ a rif:Const ;
-                                                                rif:value "foo"^^xsd:string ] ) ;
-                                                    rif:op [ a rif:Const ;
-                                                            rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#is-literal-not-long"^^xsd:anyURI ] ] ] [ a rif:External ;
-                                            rif:content [ a rif:Atom ;
-                                                    rif:args ( [ a rif:Const ;
-                                                                rif:value "foo"^^xsd:string ] ) ;
-                                                    rif:op [ a rif:Const ;
-                                                            rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#is-literal-not-int"^^xsd:anyURI ] ] ] [ a rif:External ;
-                                            rif:content [ a rif:Atom ;
-                                                    rif:args ( [ a rif:Const ;
-                                                                rif:value "foo"^^xsd:string ] ) ;
-                                                    rif:op [ a rif:Const ;
-                                                            rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#is-literal-not-short"^^xsd:anyURI ] ] ] [ a rif:External ;
-                                            rif:content [ a rif:Atom ;
-                                                    rif:args ( [ a rif:Const ;
-                                                                rif:value "foo"^^xsd:string ] ) ;
-                                                    rif:op [ a rif:Const ;
-                                                            rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#is-literal-not-byte"^^xsd:anyURI ] ] ] [ a rif:External ;
-                                            rif:content [ a rif:Atom ;
-                                                    rif:args ( [ a rif:Const ;
-                                                                rif:value "foo"^^xsd:string ] ) ;
-                                                    rif:op [ a rif:Const ;
-                                                            rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#is-literal-not-nonNegativeInteger"^^xsd:anyURI ] ] ] [ a rif:External ;
-                                            rif:content [ a rif:Atom ;
-                                                    rif:args ( [ a rif:Const ;
-                                                                rif:value "foo"^^xsd:string ] ) ;
-                                                    rif:op [ a rif:Const ;
-                                                            rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#is-literal-not-positiveInteger"^^xsd:anyURI ] ] ] [ a rif:External ;
-                                            rif:content [ a rif:Atom ;
-                                                    rif:args ( [ a rif:Const ;
-                                                                rif:value "foo"^^xsd:string ] ) ;
-                                                    rif:op [ a rif:Const ;
-                                                            rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#is-literal-not-unsignedLong"^^xsd:anyURI ] ] ] [ a rif:External ;
-                                            rif:content [ a rif:Atom ;
-                                                    rif:args ( [ a rif:Const ;
-                                                                rif:value "foo"^^xsd:string ] ) ;
-                                                    rif:op [ a rif:Const ;
-                                                            rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#is-literal-not-unsignedInt"^^xsd:anyURI ] ] ] [ a rif:External ;
-                                            rif:content [ a rif:Atom ;
-                                                    rif:args ( [ a rif:Const ;
-                                                                rif:value "foo"^^xsd:string ] ) ;
-                                                    rif:op [ a rif:Const ;
-                                                            rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#is-literal-not-unsignedShort"^^xsd:anyURI ] ] ] [ a rif:External ;
-                                            rif:content [ a rif:Atom ;
-                                                    rif:args ( [ a rif:Const ;
-                                                                rif:value "foo"^^xsd:string ] ) ;
-                                                    rif:op [ a rif:Const ;
-                                                            rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#is-literal-not-unsignedByte"^^xsd:anyURI ] ] ] [ a rif:External ;
-                                            rif:content [ a rif:Atom ;
-                                                    rif:args ( [ a rif:Const ;
-                                                                rif:value "foo"^^xsd:string ] ) ;
-                                                    rif:op [ a rif:Const ;
-                                                            rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#is-literal-not-nonPositiveInteger"^^xsd:anyURI ] ] ] [ a rif:External ;
-                                            rif:content [ a rif:Atom ;
-                                                    rif:args ( [ a rif:Const ;
-                                                                rif:value "foo"^^xsd:string ] ) ;
-                                                    rif:op [ a rif:Const ;
-                                                            rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#is-literal-not-negativeInteger"^^xsd:anyURI ] ] ] [ a rif:External ;
-                                            rif:content [ a rif:Atom ;
-                                                    rif:args ( [ a rif:External ;
-                                                                rif:content [ a rif:Expr ;
-                                                                        rif:args ( [ a rif:Const ;
-                                                                                    rif:value "1.2E34"^^xsd:string ] ) ;
-                                                                        rif:op [ a rif:Const ;
-                                                                                rif:constIRI "http://www.w3.org/2001/XMLSchema#double"^^xsd:anyURI ] ] ] ) ;
-                                                    rif:op [ a rif:Const ;
-                                                            rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#is-literal-double"^^xsd:anyURI ] ] ] [ a rif:External ;
-                                            rif:content [ a rif:Atom ;
-                                                    rif:args ( [ a rif:External ;
-                                                                rif:content [ a rif:Expr ;
-                                                                        rif:args ( [ a rif:Const ;
-                                                                                    rif:value "-1"^^xsd:string ] ) ;
-                                                                        rif:op [ a rif:Const ;
-                                                                                rif:constIRI "http://www.w3.org/2001/XMLSchema#float"^^xsd:anyURI ] ] ] ) ;
-                                                    rif:op [ a rif:Const ;
-                                                            rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#is-literal-float"^^xsd:anyURI ] ] ] [ a rif:External ;
-                                            rif:content [ a rif:Atom ;
-                                                    rif:args ( [ a rif:External ;
-                                                                rif:content [ a rif:Expr ;
-                                                                        rif:args ( [ a rif:Const ;
-                                                                                    rif:value "aabb"^^xsd:string ] ) ;
-                                                                        rif:op [ a rif:Const ;
-                                                                                rif:constIRI "http://www.w3.org/2001/XMLSchema#hexBinary"^^xsd:anyURI ] ] ] ) ;
-                                                    rif:op [ a rif:Const ;
-                                                            rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#is-literal-hexBinary"^^xsd:anyURI ] ] ] [ a rif:External ;
-                                            rif:content [ a rif:Atom ;
-                                                    rif:args ( [ a rif:External ;
-                                                                rif:content [ a rif:Expr ;
-                                                                        rif:args ( [ a rif:Const ;
-                                                                                    rif:value "1"^^xsd:string ] ) ;
-                                                                        rif:op [ a rif:Const ;
-                                                                                rif:constIRI "http://www.w3.org/2001/XMLSchema#decimal"^^xsd:anyURI ] ] ] ) ;
-                                                    rif:op [ a rif:Const ;
-                                                            rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#is-literal-decimal"^^xsd:anyURI ] ] ] [ a rif:External ;
-                                            rif:content [ a rif:Atom ;
-                                                    rif:args ( [ a rif:External ;
-                                                                rif:content [ a rif:Expr ;
-                                                                        rif:args ( [ a rif:Const ;
-                                                                                    rif:value "1"^^xsd:string ] ) ;
-                                                                        rif:op [ a rif:Const ;
-                                                                                rif:constIRI "http://www.w3.org/2001/XMLSchema#integer"^^xsd:anyURI ] ] ] ) ;
-                                                    rif:op [ a rif:Const ;
-                                                            rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#is-literal-integer"^^xsd:anyURI ] ] ] [ a rif:External ;
-                                            rif:content [ a rif:Atom ;
-                                                    rif:args ( [ a rif:External ;
-                                                                rif:content [ a rif:Expr ;
-                                                                        rif:args ( [ a rif:Const ;
-                                                                                    rif:value "1"^^xsd:string ] ) ;
-                                                                        rif:op [ a rif:Const ;
-                                                                                rif:constIRI "http://www.w3.org/2001/XMLSchema#long"^^xsd:anyURI ] ] ] ) ;
-                                                    rif:op [ a rif:Const ;
-                                                            rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#is-literal-long"^^xsd:anyURI ] ] ] [ a rif:External ;
-                                            rif:content [ a rif:Atom ;
-                                                    rif:args ( [ a rif:External ;
-                                                                rif:content [ a rif:Expr ;
-                                                                        rif:args ( [ a rif:Const ;
-                                                                                    rif:value "1"^^xsd:string ] ) ;
-                                                                        rif:op [ a rif:Const ;
-                                                                                rif:constIRI "http://www.w3.org/2001/XMLSchema#int"^^xsd:anyURI ] ] ] ) ;
-                                                    rif:op [ a rif:Const ;
-                                                            rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#is-literal-int"^^xsd:anyURI ] ] ] [ a rif:External ;
-                                            rif:content [ a rif:Atom ;
-                                                    rif:args ( [ a rif:External ;
-                                                                rif:content [ a rif:Expr ;
-                                                                        rif:args ( [ a rif:Const ;
-                                                                                    rif:value "1"^^xsd:string ] ) ;
-                                                                        rif:op [ a rif:Const ;
-                                                                                rif:constIRI "http://www.w3.org/2001/XMLSchema#short"^^xsd:anyURI ] ] ] ) ;
-                                                    rif:op [ a rif:Const ;
-                                                            rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#is-literal-short"^^xsd:anyURI ] ] ] [ a rif:External ;
-                                            rif:content [ a rif:Atom ;
-                                                    rif:args ( [ a rif:External ;
-                                                                rif:content [ a rif:Expr ;
-                                                                        rif:args ( [ a rif:Const ;
-                                                                                    rif:value "1"^^xsd:string ] ) ;
-                                                                        rif:op [ a rif:Const ;
-                                                                                rif:constIRI "http://www.w3.org/2001/XMLSchema#byte"^^xsd:anyURI ] ] ] ) ;
-                                                    rif:op [ a rif:Const ;
-                                                            rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#is-literal-byte"^^xsd:anyURI ] ] ] [ a rif:External ;
-                                            rif:content [ a rif:Atom ;
-                                                    rif:args ( [ a rif:External ;
-                                                                rif:content [ a rif:Expr ;
-                                                                        rif:args ( [ a rif:Const ;
-                                                                                    rif:value "1"^^xsd:string ] ) ;
-                                                                        rif:op [ a rif:Const ;
-                                                                                rif:constIRI "http://www.w3.org/2001/XMLSchema#nonNegativeInteger"^^xsd:anyURI ] ] ] ) ;
-                                                    rif:op [ a rif:Const ;
-                                                            rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#is-literal-nonNegativeInteger"^^xsd:anyURI ] ] ] [ a rif:External ;
-                                            rif:content [ a rif:Atom ;
-                                                    rif:args ( [ a rif:External ;
-                                                                rif:content [ a rif:Expr ;
-                                                                        rif:args ( [ a rif:Const ;
-                                                                                    rif:value "1"^^xsd:string ] ) ;
-                                                                        rif:op [ a rif:Const ;
-                                                                                rif:constIRI "http://www.w3.org/2001/XMLSchema#positiveInteger"^^xsd:anyURI ] ] ] ) ;
-                                                    rif:op [ a rif:Const ;
-                                                            rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#is-literal-positiveInteger"^^xsd:anyURI ] ] ] [ a rif:External ;
-                                            rif:content [ a rif:Atom ;
-                                                    rif:args ( [ a rif:External ;
-                                                                rif:content [ a rif:Expr ;
-                                                                        rif:args ( [ a rif:Const ;
-                                                                                    rif:value "1"^^xsd:string ] ) ;
-                                                                        rif:op [ a rif:Const ;
-                                                                                rif:constIRI "http://www.w3.org/2001/XMLSchema#unsignedLong"^^xsd:anyURI ] ] ] ) ;
-                                                    rif:op [ a rif:Const ;
-                                                            rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#is-literal-unsignedLong"^^xsd:anyURI ] ] ] [ a rif:External ;
-                                            rif:content [ a rif:Atom ;
-                                                    rif:args ( [ a rif:External ;
-                                                                rif:content [ a rif:Expr ;
-                                                                        rif:args ( [ a rif:Const ;
-                                                                                    rif:value "1"^^xsd:string ] ) ;
-                                                                        rif:op [ a rif:Const ;
-                                                                                rif:constIRI "http://www.w3.org/2001/XMLSchema#unsignedInt"^^xsd:anyURI ] ] ] ) ;
-                                                    rif:op [ a rif:Const ;
-                                                            rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#is-literal-unsignedInt"^^xsd:anyURI ] ] ] [ a rif:External ;
-                                            rif:content [ a rif:Atom ;
-                                                    rif:args ( [ a rif:External ;
-                                                                rif:content [ a rif:Expr ;
-                                                                        rif:args ( [ a rif:Const ;
-                                                                                    rif:value "1"^^xsd:string ] ) ;
-                                                                        rif:op [ a rif:Const ;
-                                                                                rif:constIRI "http://www.w3.org/2001/XMLSchema#unsignedShort"^^xsd:anyURI ] ] ] ) ;
-                                                    rif:op [ a rif:Const ;
-                                                            rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#is-literal-unsignedShort"^^xsd:anyURI ] ] ] [ a rif:External ;
-                                            rif:content [ a rif:Atom ;
-                                                    rif:args ( [ a rif:External ;
-                                                                rif:content [ a rif:Expr ;
-                                                                        rif:args ( [ a rif:Const ;
-                                                                                    rif:value "1"^^xsd:string ] ) ;
-                                                                        rif:op [ a rif:Const ;
-                                                                                rif:constIRI "http://www.w3.org/2001/XMLSchema#unsignedByte"^^xsd:anyURI ] ] ] ) ;
-                                                    rif:op [ a rif:Const ;
-                                                            rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#is-literal-unsignedByte"^^xsd:anyURI ] ] ] [ a rif:External ;
-                                            rif:content [ a rif:Atom ;
-                                                    rif:args ( [ a rif:External ;
-                                                                rif:content [ a rif:Expr ;
-                                                                        rif:args ( [ a rif:Const ;
-                                                                                    rif:value "-1"^^xsd:string ] ) ;
-                                                                        rif:op [ a rif:Const ;
-                                                                                rif:constIRI "http://www.w3.org/2001/XMLSchema#nonPositiveInteger"^^xsd:anyURI ] ] ] ) ;
-                                                    rif:op [ a rif:Const ;
-                                                            rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#is-literal-nonPositiveInteger"^^xsd:anyURI ] ] ] [ a rif:External ;
-                                            rif:content [ a rif:Atom ;
-                                                    rif:args ( [ a rif:External ;
-                                                                rif:content [ a rif:Expr ;
-                                                                        rif:args ( [ a rif:Const ;
-                                                                                    rif:value "-1"^^xsd:string ] ) ;
-                                                                        rif:op [ a rif:Const ;
-                                                                                rif:constIRI "http://www.w3.org/2001/XMLSchema#negativeInteger"^^xsd:anyURI ] ] ] ) ;
-                                                    rif:op [ a rif:Const ;
-                                                            rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#is-literal-negativeInteger"^^xsd:anyURI ] ] ] [ a rif:Equal ;
-                                            rif:left [ a rif:Const ;
-                                                    rif:value 2 ] ;
-                                            rif:right [ a rif:External ;
-                                                    rif:content [ a rif:Expr ;
-                                                            rif:args ( [ a rif:Const ;
-                                                                        rif:value 1 ] [ a rif:Const ;
-                                                                        rif:value 1 ] ) ;
-                                                            rif:op [ a rif:Const ;
-                                                                    rif:constIRI "http://www.w3.org/2007/rif-builtin-function#numeric-add"^^xsd:anyURI ] ] ] ] [ a rif:Equal ;
-                                            rif:left [ a rif:Const ;
-                                                    rif:value 1 ] ;
-                                            rif:right [ a rif:External ;
-                                                    rif:content [ a rif:Expr ;
-                                                            rif:args ( [ a rif:Const ;
-                                                                        rif:value 2 ] [ a rif:Const ;
-                                                                        rif:value 1 ] ) ;
-                                                            rif:op [ a rif:Const ;
-                                                                    rif:constIRI "http://www.w3.org/2007/rif-builtin-function#numeric-subtract"^^xsd:anyURI ] ] ] ] [ a rif:Equal ;
-                                            rif:left [ a rif:Const ;
-                                                    rif:value 6 ] ;
-                                            rif:right [ a rif:External ;
-                                                    rif:content [ a rif:Expr ;
-                                                            rif:args ( [ a rif:Const ;
-                                                                        rif:value 2 ] [ a rif:Const ;
-                                                                        rif:value 3 ] ) ;
-                                                            rif:op [ a rif:Const ;
-                                                                    rif:constIRI "http://www.w3.org/2007/rif-builtin-function#numeric-multiply"^^xsd:anyURI ] ] ] ] [ a rif:Equal ;
-                                            rif:left [ a rif:Const ;
-                                                    rif:value 2 ] ;
-                                            rif:right [ a rif:External ;
-                                                    rif:content [ a rif:Expr ;
-                                                            rif:args ( [ a rif:Const ;
-                                                                        rif:value 6 ] [ a rif:Const ;
-                                                                        rif:value 3 ] ) ;
-                                                            rif:op [ a rif:Const ;
-                                                                    rif:constIRI "http://www.w3.org/2007/rif-builtin-function#numeric-divide"^^xsd:anyURI ] ] ] ] [ a rif:Equal ;
-                                            rif:left [ a rif:Const ;
-                                                    rif:value 1 ] ;
-                                            rif:right [ a rif:External ;
-                                                    rif:content [ a rif:Expr ;
-                                                            rif:args ( [ a rif:Const ;
-                                                                        rif:value 5 ] [ a rif:Const ;
-                                                                        rif:value 3 ] ) ;
-                                                            rif:op [ a rif:Const ;
-                                                                    rif:constIRI "http://www.w3.org/2007/rif-builtin-function#numeric-integer-divide"^^xsd:anyURI ] ] ] ] [ a rif:Equal ;
-                                            rif:left [ a rif:Const ;
-                                                    rif:value 2 ] ;
-                                            rif:right [ a rif:External ;
-                                                    rif:content [ a rif:Expr ;
-                                                            rif:args ( [ a rif:Const ;
-                                                                        rif:value 5 ] [ a rif:Const ;
-                                                                        rif:value 3 ] ) ;
-                                                            rif:op [ a rif:Const ;
-                                                                    rif:constIRI "http://www.w3.org/2007/rif-builtin-function#numeric-integer-mod"^^xsd:anyURI ] ] ] ] [ a rif:External ;
-                                            rif:content [ a rif:Atom ;
-                                                    rif:args ( [ a rif:Const ;
-                                                                rif:value 0e+00 ] [ a rif:External ;
-                                                                rif:content [ a rif:Expr ;
-                                                                        rif:args ( [ a rif:Const ;
-                                                                                    rif:value 1 ] [ a rif:Const ;
-                                                                                    rif:value 1 ] ) ;
-                                                                        rif:op [ a rif:Const ;
-                                                                                rif:constIRI "http://www.w3.org/2007/rif-builtin-function#numeric-subtract"^^xsd:anyURI ] ] ] ) ;
-                                                    rif:op [ a rif:Const ;
-                                                            rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#numeric-equal"^^xsd:anyURI ] ] ] [ a rif:External ;
-                                            rif:content [ a rif:Atom ;
-                                                    rif:args ( [ a rif:Const ;
-                                                                rif:value 0 ] [ a rif:Const ;
-                                                                rif:value 1 ] ) ;
-                                                    rif:op [ a rif:Const ;
-                                                            rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#numeric-not-equal"^^xsd:anyURI ] ] ] [ a rif:External ;
-                                            rif:content [ a rif:Atom ;
-                                                    rif:args ( [ a rif:Const ;
-                                                                rif:value 1 ] [ a rif:Const ;
-                                                                rif:value 2 ] ) ;
-                                                    rif:op [ a rif:Const ;
-                                                            rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#numeric-less-than"^^xsd:anyURI ] ] ] [ a rif:External ;
-                                            rif:content [ a rif:Atom ;
-                                                    rif:args ( [ a rif:Const ;
-                                                                rif:value 1 ] [ a rif:Const ;
-                                                                rif:value 2 ] ) ;
-                                                    rif:op [ a rif:Const ;
-                                                            rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#numeric-less-than-or-equal"^^xsd:anyURI ] ] ] [ a rif:External ;
-                                            rif:content [ a rif:Atom ;
-                                                    rif:args ( [ a rif:Const ;
-                                                                rif:value 1 ] [ a rif:Const ;
-                                                                rif:value 1 ] ) ;
-                                                    rif:op [ a rif:Const ;
-                                                            rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#numeric-less-than-or-equal"^^xsd:anyURI ] ] ] [ a rif:External ;
-                                            rif:content [ a rif:Atom ;
-                                                    rif:args ( [ a rif:Const ;
-                                                                rif:value 2 ] [ a rif:Const ;
-                                                                rif:value -1 ] ) ;
-                                                    rif:op [ a rif:Const ;
-                                                            rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#numeric-greater-than"^^xsd:anyURI ] ] ] [ a rif:External ;
-                                            rif:content [ a rif:Atom ;
-                                                    rif:args ( [ a rif:Const ;
-                                                                rif:value 2 ] [ a rif:Const ;
-                                                                rif:value -1 ] ) ;
-                                                    rif:op [ a rif:Const ;
-                                                            rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#numeric-greater-than-or-equal"^^xsd:anyURI ] ] ] [ a rif:External ;
-                                            rif:content [ a rif:Atom ;
-                                                    rif:args ( [ a rif:Const ;
-                                                                rif:value 2 ] [ a rif:Const ;
-                                                                rif:value 2 ] ) ;
-                                                    rif:op [ a rif:Const ;
-                                                            rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#numeric-greater-than-or-equal"^^xsd:anyURI ] ] ] [ a rif:External ;
-                                            rif:content [ a rif:Atom ;
-                                                    rif:args ( [ a rif:Const ;
-                                                                rif:value 0 ] [ a rif:Const ;
-                                                                rif:value 1 ] ) ;
-                                                    rif:op [ a rif:Const ;
-                                                            rif:constIRI "http://www.w3.org/2007/rif-builtin-predicate#numeric-not-equal"^^xsd:anyURI ] ] ] ) ] ;
+                                rif:formulas ( <http://example.org/example#test-guard-is-literal-double> <http://example.org/example#test-guard-is-literal-float> <http://example.org/example#test-guard-is-literal-decimal> <http://example.org/example#test-guard-is-literal-integer> <http://example.org/example#test-guard-is-literal-long> <http://example.org/example#test-guard-is-literal-int> <http://example.org/example#test-guard-is-literal-short> <http://example.org/example#test-guard-is-literal-byte> <http://example.org/example#test-guard-is-literal-nonNegativeInteger> <http://example.org/example#test-guard-is-literal-positiveInteger> <http://example.org/example#test-guard-is-literal-unsignedLong> <http://example.org/example#test-guard-is-literal-unsignedInt> <http://example.org/example#test-guard-is-literal-unsignedShort> <http://example.org/example#test-guard-is-literal-unsignedByte> <http://example.org/example#test-guard-is-literal-nonPositiveInteger> <http://example.org/example#test-guard-is-literal-negativeInteger> <http://example.org/example#test-guard-is-literal-not-double> <http://example.org/example#test-guard-is-literal-not-float> <http://example.org/example#test-guard-is-literal-not-hexBinary> <http://example.org/example#test-guard-is-literal-not-decimal> <http://example.org/example#test-guard-is-literal-not-integer> <http://example.org/example#test-guard-is-literal-not-long> <http://example.org/example#test-guard-is-literal-not-int> <http://example.org/example#test-guard-is-literal-not-short> <http://example.org/example#test-guard-is-literal-not-byte> <http://example.org/example#test-guard-is-literal-not-nonNegativeInteger> <http://example.org/example#test-guard-is-literal-not-positiveInteger> <http://example.org/example#test-guard-is-literal-not-unsignedLong> <http://example.org/example#test-guard-is-literal-not-unsignedInt> <http://example.org/example#test-guard-is-literal-not-unsignedShort> <http://example.org/example#test-guard-is-literal-not-unsignedByte> <http://example.org/example#test-guard-is-literal-not-nonPositiveInteger> <http://example.org/example#test-guard-is-literal-not-negativeInteger> <http://example.org/example#test-cast-double> <http://example.org/example#test-cast-float> <http://example.org/example#test-cast-hexBinary> <http://example.org/example#test-cast-decimal> <http://example.org/example#test-cast-integer> <http://example.org/example#test-cast-long> <http://example.org/example#test-cast-int> <http://example.org/example#test-cast-short> <http://example.org/example#test-cast-byte> <http://example.org/example#test-cast-nonNegativeInteger> <http://example.org/example#test-cast-positiveInteger> <http://example.org/example#test-cast-unsignedLong> <http://example.org/example#test-cast-unsignedInt> <http://example.org/example#test-cast-unsignedShort> <http://example.org/example#test-cast-unsignedByte> <http://example.org/example#test-cast-nonPositiveInteger> <http://example.org/example#test-cast-negativeInteger> <http://example.org/example#test-numeric-add> <http://example.org/example#test-numeric-subtract> <http://example.org/example#test-numeric-multiply> <http://example.org/example#test-numeric-divide> <http://example.org/example#test-numeric-integer-divide> <http://example.org/example#test-numeric-integer-mod> <http://example.org/example#test-numeric-equal> <http://example.org/example#test-numeric-not-equal> <http://example.org/example#test-numeric-less-than> <http://example.org/example#test-numeric-less-than-or-equal1> <http://example.org/example#test-numeric-less-than-or-equal2> <http://example.org/example#test-numeric-greater-than> <http://example.org/example#test-numeric-greater-than-or-equal1> <http://example.org/example#test-numeric-greater-than-or-equal2> <http://example.org/example#test-numeric-not-equal> ) ] ;
                         rif:then [ a rif:Atom ;
                                 rif:op [ a rif:Const ;
                                         rif:constIRI "http://example.org/example#ok"^^xsd:anyURI ] ] ] ) ] .

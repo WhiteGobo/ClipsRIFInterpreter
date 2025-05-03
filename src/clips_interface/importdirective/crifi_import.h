@@ -34,15 +34,17 @@ typedef enum {
 
 typedef enum {
 	CRIFI_IMPORT_ASSERT_NOERROR = 0,
+	CRIFI_IMPORT_ASSERT_INVALID_TERM,
 	CRIFI_IMPORT_ASSERT_UNHANDLED_ERROR
 } CRIFI_IMPORT_ASSERT_RET;
 
 typedef enum {
 	CRIFI_IMPORT_MODEL_UNDEFINED = -1,
 	///type of _CRIFI_MODEL_SIMPLE_
-	CRIFI_IMPORT_MODEL_SIMPLE,
-	///type of _CRIFI_MODEL_RIFGENERATOR_
-	CRIFI_IMPORT_MODEL_RIFGENERATOR
+	CRIFI_IMPORT_MODEL_SIMPLE=0,
+	///type of _CRIFI_MODEL_RIFGENERATOR_ Is subtype to owl
+	CRIFI_IMPORT_MODEL_RIFGENERATOR=1,
+	CRIFI_IMPORT_MODEL_RIFGENERATOR_SIMPLE=2
 } CRIFI_IMPORT_MODEL_ID;
 
 typedef struct importProcess ImportProcess;
@@ -108,6 +110,7 @@ CRIFI_IMPORT_ASSERT_RET assert_frame(ImportProcess *process,
 		const char *slotvalue, const char *slotvalue_suffix,
 		IMPORT_TERM_TYPE slotvalue_type
 		);
+
 
 RET_CRIFI_IMPORT crifi_execute_import(crifi_graph *graph, CLIPSValue *import_location, CLIPSValue *entailment_regime, CLIPSValue *values, int number_values);
 

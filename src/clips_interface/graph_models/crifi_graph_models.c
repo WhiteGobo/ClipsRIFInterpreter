@@ -8,26 +8,45 @@
 #include "first.h"
 
 crifi_graph *init_graph_modelA(){
+	int err;
 	crifi_graph *graph = init_graph_modelA_internal(NULL);
-	if (graph != NULL){
-		set_model_id_for_import(graph, CRIFI_IMPORT_MODEL_RIFGENERATOR);
+	if (graph == NULL){
+		return NULL;
+	}
+	err = set_model_id_for_import(graph, CRIFI_IMPORT_MODEL_RIFGENERATOR);
+	if (err != 0){
+		close_graph(graph);
+		return NULL;
 	}
 	return graph;
 }
 
 
 crifi_graph *init_graph_modelcheckA(){
+	int err;
 	crifi_graph *graph = init_graph_modelcheckA_internal(NULL);
-	if (graph != NULL){
-		set_model_id_for_import(graph, CRIFI_IMPORT_MODEL_RIFGENERATOR);
+	if (graph == NULL){
+		return NULL;
+	}
+	err = set_model_id_for_import(graph, CRIFI_IMPORT_MODEL_RIFGENERATOR);
+	if (err != 0){
+		close_graph(graph);
+		return NULL;
 	}
 	return graph;
 }
 
 crifi_graph *init_graph_model_first(){
+	int err;
 	crifi_graph *graph = init_graph_model_first_internal(NULL);
-	if (graph != NULL){
-		set_model_id_for_import(graph, CRIFI_IMPORT_MODEL_RIFGENERATOR);
+	if (graph == NULL){
+		return NULL;
+	}
+	err = set_model_id_for_import(graph,
+				CRIFI_IMPORT_MODEL_RIFGENERATOR_SIMPLE);
+	if (err != 0){
+		close_graph(graph);
+		return NULL;
 	}
 	return graph;
 }
