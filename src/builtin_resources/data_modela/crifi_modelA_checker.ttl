@@ -1,14 +1,22 @@
-@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
-@prefix rif: <http://www.w3.org/2007/rif#> .
-
-[] a rif:Document ;
-    rif:directives ( [ a rif:Import ;
-                rif:location "http://white.gobo/crifi/built_resources/data_modela#transform-list" ;
-                rif:profile "http://www.w3.org/ns/entailment/RIF" ] [ a rif:Import ;
-                rif:location "http://white.gobo/crifi/built_resources/data_modela#create-root-script" ;
-                rif:profile "http://www.w3.org/ns/entailment/RIF" ] [ a rif:Import ;
-                rif:location "http://white.gobo/crifi/built_resources/data_modela#formula-as-test" ;
-                rif:profile "http://www.w3.org/ns/entailment/RIF" ] [ a rif:Import ;
-                rif:location "http://white.gobo/crifi/built_resources/data_modela#constants" ;
-                rif:profile "http://www.w3.org/ns/entailment/RIF" ] ) .
-
+_:Na2ce5f2e38be4f5c972aa0c7acad7836 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> _:N1a68dc54728c4b7a8510bb151f6bf235 .
+_:N5a672a141a654fa2accafe903964aca1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2007/rif#Import> .
+_:N31bef18a49364b0fad6334793d760c92 <http://www.w3.org/2007/rif#profile> "http://www.w3.org/ns/entailment/RIF" .
+_:N7414fc7a9eb14557addcf88ad9423c1b <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2007/rif#Import> .
+_:N31bef18a49364b0fad6334793d760c92 <http://www.w3.org/2007/rif#location> "http://white.gobo/crifi/built_resources/data_modela#constants" .
+_:N00264c394afc47acbc037d41632829d9 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> <http://www.w3.org/1999/02/22-rdf-syntax-ns#nil> .
+_:N5a672a141a654fa2accafe903964aca1 <http://www.w3.org/2007/rif#profile> "http://www.w3.org/ns/entailment/RIF" .
+_:N68bd6e8633d04d89983867a92f11d4a0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> _:Na2ce5f2e38be4f5c972aa0c7acad7836 .
+_:N7414fc7a9eb14557addcf88ad9423c1b <http://www.w3.org/2007/rif#profile> "http://www.w3.org/ns/entailment/RIF" .
+_:N5a672a141a654fa2accafe903964aca1 <http://www.w3.org/2007/rif#location> "http://white.gobo/crifi/built_resources/data_modela#transform-list" .
+_:N7414fc7a9eb14557addcf88ad9423c1b <http://www.w3.org/2007/rif#location> "http://white.gobo/crifi/built_resources/data_modela#formula-as-test" .
+_:N59657fd6497849fa974633d7a51a89e5 <http://www.w3.org/2007/rif#profile> "http://www.w3.org/ns/entailment/RIF" .
+_:Na2ce5f2e38be4f5c972aa0c7acad7836 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> _:N59657fd6497849fa974633d7a51a89e5 .
+_:N59657fd6497849fa974633d7a51a89e5 <http://www.w3.org/2007/rif#location> "http://white.gobo/crifi/built_resources/data_modela#create-root-script" .
+_:N31bef18a49364b0fad6334793d760c92 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2007/rif#Import> .
+_:N9a0e5562d96c48f7a8377e6fbbcc999f <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2007/rif#Document> .
+_:N9a0e5562d96c48f7a8377e6fbbcc999f <http://www.w3.org/2007/rif#directives> _:N68bd6e8633d04d89983867a92f11d4a0 .
+_:N1a68dc54728c4b7a8510bb151f6bf235 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> _:N7414fc7a9eb14557addcf88ad9423c1b .
+_:N00264c394afc47acbc037d41632829d9 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> _:N31bef18a49364b0fad6334793d760c92 .
+_:N68bd6e8633d04d89983867a92f11d4a0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> _:N5a672a141a654fa2accafe903964aca1 .
+_:N59657fd6497849fa974633d7a51a89e5 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2007/rif#Import> .
+_:N1a68dc54728c4b7a8510bb151f6bf235 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> _:N00264c394afc47acbc037d41632829d9 .

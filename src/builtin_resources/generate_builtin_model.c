@@ -5,6 +5,7 @@
 #include "crifi_builtin_resources.h"
 #include "crifi_raptor.h"
 #include "crifi_graph_models.h"
+#include <time.h>
 
 #define _CRIFI_MODELA_DATA_BASEURI_ "http://white.gobo/crifi/built_resources/data_modela#"
 #define _CRIFI_BUILTIN_MODEL_GENERATE_MODELA_ _CRIFI_MODELA_DATA_BASEURI_ "crifi_modelA"
@@ -76,7 +77,9 @@ static int printout_generated_rules(){
 		return 1;
 	}
 	return 0;
-	/*
+}
+
+static int printout_generated_rulesa(){
 	CRIFI_SERIALIZE_SCRIPT_RET err;
 	err = serialize_information_as_clips_script(out_f, graph);
 	switch(err){
@@ -99,13 +102,19 @@ static int printout_generated_rules(){
 			return 1;
 	}
 	return 0;
-	*/
 }
 
 static int run_imported_rules(){
 	bool errorstate;
-	int number_rules_run;
-	number_rules_run = run_rules(graph, -1);
+	int number_rules_run = 1;
+	time_t now;
+	time(&now);
+	fprintf(stderr, "Starting rules at %s", ctime(&now));
+	while (number_rules_run > 0){
+		number_rules_run = run_rules(graph, 10000);
+		time(&now);
+		fprintf(stderr, "Run further %d at %s", number_rules_run, ctime(&now));
+	}
 	if(graph_in_errorstate(graph, stderr)){
 		fprintf(stderr, "graph ended in errorstate after rules have run.");
 		return 1;
@@ -122,6 +131,7 @@ static int init_graph_with_import(){
 	//graph = init_graph();
 	//graph = init_graph_first();
 	graph = init_graph_model_first();
+	//graph = init_graph_modelA();
 	if (graph == NULL){
 		fprintf(stderr, "Couldnt initialize graph. Broken library?\n");
 		return 1;

@@ -1,71 +1,156 @@
-@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
-@prefix rif: <http://www.w3.org/2007/rif#> .
-@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-
-[] a rif:Document ;
-    rif:payload [ a rif:Group ;
-            rif:sentences ( [ a rif:Forall ;
-                        rif:formula [ a rif:Implies ;
-                                rif:if [ a rif:And ;
-                                        rif:formulas ( [ a rif:Frame ;
-                                                    rif:object [ a rif:Var ;
-                                                            rif:varname "directive" ] ;
-                                                    rif:slots ( [ a rif:Slot ;
-                                                                rif:slotkey [ a rif:Const ;
-                                                                        rif:constIRI "http://www.w3.org/2007/rif#location"^^xsd:anyURI ] ;
-                                                                rif:slotvalue [ a rif:Var ;
-                                                                        rif:varname "location" ] ] ) ] [ a rif:Frame ;
-                                                    rif:object [ a rif:Var ;
-                                                            rif:varname "directive" ] ;
-                                                    rif:slots ( [ a rif:Slot ;
-                                                                rif:slotkey [ a rif:Const ;
-                                                                        rif:constIRI "http://www.w3.org/2007/rif#profile"^^xsd:anyURI ] ;
-                                                                rif:slotvalue [ a rif:Var ;
-                                                                        rif:varname "profile" ] ] ) ] ) ] ;
-                                rif:then [ a rif:Do ;
-                                        rif:actions ( [ a rif:Execute ;
-                                                    rif:target [ a rif:Atom ;
-                                                            rif:args ( [ a rif:Var ;
-                                                                        rif:varname "location" ] [ a rif:Var ;
-                                                                        rif:varname "profile" ] ) ;
-                                                            rif:op [ a rif:Const ;
-                                                                    rif:constIRI "http://white.gobo/import"^^xsd:anyURI ] ] ] ) ] ] ;
-                        rif:vars ( [ a rif:Var ;
-                                    rif:varname "directive" ] [ a rif:Var ;
-                                    rif:varname "location" ] [ a rif:Var ;
-                                    rif:varname "profile" ] ) ] [ a rif:Forall ;
-                        rif:formula [ a rif:Implies ;
-                                rif:if [ a rif:And ;
-                                        rif:formulas ( [ a rif:Frame ;
-                                                    rif:object [ a rif:Var ;
-                                                            rif:varname "directive" ] ;
-                                                    rif:slots ( [ a rif:Slot ;
-                                                                rif:slotkey [ a rif:Const ;
-                                                                        rif:constIRI "http://www.w3.org/2007/rif#location"^^xsd:anyURI ] ;
-                                                                rif:slotvalue [ a rif:Var ;
-                                                                        rif:varname "location" ] ] ) ] [ a rif:INeg ;
-                                                    rif:formula [ a rif:Exists ;
-                                                            rif:formula [ a rif:Frame ;
-                                                                    rif:object [ a rif:Var ;
-                                                                            rif:varname "directive" ] ;
-                                                                    rif:slots ( [ a rif:Slot ;
-                                                                                rif:slotkey [ a rif:Const ;
-                                                                                        rif:constIRI "http://www.w3.org/2007/rif#profile"^^xsd:anyURI ] ;
-                                                                                rif:slotvalue [ a rif:Var ;
-                                                                                        rif:varname "profile" ] ] ) ] ;
-                                                            rif:vars ( [ a rif:Var ;
-                                                                        rif:varname "profile" ] ) ] ] ) ] ;
-                                rif:then [ a rif:Do ;
-                                        rif:actions ( [ a rif:Assert ;
-                                                    rif:target [ a rif:Frame ;
-                                                            rif:object [ a rif:Var ;
-                                                                    rif:varname "directive" ] ;
-                                                            rif:slots ( [ a rif:Slot ;
-                                                                        rif:slotkey [ a rif:Const ;
-                                                                                rif:constIRI "http://www.w3.org/2007/rif#profile"^^xsd:anyURI ] ;
-                                                                        rif:slotvalue [ a rif:Const ;
-                                                                                rif:constIRI "http://www.w3.org/ns/entailment/RIF"^^xsd:anyURI ] ] ) ] ] ) ] ] ;
-                        rif:vars ( [ a rif:Var ;
-                                    rif:varname "directive" ] [ a rif:Var ;
-                                    rif:varname "location" ] ) ] ) ] .
-
+_:N73a9b3e8bbcc408b9b80d10bf03702b1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> _:Ncff862da2c8246c6a2b6b564d4c9d653 .
+_:Nbe1cf4faba1e4c06b21110527edf28b8 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> <http://www.w3.org/1999/02/22-rdf-syntax-ns#nil> .
+_:Nbd2f5dff59ec4fb09de3e4211a6c5534 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2007/rif#Const> .
+_:N7d13924b41e04a46968d613563a33148 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> <http://www.w3.org/1999/02/22-rdf-syntax-ns#nil> .
+_:N7d13924b41e04a46968d613563a33148 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> _:Na9a1adc0e3194cb19bfc0aac87e333e1 .
+_:Nc3959ceefa9148a58962e721396832de <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2007/rif#Var> .
+_:N5a54b2f5995642e79a7dff28897e483c <http://www.w3.org/2007/rif#args> _:N07b0f173f55048a3a6f3829be703066f .
+_:Nbcd6be683413474abb5b3272ed195633 <http://www.w3.org/2007/rif#constIRI> "http://www.w3.org/ns/entailment/RIF"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+_:N27e20b6f14a641ba88b4c6de33d0e8f4 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2007/rif#Forall> .
+_:Nbcb34e267281438795466cae9c3b1cdf <http://www.w3.org/2007/rif#slotvalue> _:N6d0e1f8eb2374417857440c20d27cb10 .
+_:Nb303b0c9fd364463ad9ee35a4390ddf3 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2007/rif#Exists> .
+_:N537d3cbb52a74fe98f9e3f7e7aa85468 <http://www.w3.org/2007/rif#formula> _:Nb303b0c9fd364463ad9ee35a4390ddf3 .
+_:N269d0520c01c47ee8450fadda7dec98d <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2007/rif#And> .
+_:Nf2e0bd08055449169915df570382e7e0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2007/rif#Implies> .
+_:N828a3152b7964c0d82395b12a0140dd1 <http://www.w3.org/2007/rif#constIRI> "http://www.w3.org/2007/rif#profile"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+_:N5e3963e38320468cb8025529f009d7de <http://www.w3.org/2007/rif#slots> _:N97cd87e6e4ad4da981f4696439031c12 .
+_:N654bfbfc9d2c4f68bb3b2851b4dd69d9 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> _:N9cb537df94af4b5ebb72e888e4400050 .
+_:N4b0dd9782b1a4d519391baf3da840553 <http://www.w3.org/2007/rif#slots> _:Na1f77097925e4d08bd627c68db739ac5 .
+_:N837500935cf44dc3ad353f061f95710f <http://www.w3.org/2007/rif#slotkey> _:N828a3152b7964c0d82395b12a0140dd1 .
+_:N67f5727cbfb14a37a4ff823cbb154e6b <http://www.w3.org/2007/rif#varname> "directive" .
+_:N738565036d904d61aa4fe5f8b3cc9cd9 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> <http://www.w3.org/1999/02/22-rdf-syntax-ns#nil> .
+_:N537d3cbb52a74fe98f9e3f7e7aa85468 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2007/rif#INeg> .
+_:Nbcb34e267281438795466cae9c3b1cdf <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2007/rif#Slot> .
+_:N7baa187ccd6a433cbe396f6605c88b87 <http://www.w3.org/2007/rif#slotvalue> _:N0c733be74edf40e49f7df2760f4ed526 .
+_:Ne5cf295da648491680fccb5dab6b3356 <http://www.w3.org/2007/rif#varname> "directive" .
+_:N07b0f173f55048a3a6f3829be703066f <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> _:N89c27fb3cd4e4b70815bb0fa51dca252 .
+_:N73a9b3e8bbcc408b9b80d10bf03702b1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> <http://www.w3.org/1999/02/22-rdf-syntax-ns#nil> .
+_:N27e20b6f14a641ba88b4c6de33d0e8f4 <http://www.w3.org/2007/rif#formula> _:N33efc9ede1d54f97be139b25df8dd91c .
+_:Na5d2e494650543099ad391466b1421f9 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2007/rif#Var> .
+_:N0427585374e0483dbbcaa40edad505ef <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> _:N511cab4706264f0d839182863621b858 .
+_:Nbcb34e267281438795466cae9c3b1cdf <http://www.w3.org/2007/rif#slotkey> _:N2aa90689d0a744b4915a2d6cae70bb51 .
+_:Na193461d3bda4984b96c2ec3831cb96a <http://www.w3.org/2007/rif#actions> _:N73a9b3e8bbcc408b9b80d10bf03702b1 .
+_:Nf2e0bd08055449169915df570382e7e0 <http://www.w3.org/2007/rif#if> _:N5d3fe0eea35143368a52f52e468d7acf .
+_:N5d3fe0eea35143368a52f52e468d7acf <http://www.w3.org/2007/rif#formulas> _:N6e09648583244d938a0115f6d32ec867 .
+_:N0c733be74edf40e49f7df2760f4ed526 <http://www.w3.org/2007/rif#varname> "location" .
+_:N3e25f40c0e6944f2b40697e7ce597636 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2007/rif#Var> .
+_:N837500935cf44dc3ad353f061f95710f <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2007/rif#Slot> .
+_:Nb303b0c9fd364463ad9ee35a4390ddf3 <http://www.w3.org/2007/rif#formula> _:N4673a16b72544eb48df30ebf92a797a2 .
+_:N9cb64cb64a914a4491c36adac3a62984 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2007/rif#Const> .
+_:N4b0dd9782b1a4d519391baf3da840553 <http://www.w3.org/2007/rif#object> _:Nc3959ceefa9148a58962e721396832de .
+_:N828a3152b7964c0d82395b12a0140dd1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2007/rif#Const> .
+_:Nca4d5f4f9e4047b89b637cc7d9476294 <http://www.w3.org/2007/rif#varname> "directive" .
+_:Nb8563783856641e1b0b5ea1926e71fd0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> <http://www.w3.org/1999/02/22-rdf-syntax-ns#nil> .
+_:Na6b0f97a51b743d0b6a896e6e4cde21b <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> _:N4cc2b1cdf33746f98bcc908783e3ee61 .
+_:N9cb537df94af4b5ebb72e888e4400050 <http://www.w3.org/2007/rif#varname> "location" .
+_:Nbcd6be683413474abb5b3272ed195633 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2007/rif#Const> .
+_:Nc9e3b604310a4bc499cc966a8fbe6cc5 <http://www.w3.org/2007/rif#vars> _:Ne8703758053d41cfb5d89a8ec7dbaccc .
+_:N27e20b6f14a641ba88b4c6de33d0e8f4 <http://www.w3.org/2007/rif#vars> _:N1cc9b47ea42540e1b3de4c2cdeeedc45 .
+_:N97cd87e6e4ad4da981f4696439031c12 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> _:N7baa187ccd6a433cbe396f6605c88b87 .
+_:Nefe3289751cc4a319fe3a9fea2de187d <http://www.w3.org/2007/rif#slots> _:Nb8563783856641e1b0b5ea1926e71fd0 .
+_:N6e09648583244d938a0115f6d32ec867 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> _:N9de866d926324058ad4097d358f74b79 .
+_:N9cb64cb64a914a4491c36adac3a62984 <http://www.w3.org/2007/rif#constIRI> "http://www.w3.org/2007/rif#profile"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+_:N59e25ed412d948ad8ccf62bc1e562a06 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2007/rif#Var> .
+_:N07b0f173f55048a3a6f3829be703066f <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> _:Na5d2e494650543099ad391466b1421f9 .
+_:N9de866d926324058ad4097d358f74b79 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> _:N822dc36086f645a4986094023f723e7a .
+_:N33efc9ede1d54f97be139b25df8dd91c <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2007/rif#Implies> .
+_:N59e25ed412d948ad8ccf62bc1e562a06 <http://www.w3.org/2007/rif#varname> "profile" .
+_:Na7af437595984ea5a9b05f00cbf6b289 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2007/rif#Var> .
+_:N9de866d926324058ad4097d358f74b79 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> <http://www.w3.org/1999/02/22-rdf-syntax-ns#nil> .
+_:N97cd87e6e4ad4da981f4696439031c12 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> <http://www.w3.org/1999/02/22-rdf-syntax-ns#nil> .
+_:Na37b13bf6905403c938bb38425f318ec <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> <http://www.w3.org/1999/02/22-rdf-syntax-ns#nil> .
+_:Na193461d3bda4984b96c2ec3831cb96a <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2007/rif#Do> .
+_:N3e25f40c0e6944f2b40697e7ce597636 <http://www.w3.org/2007/rif#varname> "directive" .
+_:N4cc2b1cdf33746f98bcc908783e3ee61 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> _:N537d3cbb52a74fe98f9e3f7e7aa85468 .
+_:Nc3959ceefa9148a58962e721396832de <http://www.w3.org/2007/rif#varname> "directive" .
+_:Na1f77097925e4d08bd627c68db739ac5 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> <http://www.w3.org/1999/02/22-rdf-syntax-ns#nil> .
+_:N80bf69cbadad45f2863646623b09e51c <http://www.w3.org/2007/rif#slotvalue> _:N7ac560884a1e423d9ce0be4b916365bf .
+_:N62e68a09cdba4366ae495ce41816ae9c <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> _:Nc9e3b604310a4bc499cc966a8fbe6cc5 .
+_:N4673a16b72544eb48df30ebf92a797a2 <http://www.w3.org/2007/rif#object> _:N3e25f40c0e6944f2b40697e7ce597636 .
+_:N4673a16b72544eb48df30ebf92a797a2 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2007/rif#Frame> .
+_:N2aa90689d0a744b4915a2d6cae70bb51 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2007/rif#Const> .
+_:N80bf69cbadad45f2863646623b09e51c <http://www.w3.org/2007/rif#slotkey> _:N9cb64cb64a914a4491c36adac3a62984 .
+_:Na5d2e494650543099ad391466b1421f9 <http://www.w3.org/2007/rif#varname> "location" .
+_:Nbe1cf4faba1e4c06b21110527edf28b8 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> _:N80bf69cbadad45f2863646623b09e51c .
+_:N801f71dc91a54e36990367c30de474fe <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2007/rif#Const> .
+_:Nefe3289751cc4a319fe3a9fea2de187d <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2007/rif#Frame> .
+_:N654bfbfc9d2c4f68bb3b2851b4dd69d9 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> _:N43450ec26d464725ba76a4babc387822 .
+_:N00f3300bf444412387fc5191e414f2fb <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2007/rif#Var> .
+_:N4673a16b72544eb48df30ebf92a797a2 <http://www.w3.org/2007/rif#slots> _:N5f5e656e6d274d48b1fdb25e4c922412 .
+_:Nc9e3b604310a4bc499cc966a8fbe6cc5 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2007/rif#Forall> .
+_:N269d0520c01c47ee8450fadda7dec98d <http://www.w3.org/2007/rif#formulas> _:Na6b0f97a51b743d0b6a896e6e4cde21b .
+_:N89c27fb3cd4e4b70815bb0fa51dca252 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> <http://www.w3.org/1999/02/22-rdf-syntax-ns#nil> .
+_:N6d0e1f8eb2374417857440c20d27cb10 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2007/rif#Var> .
+_:Na9a1adc0e3194cb19bfc0aac87e333e1 <http://www.w3.org/2007/rif#target> _:Nefe3289751cc4a319fe3a9fea2de187d .
+_:N43450ec26d464725ba76a4babc387822 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> <http://www.w3.org/1999/02/22-rdf-syntax-ns#nil> .
+_:Nefe3289751cc4a319fe3a9fea2de187d <http://www.w3.org/2007/rif#object> _:Nca4d5f4f9e4047b89b637cc7d9476294 .
+_:N511cab4706264f0d839182863621b858 <http://www.w3.org/2007/rif#varname> "profile" .
+_:Nb303b0c9fd364463ad9ee35a4390ddf3 <http://www.w3.org/2007/rif#vars> _:N0427585374e0483dbbcaa40edad505ef .
+_:Na7af437595984ea5a9b05f00cbf6b289 <http://www.w3.org/2007/rif#varname> "directive" .
+_:N5a54b2f5995642e79a7dff28897e483c <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2007/rif#Atom> .
+_:N4bc801842bf749a698b6bd678b3be57d <http://www.w3.org/2007/rif#slotkey> _:Nbd2f5dff59ec4fb09de3e4211a6c5534 .
+_:N5ab8e232b7cf4f43bd4f5c02552028ec <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2007/rif#Var> .
+_:N7baa187ccd6a433cbe396f6605c88b87 <http://www.w3.org/2007/rif#slotkey> _:N801f71dc91a54e36990367c30de474fe .
+_:Nb8563783856641e1b0b5ea1926e71fd0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> _:N4bc801842bf749a698b6bd678b3be57d .
+_:Ne8703758053d41cfb5d89a8ec7dbaccc <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> _:Ne5cf295da648491680fccb5dab6b3356 .
+_:N5f5e656e6d274d48b1fdb25e4c922412 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> _:N837500935cf44dc3ad353f061f95710f .
+_:N822dc36086f645a4986094023f723e7a <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2007/rif#Frame> .
+_:N80bf69cbadad45f2863646623b09e51c <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2007/rif#Slot> .
+_:N4cc2b1cdf33746f98bcc908783e3ee61 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> <http://www.w3.org/1999/02/22-rdf-syntax-ns#nil> .
+_:N4bc801842bf749a698b6bd678b3be57d <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2007/rif#Slot> .
+_:N822dc36086f645a4986094023f723e7a <http://www.w3.org/2007/rif#object> _:N00f3300bf444412387fc5191e414f2fb .
+_:Na3bd13b11475408e81cc32e808eb602a <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2007/rif#Const> .
+_:N2e150e9edcc84155bf3e522cdb5de6e1 <http://www.w3.org/2007/rif#payload> _:N0adbdca3a3684167b34597bfdbd8f742 .
+_:Ncff862da2c8246c6a2b6b564d4c9d653 <http://www.w3.org/2007/rif#target> _:N5a54b2f5995642e79a7dff28897e483c .
+_:N0427585374e0483dbbcaa40edad505ef <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> <http://www.w3.org/1999/02/22-rdf-syntax-ns#nil> .
+_:Na9a1adc0e3194cb19bfc0aac87e333e1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2007/rif#Assert> .
+_:N00f3300bf444412387fc5191e414f2fb <http://www.w3.org/2007/rif#varname> "directive" .
+_:Nb998ff2e69c646e998df5b8706cf35dd <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2007/rif#Var> .
+_:N1cc9b47ea42540e1b3de4c2cdeeedc45 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> _:N67f5727cbfb14a37a4ff823cbb154e6b .
+_:N6e09648583244d938a0115f6d32ec867 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> _:N4b0dd9782b1a4d519391baf3da840553 .
+_:Na37b13bf6905403c938bb38425f318ec <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> _:N27e20b6f14a641ba88b4c6de33d0e8f4 .
+_:N2aa90689d0a744b4915a2d6cae70bb51 <http://www.w3.org/2007/rif#constIRI> "http://www.w3.org/2007/rif#location"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+_:N4b0dd9782b1a4d519391baf3da840553 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2007/rif#Frame> .
+_:Nc9e3b604310a4bc499cc966a8fbe6cc5 <http://www.w3.org/2007/rif#formula> _:Nf2e0bd08055449169915df570382e7e0 .
+_:N43450ec26d464725ba76a4babc387822 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> _:N48e6ad1ea5854d9a811641ece4186311 .
+_:N62e68a09cdba4366ae495ce41816ae9c <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> _:Na37b13bf6905403c938bb38425f318ec .
+_:N5a54b2f5995642e79a7dff28897e483c <http://www.w3.org/2007/rif#op> _:Na3bd13b11475408e81cc32e808eb602a .
+_:N801f71dc91a54e36990367c30de474fe <http://www.w3.org/2007/rif#constIRI> "http://www.w3.org/2007/rif#location"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+_:N4bc801842bf749a698b6bd678b3be57d <http://www.w3.org/2007/rif#slotvalue> _:Nbcd6be683413474abb5b3272ed195633 .
+_:Nb998ff2e69c646e998df5b8706cf35dd <http://www.w3.org/2007/rif#varname> "profile" .
+_:Ne8703758053d41cfb5d89a8ec7dbaccc <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> _:N654bfbfc9d2c4f68bb3b2851b4dd69d9 .
+_:N33efc9ede1d54f97be139b25df8dd91c <http://www.w3.org/2007/rif#then> _:N572f6f47c454443db4888adea2e7ccd9 .
+_:N7ac560884a1e423d9ce0be4b916365bf <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2007/rif#Var> .
+_:Ne5cf295da648491680fccb5dab6b3356 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2007/rif#Var> .
+_:N7ac560884a1e423d9ce0be4b916365bf <http://www.w3.org/2007/rif#varname> "profile" .
+_:N822dc36086f645a4986094023f723e7a <http://www.w3.org/2007/rif#slots> _:Nbe1cf4faba1e4c06b21110527edf28b8 .
+_:N5e3963e38320468cb8025529f009d7de <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2007/rif#Frame> .
+_:N511cab4706264f0d839182863621b858 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2007/rif#Var> .
+_:N33efc9ede1d54f97be139b25df8dd91c <http://www.w3.org/2007/rif#if> _:N269d0520c01c47ee8450fadda7dec98d .
+_:N572f6f47c454443db4888adea2e7ccd9 <http://www.w3.org/2007/rif#actions> _:N7d13924b41e04a46968d613563a33148 .
+_:N5d3fe0eea35143368a52f52e468d7acf <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2007/rif#And> .
+_:Na3bd13b11475408e81cc32e808eb602a <http://www.w3.org/2007/rif#constIRI> "http://white.gobo/import"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+_:N5e3963e38320468cb8025529f009d7de <http://www.w3.org/2007/rif#object> _:Na7af437595984ea5a9b05f00cbf6b289 .
+_:N6d0e1f8eb2374417857440c20d27cb10 <http://www.w3.org/2007/rif#varname> "location" .
+_:Na1f77097925e4d08bd627c68db739ac5 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> _:Nbcb34e267281438795466cae9c3b1cdf .
+_:N837500935cf44dc3ad353f061f95710f <http://www.w3.org/2007/rif#slotvalue> _:N59e25ed412d948ad8ccf62bc1e562a06 .
+_:Nbd2f5dff59ec4fb09de3e4211a6c5534 <http://www.w3.org/2007/rif#constIRI> "http://www.w3.org/2007/rif#profile"^^<http://www.w3.org/2001/XMLSchema#anyURI> .
+_:N572f6f47c454443db4888adea2e7ccd9 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2007/rif#Do> .
+_:N5ab8e232b7cf4f43bd4f5c02552028ec <http://www.w3.org/2007/rif#varname> "location" .
+_:Nca4d5f4f9e4047b89b637cc7d9476294 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2007/rif#Var> .
+_:N7baa187ccd6a433cbe396f6605c88b87 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2007/rif#Slot> .
+_:N0adbdca3a3684167b34597bfdbd8f742 <http://www.w3.org/2007/rif#sentences> _:N62e68a09cdba4366ae495ce41816ae9c .
+_:Nf2e0bd08055449169915df570382e7e0 <http://www.w3.org/2007/rif#then> _:Na193461d3bda4984b96c2ec3831cb96a .
+_:N738565036d904d61aa4fe5f8b3cc9cd9 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> _:N5ab8e232b7cf4f43bd4f5c02552028ec .
+_:N48e6ad1ea5854d9a811641ece4186311 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2007/rif#Var> .
+_:Ncff862da2c8246c6a2b6b564d4c9d653 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2007/rif#Execute> .
+_:N48e6ad1ea5854d9a811641ece4186311 <http://www.w3.org/2007/rif#varname> "profile" .
+_:N67f5727cbfb14a37a4ff823cbb154e6b <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2007/rif#Var> .
+_:Na6b0f97a51b743d0b6a896e6e4cde21b <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> _:N5e3963e38320468cb8025529f009d7de .
+_:N0adbdca3a3684167b34597bfdbd8f742 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2007/rif#Group> .
+_:N0c733be74edf40e49f7df2760f4ed526 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2007/rif#Var> .
+_:N2e150e9edcc84155bf3e522cdb5de6e1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2007/rif#Document> .
+_:N5f5e656e6d274d48b1fdb25e4c922412 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> <http://www.w3.org/1999/02/22-rdf-syntax-ns#nil> .
+_:N1cc9b47ea42540e1b3de4c2cdeeedc45 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> _:N738565036d904d61aa4fe5f8b3cc9cd9 .
+_:N89c27fb3cd4e4b70815bb0fa51dca252 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> _:Nb998ff2e69c646e998df5b8706cf35dd .
+_:N9cb537df94af4b5ebb72e888e4400050 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2007/rif#Var> .

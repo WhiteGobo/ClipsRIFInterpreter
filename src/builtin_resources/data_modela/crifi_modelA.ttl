@@ -1,20 +1,37 @@
-@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
-@prefix rif: <http://www.w3.org/2007/rif#> .
-
-[] a rif:Document ;
-    rif:directives ( [ a rif:Import ;
-                rif:location "http://white.gobo/crifi/built_resources/data_modela#transform-list" ;
-                rif:profile "http://www.w3.org/ns/entailment/RIF" ] [ a rif:Import ;
-                rif:location "http://white.gobo/crifi/built_resources/data_modela#constants" ;
-                rif:profile "http://www.w3.org/ns/entailment/RIF" ] [ a rif:Import ;
-                rif:location "http://white.gobo/crifi/built_resources/data_modela#rest" ;
-                rif:profile "http://www.w3.org/ns/entailment/RIF" ] [ a rif:Import ;
-                rif:location "http://white.gobo/crifi/built_resources/data_modela#import-rules" ;
-                rif:profile "http://www.w3.org/ns/entailment/RIF" ] [ a rif:Import ;
-                rif:location "http://white.gobo/crifi/built_resources/data_modela#init-defrules" ;
-                rif:profile "http://www.w3.org/ns/entailment/RIF" ] [ a rif:Import ;
-                rif:location "http://white.gobo/crifi/built_resources/data_modela#add-as-pattern" ;
-                rif:profile "http://www.w3.org/ns/entailment/RIF" ] [ a rif:Import ;
-                rif:location "http://white.gobo/crifi/built_resources/data_modela#action-from-formula-as-clause" ;
-                rif:profile "http://www.w3.org/ns/entailment/RIF" ] ) .
-
+_:Na5780e0571f4464cafaa19f4181af4f9 <http://www.w3.org/2007/rif#location> "http://white.gobo/crifi/built_resources/data_modela#transform-list" .
+_:Nb5914063ba4942f8bb6cf19dc2a84e3f <http://www.w3.org/2007/rif#profile> "http://www.w3.org/ns/entailment/RIF" .
+_:Nc5707458a3084fce92f9da7b26d4aa52 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2007/rif#Import> .
+_:N48803d3100284b9f98193084a9de7137 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> _:Nf481e2d2500d42119c5c8ba76cd77f96 .
+_:Nc5707458a3084fce92f9da7b26d4aa52 <http://www.w3.org/2007/rif#location> "http://white.gobo/crifi/built_resources/data_modela#rest" .
+_:N96defbb4483b4b55a079b22a319fc5d1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2007/rif#Import> .
+_:N96defbb4483b4b55a079b22a319fc5d1 <http://www.w3.org/2007/rif#location> "http://white.gobo/crifi/built_resources/data_modela#init-defrules" .
+_:Ndc30763b275748228be6d969cfe9f5d6 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2007/rif#Import> .
+_:N7f51274deb934820b35651f8a7f0d3ac <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> _:N48803d3100284b9f98193084a9de7137 .
+_:Na5780e0571f4464cafaa19f4181af4f9 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2007/rif#Import> .
+_:Ndc30763b275748228be6d969cfe9f5d6 <http://www.w3.org/2007/rif#location> "http://white.gobo/crifi/built_resources/data_modela#import-rules" .
+_:N36a5b5e2680b405ab1e1abb68896e84d <http://www.w3.org/2007/rif#profile> "http://www.w3.org/ns/entailment/RIF" .
+_:Nff6f0f251b5246c2a067710db5e7800a <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> _:Nc5707458a3084fce92f9da7b26d4aa52 .
+_:Nb5914063ba4942f8bb6cf19dc2a84e3f <http://www.w3.org/2007/rif#location> "http://white.gobo/crifi/built_resources/data_modela#add-as-pattern" .
+_:Ne1a38f95bb6d440a80d79a9ab478e3b1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> _:Ndc30763b275748228be6d969cfe9f5d6 .
+_:N48803d3100284b9f98193084a9de7137 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> _:Nb5914063ba4942f8bb6cf19dc2a84e3f .
+_:Nb5914063ba4942f8bb6cf19dc2a84e3f <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2007/rif#Import> .
+_:Naf7c54639063401a93a6ec4ef35d632d <http://www.w3.org/2007/rif#profile> "http://www.w3.org/ns/entailment/RIF" .
+_:N37c11f8ebe6041efa7028fdb6b447bd4 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> _:Naf7c54639063401a93a6ec4ef35d632d .
+_:Ne1a38f95bb6d440a80d79a9ab478e3b1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> _:N7f51274deb934820b35651f8a7f0d3ac .
+_:Ndc30763b275748228be6d969cfe9f5d6 <http://www.w3.org/2007/rif#profile> "http://www.w3.org/ns/entailment/RIF" .
+_:Naf7c54639063401a93a6ec4ef35d632d <http://www.w3.org/2007/rif#location> "http://white.gobo/crifi/built_resources/data_modela#constants" .
+_:N36a5b5e2680b405ab1e1abb68896e84d <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2007/rif#Import> .
+_:N37c11f8ebe6041efa7028fdb6b447bd4 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> _:Nff6f0f251b5246c2a067710db5e7800a .
+_:Nf481e2d2500d42119c5c8ba76cd77f96 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> _:N36a5b5e2680b405ab1e1abb68896e84d .
+_:N36a5b5e2680b405ab1e1abb68896e84d <http://www.w3.org/2007/rif#location> "http://white.gobo/crifi/built_resources/data_modela#action-from-formula-as-clause" .
+_:Nff6f0f251b5246c2a067710db5e7800a <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> _:Ne1a38f95bb6d440a80d79a9ab478e3b1 .
+_:Nf35148feda0a4dadba48a0b10a2c0129 <http://www.w3.org/2007/rif#directives> _:N1de7a6d468bf4c3aa9152f903d70d114 .
+_:Naf7c54639063401a93a6ec4ef35d632d <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2007/rif#Import> .
+_:N96defbb4483b4b55a079b22a319fc5d1 <http://www.w3.org/2007/rif#profile> "http://www.w3.org/ns/entailment/RIF" .
+_:N1de7a6d468bf4c3aa9152f903d70d114 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> _:Na5780e0571f4464cafaa19f4181af4f9 .
+_:N7f51274deb934820b35651f8a7f0d3ac <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> _:N96defbb4483b4b55a079b22a319fc5d1 .
+_:Nf35148feda0a4dadba48a0b10a2c0129 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2007/rif#Document> .
+_:Nc5707458a3084fce92f9da7b26d4aa52 <http://www.w3.org/2007/rif#profile> "http://www.w3.org/ns/entailment/RIF" .
+_:N1de7a6d468bf4c3aa9152f903d70d114 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> _:N37c11f8ebe6041efa7028fdb6b447bd4 .
+_:Na5780e0571f4464cafaa19f4181af4f9 <http://www.w3.org/2007/rif#profile> "http://www.w3.org/ns/entailment/RIF" .
+_:Nf481e2d2500d42119c5c8ba76cd77f96 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> <http://www.w3.org/1999/02/22-rdf-syntax-ns#nil> .
