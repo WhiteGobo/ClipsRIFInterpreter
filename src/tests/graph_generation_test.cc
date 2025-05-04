@@ -131,12 +131,15 @@ TEST_P(officialw3cSyntaxTestCases_Test, CreateModelWithModelA) {
 			if (!testdata.result){
 				FAIL() << "Syntax accepted. Expected failure";
 			}
+			break;
 		case CREATELOGIC_UNKNOWN_GRAPHERRORSTATE:
 			if (testdata.result){
 				FAIL() << "Syntax declined. Expected success";
 			}
+			break;
 		case CREATELOGIC_NOTRUN:
 			FAIL() << "Create logic didnt run.";
+			break;
 		default:
 			FAIL() << "unspecified logic error state";
 	}
@@ -179,7 +182,7 @@ static void create_logic_into_memory(FILE* tmpmem_f, TestdataSyntax testdata,
 	create_new_logic(create_logic_graph, tmpmem_f);
 	close_graph(create_logic_graph);
 	create_logic_graph = NULL;
-	FAIL() << "testfail";
+	//FAIL() << "testfail";
 }
 
 static void load_from_memory_to_graph(crifi_graph *graph,

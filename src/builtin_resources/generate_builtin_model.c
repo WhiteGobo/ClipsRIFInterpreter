@@ -62,7 +62,7 @@ static int printout_generated_rules(){
 				fprintf(stderr, "no output\n");
 				return 1;
 			}
-			fprintf(out_f, retval.val.string);
+			fprintf(out_f, "%s\n", retval.val.string);
 			break;
 		case CTC_DYNAMIC_ERROR:
 			fprintf(stderr, "oops something went wrong\n");
