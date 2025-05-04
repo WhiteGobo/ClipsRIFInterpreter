@@ -68,15 +68,51 @@ class officialw3cSyntaxTestCases_Test : public testing::TestWithParam<TestdataSy
 };
 
 static auto syntaxTestdata = testing::Values(
-		/*
-		TestdataSyntax("Core_NST_",
-			SC_NoCondition,
-			W3C_INPUT("")),
-			*/
+		TestdataSyntax("Core_IRT_Multiple_Context_Error",
+			SC_NoCondition | SC_ModelA,
+			W3C_INPUT("Multiple_Context_Error"),
+			false),
+		TestdataSyntax("Core_IRT_OWL_Combination_Invalid_DL_Formula",
+			SC_NoCondition | SC_ModelA,
+			W3C_INPUT("OWL_Combination_Invalid_DL_Formula"),
+			false),
+		TestdataSyntax("Core_IRT_OWL_Combination_Invalid_DL_Import",
+			SC_NoCondition | SC_ModelA,
+			W3C_INPUT("OWL_Combination_Invalid_DL_Import"),
+			false),
+		TestdataSyntax("Core_IRT_RDF_Combination_Invalid_Constant_1",
+			SC_NoCondition | SC_ModelA,
+			W3C_INPUT("RDF_Combination_Invalid_Constant_1"),
+			false),
+		TestdataSyntax("Core_IRT_RDF_Combination_Invalid_Constant_2",
+			SC_NoCondition | SC_ModelA,
+			W3C_INPUT("RDF_Combination_Invalid_Constant_2"),
+			false),
+		TestdataSyntax("Core_IRT_RDF_Combination_Invalid_Profiles_1",
+			SC_NoCondition | SC_ModelA,
+			W3C_INPUT("RDF_Combination_Invalid_Profiles_1"),
+			false),
+		TestdataSyntax("Core_NST_Core_NonSafeness_1",
+			SC_NoCondition | SC_ModelA,
+			W3C_INPUT("Core_NonSafeness"),
+			false),
+		TestdataSyntax("Core_NST_Core_NonSafeness_2",
+			SC_NoCondition | SC_ModelA,
+			W3C_INPUT("Core_NonSafeness_2"),
+			false),
 		TestdataSyntax("Core_NST_No_free_variables",
 			SC_NoCondition,
 			W3C_INPUT("No_free_variables"),
-			false)
+			false),
+		TestdataSyntax("Core_PST_Core_Safeness_1",
+			SC_NoCondition | SC_ModelA,
+			W3C_INPUT("Core_Safeness")),
+		TestdataSyntax("Core_PST_Core_Safeness_2",
+			SC_NoCondition | SC_ModelA,
+			W3C_INPUT("Core_Safeness_2")),
+		TestdataSyntax("Core_PST_Core_Safeness_3",
+			SC_NoCondition | SC_ModelA,
+			W3C_INPUT("Core_Safeness_3"))
 		);
 
 typedef enum {
