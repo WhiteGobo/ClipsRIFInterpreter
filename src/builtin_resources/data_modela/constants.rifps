@@ -17,7 +17,7 @@ Document(
             ?rifvar[rif:varname -> ?varname]
             Not( Exists ?clipsnode (?rifvar[ex:as-expression -> ?clipsnode]))
           ) Then Do (
-            Execute(crifi:set-graph-in-errorstate())
+            Execute(crifi:set-graph-in-errorstate("asdf"))
           )
         )
       )

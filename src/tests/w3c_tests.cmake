@@ -123,6 +123,9 @@ compile_resources(w3ctestcases ${TESTDATA_W3C_AS_HEADER}
 add_executable(w3c_tests
 	builtins_model_test.cc
 	testcases2_test.cc
+	graph_generation_test.cc
+	model_support.h
+	model_support.c
 	${TESTDATA_W3C_AS_HEADER}
 )
 
