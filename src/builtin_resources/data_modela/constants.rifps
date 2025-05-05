@@ -16,8 +16,20 @@ Document(
           If And (
             ?rifvar[rif:varname -> ?varname]
             Not( Exists ?clipsnode (?rifvar[ex:as-expression -> ?clipsnode]))
+            Not( Exists ?clipsnode (?rifvar[ex:provides-expression -> ?clipsnode]))
           ) Then Do (
             Execute(crifi:set-graph-in-errorstate(External(func:concat("Missing binding for variable with name " ?varname))))
+          )
+        )
+        Forall ?rifvar ?varname ?rifvarchild ?clipsvar(
+          If And (
+            ?rifvar[rif:varname -> ?varname]
+            ?rifvar[ex:provides-expression -> ?clipsvar]
+            Not( Exists ?rifvarchild (
+              ?rifvarchild[ex:as-expression -> ?clipsvar]
+            ))
+          ) Then Do (
+            Execute(crifi:set-graph-in-errorstate(External(func:concat("Missing use for variable with name " ?varname))))
           )
         )
       )
@@ -160,8 +172,7 @@ Document(
             External(pred:list-contains(?varlist ?rifvar))
           ) Then Do (
             (?clipsnode New())
-            Assert(?rifvar[ex:as-constraint -> ?clipsnode])
-            Assert(?rifvar[ex:as-expression -> ?clipsnode])
+            Assert(?rifvar[ex:provides-expression -> ?clipsnode])
             Assert(?clipsnode[cs:variable-name -> ?varname])
             Assert(?clipsnode[ex:as-constraint-needs-additional-conditionals -> External(func:make-list())])
           )
@@ -180,8 +191,7 @@ Document(
             ?rifframe[ex:as-expression -> ?factvar]
           ) Then Do (
             (?clipsnode New())
-            Assert(?rifvar[ex:as-constraint -> ?clipsnode])
-            Assert(?rifvar[ex:as-expression -> ?clipsnode])
+            Assert(?rifvar[ex:provides-expression -> ?clipsnode])
             Assert( ?clipsnode[cs:member-variable -> ?factvar] )
             Assert( ?clipsnode[cs:member-slot-name -> "subject"] )
             Assert( ?clipsnode[ex:as-constraint-needs-additional-conditionals -> External(func:make-list())])
@@ -240,7 +250,7 @@ Document(
             ?varparent[ex:inherits-data -> ?varchild]
             ?varparent[rif:varname -> ?varname]
             ?varchild[rif:varname -> ?varname]
-            ?varparent[ex:as-expression -> ?clipsvar]
+            ?varparent[ex:provides-expression -> ?clipsvar]
           ) Then Do (
             Assert(?varchild[ex:as-expression -> ?clipsvar])
             Assert(?varchild[ex:as-constraint -> ?clipsvar])

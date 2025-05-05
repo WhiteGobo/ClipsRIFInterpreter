@@ -42,6 +42,7 @@ void clipsudf_set_graph_in_errorstate(Environment *env, UDFContext *udfc, UDFVal
 	}
 	if (!UDFFirstArgument(udfc, ANY_TYPE_BITS, &input)) return;
 	SetErrorValue(env, input.header);
+	Eval(env, "(halt)", NULL);
 }
 
 void clipsudf_import(Environment *env, UDFContext *udfc, UDFValue *out){

@@ -75,6 +75,10 @@ static const char *baserules[] = {
 	"	(retract ?list)\n"
 	")",
 
+	//"(defrule haltonerror\n"
+	//"\n"
+	//")",
+
 	NULL
 };
 
