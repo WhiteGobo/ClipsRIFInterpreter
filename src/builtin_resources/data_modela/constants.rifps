@@ -62,6 +62,8 @@ Document(
               ?parent[rif:op -> ?child]
               ?parent[rif:payload -> ?child]
               ?parent[rif:pattern -> ?child]
+              ?parent[rif:left -> ?child]
+              ?parent[rif:right -> ?child]
             )
           ) Then Do (
             Assert( ?parent[ex:inherits-data -> ?child] )
@@ -103,6 +105,7 @@ Document(
               ?child[rdf:type -> rif:Var]
               ?child[rdf:type -> rif:Const]
               ?child[rdf:type -> rif:And]
+              ?child[rdf:type -> rif:INeg]
               ?child[rdf:type -> rif:Or]
               ?child[rdf:type -> rif:Not]
               ?child[rdf:type -> rif:Exists]

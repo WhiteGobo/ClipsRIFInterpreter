@@ -71,6 +71,7 @@ Document(
         If And (
           ?rifcondition[ex:add-as-pattern -> ?defrule]
           ?rifcondition[rdf:type -> rif:And]
+          ?defrule[rdf:type -> cs:Defrule]
           ?rifcondition[rif:formulas -> ?formulalist]
           External(pred:is-list(?formulalist))
           Or (
@@ -87,6 +88,7 @@ Document(
           External(pred:list-contains(?formulalist ?formula))
         ) Then Do (
           Assert( ?formula[ex:add-as-pattern -> ?defrule] )
+          Assert( ?rifcondition[ex:used-as-pattern-in -> ?defrule] )
         )
       )
       Forall ?rifrule ?defrule ?rifclause (

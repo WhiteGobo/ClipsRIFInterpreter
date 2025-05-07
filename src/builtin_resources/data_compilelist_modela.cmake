@@ -16,6 +16,7 @@ list(APPEND mytargets
 	init-defrules
 	add-as-pattern
 	action-from-formula-as-clause
+	process-external
 )
 
 set(compilelist)

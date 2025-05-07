@@ -1,0 +1,47 @@
+Document(
+    Prefix(func <http://www.w3.org/2007/rif-builtin-function#>) 
+    Prefix(pred <http://www.w3.org/2007/rif-builtin-predicate#>) 
+    Prefix(owl <http://www.w3.org/2002/07/owl#>)
+    Prefix(deffact <http://white.gobo/crifi/resource-manager/deffacts#>)
+    Prefix(rema <http://white.gobo/crifi/resource-manager#>)
+    Prefix(cs <http://clips.script/>)
+    Prefix(crifi <http://white.gobo/>)
+    Prefix(ex <http://example.com/>)
+    Prefix(triplestordf <http://example.com/triples-to-rdf#>)
+    Prefix(rif <http://www.w3.org/2007/rif#>)
+    Prefix(entailment <http://www.w3.org/ns/entailment/>)
+    Group 10 (
+      Group 15 (
+        Forall ?function ?rifarglist ?firstarg (
+          If And (
+            ?function[ex:add-args-from -> ?rifarglist]
+            External(pred:is-list(?rifarglist))
+            ?firstarg[ex:as-expression -> ?clipsexpression]
+            ?firstarg = External(func:get(?rifarglist 0))
+          ) Then Do (
+            (?functionargs ?function[cs:function-args -> ?functionargs])
+            Modify(?function[cs:function-args -> External(func:append(?functionargs ?clipsexpression))])
+            Modify(?function[ex:add-args-from -> External(func:remove(?rifarglist 0))])
+          )
+        )
+      )
+      Forall ?content ?rifop ?rifarglist ?functionname ?functionsymbol (
+        If And (
+          ?rifexternal[rdf:type -> rif:External]
+          ?rifexternal[rif:content -> ?content]
+          ?content[rif:op -> ?rifop]
+          ?rifop[ex:as-expression -> ?functionsymbol]
+          ?functionsymbol[cs:symbol -> ?functionname]
+          ?content[rif:args -> ?rifarglist]
+          External(pred:is-list(?rifarglist))
+        ) Then Do (
+          (?function New())
+          Assert( ?rifexternal[ex:as-action -> External(func:make-list(?function))] )
+          Assert( ?rifexternal[ex:as-expression -> ?function] )
+          Assert( ?function[cs:function-name -> ?functionname] )
+          Assert( ?function[cs:function-args -> External(func:make-list())] )
+          Assert( ?function[ex:add-args-from -> ?rifarglist] )
+        )
+      )
+    )
+)
