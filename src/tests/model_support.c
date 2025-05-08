@@ -8,3 +8,10 @@ bool skip_modelA(long unsigned int condition){
 	return false;
 }
 
+bool skip_model_first(long unsigned int condition){
+	if (condition & (SC_ModelFirst | SC_All)){
+		return true;
+	}
+	return false;
+}
+

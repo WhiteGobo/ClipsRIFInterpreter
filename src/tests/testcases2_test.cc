@@ -116,7 +116,7 @@ static auto petTestdata = testing::Values(
 			W3C_PREMISE("Builtins_boolean"),
 			W3C_CONCLUSION("Builtins_boolean")),
 		TestdataPET("Core_PET_Chaining_strategy_numeric-add_1",
-			SC_ModelA,
+			SC_NoCondition,
 			W3C_PREMISE("Chaining_strategy_numeric-add_1"),
 			W3C_CONCLUSION("Chaining_strategy_numeric-add_1")),
 		TestdataPET("Core_PET_Chaining_strategy_numeric-subtract_2",
@@ -128,7 +128,7 @@ static auto petTestdata = testing::Values(
 			W3C_PREMISE("EBusiness_Contract"),
 			W3C_CONCLUSION("EBusiness_Contract")),
 		TestdataPET("Core_PET_Factorial_Forward_Chaining",
-			SC_All,
+			SC_ModelFirst,
 			W3C_PREMISE("Factorial_Forward_Chaining"),
 			W3C_CONCLUSION("Factorial_Forward_Chaining")),
 		TestdataPET("Core_PET_Frame_slots_are_independent",
@@ -659,6 +659,9 @@ TEST_P(officialw3cPETTestCases_Test, CreateAndTestModelWithModelFirst) {
 	int number_rules_run;
 	char tmpmem[memory_size]; //script size maximal a megabyte
 	char tmpcheckmem[memory_size]; //check command size maximal a megabyte
+	if(skip_model_first(testdata.skip_c)){
+		GTEST_SKIP() << "skip on modelFirst";
+	}
 	tmpmem[memory_size-1] = '\0';
 	tmpmem[0] = '\0';
 	tmpcheckmem[memory_size-1] = '\0';

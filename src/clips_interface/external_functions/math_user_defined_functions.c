@@ -735,7 +735,7 @@ void rif_numeric_subtract(Environment *env, UDFContext *udfc, UDFValue *out){
 }
 
 void rif_numeric_multiply(Environment *env, UDFContext *udfc, UDFValue *out){
-	NUMERICLISTCALCULATOR(numeric_multiply, "numeric_multiply");
+	numeric_list_calculator(env, udfc, out, crifi_numeric_multiply);
 }
 
 void rif_numeric_divide(Environment *env, UDFContext *udfc, UDFValue *out){

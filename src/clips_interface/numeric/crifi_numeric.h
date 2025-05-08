@@ -37,4 +37,6 @@ double nv_as_float(NumericValue val);
 bool clipsvalue_as_integer(Environment *env, CLIPSValue val, long long *value);
 
 NumericValue* crifi_numeric_create_rational(long int dividend, long int divisor);
+NumericValue* crifi_numeric_create_float(double value, double precision);
 NumericValue* crifi_numeric_add(Environment *env, NumericValue *val1, NumericValue *val2);
+NumericValue* crifi_numeric_multiply(Environment *env, NumericValue *val1, NumericValue *val2);

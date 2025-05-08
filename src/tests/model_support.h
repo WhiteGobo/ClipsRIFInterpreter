@@ -16,6 +16,7 @@ extern "C" {
 
 //bool skip_modelA(SkipCondition condition);
 bool skip_modelA(long unsigned int condition);
+bool skip_model_first(long unsigned int condition);
 
 #ifdef __cplusplus
 }
