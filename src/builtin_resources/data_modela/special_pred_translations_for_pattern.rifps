@@ -1,0 +1,46 @@
+Document(
+    Prefix(func <http://www.w3.org/2007/rif-builtin-function#>) 
+    Prefix(pred <http://www.w3.org/2007/rif-builtin-predicate#>) 
+    Prefix(owl <http://www.w3.org/2002/07/owl#>)
+    Prefix(deffact <http://white.gobo/crifi/resource-manager/deffacts#>)
+    Prefix(rema <http://white.gobo/crifi/resource-manager#>)
+    Prefix(cs <http://clips.script/>)
+    Prefix(crifi <http://white.gobo/>)
+    Prefix(ex <http://example.com/>)
+    Prefix(triplestordf <http://example.com/triples-to-rdf#>)
+    Prefix(rif <http://www.w3.org/2007/rif#>)
+    Prefix(entailment <http://www.w3.org/ns/entailment/>)
+    Prefix(xs <http://www.w3.org/2001/XMLSchema#>)
+    Group -1 (
+      Forall ?rifexternal ?rifatom ?rifopiristring ?defrule ?arglist ?targetiri ?targetstring ?varname ?clipsvar ?clipsexpression (
+        If And(
+          ?rifconstiristring[rif:constIRI -> "http://www.w3.org/2007/rif-builtin-predicate#iri-string"^^xs:anyURI]
+          ?rifatom[rif:op -> ?rifconstiristring]
+          ?rifexternal[rif:content -> ?rifatom]
+          ?rifexternal[rdf:type -> rif:External]
+          ?rifexternal[ex:add-as-pattern -> ?defrule]
+          Not( ?rifexternal[ex:used-as-pattern-in -> ?defrule] )
+          ?rifatom[rif:args -> ?arglist]
+          External(pred:is-list(?arglist))
+
+          ?targetiri[rif:varname -> ?varname]
+          ?targetiri[ex:as-expression -> ?clipsvar]
+          Not( ?defrule[ex:bound-variable -> ?clipsvar] )
+          ?targetstring[ex:as-expression -> ?clipsexpression]
+          ?targetiri = External(func:get(?arglist 0))
+          ?targetstring = External(func:get(?arglist 1))
+          Not ( Exists ?x (And (
+            ?clipsexpression[ex:needs-variable -> ?x]
+            Not( ?defrule[ex:bound-variable -> ?x] )
+          )))
+          Not ( And (
+            Exists ?tmp (?clipsexpression[cs:variable-name -> ?tmp])
+            Not( ?defrule[ex:bound-variable -> ?clipsexpression] )
+          ))
+        ) Then Do (
+          Assert( ?rifexternal[ex:used-as-pattern-in -> ?defrule] )
+          Assert( ?clipsvar[cs:var-as-const-expr -> ?clipsexpression] )
+        )
+      )
+    )
+)
