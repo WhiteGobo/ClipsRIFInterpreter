@@ -81,6 +81,7 @@ typedef struct {
 	raptor_term *clips_symbol;
 	raptor_term *clips_string;
 	raptor_term *clips_variable_name;
+	raptor_term *clips_var_as_const_expr;
 	raptor_term *clips_Function;
 
 	raptor_term *clips_SingleWildcard;
@@ -163,7 +164,7 @@ static MyContext* init_context(){
 	cntxt->clips_symbol = URI(world, CLIPS("symbol"));
 	cntxt->clips_string = URI(world, CLIPS("string"));
 	cntxt->clips_variable_name = URI(world, CLIPS("variable-name"));
-	//cntxt-> = URI(world, CLIPS(""));
+	cntxt->clips_var_as_const_expr = URI(world, CLIPS("var-as-const-expr"));
 	return cntxt;
 }
 
@@ -822,7 +823,16 @@ FUNC_DESC(fprintf_not_ce){
  * 		<global-variable>
  */
 static CRIFI_SERIALIZE_SCRIPT_RET fprintf_variable(MyContext *cntxt, FILE* stream, Node* n){
-	raptor_term *varname;
+	Node *replacement_n;
+	raptor_term *varname, *replacement;
+	replacement = get_object(n, cntxt->clips_var_as_const_expr);
+	if (replacement != NULL){
+		replacement_n = retrieve_node(cntxt->nodes, replacement);
+		if (replacement_n == NULL){
+			return CRIFI_SERIALIZE_SCRIPT_UNKNOWN;
+		}
+		return fprintf_expression(cntxt, stream, replacement_n);
+	}
 	varname = get_object(n, cntxt->clips_variable_name);
 	if (varname != NULL){
 		fprintf(stream, " ?");

@@ -84,6 +84,56 @@ Document(
           )
         )
 
+        Group -1 (
+          Forall ?rifequal ?action ?defrule ?left ?right ?leftexpr ?rightexpr (
+            If And (
+              ?rifequal[ex:add-as-pattern -> ?defrule]
+              ?rifequal[rif:left -> ?left]
+              ?rifequal[rif:right -> ?right]
+              ?left[ex:as-expression -> ?leftexpr]
+              ?right[ex:as-expression -> ?rightexpr]
+              ?leftexpr[cs:variable-name -> ?varname]
+              Not( ?defrule[ex:bound-variable -> ?leftexpr] )
+              Not (Exists ?var ( And(
+                ?rightexpr[ex:needs-variable -> ?var]
+                Not (?defrule[ex:bound-variable -> ?var])
+              )))
+              Not ( And (
+                Exists ?tmp (?rightexpr[cs:variable-name -> ?tmp])
+                Not( ?defrule[ex:bound-variable -> ?rightexpr] )
+              ))
+            ) Then Do (
+              Assert( ?rifequal[ex:used-as-pattern-in -> ?defrule] )
+              Assert( ?leftexpr[cs:var-as-const-expr -> ?rightexpr] )
+              Assert( ?defrule[ex:bound-variable -> ?leftexpr] )
+            )
+          )
+
+          Forall ?rifequal ?action ?defrule ?left ?right ?leftexpr ?rightexpr (
+            If And (
+              ?rifequal[ex:add-as-pattern -> ?defrule]
+              ?rifequal[rif:left -> ?left]
+              ?rifequal[rif:right -> ?right]
+              ?left[ex:as-expression -> ?leftexpr]
+              ?right[ex:as-expression -> ?rightexpr]
+              ?rightexpr[cs:variable-name -> ?varname]
+              Not( ?defrule[ex:bound-variable -> ?rightexpr] )
+              Not (Exists ?var ( And(
+                ?leftexpr[ex:needs-variable -> ?var]
+                Not (?defrule[ex:bound-variable -> ?var])
+              )))
+              Not ( And (
+                Exists ?tmp (?leftexpr[cs:variable-name -> ?tmp])
+                Not( ?defrule[ex:bound-variable -> ?leftexpr] )
+              ))
+            ) Then Do (
+              Assert( ?rifequal[ex:used-as-pattern-in -> ?defrule] )
+              Assert( ?rightexpr[cs:var-as-const-expr -> ?leftexpr] )
+              Assert( ?defrule[ex:bound-variable -> ?rightexpr] )
+            )
+          )
+        )
+
         Forall ?rifequal ?action ?defrule ?left ?right ?leftexpr ?rightexpr (
           If And (
             ?rifequal[ex:add-as-pattern -> ?defrule]
