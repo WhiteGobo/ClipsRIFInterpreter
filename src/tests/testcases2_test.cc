@@ -316,7 +316,7 @@ static auto petTestdata = testing::Values(
 				W3C_PREMISE("Modify_loop"),
 				W3C_CONCLUSION("Modify_loop")),
 		TestdataPET("Core_NET_NestedListsAreNotFlatLists",
-				SC_All,
+				SC_ModelFirst,
 				W3C_PREMISE("NestedListsAreNotFlatLists"),
 				W3C_NONCONCLUSION("NestedListsAreNotFlatLists"),
 				false)

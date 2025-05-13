@@ -35,13 +35,26 @@ void clipsudf_equal(Environment *env, UDFContext *udfc, UDFValue *out){
 }
 
 void clipsudf_set_graph_in_errorstate(Environment *env, UDFContext *udfc, UDFValue *out){
+	char *errorstring;
 	UDFValue input;
+	CLIPSValue errorvalue;
 	if(0 == UDFArgumentCount(udfc)){
 		SetErrorValue(env, &(CreateString(env, "Undescribed error.")->header));
 		return;
 	}
 	if (!UDFFirstArgument(udfc, ANY_TYPE_BITS, &input)) return;
-	SetErrorValue(env, input.header);
+
+	errorstring = extract_lexical(env, input.header);
+	if (errorstring != NULL){
+		errorvalue.lexemeValue = CreateString(env, errorstring);
+		free(errorstring);
+	} else {
+		errorvalue.lexemeValue = CreateString(env,
+				"graph ended in errorstate "
+				"but no lexical could be extracted "
+				"from graph_in_errorstate argument");
+	}
+	SetErrorValue(env, errorvalue.header);
 	Eval(env, "(halt)", NULL);
 }
 

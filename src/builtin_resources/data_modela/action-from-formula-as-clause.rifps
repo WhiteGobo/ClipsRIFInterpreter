@@ -224,6 +224,16 @@ Document(
             Modify( ?slotargs[cs:field -> External(func:append(?oldfield ?clipsexpr))] )
           )
         )
+        Group -100 (
+          Forall ?clipsfunction ?rifrestargs (
+            If And (
+              ?clipsfunction[ex:add-atom-args-rhspattern -> ?rifrestargs]
+              External( pred:numeric-not-equal(0 External(func:count(?rifrestargs))) )
+            ) Then Do (
+              Execute(crifi:set-graph-in-errorstate("Translation of rif:Atom to rhs-pattern failed. Didnt translated all rif:args."))
+            )
+          )
+        )
         Forall ?slotargs (
           If ?slotargs[ex:add-atom-args-rhspattern -> List()]
           Then Do(

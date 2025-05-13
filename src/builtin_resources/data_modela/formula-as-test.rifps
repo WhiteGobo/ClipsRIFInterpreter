@@ -107,6 +107,16 @@ Document(
           Modify(?clipsfunction[cs:function-args -> External(func:append(?currentargs ?nextarg))])
         )
       )
+      Group -100 (
+        Forall ?clipsfunction ?rifrestargs (
+          If And (
+            ?clipsfunction[ex:add-expressions-as-args -> ?rifrestargs]
+            External( pred:numeric-not-equal(0 External(func:count(?rifrestargs))) )
+          ) Then Do (
+            Execute(crifi:set-graph-in-errorstate("Translation of rif:Atom to testfunction failed."))
+          )
+        )
+      )
 
       Forall ?checktriple ?factvar ?checktriple (
         If And (
