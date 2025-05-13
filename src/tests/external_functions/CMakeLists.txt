@@ -3,6 +3,7 @@ add_executable(external_functions_test
 	xmlliteral_test.cc
 	system_test.cc
 	time_test.cc
+	list_test.cc
 	helper.h
 	helper.cc
 )
