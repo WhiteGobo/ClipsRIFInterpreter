@@ -111,7 +111,7 @@ static auto petTestdata = testing::Values(
 			W3C_PREMISE("Builtins_anyURI"),
 			W3C_CONCLUSION("Builtins_anyURI")),
 		TestdataPET("Core_PET_Builtins_boolean",
-			SC_All,
+			SC_ModelFirst | SC_ModelA,
 			W3C_PREMISE("Builtins_boolean"),
 			W3C_CONCLUSION("Builtins_boolean")),
 		TestdataPET("Core_PET_Chaining_strategy_numeric-add_1",

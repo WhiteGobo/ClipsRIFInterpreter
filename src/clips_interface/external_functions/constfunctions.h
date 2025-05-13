@@ -81,12 +81,25 @@ static UDFDescription builtinFunctionList[] = {
 		rif_numeric_greater_than, "rif_numeric_greater_than", CT_static, NULL},
 	{"<"_PRED_numeric_greater_than_or_equal_">", "s", 2, 2, "s",
 		rif_numeric_greater_than_or_equal, "rif_numeric_greater_than_or_equal", CT_static, NULL},
+	{"<"_PRED_boolean_greater_than_">", "b", 2, 2, "*",
+		rif_boolean_greater_than, "rif_boolean_greater_than",
+		CT_static, NULL},
+	{"<"_PRED_boolean_less_than_">", "b", 2, 2, "*",
+		rif_boolean_less_than, "rif_boolean_less_than",
+		CT_static, NULL},
+	{"<"_PRED_boolean_equal_">", "b", 2, 2, "*",
+		rif_boolean_equal, "rif_boolean_equal",
+		CT_static, NULL},
 
 
 	{"<"_PRED_literal_not_identical_">", "*", 2, 2, NULL,
 		pred_literal_not_identical, "pred_literal_not_identical", CT_static, NULL},
 
 
+	{"<"_PRED_is_literal_boolean_">", "b", 1, 1, "*",
+		rif_is_literal_boolean, "rif_is_literal_boolean", CT_static, &CRegular},
+	{"<"_PRED_is_literal_not_boolean_">", "b", 1, 1, "*",
+		rif_is_literal_boolean, "rif_is_literal_boolean", CT_static, &CInvert},
 	{"<"_PRED_is_literal_double_">", "b", 1, 1, "s",
 		rif_is_literal_double, "rif_is_literal_double", CT_static, &CRegular},
 	{"<"_PRED_is_literal_float_">", "b", 1, 1, "s",
@@ -157,6 +170,8 @@ static UDFDescription builtinFunctionList[] = {
 	{"<"_PRED_is_literal_not_negativeInteger_">", "b", 1, 1, "s",
 		rif_is_literal_negativeInteger, "rif_is_literal_negativeInteger", CT_static, &CInvert},
 
+	{"<"_XS_boolean_">", "b", 1, 1, "*",
+		rif_cast_boolean, "rif_cast_boolean", CT_static, NULL},
 	{"<"_XS_double_">", "s", 1, 1, "s",
 		rif_cast_as, "rif_cast_as", CT_static, _XS_double_},
 	{"<"_XS_float_">", "s", 1, 1, "s",

@@ -5,6 +5,7 @@
 typedef enum {
 	NT_RATIONAL,
 	NT_FLOAT,
+	NT_BOOLEAN,
 	NT_NAN
 } NUMERIC_TYPE;
 
@@ -23,6 +24,7 @@ typedef struct {
 	};
 } NumericValue;
 
+void crifi_numeric_create_boolean(Environment *env, bool value, CLIPSValue *result);
 
 CLIPSValue crifi_create_integer(Environment *env, long long value);
 
@@ -30,6 +32,9 @@ CLIPSValue crifi_create_rational(Environment *env, long long dividend, long long
 
 CLIPSValue crifi_numeric_to_clipsvalue(Environment *env, NumericValue val);
 CLIPSValue crifi_numeric_to_clipsvalue2(Environment *env, NumericValue *val);
+void crifi_numeric_create_true(NumericValue *val);
+void crifi_numeric_create_false(NumericValue *val);
+NumericValue crifi_numeric_cast_as_boolean(NumericValue val);
 
 bool clipsvalue_as_numeric_value(Environment *env, CLIPSValue val, NumericValue *out);
 double nv_as_float(NumericValue val);

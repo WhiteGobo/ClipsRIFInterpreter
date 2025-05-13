@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string.h>
+
 #define _RDF_string_ "http://www.w3.org/2001/XMLSchema#string"
 #define _RDF_langString_ "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString"
 #define _RDF_PlainLiteral_ "http://www.w3.org/1999/02/22-rdf-syntax-ns#PlainLiteral"
@@ -51,6 +53,7 @@
 #define _XS_nonPositiveInteger_ "http://www.w3.org/2001/XMLSchema#nonPositiveInteger"
 #define _XS_negativeInteger_ "http://www.w3.org/2001/XMLSchema#negativeInteger"
 #define _XS_string_ _XML_ "string"
+#define _XS_untypedAtomic_ _XML_ "untypedAtomic"
 #define _XS_token_ "http://www.w3.org/2001/XMLSchema#token"
 #define _XS_language_ "http://www.w3.org/2001/XMLSchema#language"
 #define _XS_lang_ "http://www.w3.org/2001/XMLSchema#lang"
@@ -82,7 +85,12 @@
 #define _PRED_numeric_less_than_or_equal_ "http://www.w3.org/2007/rif-builtin-predicate#numeric-less-than-or-equal"
 #define _PRED_numeric_greater_than_ "http://www.w3.org/2007/rif-builtin-predicate#numeric-greater-than"
 #define _PRED_numeric_greater_than_or_equal_ "http://www.w3.org/2007/rif-builtin-predicate#numeric-greater-than-or-equal"
+#define _PRED_boolean_greater_than_ _PRED_ "boolean-greater-than"
+#define _PRED_boolean_less_than_ _PRED_ "boolean-less-than"
+#define _PRED_boolean_equal_ _PRED_ "boolean-equal"
 
+#define _PRED_is_literal_boolean_ _PRED_ "is-literal-boolean"
+#define _PRED_is_literal_not_boolean_ _PRED_ "is-literal-not-boolean"
 #define _PRED_is_literal_double_ "http://www.w3.org/2007/rif-builtin-predicate#is-literal-double"
 #define _PRED_is_literal_float_ "http://www.w3.org/2007/rif-builtin-predicate#is-literal-float"
 #define _PRED_is_literal_hexBinary_ "http://www.w3.org/2007/rif-builtin-predicate#is-literal-hexBinary"

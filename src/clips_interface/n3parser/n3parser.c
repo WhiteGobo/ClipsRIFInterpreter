@@ -180,11 +180,6 @@ static int literal_to_clipsvalue(Environment *env, N3String node, CLIPSValue *re
 
 	CRIFIN3ParserData* rgx = LoadingCRIFIN3ParserData(env);
 
-	/*
-	if (0 != init_regex()){
-		//fprintf(stderr, "Failed to compile regex_datatype\n");
-		return 3;
-	}*/
 	//err = regexec(&reg_datatype, node, max_matches, matches, 0);
 	err = regexec(&(rgx->reg_datatype), node, max_matches, matches, 0);
 	if (err == 0) {

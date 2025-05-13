@@ -1,6 +1,9 @@
 add_library(crifi_numeric STATIC
 	crifi_numeric.c
 	crifi_numeric.h
+	clipsvalue.c
+	datatypes.c
+	datatypes.h
 	base_calculations.c
 )
 
@@ -16,4 +19,5 @@ set_target_properties(crifi_numeric PROPERTIES
 target_link_libraries(crifi_numeric PRIVATE
 	clips
 	n3parser
+	info_query
 )
