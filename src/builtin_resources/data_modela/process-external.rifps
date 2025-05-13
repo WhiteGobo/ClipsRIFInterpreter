@@ -43,5 +43,17 @@ Document(
           Assert( ?function[ex:add-args-from -> ?rifarglist] )
         )
       )
+      Forall ?riflist ?itemlist (
+        If And (
+          ?riflist[rif:items -> ?itemlist]
+          External(pred:is-list(?itemlist))
+        ) Then Do (
+          (?function New())
+          Assert( ?riflist[ex:as-expression -> ?function] )
+          Assert( ?function[cs:function-name -> "<http://www.w3.org/2007/rif-builtin-function#make-list>"] )
+          Assert( ?function[cs:function-args -> External(func:make-list())] )
+          Assert( ?function[ex:add-args-from -> ?itemlist] )
+        )
+      )
     )
 )
