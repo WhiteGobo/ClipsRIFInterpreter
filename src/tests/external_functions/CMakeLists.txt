@@ -2,6 +2,7 @@ add_executable(external_functions_test
 	string_test.cc
 	xmlliteral_test.cc
 	system_test.cc
+	time_test.cc
 	helper.h
 	helper.cc
 )

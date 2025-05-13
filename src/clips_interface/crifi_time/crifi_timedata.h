@@ -19,6 +19,7 @@ typedef struct crifiTimeData{
 	regex_t reg_time;
 	regex_t reg_dayTimeDuration;
 	regex_t reg_yearMonthDuration;
+	regex_t reg_generalDuration;
 } CRIFITimeData;
 
 /** LoadingCRIFITimeData

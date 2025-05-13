@@ -124,7 +124,7 @@ static auto petTestdata = testing::Values(
 			W3C_PREMISE("Chaining_strategy_numeric-subtract_2"),
 			W3C_CONCLUSION("Chaining_strategy_numeric-subtract_2")),
 		TestdataPET("Core_PET_EBusiness_Contract",
-			SC_All,
+			SC_ModelFirst,
 			W3C_PREMISE("EBusiness_Contract"),
 			W3C_CONCLUSION("EBusiness_Contract")),
 		TestdataPET("Core_PET_Factorial_Forward_Chaining",

@@ -3,100 +3,10 @@
 #include <n3parser.h>
 #include "ffi_constants.h"
 #include <math.h>
+#include "timedata_object.h"
+#include "timeduration_object.h"
 
-#define LEAPYEAR(dts) (((dts->year % 100 != 0) || (dts->year % 400 == 0)) && (dts->year % 4 == 0))
-#define MONTH31(dts) ((dts->month == 1) || (dts->month == 3) || (dts->month == 5) || (dts->month == 7) || (dts->month == 8) || (dts->month == 10) || (dts->month == 12))
-#define MONTH29(dts) ((dts->month == 2) && LEAPYEAR(dts))
-#define MONTH28(dts) ((dts->month == 2) && !LEAPYEAR(dts))
-#define MONTH30(dts) ((dts->month == 4) || (dts->month == 6) || (dts->month == 9) || (dts->month == 11))
-
-//length of month before
-#define MONTH31L(dts) ((dts->month == 2) || (dts->month == 4) || (dts->month == 6) || (dts->month == 8) || (dts->month == 9) || (dts->month == 11) || (dts->month == 1))
-#define MONTH29L(dts) ((dts->month == 3) && LEAPYEAR(dts))
-#define MONTH28L(dts) ((dts->month == 3) && !LEAPYEAR(dts))
-#define MONTH30L(dts) ((dts->month == 5) || (dts->month == 7) || (dts->month == 10) || (dts->month == 12))
-
-#define MATCHESSIZETIME 12
-
-static void normalize_dateTimeStamp(DateTimeStamp *result){
-	bool repeat = true;
-	while (repeat){
-		if (result->month > 12){
-			result->month -= 12;
-			result->year += 1;
-			repeat = true;
-		} else if (result->month <1) {
-			result->month += 12;
-			result->year -= 1;
-			repeat = true;
-		} else if (MONTH28(result) && result->day > 28){
-			result->month += 1;
-			result->day -= 28;
-			repeat = true;
-		} else if (MONTH29(result) && result->day > 29){
-			result->month += 1;
-			result->day -= 29;
-			repeat = true;
-		} else if (MONTH30(result) && result->day > 30){
-			result->month += 1;
-			result->day -= 30;
-			repeat = true;
-		} else if (result->day > 31){
-			result->month += 1;
-			result->day -= 31;
-			repeat = true;
-		} else if (result->day < 1){
-			if (MONTH28L(result) && result->day > 28){
-				result->month -= 1;
-				result->day += 28;
-			} else if (MONTH29L(result) && result->day > 29){
-				result->month -= 1;
-				result->day += 29;
-			} else if (MONTH30L(result) && result->day > 30){
-				result->month -= 1;
-				result->day += 30;
-			} else {
-				result->month -= 1;
-				result->day += 31;
-			}
-			repeat = true;
-		} else if (result->hour >= 24){
-			result->day += 1;
-			result->hour -= 24;
-			repeat = true;
-		} else if (result->hour < 0){
-			result->day -= 1;
-			result->hour += 24;
-			repeat = true;
-		} else if (result->minute >= 60){
-			result->hour += 1;
-			result->minute -= 60;
-			repeat = true;
-		} else if (result->minute < 0){
-			result->hour -= 1;
-			result->minute += 60;
-			repeat = true;
-		} else if (result->second >= 60){
-			result->minute += 1;
-			result->second -= 60;
-			repeat = true;
-		} else if (result->second < 0){
-			result->minute -= 1;
-			result->second += 60;
-			repeat = true;
-		} else if (result->millisecond >= 1000){
-			result->second += 1;
-			result->millisecond -= 1000;
-			repeat = true;
-		} else if (result->millisecond < 0){
-			result->second -= 1;
-			result->millisecond += 1000;
-			repeat = true;
-		} else {
-			repeat = false;
-		}
-	}
-}
+#include "macros_date_to_days.h"
 
 static void normalize_dayTimeDuration(DateTimeStamp *result){
 	result->second += result->millisecond / 1000;
@@ -147,54 +57,6 @@ static void normalize_dayTimeDuration(DateTimeStamp *result){
 }
 
 
-static void transform_date_match(char *lexical, regmatch_t matches[14], DateTimeStamp* result){
-	char tmp[5];
-	if (matches[1].rm_so >= 0){
-		memcpy(tmp, lexical+matches[1].rm_so, 4);
-		tmp[4] = '\0';
-		result->year = atoi(tmp);
-	} else result->year=0;
-	if (matches[2].rm_so >= 0){
-		memcpy(tmp, lexical+matches[2].rm_so, 2);
-		tmp[2] = '\0';
-		result->month = atoi(tmp);
-	} else result->month=0;
-	if (matches[3].rm_so >= 0){
-		memcpy(tmp, lexical+matches[3].rm_so, 2);
-		tmp[2] = '\0';
-		result->day = atoi(tmp);
-	} else result->day=0;
-	result->hour = 0;
-	result->minute = 0;
-	result->second = 0;
-	result->millisecond = 0;
-	result->timezone_minute=0;
-	if (matches[5].rm_so >= 0) {//Z (zero)
-		result->no_timezone_data = false;
-	} else if (matches[6].rm_so >= 0){
-		result->no_timezone_data = false;
-		memcpy(tmp, lexical+matches[7].rm_so, 2); //hours
-		tmp[2] = '\0';
-		result->timezone_minute = 60*atoi(tmp);
-		memcpy(tmp, lexical+matches[8].rm_so, 2); //minutes
-		tmp[2] = '\0';
-		result->timezone_minute += atoi(tmp);
-		if (lexical[matches[6].rm_so] == '-') {
-			result->timezone_minute = - result->timezone_minute;
-		} else {// == '+'
-		}
-	} else {
-		result->no_timezone_data = true;
-	}
-}
-
-/**
- */
-static size_t get_match_length(regmatch_t match){
-	return match.rm_eo - match.rm_so;
-}
-
-
 bool check_is_date(Environment *env, CLIPSValue val, DateTimeStamp *result){
 	int err;
 	char *datatype, *lexical;
@@ -224,62 +86,6 @@ bool check_is_date(Environment *env, CLIPSValue val, DateTimeStamp *result){
 	return true;
 }
 
-static void transform_dateTimeStamp_match(
-		char *lexical, regmatch_t matches[14],
-	       	DateTimeStamp* result)
-{
-	char tmp[5];
-	int year, month, day, hour, minute, second, millisecond;
-	if (matches[1].rm_so >= 0){
-		memcpy(tmp, lexical+matches[1].rm_so, 4);
-		tmp[4] = '\0';
-		result->year = atoi(tmp);
-	} else result->year=0;
-	if (matches[2].rm_so >= 0){
-		memcpy(tmp, lexical+matches[2].rm_so, 2);
-		tmp[2] = '\0';
-		result->month = atoi(tmp);
-	} else result->month=0;
-	if (matches[3].rm_so >= 0){
-		memcpy(tmp, lexical+matches[3].rm_so, 2);
-		tmp[2] = '\0';
-		result->day = atoi(tmp);
-	} else result->day=0;
-	if (matches[4].rm_so >= 0){
-		memcpy(tmp, lexical+matches[4].rm_so, 2);
-		tmp[2] = '\0';
-		result->hour = atoi(tmp);
-	} else result->hour=0;
-	if (matches[5].rm_so >= 0){
-		memcpy(tmp, lexical+matches[5].rm_so, 2);
-		tmp[2] = '\0';
-		result->minute = atoi(tmp);
-	} else result->minute=0;
-	if (matches[6].rm_so >= 0){
-		memcpy(tmp, lexical+matches[6].rm_so, 2);
-		tmp[2] = '\0';
-		result->second = atoi(tmp);
-	} else result->second=0;
-	if (matches[9].rm_so >= 0){
-		tmp[0] = lexical[matches[9].rm_so];
-		tmp[1] = '\0';
-		result->millisecond = 100*atoi(tmp);
-	} else result->millisecond=0;
-	result->timezone_minute=0;
-	if (matches[10].rm_so >= 0) {//Z (zero)
-	} else if (matches[11].rm_so >= 0){
-		memcpy(tmp, lexical+matches[12].rm_so, 2); //hours
-		tmp[2] = '\0';
-		result->timezone_minute = 60*atoi(tmp);
-		memcpy(tmp, lexical+matches[13].rm_so, 2); //minutes
-		tmp[2] = '\0';
-		result->timezone_minute += atoi(tmp);
-		if (lexical[matches[11].rm_so] == '-') {
-			result->timezone_minute = - result->timezone_minute;
-		} else {// == '+'
-		}
-	}
-}
 
 bool check_is_dateTime(Environment *env, CLIPSValue val, DateTimeStamp *result){
 	int err;
@@ -287,10 +93,10 @@ bool check_is_dateTime(Environment *env, CLIPSValue val, DateTimeStamp *result){
 	CRIFITimeData *data = LoadingCRIFITimeData(env);
 	regmatch_t matches[14];
 
-	if (val.header->type != STRING_TYPE){
+	datatype = lexeme_extract_datatype(env, val.lexemeValue);
+	if (datatype == NULL){
 		return false;
 	}
-	datatype = lexeme_extract_datatype(env, val.lexemeValue);
 	if (0!=strcmp(datatype, _XS_dateTime_)){
 		free(datatype);
 		return false;
@@ -339,57 +145,6 @@ bool check_is_dateTimeStamp(Environment *env, CLIPSValue val, DateTimeStamp *res
 	return true;
 }
 
-static void transform_time_match(char *lexical,
-		regmatch_t matches[MATCHESSIZETIME],
-		DateTimeStamp* result){
-	size_t l;
-	char tmp[5] = {'\0', '\0', '\0', '\0', '\0'};
-	if (lexical == NULL){return;}
-	result->year=0;
-	result->month=0;
-	result->day=0;
-	if (matches[1].rm_so >= 0){
-		memcpy(tmp, lexical+matches[1].rm_so, 2);
-		tmp[2] = '\0';
-		result->hour = atoi(tmp);
-	} else result->hour=0;
-	if (matches[2].rm_so >= 0){
-		memcpy(tmp, lexical+matches[2].rm_so, 2);
-		tmp[2] = '\0';
-		result->minute = atoi(tmp);
-	} else result->minute=0;
-	if (matches[3].rm_so >= 0){
-		memcpy(tmp, lexical+matches[3].rm_so, 2);
-		tmp[2] = '\0';
-		result->second = atoi(tmp);
-	} else result->second=0;
-	if (matches[4].rm_so >= 0){
-		tmp[0] = lexical[matches[4].rm_so];
-		tmp[1] = '\0';
-		result->millisecond = 100*atoi(tmp);
-	} else result->millisecond=0;
-
-	if (matches[7].rm_so >= 0){
-		//this is the Z. im not sure for what z means
-		result->timezone_minute = 0;
-	} else if (matches[8].rm_so >= 0){
-		result->timezone_minute = 0;
-		l = get_match_length(matches[9]);
-		memcpy(tmp, lexical+matches[9].rm_so, l); //hours
-		tmp[l] = '\0';
-		result->timezone_minute = 60*atoi(tmp);
-		l = get_match_length(matches[10]);
-		memcpy(tmp, lexical+matches[10].rm_so, l); //minutes
-		tmp[l] = '\0';
-		result->timezone_minute += atoi(tmp);
-		if (lexical[matches[8].rm_so] == '-') {
-			result->timezone_minute = - result->timezone_minute;
-		} else {// == '+'
-		}
-	} else {
-		result->timezone_minute = 0;
-	}
-}
 
 bool check_is_time(Environment *env, CLIPSValue val, DateTimeStamp *result){
 	int err;
@@ -420,75 +175,6 @@ bool check_is_time(Environment *env, CLIPSValue val, DateTimeStamp *result){
 	return true;
 }
 
-
-static void transform_yearMonthDuration_match(char *lexical, regmatch_t matches[14], YearMonthDuration* result){
-	char tmp[22];
-	size_t l;
-	//"^P([0-9]+Y)?([0-9]+M)?$",
-	if (matches[1].rm_so >= 0){ //there is a '-' as preamble
-		result->is_negative_duration = true;
-	} else result->is_negative_duration = false;
-	if (matches[2].rm_so >= 0){
-		l = matches[2].rm_eo - matches[2].rm_so;
-		memcpy(tmp, lexical+matches[2].rm_so, l);
-		tmp[l] = '\0';
-		result->year = atoi(tmp);
-	} else result->year=0;
-	if (matches[3].rm_so >= 0){
-		l = matches[3].rm_eo - matches[3].rm_so;
-		memcpy(tmp, lexical+matches[3].rm_so, l);
-		tmp[l] = '\0';
-		result->month = atoi(tmp);
-	} else result->month=0;
-}
-
-static void transform_dayTimeDuration_match(char *lexical, regmatch_t matches[14], DateTimeStamp* result){
-	//"^P([0-9]+D)?(T([0-9]+H)?([0-9]+M)?([0-9]+S)?)?$",
-	char tmp[22];
-	size_t l;
-	if (matches[1].rm_so >= 0){ //there is a '-' as preamble
-		result->is_negative_duration = true;
-	} else result->is_negative_duration = false;
-	result->year=0;
-	result->month=0;
-	if (matches[2].rm_so >= 0){
-		l = matches[2].rm_eo - matches[2].rm_so;
-		memcpy(tmp, lexical+matches[2].rm_so, l);
-		tmp[l] = '\0';
-		result->day = atoi(tmp);
-	} else result->day=0;
-	if (matches[4].rm_so >= 0){
-		l = matches[4].rm_eo - matches[4].rm_so;
-		memcpy(tmp, lexical+matches[4].rm_so, l);
-		tmp[l] = '\0';
-		result->hour = atoi(tmp);
-	} else result->hour=0;
-	if (matches[5].rm_so >= 0){
-		l = matches[5].rm_eo - matches[5].rm_so;
-		memcpy(tmp, lexical+matches[5].rm_so, l);
-		tmp[l] = '\0';
-		result->minute = atoi(tmp);
-	} else result->minute=0;
-	if (matches[6].rm_so >= 0){
-		l = matches[6].rm_eo - matches[6].rm_so;
-		memcpy(tmp, lexical+matches[6].rm_so, l);
-		tmp[l] = '\0';
-		result->second = atoi(tmp);
-	} else result->second=0;
-	if (matches[7].rm_so >= 0){
-		l = matches[8].rm_eo - matches[8].rm_so;
-		memcpy(tmp, lexical+matches[8].rm_so, l);
-		tmp[l] = '\0';
-		if (l==1){
-			result->millisecond = 100*atoi(tmp);
-		} else if (l==2){
-			result->millisecond = 10*atoi(tmp);
-		} else { //l==3
-			result->millisecond = atoi(tmp);
-		}
-	} else result->millisecond=0;
-	result->timezone_minute=0;
-}
 
 bool check_is_dayTimeDuration(Environment *env, CLIPSValue val, DateTimeStamp *result){
 	int err;
@@ -631,18 +317,6 @@ YearMonthDuration subtract_yearMonthDuration(YearMonthDuration val1, YearMonthDu
 	return add_yearMonthDuration(val1, val2);
 }
 
-YearMonthDuration multiply_yearMonthDuration(YearMonthDuration dur, float mult){
-	YearMonthDuration ret;
-	float months;
-	long lmonths;
-	months = (12*dur.year) + dur.month;
-	months *= mult;
-	lmonths = lround(months);
-	ret.year = lmonths / 12;
-	ret.month = lmonths % 12;
-	ret.is_negative_duration = dur.is_negative_duration;
-	return ret;
-}
 
 YearMonthDuration divide_yearMonthDuration(YearMonthDuration dur, float mult){
 	YearMonthDuration ret;
@@ -673,28 +347,6 @@ NumericValue divide_yearMonthDuration_by_yearMonthDuration(YearMonthDuration dur
 	return ret;
 }
 
-DateTimeStamp subtract_dayTimeDurations(DateTimeStamp dur1, DateTimeStamp dur2){
-	dur2.is_negative_duration = !dur2.is_negative_duration;
-	return add_dayTimeDurations(dur1, dur2);
-}
-
-
-DateTimeStamp add_dayTimeDurations(DateTimeStamp dur1, DateTimeStamp dur2){
-	if (dur1.is_negative_duration != dur2.is_negative_duration){
-		dur1.day -= dur2.day;
-		dur1.hour -= dur2.hour;
-		dur1.minute -= dur2.minute;
-		dur1.second -= dur2.second;
-		dur1.millisecond -= dur2.millisecond;
-	} else {
-		dur1.day += dur2.day;
-		dur1.hour += dur2.hour;
-		dur1.minute += dur2.minute;
-		dur1.second += dur2.second;
-		dur1.millisecond += dur2.millisecond;
-	}
-	return dur1;
-}
 
 /**
  * This function has to consider precision of multiplication to get precision
@@ -749,10 +401,6 @@ DateTimeStamp multiply_dayTimeDuration(DateTimeStamp dur, float mult){
 	return dur;
 }
 
-DateTimeStamp divide_dayTimeDuration(DateTimeStamp dur, float mult){
-	float q = 1/mult;
-	return multiply_dayTimeDuration(dur, q);
-}
 
 NumericValue divide_dayTimeDuration_by_dayTimeDuration(DateTimeStamp dur1, DateTimeStamp dur2){
 	NumericValue ret;
@@ -832,57 +480,6 @@ CLIPSValue crifi_create_yearMonthDuration(Environment *env, YearMonthDuration va
 	return result;
 }
 
-/**
- * works only correct in month 12
- */
-static void transform_year_to_days(DateTimeStamp *result, int target_year){
-	while (result->year > target_year) {
-		if (LEAPYEAR(result)) {
-			result->day += 366;
-		} else {
-			result->day += 365;
-		}
-		result->year--;
-	}
-}
-
-static void transform_day_to_month(DateTimeStamp *result, int target_month){
-	while (result->month < target_month){
-		if (MONTH28(result)){
-			result->month += 1;
-			result->day -= 28;
-		} else if (MONTH29(result)){
-			result->month += 1;
-			result->day -= 29;
-		} else if (MONTH30(result)){
-			result->month += 1;
-			result->day -= 30;
-		} else {
-			result->month += 1;
-			result->day -= 31;
-		}
-	}
-}
-
-DateTimeStamp subtract_dateTime(DateTimeStamp val1, DateTimeStamp val2){
-	DateTimeStamp diff;
-	transform_day_to_month(&val1, 12);
-	transform_day_to_month(&val2, 12);
-	if (val1.year > val2.year) {
-		transform_year_to_days(&val1, val2.year);
-	} else {
-		transform_year_to_days(&val2, val1.year);
-	}
-	diff.is_negative_duration = false;
-	diff.day = val1.day - val2.day;
-	diff.hour = val1.hour - val2.hour;
-	diff.minute = val1.minute - val2.minute - val1.timezone_minute + val2.timezone_minute;
-	diff.second = val1.second - val2.second;
-	diff.millisecond = val1.millisecond - val2.millisecond;
-	normalize_dayTimeDuration(&diff);
-	return diff;
-}
-
 
 
 DateTimeStamp add_yearMonthDuration_to_dateTime(DateTimeStamp time, YearMonthDuration dur){
@@ -897,6 +494,7 @@ DateTimeStamp add_yearMonthDuration_to_dateTime(DateTimeStamp time, YearMonthDur
 	return time;
 }
 
+/*
 DateTimeStamp add_dayTimeDuration_to_dateTime(DateTimeStamp time, DateTimeStamp dur){
 	if (dur.is_negative_duration){
 		time.day -= dur.day;
@@ -916,15 +514,17 @@ DateTimeStamp add_dayTimeDuration_to_dateTime(DateTimeStamp time, DateTimeStamp 
 	return time;
 }
 
+DateTimeStamp subtract_dayTimeDuration_from_dateTime(DateTimeStamp time, DateTimeStamp dur){
+	dur.is_negative_duration = !dur.is_negative_duration;
+	return add_dayTimeDuration_to_dateTime(time, dur);
+}
+*/
+
 DateTimeStamp subtract_yearMonthDuration_from_dateTime(DateTimeStamp time, YearMonthDuration dur){
 	dur.is_negative_duration = !dur.is_negative_duration;
 	return add_yearMonthDuration_to_dateTime(time, dur);
 }
 
-DateTimeStamp subtract_dayTimeDuration_from_dateTime(DateTimeStamp time, DateTimeStamp dur){
-	dur.is_negative_duration = !dur.is_negative_duration;
-	return add_dayTimeDuration_to_dateTime(time, dur);
-}
 
 
 CLIPSValue crifi_create_dateTime(Environment *env, DateTimeStamp time){

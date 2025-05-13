@@ -10,19 +10,11 @@
 		out->voidValue = VoidConstant(env);\
 		return;
 
-void rif_is_literal_date(Environment *env, UDFContext *udfc, UDFValue *out){
-	bool truth;
-	bool invert = *(bool*) udfc->context;
-	UDFValue udfval;
-	CLIPSValue clipsval;
-	if (!UDFFirstArgument(udfc, STRING_BIT, &udfval)){
-		RETURNFAIL("Argument error for is-literal-date.");
-	}
-	clipsval.value = udfval.value;
-	truth = check_is_date(env, clipsval, NULL);
-	if (invert) truth = !truth;
-	out->lexemeValue = CreateBoolean(env, truth);
-}
+
+typedef bool TimeCast(DateTimeStamp *time);
+typedef void DurationCast(CrifiDuration *result);
+
+static int rif_add_duration_to_time(Environment *env, UDFContext *udfc, UDFValue *out, TimeCast *time_cast, DurationCast *duration_cast, bool subtract);
 
 
 void rif_is_literal_dateTime(Environment *env, UDFContext *udfc, UDFValue *out){
@@ -30,47 +22,97 @@ void rif_is_literal_dateTime(Environment *env, UDFContext *udfc, UDFValue *out){
 	bool invert = *(bool*) udfc->context;
 	UDFValue udfval;
 	CLIPSValue clipsval;
+	DateTimeStamp result;
 	if (!UDFFirstArgument(udfc, STRING_BIT, &udfval)){
 		RETURNFAIL("Argument error for is-literal-date.");
 	}
 	clipsval.value = udfval.value;
-	DateTimeStamp tmp;
-	truth = check_is_dateTime(env, clipsval, NULL);
-	if (invert) truth = !truth;
-	out->lexemeValue = CreateBoolean(env, truth);
-}
-
-
-void rif_is_literal_dateTimeStamp(Environment *env, UDFContext *udfc, UDFValue *out){
-	bool truth;
-	bool invert = *(bool*) udfc->context;
-	UDFValue udfval;
-	CLIPSValue clipsval;
-	if (!UDFFirstArgument(udfc, STRING_BIT, &udfval)){
-		RETURNFAIL("Argument error for is-literal-date.");
+	truth = crifi_time_clips_to_time(env, &clipsval, &result);
+	if (!truth) {
+		out->lexemeValue = CreateBoolean(env, invert);
+		return;
+	} else if (invert){
+		out->lexemeValue = CreateBoolean(env, false);
+		return;
 	}
-	clipsval.value = udfval.value;
-	truth = check_is_dateTimeStamp(env, clipsval, NULL);
+	switch (result.type){
+		case CRIFI_TIME_DATETIMESTAMP_DATETIME:
+		case CRIFI_TIME_DATETIMESTAMP_DATE:
+			truth = true;
+			break;
+		case CRIFI_TIME_DATETIMESTAMP_TIME:
+		case CRIFI_TIME_DATETIMESTAMP_UNKNOWN_TYPE:
+		case CRIFI_TIME_DATETIMESTAMP_GYEARMONTH:
+		case CRIFI_TIME_DATETIMESTAMP_GYEAR:
+		case CRIFI_TIME_DATETIMESTAMP_GMONTHDAY:
+		case CRIFI_TIME_DATETIMESTAMP_GMONTH:
+		case CRIFI_TIME_DATETIMESTAMP_GDAY:
+		default:
+			truth = false;
+	}
+
+	//truth = check_is_date(env, clipsval, NULL);
 	if (invert) truth = !truth;
 	out->lexemeValue = CreateBoolean(env, truth);
 }
-
 
 void rif_is_literal_time(Environment *env, UDFContext *udfc, UDFValue *out){
 	bool truth;
 	bool invert = *(bool*) udfc->context;
 	UDFValue udfval;
 	CLIPSValue clipsval;
+	DateTimeStamp result;
 	if (!UDFFirstArgument(udfc, STRING_BIT, &udfval)){
 		RETURNFAIL("Argument error for is-literal-date.");
 	}
 	clipsval.value = udfval.value;
-	truth = check_is_time(env, clipsval, NULL);
+	truth = crifi_time_clips_to_time(env, &clipsval, &result);
+	if (!truth) {
+		out->lexemeValue = CreateBoolean(env, invert);
+		return;
+	} else if (invert){
+		out->lexemeValue = CreateBoolean(env, false);
+		return;
+	}
+	switch (result.type){
+		case CRIFI_TIME_DATETIMESTAMP_DATETIME:
+		case CRIFI_TIME_DATETIMESTAMP_TIME:
+			truth = true;
+			break;
+		case CRIFI_TIME_DATETIMESTAMP_DATE:
+		case CRIFI_TIME_DATETIMESTAMP_UNKNOWN_TYPE:
+		case CRIFI_TIME_DATETIMESTAMP_GYEARMONTH:
+		case CRIFI_TIME_DATETIMESTAMP_GYEAR:
+		case CRIFI_TIME_DATETIMESTAMP_GMONTHDAY:
+		case CRIFI_TIME_DATETIMESTAMP_GMONTH:
+		case CRIFI_TIME_DATETIMESTAMP_GDAY:
+		default:
+			truth = false;
+	}
+
+	//truth = check_is_date(env, clipsval, NULL);
 	if (invert) truth = !truth;
 	out->lexemeValue = CreateBoolean(env, truth);
 }
 
 
+void rif_is_literal_duration(Environment *env, UDFContext *udfc, UDFValue *out){
+	bool truth;
+	bool invert = *(bool*) udfc->context;
+	UDFValue udfval;
+	CLIPSValue clipsval;
+	if (!UDFFirstArgument(udfc, STRING_BIT, &udfval)){
+		RETURNFAIL("Argument error for is-literal-date.");
+	}
+	clipsval.value = udfval.value;
+
+	truth = crifi_time_clips_to_duration(env, &clipsval, NULL);
+	if (invert) truth = !truth;
+	out->lexemeValue = CreateBoolean(env, truth);
+}
+
+
+/*
 void rif_is_literal_dayTimeDuration(Environment *env, UDFContext *udfc, UDFValue *out){
 	bool truth;
 	bool invert = *(bool*) udfc->context;
@@ -99,6 +141,7 @@ void rif_is_literal_yearMonthDuration(Environment *env, UDFContext *udfc, UDFVal
 	if (invert) truth = !truth;
 	out->lexemeValue = CreateBoolean(env, truth);
 }
+*/
 
 
 void rif_year_from_dateTime(Environment *env, UDFContext *udfc, UDFValue *out){
@@ -109,7 +152,8 @@ void rif_year_from_dateTime(Environment *env, UDFContext *udfc, UDFValue *out){
 	}
 	clipsval.value = udfval.value;
 	DateTimeStamp tmp;
-	if(!check_is_dateTime(env, clipsval, &tmp)){
+	//if(!check_is_dateTime(env, clipsval, &tmp)){
+	if(!crifi_time_clips_to_time(env, &clipsval, &tmp)){
 		RETURNFAIL("Missing Guard. year-from-dateTime "
 				"expects xs:dateTime");
 	}
@@ -126,7 +170,8 @@ void rif_month_from_dateTime(Environment *env, UDFContext *udfc, UDFValue *out){
 	}
 	clipsval.value = udfval.value;
 	DateTimeStamp tmp;
-	if(!check_is_dateTime(env, clipsval, &tmp)){
+	//if(!check_is_dateTime(env, clipsval, &tmp)){
+	if(!crifi_time_clips_to_time(env, &clipsval, &tmp)){
 		RETURNFAIL("Missing Guard. year-from-dateTime "
 				"expects xs:dateTime");
 	}
@@ -143,7 +188,8 @@ void rif_day_from_dateTime(Environment *env, UDFContext *udfc, UDFValue *out){
 	}
 	clipsval.value = udfval.value;
 	DateTimeStamp tmp;
-	if(!check_is_dateTime(env, clipsval, &tmp)){
+	//if(!check_is_dateTime(env, clipsval, &tmp)){
+	if(!crifi_time_clips_to_time(env, &clipsval, &tmp)){
 		RETURNFAIL("Missing Guard. year-from-dateTime "
 				"expects xs:dateTime");
 	}
@@ -160,7 +206,8 @@ void rif_hours_from_dateTime(Environment *env, UDFContext *udfc, UDFValue *out){
 	}
 	clipsval.value = udfval.value;
 	DateTimeStamp tmp;
-	if(!check_is_dateTime(env, clipsval, &tmp)){
+	//if(!check_is_dateTime(env, clipsval, &tmp)){
+	if(!crifi_time_clips_to_time(env, &clipsval, &tmp)){
 		RETURNFAIL("Missing Guard. year-from-dateTime "
 				"expects xs:dateTime");
 	}
@@ -177,7 +224,8 @@ void rif_minutes_from_dateTime(Environment *env, UDFContext *udfc, UDFValue *out
 	}
 	clipsval.value = udfval.value;
 	DateTimeStamp tmp;
-	if(!check_is_dateTime(env, clipsval, &tmp)){
+	//if(!check_is_dateTime(env, clipsval, &tmp)){
+	if(!crifi_time_clips_to_time(env, &clipsval, &tmp)){
 		RETURNFAIL("Missing Guard. year-from-dateTime "
 				"expects xs:dateTime");
 	}
@@ -194,7 +242,8 @@ void rif_seconds_from_dateTime(Environment *env, UDFContext *udfc, UDFValue *out
 	}
 	clipsval.value = udfval.value;
 	DateTimeStamp tmp;
-	if(!check_is_dateTime(env, clipsval, &tmp)){
+	//if(!check_is_dateTime(env, clipsval, &tmp)){
+	if(!crifi_time_clips_to_time(env, &clipsval, &tmp)){
 		RETURNFAIL("Missing Guard. year-from-dateTime "
 				"expects xs:dateTime");
 	}
@@ -210,7 +259,8 @@ void rif_year_from_date(Environment *env, UDFContext *udfc, UDFValue *out){
 	}
 	clipsval.value = udfval.value;
 	DateTimeStamp tmp;
-	if(!check_is_date(env, clipsval, &tmp)){
+	//if(!check_is_date(env, clipsval, &tmp)){
+	if(!crifi_time_clips_to_time(env, &clipsval, &tmp)){
 		RETURNFAIL("Missing Guard. year-from-date expects xs:date");
 	}
 	clipsout = crifi_create_integer(env, tmp.year);
@@ -226,7 +276,8 @@ void rif_month_from_date(Environment *env, UDFContext *udfc, UDFValue *out){
 	}
 	clipsval.value = udfval.value;
 	DateTimeStamp tmp;
-	if(!check_is_date(env, clipsval, &tmp)){
+	//if(!check_is_date(env, clipsval, &tmp)){
+	if(!crifi_time_clips_to_time(env, &clipsval, &tmp)){
 		RETURNFAIL("Missing Guard. year-from-date expects xs:date");
 	}
 	clipsout = crifi_create_integer(env, tmp.month);
@@ -242,7 +293,8 @@ void rif_day_from_date(Environment *env, UDFContext *udfc, UDFValue *out){
 	}
 	clipsval.value = udfval.value;
 	DateTimeStamp tmp;
-	if(!check_is_date(env, clipsval, &tmp)){
+	//if(!check_is_date(env, clipsval, &tmp)){
+	if(!crifi_time_clips_to_time(env, &clipsval, &tmp)){
 		RETURNFAIL("Missing Guard. year-from-date expects xs:date");
 	}
 	clipsout = crifi_create_integer(env, tmp.day);
@@ -258,7 +310,8 @@ void rif_hours_from_time(Environment *env, UDFContext *udfc, UDFValue *out){
 	}
 	clipsval.value = udfval.value;
 	DateTimeStamp tmp;
-	if(!check_is_time(env, clipsval, &tmp)){
+	//if(!check_is_time(env, clipsval, &tmp)){
+	if(!crifi_time_clips_to_time(env, &clipsval, &tmp)){
 		RETURNFAIL("Missing Guard. year-from-date expects xs:date");
 	}
 	clipsout = crifi_create_integer(env, tmp.hour);
@@ -274,7 +327,8 @@ void rif_minutes_from_time(Environment *env, UDFContext *udfc, UDFValue *out){
 	}
 	clipsval.value = udfval.value;
 	DateTimeStamp tmp;
-	if(!check_is_time(env, clipsval, &tmp)){
+	//if(!check_is_time(env, clipsval, &tmp)){
+	if(!crifi_time_clips_to_time(env, &clipsval, &tmp)){
 		RETURNFAIL("Missing Guard. year-from-date expects xs:date");
 	}
 	clipsout = crifi_create_integer(env, tmp.minute);
@@ -290,7 +344,8 @@ void rif_seconds_from_time(Environment *env, UDFContext *udfc, UDFValue *out){
 	}
 	clipsval.value = udfval.value;
 	DateTimeStamp tmp;
-	if(!check_is_time(env, clipsval, &tmp)){
+	//if(!check_is_time(env, clipsval, &tmp)){
+	if(!crifi_time_clips_to_time(env, &clipsval, &tmp)){
 		RETURNFAIL("Missing Guard. year-from-date expects xs:date");
 	}
 	clipsout = crifi_create_integer(env, tmp.second);
@@ -301,53 +356,20 @@ void rif_seconds_from_time(Environment *env, UDFContext *udfc, UDFValue *out){
 void rif_timezone_from_dateTime(Environment *env, UDFContext *udfc, UDFValue *out){
 	UDFValue udfval;
 	CLIPSValue clipsval, clipsout;
+	CrifiDuration dur;
 	if (!UDFFirstArgument(udfc, STRING_BIT, &udfval)){
 		RETURNFAIL("Argument error for is-literal-date.");
 	}
 	clipsval.value = udfval.value;
 	DateTimeStamp tmp;
-	if(!check_is_dateTime(env, clipsval, &tmp)){
+	
+	if(!crifi_time_clips_to_time(env, &clipsval, &tmp)){
 		RETURNFAIL("Missing Guard. year-from-dateTime "
 				"expects xs:dateTime");
 	}
-	clipsout = crifi_create_dayTimeDuration(env, false, 0, 0,
-			tmp.timezone_minute, 0, 0);
-	out->value = clipsout.value;
-}
+	dur = crifi_new_dayTimeDuration(false, 0, 0, tmp.timezone_minute, 0, 0);
 
-
-void rif_timezone_from_date(Environment *env, UDFContext *udfc, UDFValue *out){
-	UDFValue udfval;
-	CLIPSValue clipsval, clipsout;
-	if (!UDFFirstArgument(udfc, STRING_BIT, &udfval)){
-		RETURNFAIL("Argument error for is-literal-date.");
-	}
-	clipsval.value = udfval.value;
-	DateTimeStamp tmp;
-	if(!check_is_date(env, clipsval, &tmp)){
-		RETURNFAIL("Missing Guard. timezone-from-date "
-				"expects xs:date");
-	}
-	clipsout = crifi_create_dayTimeDuration(env, false, 0, 0,
-			tmp.timezone_minute, 0, 0);
-	out->value = clipsout.value;
-}
-
-
-void rif_timezone_from_time(Environment *env, UDFContext *udfc, UDFValue *out){
-	UDFValue udfval;
-	CLIPSValue clipsval, clipsout;
-	if (!UDFFirstArgument(udfc, STRING_BIT, &udfval)){
-		RETURNFAIL("Argument error for is-literal-date.");
-	}
-	clipsval.value = udfval.value;
-	DateTimeStamp tmp;
-	if(!check_is_time(env, clipsval, &tmp)){
-		RETURNFAIL("Missing Guard. timezone-from-time "
-				"expects xs:date");
-	}
-	clipsout = crifi_create_dayTimeDuration(env, false, 0, 0,
-			tmp.timezone_minute, 0, 0);
+	crifi_time_duration_to_clips(env, &dur, &clipsout);
 	out->value = clipsout.value;
 }
 
@@ -356,18 +378,19 @@ void rif_years_from_duration(Environment *env, UDFContext *udfc, UDFValue *out){
 	YearMonthDuration tmp;
 	UDFValue udfval;
 	CLIPSValue clipsval, clipsout;
+	CrifiDuration dur;
 	if (!UDFFirstArgument(udfc, STRING_BIT, &udfval)){
 		RETURNFAIL("Argument error for is-literal-date.");
 	}
 	clipsval.value = udfval.value;
-	if(!check_is_yearMonthDuration(env, clipsval, &tmp)){
+	if(!crifi_time_clips_to_duration(env, &clipsval, &dur)){
 		RETURNFAIL("Missing Guard. years-from-duration "
 				"expects xs:yearMonthDuration");
 	}
-	if (tmp.is_negative_duration){
-		clipsout = crifi_create_integer(env, -tmp.year);
+	if (dur.is_negative_duration){
+		clipsout = crifi_create_integer(env, -dur.year);
 	} else {
-		clipsout = crifi_create_integer(env, tmp.year);
+		clipsout = crifi_create_integer(env, dur.year);
 	}
 	out->value = clipsout.value;
 }
@@ -408,7 +431,7 @@ void rif_days_from_duration(Environment *env, UDFContext *udfc, UDFValue *out){
 	}
 	if (tmp.is_negative_duration){
 		clipsout = crifi_create_integer(env, -tmp.day);
-	}else {
+	} else {
 		clipsout = crifi_create_integer(env, tmp.day);
 	}
 	out->value = clipsout.value;
@@ -490,6 +513,7 @@ void rif_seconds_from_duration(Environment *env, UDFContext *udfc, UDFValue *out
 
 void rif_subtract_dateTimes(Environment *env, UDFContext *udfc, UDFValue *out){
 	DateTimeStamp tmp1, tmp2, outtmp;
+	CrifiDuration dur;
 	UDFValue udfval1, udfval2;
 	CLIPSValue clipsval1, clipsval2, clipsout;
 	if (!UDFFirstArgument(udfc, STRING_BIT, &udfval1)){
@@ -500,23 +524,29 @@ void rif_subtract_dateTimes(Environment *env, UDFContext *udfc, UDFValue *out){
 	}
 	clipsval1.value = udfval1.value;
 	clipsval2.value = udfval2.value;
-	if(!check_is_dateTime(env, clipsval1, &tmp1)){
+	//if(!check_is_dateTime(env, clipsval1, &tmp1)){
+	if(!crifi_time_clips_to_time(env, &clipsval1, &tmp1)){
 		RETURNFAIL("Missing Guard. subtract-dateTimes");
 	}
-	if(!check_is_dateTime(env, clipsval2, &tmp2)){
+	if(!crifi_time_cast_as_dateTime(&tmp1)){
 		RETURNFAIL("Missing Guard. subtract-dateTimes");
 	}
-	outtmp = subtract_dateTime(tmp1, tmp2);
-	clipsout = crifi_create_dayTimeDuration(env,
-			outtmp.is_negative_duration,
-			outtmp.day, outtmp.hour, outtmp.minute,
-			outtmp.second, outtmp.millisecond);
+	//if(!check_is_dateTime(env, clipsval2, &tmp2)){
+	if(!crifi_time_clips_to_time(env, &clipsval2, &tmp2)){
+		RETURNFAIL("Missing Guard. subtract-dateTimes");
+	}
+	if(!crifi_time_cast_as_dateTime(&tmp2)){
+		RETURNFAIL("Missing Guard. subtract-dateTimes");
+	}
+	dur = subtract_dateTime(tmp1, tmp2);
+	crifi_time_duration_to_clips(env, &dur, &clipsout);
 	out->value = clipsout.value;
 }
 
 
 void rif_subtract_dates(Environment *env, UDFContext *udfc, UDFValue *out){
 	DateTimeStamp tmp1, tmp2, outtmp;
+	CrifiDuration dur;
 	UDFValue udfval1, udfval2;
 	CLIPSValue clipsval1, clipsval2, clipsout;
 	if (!UDFFirstArgument(udfc, STRING_BIT, &udfval1)){
@@ -527,18 +557,22 @@ void rif_subtract_dates(Environment *env, UDFContext *udfc, UDFValue *out){
 	}
 	clipsval1.value = udfval1.value;
 	clipsval2.value = udfval2.value;
-	if(!check_is_date(env, clipsval1, &tmp1)){
+	//if(!check_is_date(env, clipsval1, &tmp1)){
+	if(!crifi_time_clips_to_time(env, &clipsval1, &tmp1)){
 		RETURNFAIL("Missing Guard. subtract-dateTimes");
 	}
-	if(!check_is_date(env, clipsval2, &tmp2)){
+	if(!crifi_time_cast_as_date(&tmp1)){
 		RETURNFAIL("Missing Guard. subtract-dateTimes");
 	}
-	tmp1.timezone_minute = 0;
-	tmp2.timezone_minute = 0;
-	outtmp = subtract_dateTime(tmp1, tmp2);
-	clipsout = crifi_create_dayTimeDuration(env,
-			outtmp.is_negative_duration,
-			outtmp.day, 0, 0, 0, 0);
+	//if(!check_is_date(env, clipsval2, &tmp2)){
+	if(!crifi_time_clips_to_time(env, &clipsval2, &tmp2)){
+		RETURNFAIL("Missing Guard. subtract-dateTimes");
+	}
+	if(!crifi_time_cast_as_date(&tmp2)){
+		RETURNFAIL("Missing Guard. subtract-dateTimes");
+	}
+	dur = subtract_dateTime(tmp1, tmp2);
+	crifi_time_duration_to_clips(env, &dur, &clipsout);
 	out->value = clipsout.value;
 }
 
@@ -546,6 +580,7 @@ void rif_subtract_dates(Environment *env, UDFContext *udfc, UDFValue *out){
 void rif_subtract_times(Environment *env, UDFContext *udfc, UDFValue *out){
 	DateTimeStamp tmp1, tmp2, outtmp;
 	UDFValue udfval1, udfval2;
+	CrifiDuration dur;
 	CLIPSValue clipsval1, clipsval2, clipsout;
 	if (!UDFFirstArgument(udfc, STRING_BIT, &udfval1)){
 		RETURNFAIL("Argument error for is-literal-date.");
@@ -555,23 +590,29 @@ void rif_subtract_times(Environment *env, UDFContext *udfc, UDFValue *out){
 	}
 	clipsval1.value = udfval1.value;
 	clipsval2.value = udfval2.value;
-	if(!check_is_time(env, clipsval1, &tmp1)){
+	//if(!check_is_time(env, clipsval1, &tmp1)){
+	if(!crifi_time_clips_to_time(env, &clipsval1, &tmp1)){
 		RETURNFAIL("Missing Guard. subtract-dateTimes");
 	}
-	if(!check_is_time(env, clipsval2, &tmp2)){
+	if(!crifi_time_cast_as_time(&tmp1)){
 		RETURNFAIL("Missing Guard. subtract-dateTimes");
 	}
-	outtmp = subtract_dateTime(tmp1, tmp2);
-	clipsout = crifi_create_dayTimeDuration(env,
-			outtmp.is_negative_duration,
-			outtmp.day, outtmp.hour, outtmp.minute,
-			outtmp.second, outtmp.millisecond);
+	//if(!check_is_time(env, clipsval2, &tmp2)){
+	if(!crifi_time_clips_to_time(env, &clipsval2, &tmp2)){
+		RETURNFAIL("Missing Guard. subtract-dateTimes");
+	}
+	if(!crifi_time_cast_as_time(&tmp2)){
+		RETURNFAIL("Missing Guard. subtract-dateTimes");
+	}
+	dur = subtract_dateTime(tmp1, tmp2);
+	crifi_time_duration_to_clips(env, &dur, &clipsout);
 	out->value = clipsout.value;
 }
 
 
 void rif_add_yearMonthDurations(Environment *env, UDFContext *udfc, UDFValue *out){
-	YearMonthDuration tmp1, tmp2, outtmp;
+	CrifiDuration dur1, dur2, outdur;
+	NumericValue outval;
 	UDFValue udfval1, udfval2;
 	CLIPSValue clipsval1, clipsval2, clipsout;
 	if (!UDFFirstArgument(udfc, STRING_BIT, &udfval1)){
@@ -582,14 +623,16 @@ void rif_add_yearMonthDurations(Environment *env, UDFContext *udfc, UDFValue *ou
 	}
 	clipsval1.value = udfval1.value;
 	clipsval2.value = udfval2.value;
-	if(!check_is_yearMonthDuration(env, clipsval1, &tmp1)){
+	if(!crifi_time_clips_to_duration(env, &clipsval1, &dur1)){
 		RETURNFAIL("Missing Guard. subtract-dateTimes");
 	}
-	if(!check_is_yearMonthDuration(env, clipsval2, &tmp2)){
+	if(!crifi_time_clips_to_duration(env, &clipsval2, &dur2)){
 		RETURNFAIL("Missing Guard. subtract-dateTimes");
 	}
-	outtmp = add_yearMonthDuration(tmp1, tmp2);
-	clipsout = crifi_create_yearMonthDuration(env, outtmp);
+	crifi_time_cast_as_yearMonthDuration(&dur1);
+	crifi_time_cast_as_yearMonthDuration(&dur2);
+	outdur = add_durations(dur1, dur2);
+	crifi_time_duration_to_clips(env, &outdur, &clipsout);
 	out->value = clipsout.value;
 }
 
@@ -619,7 +662,7 @@ void rif_subtract_yearMonthDurations(Environment *env, UDFContext *udfc, UDFValu
 
 
 void rif_multiply_yearMonthDuration(Environment *env, UDFContext *udfc, UDFValue *out){
-	YearMonthDuration indur, outdur;
+	CrifiDuration indur, outdur;
 	UDFValue udfdur, udfmult;
 	float months;
 	long lmonths;
@@ -633,14 +676,15 @@ void rif_multiply_yearMonthDuration(Environment *env, UDFContext *udfc, UDFValue
 	}
 	clipsdur.value = udfdur.value;
 	clipsmult.value = udfmult.value;
-	if(!check_is_yearMonthDuration(env, clipsdur, &indur)){
+	if(!crifi_time_clips_to_duration(env, &clipsdur, &indur)){
 		RETURNFAIL("Missing Guard. muliply-yearMonthDuration");
 	}
+	crifi_time_cast_as_yearMonthDuration(&indur);
 	if(!clipsvalue_as_numeric_value(env, clipsmult, &mult) && mult.t != NT_NAN){
 		RETURNFAIL("Missing Guard. muliply-yearMonthDuration");
 	}
-	outdur = multiply_yearMonthDuration(indur, nv_as_float(mult));
-	clipsout = crifi_create_yearMonthDuration(env, outdur);
+	outdur = multiply_duration(indur, nv_as_float(mult));
+	crifi_time_duration_to_clips(env, &outdur, &clipsout);
 	out->value = clipsout.value;
 }
 
@@ -698,7 +742,7 @@ void rif_divide_yearMonthDuration_by_yearMonthDuration(Environment *env, UDFCont
 
 
 void rif_add_dayTimeDurations(Environment *env, UDFContext *udfc, UDFValue *out){
-	DateTimeStamp tmp1, tmp2, outtmp;
+	CrifiDuration dur1, dur2, outdur;
 	NumericValue outval;
 	UDFValue udfval1, udfval2;
 	CLIPSValue clipsval1, clipsval2, clipsout;
@@ -710,23 +754,22 @@ void rif_add_dayTimeDurations(Environment *env, UDFContext *udfc, UDFValue *out)
 	}
 	clipsval1.value = udfval1.value;
 	clipsval2.value = udfval2.value;
-	if(!check_is_dayTimeDuration(env, clipsval1, &tmp1)){
+	if(!crifi_time_clips_to_duration(env, &clipsval1, &dur1)){
 		RETURNFAIL("Missing Guard. subtract-dateTimes");
 	}
-	if(!check_is_dayTimeDuration(env, clipsval2, &tmp2)){
+	if(!crifi_time_clips_to_duration(env, &clipsval2, &dur2)){
 		RETURNFAIL("Missing Guard. subtract-dateTimes");
 	}
-	outtmp = add_dayTimeDurations(tmp1, tmp2);
-	clipsout = crifi_create_dayTimeDuration(env,
-			outtmp.is_negative_duration,
-			outtmp.day, outtmp.hour, outtmp.minute,
-			outtmp.second, outtmp.millisecond);
+	crifi_time_cast_as_dayTimeDuration(&dur1);
+	crifi_time_cast_as_dayTimeDuration(&dur2);
+	outdur = add_durations(dur1, dur2);
+	crifi_time_duration_to_clips(env, &outdur, &clipsout);
 	out->value = clipsout.value;
 }
 
 
 void rif_subtract_dayTimeDurations(Environment *env, UDFContext *udfc, UDFValue *out){
-	DateTimeStamp tmp1, tmp2, outtmp;
+	CrifiDuration dur1, dur2, outdur;
 	NumericValue outval;
 	UDFValue udfval1, udfval2;
 	CLIPSValue clipsval1, clipsval2, clipsout;
@@ -738,23 +781,22 @@ void rif_subtract_dayTimeDurations(Environment *env, UDFContext *udfc, UDFValue 
 	}
 	clipsval1.value = udfval1.value;
 	clipsval2.value = udfval2.value;
-	if(!check_is_dayTimeDuration(env, clipsval1, &tmp1)){
+	if(!crifi_time_clips_to_duration(env, &clipsval1, &dur1)){
 		RETURNFAIL("Missing Guard. subtract-dateTimes");
 	}
-	if(!check_is_dayTimeDuration(env, clipsval2, &tmp2)){
+	if(!crifi_time_clips_to_duration(env, &clipsval2, &dur2)){
 		RETURNFAIL("Missing Guard. subtract-dateTimes");
 	}
-	outtmp = subtract_dayTimeDurations(tmp1, tmp2);
-	clipsout = crifi_create_dayTimeDuration(env,
-			outtmp.is_negative_duration,
-			outtmp.day, outtmp.hour, outtmp.minute,
-			outtmp.second, outtmp.millisecond);
+	crifi_time_cast_as_dayTimeDuration(&dur1);
+	crifi_time_cast_as_dayTimeDuration(&dur2);
+	outdur = subtract_durations(dur1, dur2);
+	crifi_time_duration_to_clips(env, &outdur, &clipsout);
 	out->value = clipsout.value;
 }
 
 
 void rif_multiply_dayTimeDuration(Environment *env, UDFContext *udfc, UDFValue *out){
-	DateTimeStamp indur, outdur;
+	CrifiDuration indur, outdur;
 	UDFValue udfdur, udfmult;
 	float months;
 	long lmonths;
@@ -768,23 +810,21 @@ void rif_multiply_dayTimeDuration(Environment *env, UDFContext *udfc, UDFValue *
 	}
 	clipsdur.value = udfdur.value;
 	clipsmult.value = udfmult.value;
-	if(!check_is_dayTimeDuration(env, clipsdur, &indur)){
+	if(!crifi_time_clips_to_duration(env, &clipsdur, &indur)){
 		RETURNFAIL("Missing Guard. muliply-yearMonthDuration");
 	}
+	crifi_time_cast_as_dayTimeDuration(&indur);
 	if(!clipsvalue_as_numeric_value(env, clipsmult, &mult) && mult.t != NT_NAN){
 		RETURNFAIL("Missing Guard. muliply-yearMonthDuration");
 	}
-	outdur = multiply_dayTimeDuration(indur, nv_as_float(mult));
-	clipsout = crifi_create_dayTimeDuration(env,
-			outdur.is_negative_duration,
-			outdur.day, outdur.hour, outdur.minute,
-			outdur.second, outdur.millisecond);
+	outdur = multiply_duration(indur, nv_as_float(mult));
+	crifi_time_duration_to_clips(env, &outdur, &clipsout);
 	out->value = clipsout.value;
 }
 
 
 void rif_divide_dayTimeDuration(Environment *env, UDFContext *udfc, UDFValue *out){
-	DateTimeStamp indur, outdur;
+	CrifiDuration indur, outdur;
 	UDFValue udfdur, udfmult;
 	float months;
 	long lmonths;
@@ -798,17 +838,15 @@ void rif_divide_dayTimeDuration(Environment *env, UDFContext *udfc, UDFValue *ou
 	}
 	clipsdur.value = udfdur.value;
 	clipsmult.value = udfmult.value;
-	if(!check_is_dayTimeDuration(env, clipsdur, &indur)){
+	if(!crifi_time_clips_to_duration(env, &clipsdur, &indur)){
 		RETURNFAIL("Missing Guard. muliply-yearMonthDuration");
 	}
+	crifi_time_cast_as_dayTimeDuration(&indur);
 	if(!clipsvalue_as_numeric_value(env, clipsmult, &mult) && mult.t != NT_NAN){
 		RETURNFAIL("Missing Guard. muliply-yearMonthDuration");
 	}
-	outdur = divide_dayTimeDuration(indur, nv_as_float(mult));
-	clipsout = crifi_create_dayTimeDuration(env,
-			outdur.is_negative_duration,
-			outdur.day, outdur.hour, outdur.minute,
-			outdur.second, outdur.millisecond);
+	outdur = divide_duration(indur, nv_as_float(mult));
+	crifi_time_duration_to_clips(env, &outdur, &clipsout);
 	out->value = clipsout.value;
 }
 
@@ -853,7 +891,8 @@ void rif_add_yearMonthDuration_to_dateTime(Environment *env, UDFContext *udfc, U
 	}
 	clipstime.value = udftime.value;
 	clipsdur.value = udfdur.value;
-	if(!check_is_dateTime(env, clipstime, &time)){
+	//if(!check_is_dateTime(env, clipstime, &time)){
+	if(!crifi_time_clips_to_time(env, &clipstime, &time)){
 		RETURNFAIL("Missing Guard. "
 				"divide-dayTimeDuration-by-dayTimeDuration");
 	}
@@ -880,7 +919,8 @@ void rif_add_yearMonthDuration_to_date(Environment *env, UDFContext *udfc, UDFVa
 	}
 	clipstime.value = udftime.value;
 	clipsdur.value = udfdur.value;
-	if(!check_is_date(env, clipstime, &time)){
+	//if(!check_is_date(env, clipstime, &time)){
+	if(!crifi_time_clips_to_time(env, &clipstime, &time)){
 		RETURNFAIL("Missing Guard. "
 				"divide-dayTimeDuration-by-dayTimeDuration");
 	}
@@ -893,83 +933,168 @@ void rif_add_yearMonthDuration_to_date(Environment *env, UDFContext *udfc, UDFVa
 	out->value = clipsout.value;
 }
 
-
-void rif_add_dayTimeDuration_to_dateTime(Environment *env, UDFContext *udfc, UDFValue *out){
-	DateTimeStamp time, dur, outval;
-	UDFValue udftime, udfdur;
-	CLIPSValue clipstime, clipsdur, clipsout;
+static int rif_add_duration_to_time(Environment *env, UDFContext *udfc, UDFValue *out, TimeCast *time_cast, DurationCast *duration_cast, bool subtract){
+	CrifiDuration dur;
+	DateTimeStamp time, outtime;
+	UDFValue udfdur, udftime;
+	CLIPSValue clipsdur, clipstime, clipsout;
 	if (!UDFFirstArgument(udfc, STRING_BIT, &udftime)){
-		RETURNFAIL("Argument error for is-literal-date.");
-	}
-	if (!UDFNextArgument(udfc, STRING_BIT, &udfdur)){
-		RETURNFAIL("Argument error for is-literal-date.");
+		return 1;
 	}
 	clipstime.value = udftime.value;
+	if(!crifi_time_clips_to_time(env, &clipstime, &time)){
+		return 2;
+	}
+	if(!time_cast(&time)){
+		return 2;
+	}
+
+	if (!UDFNextArgument(udfc, STRING_BIT, &udfdur)){
+		return 1;
+	}
 	clipsdur.value = udfdur.value;
-	if(!check_is_dateTime(env, clipstime, &time)){
-		RETURNFAIL("Missing Guard. "
-				"add-dayTimeDuration-to-dateTime");
+	if(!crifi_time_clips_to_duration(env, &clipsdur, &dur)){
+		return 2;
 	}
-	if(!check_is_dayTimeDuration(env, clipsdur, &dur)){
-		RETURNFAIL("Missing Guard. "
-				"add-dayTimeDuration-to-dateTime");
+	duration_cast(&dur);
+
+	if (subtract){
+		outtime = subtract_duration_from_time(time, dur);
+	} else {
+		outtime = add_duration_to_time(time, dur);
 	}
-	outval = add_dayTimeDuration_to_dateTime(time, dur);
-	clipsout = crifi_create_dateTime(env, outval);
+	if(!time_cast(&outtime)){
+		return 3;
+	}
+	clipsout = crifi_create_dateTime(env, outtime);
+	if(!crifi_time_time_to_clips(env, &outtime, &clipsout)){
+		return 3;
+	}
 	out->value = clipsout.value;
+	return 0;
+}
+
+
+void rif_add_dayTimeDuration_to_dateTime(Environment *env, UDFContext *udfc, UDFValue *out){
+	int err;
+	err = rif_add_duration_to_time(env, udfc, out,
+			crifi_time_cast_as_dateTime,
+			crifi_time_cast_as_dayTimeDuration,
+			false);
+	switch (err){
+		case 1:
+			RETURNFAIL("Argument error for .");
+			break;
+		case 2:
+			RETURNFAIL("Missing Guard.");
+			break;
+		case 3:
+			RETURNFAIL("Internal error: add_duration_to_time "
+					"isnt working correct.");
+			break;
+	}
 }
 
 
 void rif_add_dayTimeDuration_to_date(Environment *env, UDFContext *udfc, UDFValue *out){
-	DateTimeStamp time, dur, outval;
-	UDFValue udftime, udfdur;
-	CLIPSValue clipstime, clipsdur, clipsout;
-	if (!UDFFirstArgument(udfc, STRING_BIT, &udftime)){
-		RETURNFAIL("Argument error for is-literal-date.");
+	int err = rif_add_duration_to_time(env, udfc, out,
+			crifi_time_cast_as_date,
+			crifi_time_cast_as_dayTimeDuration,
+			false);
+	switch (err){
+		case 1:
+			RETURNFAIL("Argument error for .");
+			break;
+		case 2:
+			RETURNFAIL("Missing Guard.");
+			break;
+		case 3:
+			RETURNFAIL("Internal error: add_duration_to_time "
+					"isnt working correct.");
+			break;
 	}
-	if (!UDFNextArgument(udfc, STRING_BIT, &udfdur)){
-		RETURNFAIL("Argument error for is-literal-date.");
-	}
-	clipstime.value = udftime.value;
-	clipsdur.value = udfdur.value;
-	if(!check_is_date(env, clipstime, &time)){
-		RETURNFAIL("Missing Guard. "
-				"add-dayTimeDuration-to-date");
-	}
-	if(!check_is_dayTimeDuration(env, clipsdur, &dur)){
-		RETURNFAIL("Missing Guard. "
-				"add-dayTimeDuration-to-date");
-	}
-	outval = add_dayTimeDuration_to_dateTime(time, dur);
-	clipsout = crifi_create_date(env, outval);
-	out->value = clipsout.value;
 }
 
 
 void rif_add_dayTimeDuration_to_time(Environment *env, UDFContext *udfc, UDFValue *out){
-	DateTimeStamp time, dur, outval;
-	UDFValue udftime, udfdur;
-	CLIPSValue clipstime, clipsdur, clipsout;
-	if (!UDFFirstArgument(udfc, STRING_BIT, &udftime)){
-		RETURNFAIL("Argument error for is-literal-date.");
+	int err = rif_add_duration_to_time(env, udfc, out,
+			crifi_time_cast_as_time,
+			crifi_time_cast_as_dayTimeDuration,
+			false);
+	switch (err){
+		case 1:
+			RETURNFAIL("Argument error for .");
+			break;
+		case 2:
+			RETURNFAIL("Missing Guard.");
+			break;
+		case 3:
+			RETURNFAIL("Internal error: add_duration_to_time "
+					"isnt working correct.");
+			break;
 	}
-	if (!UDFNextArgument(udfc, STRING_BIT, &udfdur)){
-		RETURNFAIL("Argument error for is-literal-date.");
-	}
-	clipstime.value = udftime.value;
-	clipsdur.value = udfdur.value;
-	if(!check_is_time(env, clipstime, &time)){
-		RETURNFAIL("Missing Guard. "
-				"add-dayTimeDuration-to-date");
-	}
-	if(!check_is_dayTimeDuration(env, clipsdur, &dur)){
-		RETURNFAIL("Missing Guard. "
-				"add-dayTimeDuration-to-date");
-	}
-	outval = add_dayTimeDuration_to_dateTime(time, dur);
-	clipsout = crifi_create_time(env, outval);
-	out->value = clipsout.value;
 }
+
+
+void rif_subtract_dayTimeDuration_from_dateTime(Environment *env, UDFContext *udfc, UDFValue *out){
+	int err = rif_add_duration_to_time(env, udfc, out,
+			crifi_time_cast_as_dateTime,
+			crifi_time_cast_as_dayTimeDuration,
+			true);
+	switch (err){
+		case 1:
+			RETURNFAIL("Argument error for .");
+			break;
+		case 2:
+			RETURNFAIL("Missing Guard.");
+			break;
+		case 3:
+			RETURNFAIL("Internal error: add_duration_to_time "
+					"isnt working correct.");
+			break;
+	}
+}
+
+
+void rif_subtract_dayTimeDuration_from_date(Environment *env, UDFContext *udfc, UDFValue *out){
+	int err = rif_add_duration_to_time(env, udfc, out,
+			crifi_time_cast_as_date,
+			crifi_time_cast_as_dayTimeDuration,
+			true);
+	switch (err){
+		case 1:
+			RETURNFAIL("Argument error for .");
+			break;
+		case 2:
+			RETURNFAIL("Missing Guard.");
+			break;
+		case 3:
+			RETURNFAIL("Internal error: add_duration_to_time "
+					"isnt working correct.");
+			break;
+	}
+}
+
+
+void rif_subtract_dayTimeDuration_from_time(Environment *env, UDFContext *udfc, UDFValue *out){
+	int err = rif_add_duration_to_time(env, udfc, out,
+			crifi_time_cast_as_time,
+			crifi_time_cast_as_dayTimeDuration,
+			true);
+	switch (err){
+		case 1:
+			RETURNFAIL("Argument error for .");
+			break;
+		case 2:
+			RETURNFAIL("Missing Guard.");
+			break;
+		case 3:
+			RETURNFAIL("Internal error: add_duration_to_time "
+					"isnt working correct.");
+			break;
+	}
+}
+
 
 
 void rif_subtract_yearMonthDuration_from_date(Environment *env, UDFContext *udfc, UDFValue *out){
@@ -985,7 +1110,8 @@ void rif_subtract_yearMonthDuration_from_date(Environment *env, UDFContext *udfc
 	}
 	clipstime.value = udftime.value;
 	clipsdur.value = udfdur.value;
-	if(!check_is_date(env, clipstime, &time)){
+	//if(!check_is_date(env, clipstime, &time)){
+	if(!crifi_time_clips_to_time(env, &clipstime, &time)){
 		RETURNFAIL("Missing Guard. "
 				"divide-dayTimeDuration-by-dayTimeDuration");
 	}
@@ -1012,7 +1138,8 @@ void rif_subtract_yearMonthDuration_from_dateTime(Environment *env, UDFContext *
 	}
 	clipstime.value = udftime.value;
 	clipsdur.value = udfdur.value;
-	if(!check_is_dateTime(env, clipstime, &time)){
+	//if(!check_is_dateTime(env, clipstime, &time)){
+	if(!crifi_time_clips_to_time(env, &clipstime, &time)){
 		RETURNFAIL("Missing Guard. "
 				"divide-dayTimeDuration-by-dayTimeDuration");
 	}
@@ -1022,87 +1149,6 @@ void rif_subtract_yearMonthDuration_from_dateTime(Environment *env, UDFContext *
 	}
 	outval = subtract_yearMonthDuration_from_dateTime(time, dur);
 	clipsout = crifi_create_dateTime(env, outval);
-	out->value = clipsout.value;
-}
-
-
-void rif_subtract_dayTimeDuration_from_dateTime(Environment *env, UDFContext *udfc, UDFValue *out){
-	DateTimeStamp dur;
-	DateTimeStamp time, outval;
-	UDFValue udftime, udfdur;
-	CLIPSValue clipstime, clipsdur, clipsout;
-	if (!UDFFirstArgument(udfc, STRING_BIT, &udftime)){
-		RETURNFAIL("Argument error for is-literal-date.");
-	}
-	if (!UDFNextArgument(udfc, STRING_BIT, &udfdur)){
-		RETURNFAIL("Argument error for is-literal-date.");
-	}
-	clipstime.value = udftime.value;
-	clipsdur.value = udfdur.value;
-	if(!check_is_dateTime(env, clipstime, &time)){
-		RETURNFAIL("Missing Guard. "
-				"divide-dayTimeDuration-by-dayTimeDuration");
-	}
-	if(!check_is_dayTimeDuration(env, clipsdur, &dur)){
-		RETURNFAIL("Missing Guard. "
-				"divide-dayTimeDuration-by-dayTimeDuration");
-	}
-	outval = subtract_dayTimeDuration_from_dateTime(time, dur);
-	clipsout = crifi_create_dateTime(env, outval);
-	out->value = clipsout.value;
-}
-
-
-void rif_subtract_dayTimeDuration_from_date(Environment *env, UDFContext *udfc, UDFValue *out){
-	DateTimeStamp dur;
-	DateTimeStamp time, outval;
-	UDFValue udftime, udfdur;
-	CLIPSValue clipstime, clipsdur, clipsout;
-	if (!UDFFirstArgument(udfc, STRING_BIT, &udftime)){
-		RETURNFAIL("Argument error for is-literal-date.");
-	}
-	if (!UDFNextArgument(udfc, STRING_BIT, &udfdur)){
-		RETURNFAIL("Argument error for is-literal-date.");
-	}
-	clipstime.value = udftime.value;
-	clipsdur.value = udfdur.value;
-	if(!check_is_date(env, clipstime, &time)){
-		RETURNFAIL("Missing Guard. "
-				"divide-dayTimeDuration-by-dayTimeDuration");
-	}
-	if(!check_is_dayTimeDuration(env, clipsdur, &dur)){
-		RETURNFAIL("Missing Guard. "
-				"divide-dayTimeDuration-by-dayTimeDuration");
-	}
-	outval = subtract_dayTimeDuration_from_dateTime(time, dur);
-	clipsout = crifi_create_date(env, outval);
-	out->value = clipsout.value;
-}
-
-
-void rif_subtract_dayTimeDuration_from_time(Environment *env, UDFContext *udfc, UDFValue *out){
-	DateTimeStamp dur;
-	DateTimeStamp time, outval;
-	UDFValue udftime, udfdur;
-	CLIPSValue clipstime, clipsdur, clipsout;
-	if (!UDFFirstArgument(udfc, STRING_BIT, &udftime)){
-		RETURNFAIL("Argument error for is-literal-date.");
-	}
-	if (!UDFNextArgument(udfc, STRING_BIT, &udfdur)){
-		RETURNFAIL("Argument error for is-literal-date.");
-	}
-	clipstime.value = udftime.value;
-	clipsdur.value = udfdur.value;
-	if(!check_is_time(env, clipstime, &time)){
-		RETURNFAIL("Missing Guard. "
-				"divide-dayTimeDuration-by-dayTimeDuration");
-	}
-	if(!check_is_dayTimeDuration(env, clipsdur, &dur)){
-		RETURNFAIL("Missing Guard. "
-				"divide-dayTimeDuration-by-dayTimeDuration");
-	}
-	outval = subtract_dayTimeDuration_from_dateTime(time, dur);
-	clipsout = crifi_create_time(env, outval);
 	out->value = clipsout.value;
 }
 
@@ -1123,10 +1169,12 @@ void rif_dateTime_equal(Environment *env, UDFContext *udfc, UDFValue *out){
 	}
 	clipsleft.value = udfleft.value;
 	clipsright.value = udfright.value;
-	if(!check_is_dateTime(env, clipsleft, &left)){
+	//if(!check_is_dateTime(env, clipsleft, &left)){
+	if(!crifi_time_clips_to_time(env, &clipsleft, &left)){
 		RETURNFAIL("Missing Guard.");
 	}
-	if(!check_is_dateTime(env, clipsright, &right)){
+	//if(!check_is_dateTime(env, clipsright, &right)){
+	if(!crifi_time_clips_to_time(env, &clipsright, &right)){
 		RETURNFAIL("Missing Guard.");
 	}
 	success = equal_dateTime(left, right);
@@ -1151,10 +1199,12 @@ void rif_dateTime_less_than(Environment *env, UDFContext *udfc, UDFValue *out){
 	}
 	clipsleft.value = udfleft.value;
 	clipsright.value = udfright.value;
-	if(!check_is_dateTime(env, clipsleft, &left)){
+	//if(!check_is_dateTime(env, clipsleft, &left)){
+	if(!crifi_time_clips_to_time(env, &clipsleft, &left)){
 		RETURNFAIL("Missing Guard.");
 	}
-	if(!check_is_dateTime(env, clipsright, &right)){
+	//if(!check_is_dateTime(env, clipsright, &right)){
+	if(!crifi_time_clips_to_time(env, &clipsright, &right)){
 		RETURNFAIL("Missing Guard.");
 	}
 	success = less_than_dateTime(left, right);
@@ -1179,10 +1229,12 @@ void rif_dateTime_greater_than(Environment *env, UDFContext *udfc, UDFValue *out
 	}
 	clipsleft.value = udfleft.value;
 	clipsright.value = udfright.value;
-	if(!check_is_dateTime(env, clipsleft, &left)){
+	//if(!check_is_dateTime(env, clipsleft, &left)){
+	if(!crifi_time_clips_to_time(env, &clipsleft, &left)){
 		RETURNFAIL("Missing Guard.");
 	}
-	if(!check_is_dateTime(env, clipsright, &right)){
+	//if(!check_is_dateTime(env, clipsright, &right)){
+	if(!crifi_time_clips_to_time(env, &clipsright, &right)){
 		RETURNFAIL("Missing Guard.");
 	}
 	success = greater_than_dateTime(left, right);
@@ -1207,10 +1259,12 @@ void rif_date_equal(Environment *env, UDFContext *udfc, UDFValue *out){
 	}
 	clipsleft.value = udfleft.value;
 	clipsright.value = udfright.value;
-	if(!check_is_date(env, clipsleft, &left)){
+	//if(!check_is_date(env, clipsleft, &left)){
+	if(!crifi_time_clips_to_time(env, &clipsleft, &left)){
 		RETURNFAIL("Missing Guard.");
 	}
-	if(!check_is_date(env, clipsright, &right)){
+	//if(!check_is_date(env, clipsright, &right)){
+	if(!crifi_time_clips_to_time(env, &clipsright, &right)){
 		RETURNFAIL("Missing Guard.");
 	}
 	success = equal_dateTime(left, right);
@@ -1235,10 +1289,12 @@ void rif_date_less_than(Environment *env, UDFContext *udfc, UDFValue *out){
 	}
 	clipsleft.value = udfleft.value;
 	clipsright.value = udfright.value;
-	if(!check_is_date(env, clipsleft, &left)){
+	//if(!check_is_date(env, clipsleft, &left)){
+	if(!crifi_time_clips_to_time(env, &clipsleft, &left)){
 		RETURNFAIL("Missing Guard.");
 	}
-	if(!check_is_date(env, clipsright, &right)){
+	//if(!check_is_date(env, clipsright, &right)){
+	if(!crifi_time_clips_to_time(env, &clipsright, &right)){
 		RETURNFAIL("Missing Guard.");
 	}
 	success = less_than_dateTime(left, right);
@@ -1263,10 +1319,12 @@ void rif_date_greater_than(Environment *env, UDFContext *udfc, UDFValue *out){
 	}
 	clipsleft.value = udfleft.value;
 	clipsright.value = udfright.value;
-	if(!check_is_date(env, clipsleft, &left)){
+	//if(!check_is_date(env, clipsleft, &left)){
+	if(!crifi_time_clips_to_time(env, &clipsleft, &left)){
 		RETURNFAIL("Missing Guard.");
 	}
-	if(!check_is_date(env, clipsright, &right)){
+	//if(!check_is_date(env, clipsright, &right)){
+	if(!crifi_time_clips_to_time(env, &clipsright, &right)){
 		RETURNFAIL("Missing Guard.");
 	}
 	success = greater_than_dateTime(left, right);
@@ -1291,10 +1349,12 @@ void rif_time_equal(Environment *env, UDFContext *udfc, UDFValue *out){
 	}
 	clipsleft.value = udfleft.value;
 	clipsright.value = udfright.value;
-	if(!check_is_time(env, clipsleft, &left)){
+	//if(!check_is_time(env, clipsleft, &left)){
+	if(!crifi_time_clips_to_time(env, &clipsleft, &left)){
 		RETURNFAIL("Missing Guard.");
 	}
-	if(!check_is_time(env, clipsright, &right)){
+	//if(!check_is_time(env, clipsright, &right)){
+	if(!crifi_time_clips_to_time(env, &clipsright, &right)){
 		RETURNFAIL("Missing Guard.");
 	}
 	success = equal_dateTime(left, right);
@@ -1319,10 +1379,12 @@ void rif_time_less_than(Environment *env, UDFContext *udfc, UDFValue *out){
 	}
 	clipsleft.value = udfleft.value;
 	clipsright.value = udfright.value;
-	if(!check_is_time(env, clipsleft, &left)){
+	//if(!check_is_time(env, clipsleft, &left)){
+	if(!crifi_time_clips_to_time(env, &clipsleft, &left)){
 		RETURNFAIL("Missing Guard.");
 	}
-	if(!check_is_time(env, clipsright, &right)){
+	//if(!check_is_time(env, clipsright, &right)){
+	if(!crifi_time_clips_to_time(env, &clipsright, &right)){
 		RETURNFAIL("Missing Guard.");
 	}
 	success = less_than_dateTime(left, right);
@@ -1347,10 +1409,12 @@ void rif_time_greater_than(Environment *env, UDFContext *udfc, UDFValue *out){
 	}
 	clipsleft.value = udfleft.value;
 	clipsright.value = udfright.value;
-	if(!check_is_time(env, clipsleft, &left)){
+	//if(!check_is_time(env, clipsleft, &left)){
+	if(!crifi_time_clips_to_time(env, &clipsleft, &left)){
 		RETURNFAIL("Missing Guard.");
 	}
-	if(!check_is_time(env, clipsright, &right)){
+	//if(!check_is_time(env, clipsright, &right)){
+	if(!crifi_time_clips_to_time(env, &clipsright, &right)){
 		RETURNFAIL("Missing Guard.");
 	}
 	success = greater_than_dateTime(left, right);

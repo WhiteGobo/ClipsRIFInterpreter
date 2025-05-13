@@ -49,6 +49,10 @@ bool crifi_timedata_register_data(Environment *env){
 #define DATE_TIME FULL_DATE "[Tt]" PARTIAL_TIME
 #define DATE_TIME_STAMP FULL_DATE "[Tt]" FULL_TIME
 
+#define DAYTIMEDURATION "(-)?P([0-9]+D)?(T([0-9]+H)?([0-9]+M)?([0-9]+(.([0-9]))S)?)?"
+#define YEARMONTHDURATION "(-)?P([0-9]+Y)?([0-9]+M)?"
+#define GENERALDURATION "(-)?P([0-9]+Y)?([0-9]+M)?([0-9]+D)?(T([0-9]+H)?([0-9]+M)?([0-9]+(.([0-9]))S)?)?"
+
 
 bool initialize_crifi_timedata(CRIFITimeData *data){
 	int err;
@@ -81,14 +85,21 @@ bool initialize_crifi_timedata(CRIFITimeData *data){
 		return false;
 	}
 	err = regcomp(&(data->reg_dayTimeDuration),
-			"^(-)?P([0-9]+D)?(T([0-9]+H)?([0-9]+M)?([0-9]+(.([0-9]))S)?)?$",
+			"^" DAYTIMEDURATION "$",
 			REG_EXTENDED);
 	if (err != 0){
 		free_crifi_timedata(data);
 		return false;
 	}
 	err = regcomp(&(data->reg_yearMonthDuration),
-			"^(-)?P([0-9]+Y)?([0-9]+M)?$",
+			"^" YEARMONTHDURATION "$",
+			REG_EXTENDED);
+	if (err != 0){
+		free_crifi_timedata(data);
+		return false;
+	}
+	err = regcomp(&(data->reg_generalDuration),
+			"^" GENERALDURATION "$",
 			REG_EXTENDED);
 	if (err != 0){
 		free_crifi_timedata(data);
@@ -104,4 +115,5 @@ void free_crifi_timedata(CRIFITimeData *data){
 	regfree(&(data->reg_time));
 	regfree(&(data->reg_dayTimeDuration));
 	regfree(&(data->reg_yearMonthDuration));
+	regfree(&(data->reg_generalDuration));
 }

@@ -32,6 +32,7 @@
 #define _XS_date_ "http://www.w3.org/2001/XMLSchema#date"
 #define _XS_dateTime_ "http://www.w3.org/2001/XMLSchema#dateTime"
 #define _XS_dateTimeStamp_ "http://www.w3.org/2001/XMLSchema#dateTimeStamp"
+#define _XS_time_ "http://www.w3.org/2001/XMLSchema#time"
 #define _XS_double_ "http://www.w3.org/2001/XMLSchema#double"
 #define _XS_float_ "http://www.w3.org/2001/XMLSchema#float"
 #define _XS_hexBinary_ "http://www.w3.org/2001/XMLSchema#hexBinary"
@@ -56,9 +57,10 @@
 #define _XS_Name_ "http://www.w3.org/2001/XMLSchema#Name"
 #define _XS_NCName_ "http://www.w3.org/2001/XMLSchema#NCName"
 #define _XS_NMTOKEN_ "http://www.w3.org/2001/XMLSchema#NMTOKEN"
-#define _XS_time_ "http://www.w3.org/2001/XMLSchema#time"
 #define _XS_dayTimeDuration_ "http://www.w3.org/2001/XMLSchema#dayTimeDuration"
 #define _XS_yearMonthDuration_ "http://www.w3.org/2001/XMLSchema#yearMonthDuration"
+#define _XS_duration_ _XML_ "duration"
+
 #define _XS_normalizedString_ "http://www.w3.org/2001/XMLSchema#normalizedString"
 
 #define _RDF_XMLLiteral_ _RDF_ "XMLLiteral"

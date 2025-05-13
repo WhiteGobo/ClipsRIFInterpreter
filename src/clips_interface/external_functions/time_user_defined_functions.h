@@ -2,12 +2,27 @@
 
 #include <clips.h>
 
-void rif_is_literal_date(Environment *env, UDFContext *udfc, UDFValue *out);
+/**
+ * Identifier XS:date XS:dateTime and XS:dateTimeStamp.
+ * They are castable in one another.
+ *
+ * See for more information:
+ * `https://www.w3.org/TR/xpath-functions/#casting-from-primitive-to-primitive`_
+ */
 void rif_is_literal_dateTime(Environment *env, UDFContext *udfc, UDFValue *out);
-void rif_is_literal_dateTimeStamp(Environment *env, UDFContext *udfc, UDFValue *out);
+//void rif_is_literal_date(Environment *env, UDFContext *udfc, UDFValue *out);
+//void rif_is_literal_dateTimeStamp(Environment *env, UDFContext *udfc, UDFValue *out);
+
 void rif_is_literal_time(Environment *env, UDFContext *udfc, UDFValue *out);
-void rif_is_literal_dayTimeDuration(Environment *env, UDFContext *udfc, UDFValue *out);
-void rif_is_literal_yearMonthDuration(Environment *env, UDFContext *udfc, UDFValue *out);
+
+/**
+ * Identifier XS:duration, XS:dayTimeDuration and XS:yearMonthDuration.
+ */
+void rif_is_literal_duration(Environment *env, UDFContext *udfc, UDFValue *out);
+//void rif_is_literal_dayTimeDuration(Environment *env, UDFContext *udfc, UDFValue *out);
+//void rif_is_literal_yearMonthDuration(Environment *env, UDFContext *udfc, UDFValue *out);
+
+
 void rif_year_from_dateTime(Environment *env, UDFContext *udfc, UDFValue *out);
 void rif_month_from_dateTime(Environment *env, UDFContext *udfc, UDFValue *out);
 void rif_day_from_dateTime(Environment *env, UDFContext *udfc, UDFValue *out);
@@ -21,8 +36,8 @@ void rif_hours_from_time(Environment *env, UDFContext *udfc, UDFValue *out);
 void rif_minutes_from_time(Environment *env, UDFContext *udfc, UDFValue *out);
 void rif_seconds_from_time(Environment *env, UDFContext *udfc, UDFValue *out);
 void rif_timezone_from_dateTime(Environment *env, UDFContext *udfc, UDFValue *out);
-void rif_timezone_from_date(Environment *env, UDFContext *udfc, UDFValue *out);
-void rif_timezone_from_time(Environment *env, UDFContext *udfc, UDFValue *out);
+//void rif_timezone_from_date(Environment *env, UDFContext *udfc, UDFValue *out);
+//void rif_timezone_from_time(Environment *env, UDFContext *udfc, UDFValue *out);
 void rif_years_from_duration(Environment *env, UDFContext *udfc, UDFValue *out);
 void rif_months_from_duration(Environment *env, UDFContext *udfc, UDFValue *out);
 void rif_days_from_duration(Environment *env, UDFContext *udfc, UDFValue *out);
