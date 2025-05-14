@@ -27,7 +27,13 @@ static bool numeric_value_from_lexical_and_datatype(char *lexical, char *datatyp
 		out->f = strtod(lexical, &endptr);
 		out->precision = out->f /1000;
 		success = endptr != NULL;
-	} else if (castable_as_hexadecimal(lexical, datatype, dt_length)){
+	} else if (castable_as_true(lexical, datatype, dt_length)) {
+		crifi_numeric_create_true(out);
+		success = true;
+	} else if (castable_as_false(lexical, datatype, dt_length)) {
+		crifi_numeric_create_false(out);
+		success = true;
+	} else if (castable_as_hexadecimal(lexical, datatype, dt_length)) {
 		out->t = NT_RATIONAL;
 		out->dividend = strtol(lexical, &endptr, 16);
 		out->divisor = 1;

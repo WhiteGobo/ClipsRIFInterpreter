@@ -111,7 +111,7 @@ static auto petTestdata = testing::Values(
 			W3C_PREMISE("Builtins_anyURI"),
 			W3C_CONCLUSION("Builtins_anyURI")),
 		TestdataPET("Core_PET_Builtins_boolean",
-			SC_ModelFirst | SC_ModelA,
+			SC_ModelFirst,
 			W3C_PREMISE("Builtins_boolean"),
 			W3C_CONCLUSION("Builtins_boolean")),
 		TestdataPET("Core_PET_Chaining_strategy_numeric-add_1",
@@ -138,11 +138,11 @@ static auto petTestdata = testing::Values(
 			SC_NoCondition,
 			W3C_PREMISE("Frames"),
 			W3C_CONCLUSION("Frames")),
-		/*
 		TestdataPET("Core_PET_Guards_and_subtypes",
-			SC_All,
+			SC_ModelFirst,
 			W3C_PREMISE("Guards_and_subtypes"),
 			W3C_CONCLUSION("Guards_and_subtypes")),
+		/*
 		TestdataPET("Core_PET_Modeling_Brain_Anatomy",
 			SC_All,
 			W3C_PREMISE("Modeling_Brain_Anatomy"),
