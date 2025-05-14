@@ -13,12 +13,12 @@ FetchContent_MakeAvailable(googletest)
 
 enable_testing()
 
-#set(PREFIX_TESTDATA_IMPORT "http://example.com/testdata#")
-#set(TESTDATA_OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/testdata.h")
-#compile_resources(testdata ${TESTDATA_OUTPUT} TARGETS
-#	"${PREFIX_TESTDATA_IMPORT}shared_bnode" importdata/shared_bnode.ttl
-#	"${PREFIX_TESTDATA_IMPORT}import_simple_to_rif" importdata/import_simple_to_rif.ttl
-#)
+set(PREFIX_TESTDATA_IMPORT "http://example.com/testdata#")
+set(TESTDATA_OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/testdata.h")
+compile_resources(testdata ${TESTDATA_OUTPUT} TARGETS
+	"${PREFIX_TESTDATA_IMPORT}shared_bnode" importdata/shared_bnode.ttl
+	"${PREFIX_TESTDATA_IMPORT}import_simple_to_rif" importdata/import_simple_to_rif.ttl
+)
 
 
 add_executable(hello_test
@@ -26,7 +26,7 @@ add_executable(hello_test
 	#testcases_test.cc
 	raptor_test.cc
 	import_test.cc
-	#	${TESTDATA_OUTPUT}
+	${TESTDATA_OUTPUT}
 )
 
 target_include_directories(hello_test PRIVATE "${CMAKE_CURRENT_BINARY_DIR}")
