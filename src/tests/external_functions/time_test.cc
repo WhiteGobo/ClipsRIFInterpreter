@@ -10,6 +10,8 @@
 #include "info_query.h"
 #include "helper.h"
 
+
+
 TEST(ExternalFunctionsTime, isLiteralDate){
 	check_command_true( 
 			"(<http://www.w3.org/2007/rif-builtin-predicate#is-literal-date> \"2000-12-13-11%3A00^^http://www.w3.org/2001/XMLSchema#date\" )"

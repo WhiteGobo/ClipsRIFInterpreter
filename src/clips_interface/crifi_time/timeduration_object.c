@@ -82,7 +82,6 @@ void dayTimeDuration_regex_to_crifiDuration(char *lexical, regmatch_t matches[14
 void normalize_duration(CrifiDuration *result){
 	bool repeat = true;
 	bool applied_invert = false;
-	fprintf(stderr, "start norm\n");
 	while (repeat){
 		if (result->month > 12){
 			result->month -= 12;
@@ -109,7 +108,6 @@ void normalize_duration(CrifiDuration *result){
 			result->minute += 60;
 			repeat = true;
 		} else if (result->second >= 60){
-			fprintf(stderr, "second to minute\n");
 			result->minute += 1;
 			result->second -= 60;
 			repeat = true;
@@ -147,7 +145,6 @@ void normalize_duration(CrifiDuration *result){
 			repeat = false;
 		}
 	}
-	fprintf(stderr, "second: %dm %ds\n", result->minute, result->second);
 	if (result->year < 0 || result->month < 0 || result->day < 0 || result->hour < 0 || result->minute < 0 || result->second < 0 || result->millisecond < 0){
 		fprintf(stderr, "ERROR: Couldnt normalize duration\n");
 	}

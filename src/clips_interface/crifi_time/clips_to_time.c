@@ -202,6 +202,5 @@ bool crifi_time_duration_to_clips(Environment *env, CrifiDuration *val, CLIPSVal
 				_XS_duration_, sizeof(_XS_duration_));
 	}
 	result->lexemeValue = CreateString(env, tmpout);
-	fprintf(stderr, "duration to clips: %s\n", tmpout);
 	return result;
 }

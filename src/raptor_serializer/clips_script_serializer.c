@@ -396,7 +396,6 @@ FUNC_DESC(fprintf_function){
 	} else if (check_property(n, cntxt->rdf_type, cntxt->clips_do_for_all_facts)) {
 		return fprintf_find_facts(cntxt, stream, n);
 	}
-	fprintf(stderr, "start fprintf_function\n");
 	name = get_object(n, cntxt->clips_function_name);
 	if (name == NULL){
 		debug_fprintf_node(stderr, "tried as function but is "
@@ -405,7 +404,6 @@ FUNC_DESC(fprintf_function){
 	}
 	fprintf(stream, " (");
 	fprintf_raptor_term(stream, name);
-	fprintf(stderr, "function name:"); fprintf_raptor_term(stderr, name); fprintf(stderr, "\n");
 
 	args = get_object(n, cntxt->clips_function_args);
 	if(args == NULL){
@@ -461,7 +459,6 @@ FUNC_DESC(fprintf_test_ce){
  * TODO: Missing implementation for multiple deftemplate-name-expression
  */
 FUNC_DESC(fprintf_find_facts){
-	fprintf(stderr, "print find facts\n");
 	CRIFI_SERIALIZE_SCRIPT_RET err = CRIFI_SERIALIZE_SCRIPT_NOERROR;
 	raptor_term *type, *var_templates, *query_facts, *tmpfactvar, *tmprestriction;
 	Node *tmpfactvar_n, *tmprestriction_n, *query_facts_n;

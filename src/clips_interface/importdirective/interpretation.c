@@ -7,6 +7,13 @@
 #include "simple_to_owl_interpretation.h"
 
 
+static CRIFI_IMPORT_INTERPRETER_ID get_interpreter_model_rifgenerator_simple(
+						const char *entailment);
+static CRIFI_IMPORT_INTERPRETER_ID get_interpreter_model_rifgenerator(
+						const char *entailment);
+static CRIFI_IMPORT_INTERPRETER_ID get_interpreter_model_simple(
+						const char *entailment);
+
 static CRIFI_IMPORT_INTERPRETER_ID get_interpreter(crifi_graph *graph, CLIPSValue *input_entailment){
 	int err;
 	char *entailment;
@@ -16,47 +23,77 @@ static CRIFI_IMPORT_INTERPRETER_ID get_interpreter(crifi_graph *graph, CLIPSValu
 	CLIPSValue tmpval = {.voidValue = VoidConstant(graph)};
 
 	entailment = extract_uri(graph, input_entailment->header);
-	if (entailment == NULL) entailment = extract_lexical(graph, input_entailment->header);
-	if (entailment == NULL) return CRIFI_IMPORT_IP_UNKNOWN;
+	if (entailment == NULL) {
+		entailment = extract_lexical(graph, input_entailment->header);
+		if (entailment == NULL) {
+			return CRIFI_IMPORT_IP_UNKNOWN;
+		}
+	}
 	model = LoadingCRIFIImportData(graph)->model_id;
-	//err = get_interpretation_id(graph, &graph_interpretation_id);
-	//model = extract_uri(graph, graph_interpretation_id.header);
-	if (
-			0 == strcmp(entailment, _RIFENTAIL_RDF_)
-			|| 0 == strcmp(entailment, _RIFENTAIL_RDFS_)
-			|| 0 == strcmp(entailment, _RIFENTAIL_SIMPLE_))
-	{
-		switch (model){
-			case CRIFI_IMPORT_MODEL_SIMPLE:
-				ret = CRIFI_IMPORT_IP_DIRECT;
-				break;
-			case CRIFI_IMPORT_MODEL_RIFGENERATOR:
-			case CRIFI_IMPORT_MODEL_RIFGENERATOR_SIMPLE:
-				ret = CRIFI_IMPORT_IP_SIMPLE_TO_RIF;
-				break;
-			default:
-				ret = CRIFI_IMPORT_IP_UNKNOWN;
-		}
-	} else if (0 == strcmp(entailment, _RIFENTAIL_RIF_)){
-		switch (model){
-			case CRIFI_IMPORT_MODEL_RIFGENERATOR:
-				//ret = CRIFI_IMPORT_IP_SIMPLE_TO_OWL;
-				ret = CRIFI_IMPORT_IP_DIRECT;
-				break;
-			case CRIFI_IMPORT_MODEL_RIFGENERATOR_SIMPLE:
-				ret = CRIFI_IMPORT_IP_DIRECT;
-				break;
-			case CRIFI_IMPORT_MODEL_SIMPLE:
-			default:
-				ret = CRIFI_IMPORT_IP_UNKNOWN;
-				break;
-		}
+	switch (model){
+		case CRIFI_IMPORT_MODEL_RIFGENERATOR:
+			ret = get_interpreter_model_rifgenerator(entailment);
+			break;
+		case CRIFI_IMPORT_MODEL_RIFGENERATOR_SIMPLE:
+			ret = get_interpreter_model_rifgenerator_simple(
+								entailment);
+			break;
+		case CRIFI_IMPORT_MODEL_SIMPLE:
+			ret = get_interpreter_model_simple(entailment);
+			break;
 	}
 	free(entailment);
 	return ret;
 }
 
-ImportProcess *start_import_process(crifi_graph *graph, CLIPSValue *input_interpretation){
+static CRIFI_IMPORT_INTERPRETER_ID get_interpreter_model_rifgenerator_simple(
+						const char *entailment)
+{
+	if (
+			0 == strcmp(entailment, _RIFENTAIL_RDF_)
+			|| 0 == strcmp(entailment, _RIFENTAIL_RDFS_)
+			|| 0 == strcmp(entailment, _RIFENTAIL_SIMPLE_))
+	{
+		return CRIFI_IMPORT_IP_SIMPLE_TO_RIF;
+	} else if (0 == strcmp(entailment, _RIFENTAIL_RIF_)){
+		return CRIFI_IMPORT_IP_DIRECT;
+	}
+	return CRIFI_IMPORT_IP_UNKNOWN;
+}
+
+static CRIFI_IMPORT_INTERPRETER_ID get_interpreter_model_rifgenerator(
+						const char *entailment)
+{
+	if (
+			0 == strcmp(entailment, _RIFENTAIL_RDF_)
+			|| 0 == strcmp(entailment, _RIFENTAIL_RDFS_)
+			|| 0 == strcmp(entailment, _RIFENTAIL_SIMPLE_))
+	{
+		return CRIFI_IMPORT_IP_SIMPLE_TO_RIF;
+	} else if (0 == strcmp(entailment, _RIFENTAIL_RIF_)){
+		return CRIFI_IMPORT_IP_SIMPLE_TO_OWL;
+		return CRIFI_IMPORT_IP_DIRECT;
+	}
+	return CRIFI_IMPORT_IP_UNKNOWN;
+}
+
+static CRIFI_IMPORT_INTERPRETER_ID get_interpreter_model_simple(
+						const char *entailment)
+{
+	if (
+			0 == strcmp(entailment, _RIFENTAIL_RDF_)
+			|| 0 == strcmp(entailment, _RIFENTAIL_RDFS_)
+			|| 0 == strcmp(entailment, _RIFENTAIL_SIMPLE_))
+	{
+		return CRIFI_IMPORT_IP_DIRECT;
+	}
+	return CRIFI_IMPORT_IP_UNKNOWN;
+}
+
+
+ImportProcess *start_import_process(crifi_graph *graph,
+				CLIPSValue *input_interpretation)
+{
 	ImportProcess * ret = NULL;
 	CRIFI_IMPORT_INTERPRETER_ID interpreter_id = get_interpreter(graph,
 							input_interpretation);

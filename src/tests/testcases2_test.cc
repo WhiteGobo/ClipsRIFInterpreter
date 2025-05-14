@@ -180,13 +180,13 @@ static auto petTestdata = testing::Values(
 			SC_NoCondition,
 			W3C_PREMISE("RDF_Combination_Constant_Equivalence_4"),
 			W3C_CONCLUSION("RDF_Combination_Constant_Equivalence_4")),
-		TestdataPET("Core_PET_RDF_Combination_Constant_Equivalence_Graph_Entailment",
-			SC_All,
-			W3C_PREMISE("RDF_Combination_Constant_Equivalence_Graph_Entailment"),
-			W3C_CONCLUSION("RDF_Combination_Constant_Equivalence_Graph_Entailment")),
-		/*
+		//Testing hasnt implemented checking directly for rdf graphs
+		//TestdataPET("Core_PET_RDF_Combination_Constant_Equivalence_Graph_Entailment",
+		//	SC_All,
+		//	W3C_PREMISE("RDF_Combination_Constant_Equivalence_Graph_Entailment"),
+		//	W3C_CONCLUSION("RDF_Combination_Constant_Equivalence_Graph_Entailment")),
 		TestdataPET("Core_PET_RDF_Combination_SubClass_2",
-			SC_All,
+			SC_ModelFirst,
 			W3C_PREMISE("RDF_Combination_SubClass_2"),
 			W3C_CONCLUSION("RDF_Combination_SubClass_2")),
 		TestdataPET("BLD_PET_Chaining_strategy_numeric-add_2",
@@ -209,6 +209,7 @@ static auto petTestdata = testing::Values(
 			SC_All,
 			W3C_PREMISE("ElementEqualityFromListEquality"),
 			W3C_CONCLUSION("ElementEqualityFromListEquality")),
+		/*
 		TestdataPET("BLD_PET_EntailEverything",
 			SC_All,
 			W3C_PREMISE("EntailEverything"),
