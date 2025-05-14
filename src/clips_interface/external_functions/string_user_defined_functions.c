@@ -6,11 +6,14 @@
 #include <uriencode.h>
 #include <xpath_replace.h>
 
+#include "errormanagment.h"
+
 #define RETURNFAIL(failure) \
-		Writeln(env, failure);\
-		SetErrorValue(env, &(CreateString(env, failure)->header));\
-		out->voidValue = VoidConstant(env);\
+		crifi_udf_error(env, failure, out);\
 		return;
+
+#define RETURNONVOID(env, udfval)\
+		if(udfval.voidValue == VoidConstant(env)){return;}
 
 void rif_is_literal_string(Environment *env, UDFContext *udfc, UDFValue *out){
 	char *datatype;

@@ -2,12 +2,14 @@
 #include "plainliteral_user_defined_functions.h"
 #include "info_query.h"
 
+#include "errormanagment.h"
 
 #define RETURNFAIL(failure) \
-		Writeln(env, failure);\
-		SetErrorValue(env, &(CreateString(env, failure)->header));\
-		out->voidValue = VoidConstant(env);\
+		crifi_udf_error(env, failure, out);\
 		return;
+
+#define RETURNONVOID(env, udfval)\
+		if(udfval.voidValue == VoidConstant(env)){return;}
 
 void rif_PlainLiteral_from_string_lang(Environment *env, UDFContext *udfc, UDFValue *out){
 	char *value, *lang, *retval;

@@ -64,20 +64,14 @@ static const char *baserules[] = {
 	
 	"(defrule remove-unneeded-atomlists\n"
 	"	?list <- (AtomList)\n"
-	"	(not (exists (or\n"
-	"		(TripleTemplate (subject ?list))\n"
-	"		(TripleTemplate (predicate ?list))\n"
-	"		(TripleTemplate (object ?list))\n"
-	"		(Atom (op ?list))\n"
-	"		(Atom (args $? ?list $?))\n"
-	"	)))\n"
+	"	(not (TripleTemplate (subject ?list)))\n"
+	"	(not (TripleTemplate (predicate ?list)))\n"
+	"	(not (TripleTemplate (object ?list)))\n"
+	"	(not (Atom (op ?list)))\n"
+	"	(not (Atom (args $? ?list $?)))\n"
 	"	=>\n"
 	"	(retract ?list)\n"
 	")",
-
-	//"(defrule haltonerror\n"
-	//"\n"
-	//")",
 
 	NULL
 };

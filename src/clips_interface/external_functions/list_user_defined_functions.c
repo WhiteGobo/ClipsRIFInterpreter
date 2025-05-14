@@ -6,14 +6,14 @@
 #include <crifi_objects.h>
 
 #include "info_query.h"
-
-#define RETURNARGERROR(fooname) \
-		SetErrorValue(env, &(CreateString(env, "Argument Error for "fooname)->header));\
-		return;
+#include "errormanagment.h"
 
 #define RETURNFAIL(failure) \
-		SetErrorValue(env, &(CreateString(env, failure)->header));\
+		crifi_udf_error(env, failure, out);\
 		return;
+
+#define RETURNONVOID(env, udfval)\
+		if(udfval.voidValue == VoidConstant(env)){return;}
 
 
 void pred_is_list(Environment *env, UDFContext *udfc, UDFValue *out){
@@ -22,8 +22,9 @@ void pred_is_list(Environment *env, UDFContext *udfc, UDFValue *out){
 	out->lexemeValue = FalseSymbol(env); //default output
 	if (!UDFFirstArgument(udfc, ANY_TYPE_BITS, &myval)){
 		return;
-		//RETURNARGERROR("pred_is_list");
+		//RETURNFAIL("pred_is_list");
 	}
+	RETURNONVOID(env, myval);
 	val.header = myval.header;
 	out->lexemeValue = CreateBoolean(env, crifi_is_list(env, &val));
 }
@@ -52,10 +53,10 @@ void pred_list_contains(Environment *env, UDFContext *udfc, UDFValue *out){
 	CLIPSValue items = {.voidValue=VoidConstant(env)};
 	out->lexemeValue = FalseSymbol(env); //default output
 	if (!UDFFirstArgument(udfc, ANY_TYPE_BITS, &arglist)){
-		RETURNARGERROR("list_contains");
+		RETURNFAIL("list_contains");
 	}
 	if(!UDFNextArgument(udfc, ANY_TYPE_BITS, &entry)){
-		RETURNARGERROR("list_contains");
+		RETURNFAIL("list_contains");
 	}
 	c_arglist.value = arglist.value;
 	if (!retrieve_items(env, c_arglist, &items)){
@@ -71,7 +72,7 @@ void pred_list_contains(Environment *env, UDFContext *udfc, UDFValue *out){
 			out->lexemeValue = CreateBoolean(env, true);
 			return;
 		} else if (check == IEQ_ERROR){
-			RETURNARGERROR("pred_list_contains");
+			RETURNFAIL("pred_list_contains");
 		}
 	}
 }
@@ -123,12 +124,12 @@ void func_make_list(Environment *env, UDFContext *udfc, UDFValue *out){
 	CLIPSValue myval[l+1];
 	if (l > 0){
 		if (!UDFFirstArgument(udfc, ANY_TYPE_BITS, &tmpval)){
-			RETURNARGERROR("func_make_list");
+			RETURNFAIL("func_make_list");
 		}
 		myval[0].value = tmpval.value;
 		for (int i=1; i<l; i++){
 			if(!UDFNextArgument(udfc, ANY_TYPE_BITS, &tmpval)){
-				RETURNARGERROR("func_make_list");
+				RETURNFAIL("func_make_list");
 			}
 			myval[i].value = tmpval.value;
 		}
@@ -178,10 +179,10 @@ void func_get(Environment *env, UDFContext *udfc, UDFValue *out){
 	UDFValue arglist, entry;
 	CLIPSValue val_arglist;
 	if (!UDFFirstArgument(udfc, ANY_TYPE_BITS, &arglist)){
-		RETURNARGERROR("list_contains");
+		RETURNFAIL("list_contains");
 	}
 	if(!UDFNextArgument(udfc, ANY_TYPE_BITS, &entry)){
-		RETURNARGERROR("list_contains");
+		RETURNFAIL("list_contains");
 	}
 	val_arglist.value = arglist.value;
 	if (!udfvalue_as_integer(entry, &i)) return;
@@ -198,17 +199,17 @@ void func_sublist(Environment *env, UDFContext *udfc, UDFValue *out){
 	UDFValue arglist, start_val, end_val;
 	CLIPSValue entry_dupl, items;
 	if (!UDFFirstArgument(udfc, ANY_TYPE_BITS, &arglist)){
-		RETURNARGERROR("func_sublist");
+		RETURNFAIL("func_sublist");
 	}
 	if(!UDFNextArgument(udfc, ANY_TYPE_BITS, &start_val)){
-		RETURNARGERROR("func_sublist");
+		RETURNFAIL("func_sublist");
 	}
 	if(!UDFNextArgument(udfc, ANY_TYPE_BITS, &end_val)){
-		RETURNARGERROR("func_sublist");
+		RETURNFAIL("func_sublist");
 	}
 	if (true){//if number args == 3
 		if (!retrieve_items_udf(env, arglist, &items)){
-			RETURNARGERROR("Cant handle given list."
+			RETURNFAIL("Cant handle given list."
 					"(retrieve_items_udf failed)");
 		}
 	} else {
@@ -237,10 +238,10 @@ void func_append(Environment *env, UDFContext *udfc, UDFValue *out){
 	CLIPSValue list;
 	CLIPSValue *newvalues, *tmpptr;
 	if (!UDFFirstArgument(udfc, ANY_TYPE_BITS, &firstarg)){
-		RETURNARGERROR("func_append");
+		RETURNFAIL("func_append");
 	}
 	if (!retrieve_items_udf(env, firstarg, &list)){
-		RETURNARGERROR("Cant handle given list."
+		RETURNFAIL("Cant handle given list."
 				"(retrieve_items_udf failed)");
 	}
 	arglength = UDFArgumentCount(udfc);
@@ -254,7 +255,7 @@ void func_append(Environment *env, UDFContext *udfc, UDFValue *out){
 	for (int i=1; i<arglength; i++){
 		if(!UDFNextArgument(udfc, ANY_TYPE_BITS, &tmparg)){
 			free(newvalues);
-			RETURNARGERROR("func_append");
+			RETURNFAIL("func_append");
 		}
 		tmpptr->value = tmparg.value;
 		tmpptr++;
@@ -275,12 +276,12 @@ void func_concatenate(Environment *env, UDFContext *udfc, UDFValue *out){
 	CLIPSValue listlist[argcount];
 	CLIPSValue ret;
 	if (!UDFFirstArgument(udfc, ANY_TYPE_BITS, &tmparg)){
-		RETURNARGERROR("func_sublist");
+		RETURNFAIL("func_sublist");
 	}
 	listlist[0].value = tmparg.value;
 	for (int i=1; i<argcount; i++){
 		if(!UDFNextArgument(udfc, ANY_TYPE_BITS, &tmparg)){
-			RETURNARGERROR("func_sublist");
+			RETURNFAIL("func_sublist");
 		}
 		listlist[i].value = tmparg.value;
 	}
@@ -302,14 +303,14 @@ void func_insert_before(Environment *env, UDFContext *udfc, UDFValue *out){
 	CLIPSValue list;
 	CLIPSValue *newvalues, *tmpptr;
 	if (!UDFFirstArgument(udfc, ANY_TYPE_BITS, &firstarg)){
-		RETURNARGERROR("func_insert_before");
+		RETURNFAIL("func_insert_before");
 	}
 	if(!UDFNextArgument(udfc, ANY_TYPE_BITS, &positionarg)){
-		RETURNARGERROR("func_insert_before");
+		RETURNFAIL("func_insert_before");
 	}
 	if (!udfvalue_as_integer(positionarg, &position)) return;
 	if(!UDFNextArgument(udfc, ANY_TYPE_BITS, &newvalarg)){
-		RETURNARGERROR("func_insert_before");
+		RETURNFAIL("func_insert_before");
 	}
 	if (!retrieve_items_udf(env, firstarg, &list)){
 		RETURNFAIL("Cant handle given list."
@@ -344,10 +345,10 @@ void func_remove(Environment *env, UDFContext *udfc, UDFValue *out){
 	CLIPSValue list;
 	CLIPSValue *newvalues, *tmpptr;
 	if (!UDFFirstArgument(udfc, ANY_TYPE_BITS, &firstarg)){
-		RETURNARGERROR("func_insert_before");
+		RETURNFAIL("func_insert_before");
 	}
 	if(!UDFNextArgument(udfc, ANY_TYPE_BITS, &positionarg)){
-		RETURNARGERROR("func_insert_before");
+		RETURNFAIL("func_insert_before");
 	}
 	if (!udfvalue_as_integer(positionarg, &position)) return;
 	if (!retrieve_items_udf(env, firstarg, &list)){
@@ -355,6 +356,9 @@ void func_remove(Environment *env, UDFContext *udfc, UDFValue *out){
 				"(retrieve_items_udf failed)");
 	}
 	listlength = list.multifieldValue->length;
+	if (listlength < 1){
+		RETURNFAIL("func:remove cant work on empty list.");
+	}
 	if (!normalize_index(listlength, &position)){
 		RETURNFAIL("cant insert at given position");
 	}
@@ -381,7 +385,7 @@ void func_reverse(Environment *env, UDFContext *udfc, UDFValue *out){
 	CLIPSValue list;
 	CLIPSValue *newvalues, *tmpptr;
 	if (!UDFFirstArgument(udfc, ANY_TYPE_BITS, &firstarg)){
-		RETURNARGERROR("func_insert_before");
+		RETURNFAIL("func_insert_before");
 	}
 	if (!retrieve_items_udf(env, firstarg, &list)){
 		RETURNFAIL("Cant handle given list."
@@ -410,7 +414,7 @@ void func_index_of(Environment *env, UDFContext *udfc, UDFValue *out){
 	CLIPSValue *newvalues, *tmpptr;
 	CLIPSValue tmpval, cmpval;
 	if (!UDFFirstArgument(udfc, ANY_TYPE_BITS, &firstarg)){
-		RETURNARGERROR("func_insert_before");
+		RETURNFAIL("func_insert_before");
 	}
 	if (!retrieve_items_udf(env, firstarg, &list)){
 		RETURNFAIL("Cant handle given list."
@@ -419,7 +423,7 @@ void func_index_of(Environment *env, UDFContext *udfc, UDFValue *out){
 	listlength = list.multifieldValue->length;
 
 	if(!UDFNextArgument(udfc, ANY_TYPE_BITS, &cmparg)){
-		RETURNARGERROR("func_insert_before");
+		RETURNFAIL("func_insert_before");
 	}
 	cmpval.value = cmparg.value;
 
@@ -457,12 +461,12 @@ void func_union(Environment *env, UDFContext *udfc, UDFValue *out){
 	CLIPSValue listlist[argcount];
 	CLIPSValue ret;
 	if (!UDFFirstArgument(udfc, ANY_TYPE_BITS, &tmparg)){
-		RETURNARGERROR("func_sublist");
+		RETURNFAIL("func_sublist");
 	}
 	listlist[0].value = tmparg.value;
 	for (int i=1; i<argcount; i++){
 		if(!UDFNextArgument(udfc, ANY_TYPE_BITS, &tmparg)){
-			RETURNARGERROR("func_sublist");
+			RETURNFAIL("func_sublist");
 		}
 		listlist[i].value = tmparg.value;
 	}
@@ -487,7 +491,7 @@ void func_distinct_values(Environment *env, UDFContext *udfc, UDFValue *out){
 	CLIPSValue entry_dupl, items;
 	CLIPSValue *newvalues, *tmpptr, *values;
 	if (!UDFFirstArgument(udfc, ANY_TYPE_BITS, &firstarg)){
-		RETURNARGERROR("func_distinct_values");
+		RETURNFAIL("func_distinct_values");
 	}
 	firstval.value = firstarg.value;
 	newlist = crifi_list_distinct_values(env, firstval);
@@ -503,11 +507,11 @@ void func_intersect(Environment *env, UDFContext *udfc, UDFValue *out){
 	UDFValue leftarg, rightarg;
 	CLIPSValue leftlist, rightlist;
 	if (!UDFFirstArgument(udfc, ANY_TYPE_BITS, &leftarg)){
-		RETURNARGERROR("func_sublist");
+		RETURNFAIL("func_sublist");
 	}
 	leftlist.value = leftarg.value;
 	if(!UDFNextArgument(udfc, ANY_TYPE_BITS, &rightarg)){
-		RETURNARGERROR("func_sublist");
+		RETURNFAIL("func_sublist");
 	}
 	rightlist.value = rightarg.value;
 
@@ -525,11 +529,11 @@ void func_except(Environment *env, UDFContext *udfc, UDFValue *out){
 	UDFValue leftarg, rightarg;
 	CLIPSValue leftlist, rightlist;
 	if (!UDFFirstArgument(udfc, ANY_TYPE_BITS, &leftarg)){
-		RETURNARGERROR("func_sublist");
+		RETURNFAIL("func_sublist");
 	}
 	leftlist.value = leftarg.value;
 	if(!UDFNextArgument(udfc, ANY_TYPE_BITS, &rightarg)){
-		RETURNARGERROR("func_sublist");
+		RETURNFAIL("func_sublist");
 	}
 	rightlist.value = rightarg.value;
 
@@ -538,5 +542,4 @@ void func_except(Environment *env, UDFContext *udfc, UDFValue *out){
 }
 
 
-#undef RETURNARGERROR
 #undef RETURNFAIL

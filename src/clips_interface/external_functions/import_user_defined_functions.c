@@ -2,8 +2,14 @@
 #include "crifi_import.h"
 #include "info_query.h"
 
-#define SETERROR(errormessage) \
-		SetErrorValue(env, &(CreateString(env, errormessage)->header));
+#include "errormanagment.h"
+#define RETURNFAIL(failure) \
+		crifi_udf_error(env, failure, out);\
+		return;
+
+#define RETURNONVOID(env, udfval)\
+		if(udfval.voidValue == VoidConstant(env)){return;}
+
 
 static void set_error_combine(Environment *env, CLIPSValue *values, int number_values){
 	CLIPSValue errval;
@@ -48,18 +54,15 @@ void crifi_import(Environment *env, UDFContext *udfc, UDFValue *out){
 
 	number_additional_args = UDFArgumentCount(udfc) - 2;
 	if (number_additional_args < 0){
-		SETERROR("crifi:import has to few arguments");
-		return;
+		RETURNFAIL("crifi:import has to few arguments");
 	}
 
 	if (!UDFFirstArgument(udfc, ANY_TYPE_BITS, &tmpudfval)){
-		SETERROR("Argument Error for crifi:import");
-		return;
+		RETURNFAIL("Argument Error for crifi:import");
 	}
 	import_location.header = tmpudfval.header;
 	if(!UDFNextArgument(udfc, ANY_TYPE_BITS, &tmpudfval)){
-		SETERROR("Argument Error for crifi:import");
-		return;
+		RETURNFAIL("Argument Error for crifi:import");
 	}
 	entailment_regime.header = tmpudfval.header;
 
@@ -82,15 +85,15 @@ void crifi_import(Environment *env, UDFContext *udfc, UDFValue *out){
 			out->lexemeValue = TrueSymbol(env);
 			break;
 		case RET_CRIFI_BROKEN_ALGORITHM:
-			SETERROR("crifi:import is broken.");
+			RETURNFAIL("crifi:import is broken.");
 			break;
 		case RET_CRIFI_IMPORT_UNHANDLED:
 			set_error_string_uri(env, "crifi:import doesnt know "
 					"how to find: %s", &import_location);
-			//SETERROR("crifi:import doesnt know how to find:");
+			//RETURNFAIL("crifi:import doesnt know how to find:");
 			break;
 		case RET_CRIFI_IMPORT_COULDNT_LOCATE_SOURCE:
-			SETERROR("crifi:import couldnt has method to locate "
+			RETURNFAIL("crifi:import couldnt has method to locate "
 					"but couldnt load source");
 			break;
 		case RET_CRIFI_IMPORT_REJECTED_PROFILE:
@@ -109,7 +112,7 @@ void crifi_import(Environment *env, UDFContext *udfc, UDFValue *out){
 		case RET_CRIFI_IMPORT_PROCESS_FAILED:
 		case RET_CRIFI_IMPORT_UNKNOWN_ERROR:
 		default:
-			SETERROR("crifi:import failed to execute import "
+			RETURNFAIL("crifi:import failed to execute import "
 					"with unknown error");
 	}
 }

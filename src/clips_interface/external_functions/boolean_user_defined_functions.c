@@ -2,9 +2,13 @@
 #include "info_query.h"
 #include "crifi_numeric.h"
 
+#include "errormanagment.h"
 #define RETURNFAIL(failure) \
-		SetErrorValue(env, &(CreateString(env, failure)->header));\
+		crifi_udf_error(env, failure, out);\
 		return;
+
+#define RETURNONVOID(env, udfval)\
+		if(udfval.voidValue == VoidConstant(env)){return;}
 
 void rif_is_literal_boolean(Environment *env, UDFContext *udfc, UDFValue *out){
 	bool invert = *(bool*) udfc->context;

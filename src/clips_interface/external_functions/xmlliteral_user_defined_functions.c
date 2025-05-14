@@ -2,9 +2,15 @@
 #include "info_query.h"
 #include "ffi_constants.h"
 
-static void my_set_error(Environment *env, const char* failure){
-	SetErrorValue(env, &(CreateString(env, failure)->header));
-}
+#include "errormanagment.h"
+
+#define RETURNFAIL(failure) \
+		crifi_udf_error(env, failure, out);\
+		return;
+
+#define RETURNONVOID(env, udfval)\
+		if(udfval.voidValue == VoidConstant(env)){return;}
+
 
 void rif_is_literal_XMLLiteral(Environment *env, UDFContext *udfc, UDFValue *out){
 	bool truth;
@@ -14,8 +20,7 @@ void rif_is_literal_XMLLiteral(Environment *env, UDFContext *udfc, UDFValue *out
 	UDFValue udfval;
 	CLIPSValue clipsval;
 	if (!UDFFirstArgument(udfc, STRING_BIT, &udfval)){
-		my_set_error(env, "Argument error for is-literal-XMLLiteral.");
-		return;
+		RETURNFAIL("Argument error for is-literal-XMLLiteral.");
 	}
 
 	datatype = extract_datatype(env, udfval.header);
@@ -34,8 +39,7 @@ void rif_is_literal_anyURI(Environment *env, UDFContext *udfc, UDFValue *out){
 	UDFValue udfval;
 	CLIPSValue clipsval;
 	if (!UDFFirstArgument(udfc, STRING_BIT, &udfval)){
-		my_set_error(env, "Argument error for is-literal-anyURI.");
-		return;
+		RETURNFAIL("Argument error for is-literal-anyURI.");
 	}
 
 	datatype = extract_datatype(env, udfval.header);

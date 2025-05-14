@@ -4,11 +4,14 @@
 #include <math.h>
 #include "info_query.h"
 
+#include "errormanagment.h"
+
 #define RETURNFAIL(failure) \
-		Writeln(env, failure);\
-		SetErrorValue(env, &(CreateString(env, failure)->header));\
-		out->voidValue = VoidConstant(env);\
+		crifi_udf_error(env, failure, out);\
 		return;
+
+#define RETURNONVOID(env, udfval)\
+		if(udfval.voidValue == VoidConstant(env)){return;}
 
 
 typedef bool TimeCast(DateTimeStamp *time);

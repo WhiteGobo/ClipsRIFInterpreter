@@ -3,10 +3,14 @@
 #include "n3parser.h"
 #include "info_query.h"
 
-#define RETURNFAIL(failure, ret) \
-		Writeln(env, failure);\
-		SetErrorValue(env, &(CreateString(env, failure)->header));\
-		return ret;
+#include "errormanagment.h"
+
+#define RETURNFAIL(failure) \
+		crifi_udf_error(env, failure, out);\
+		return;
+
+#define RETURNONVOID(env, udfval)\
+		if(udfval.voidValue == VoidConstant(env)){return;}
 
 
 void clipsudf_equal(Environment *env, UDFContext *udfc, UDFValue *out){

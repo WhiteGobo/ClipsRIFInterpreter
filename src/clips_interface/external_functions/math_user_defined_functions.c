@@ -8,6 +8,15 @@
 #include "math_user_defined_functions.h"
 #include <crifi_numeric.h>
 
+#include "errormanagment.h"
+
+#define RETURNFAIL(failure) \
+		crifi_udf_error(env, failure, out);\
+		return;
+
+#define RETURNONVOID(env, udfval)\
+		if(udfval.voidValue == VoidConstant(env)){return;}
+
 
 typedef enum {
 	NT_RATIONAL_H,

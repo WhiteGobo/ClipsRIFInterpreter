@@ -2,12 +2,14 @@
 #include <check_datatype.h>
 #include "info_query.h"
 
-
+#include "errormanagment.h"
 #define RETURNFAIL(failure) \
-		Writeln(env, failure);\
-		SetErrorValue(env, &(CreateString(env, failure)->header));\
-		out->voidValue = VoidConstant(env);\
+		crifi_udf_error(env, failure, out);\
 		return;
+
+#define RETURNONVOID(env, udfval)\
+		if(udfval.voidValue == VoidConstant(env)){return;}
+
 
 void rif_check_datatype(Environment *env, UDFContext *udfc, UDFValue *out){
 	bool invert = ((struct context_check_datatype *) udfc->context)->invert;

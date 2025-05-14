@@ -502,6 +502,17 @@ static void create_logic_into_memory(FILE* tmpmem_f, TestdataPET testdata,
 	load_from_memory_to_graph(create_logic_graph,
 					testdata.premise_uri.c_str());
 
+	//eval(create_logic_graph, "(println \"vbnm\")");
+	//eval(create_logic_graph, "(agenda)");
+	//eval(create_logic_graph, "(println \"vbnm\")");
+	eval(create_logic_graph, "(watch rules)");
+	//eval(create_logic_graph, "(println \"vbnm\")");
+	//eval(create_logic_graph, "(facts)");
+	//eval(create_logic_graph, "(println \"vbnm\")");
+	//crifi_serialize_all_triples(create_logic_graph, stdout, "turtle", "");
+	//eval(create_logic_graph, "(println \"vbnm\")");
+
+	//number_rules_run = run_rules(create_logic_graph, 10000);
 	number_rules_run = run_rules(create_logic_graph, 10000);
 	fprintf(stderr, "information in create_logic_graph after rules run.\n");
 	//ignore error:

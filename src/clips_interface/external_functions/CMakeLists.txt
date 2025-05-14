@@ -14,6 +14,8 @@ add_library(external_functions STATIC
 	clipsvalue_check_datatype.c
 	import_user_defined_functions.h
 	import_user_defined_functions.c
+	errormanagment.c
+	errormanagment.h
 )
 
 #add_compile_options(-fPIC)
