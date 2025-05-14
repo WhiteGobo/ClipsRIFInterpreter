@@ -128,6 +128,14 @@ static void dont_lngjump_on_exit(Environment *env, int code, void *context)
 	}
 }
 
+/**
+ * If no more memory can be allocated this function returns true.
+ */
+static bool crifi_outOfMemoryFunction(Environment *env, size_t size){
+	fprintf(stderr, "Out of memory %d %d\n", size, sizeof(struct multifieldBuilder));
+	return true;
+}
+
 Environment *initEnvironment(){
 	Environment *env = CreateEnvironment();
 	//Add Router that disables jump to exit when ExitRouter is called
@@ -137,6 +145,10 @@ Environment *initEnvironment(){
 		DestroyEnvironment(env);
 		return NULL;
 	}
+	//Handle out of memory
+	MemoryData(env)->OutOfMemoryCallback = crifi_outOfMemoryFunction;
+
+
 	load_basic_templates(env);
 	if(!add_literal_user_functions(env)) {
 		//fprintf(stderr, "initEnvironment failed cause userfunctions.");

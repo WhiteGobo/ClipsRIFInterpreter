@@ -628,9 +628,7 @@ TEST_P(officialw3cPETTestCases_Test, CreateAndTestModelWithModelA) {
 
 	tmpmem_f = fmemopen(tmpmem, memory_size-1, "w");
 	ASSERT_NE(tmpmem_f, nullptr) << "Couldnt open memory. broken test.";
-	fprintf(stderr, "qq1\n");
 	create_logic_into_memory(tmpmem_f, testdata, init_graph_modelA);
-	fprintf(stderr, "qq3\n");
 	fclose(tmpmem_f);
 	if (HasFatalFailure()) return;
 	if (HasFailure()) return;

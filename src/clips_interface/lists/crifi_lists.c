@@ -188,7 +188,14 @@ int crifi_list_new(Environment *env, CLIPSValue *values, size_t values_length, C
 	CLIPSValue errval = {.voidValue = VoidConstant(env)};
 	Multifield *items;
 	MultifieldBuilder *mb;
+	if (values_length == -1){ //?why does only == -1 work?
+		return 2;
+	}
 	mb = CreateMultifieldBuilder(env, values_length);
+	if (mb == NULL){
+		return 3;
+	}
+
 	for (int i=0; i<values_length; i++){
 		MBAppend(mb, values + i);
 	}
