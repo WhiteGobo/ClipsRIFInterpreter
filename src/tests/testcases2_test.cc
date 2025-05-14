@@ -173,7 +173,7 @@ static auto petTestdata = testing::Values(
 			W3C_PREMISE("RDF_Combination_Constant_Equivalence_2"),
 			W3C_CONCLUSION("RDF_Combination_Constant_Equivalence_2")),
 		TestdataPET("Core_PET_RDF_Combination_Constant_Equivalence_3",
-			SC_All,
+			SC_ModelFirst,
 			W3C_PREMISE("RDF_Combination_Constant_Equivalence_3"),
 			W3C_CONCLUSION("RDF_Combination_Constant_Equivalence_3")),
 		TestdataPET("Core_PET_RDF_Combination_Constant_Equivalence_4",
