@@ -114,8 +114,26 @@ static bool load_basic_templates(Environment *env) {
 	return true;
 }
 
+static bool dump_query(Environment *env, const char *logicalName, void *context)
+{
+	return false;
+}
+
+static void dont_lngjump_on_exit(Environment *env, int code, void *context)
+{
+	switch (code){
+		case EXIT_FAILURE:
+			AbortExit(env);
+			break;
+	}
+}
+
 Environment *initEnvironment(){
 	Environment *env = CreateEnvironment();
+	if (!AddRouter(env, "NoLongJumpOnExitRouter", -1000, dump_query, NULL, NULL, NULL, dont_lngjump_on_exit, NULL)){
+		DestroyEnvironment(env);
+		return NULL;
+	}
 	load_basic_templates(env);
 	if(!add_literal_user_functions(env)) {
 		//fprintf(stderr, "initEnvironment failed cause userfunctions.");
