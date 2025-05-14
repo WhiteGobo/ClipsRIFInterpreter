@@ -130,7 +130,10 @@ static void dont_lngjump_on_exit(Environment *env, int code, void *context)
 
 Environment *initEnvironment(){
 	Environment *env = CreateEnvironment();
-	if (!AddRouter(env, "NoLongJumpOnExitRouter", -1000, dump_query, NULL, NULL, NULL, dont_lngjump_on_exit, NULL)){
+	//Add Router that disables jump to exit when ExitRouter is called
+	if (!AddRouter(env, "NoLongJumpOnExitRouter", -1000, dump_query,
+				NULL, NULL, NULL, dont_lngjump_on_exit, NULL))
+	{
 		DestroyEnvironment(env);
 		return NULL;
 	}
