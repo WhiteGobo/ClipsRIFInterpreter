@@ -35,7 +35,7 @@ void pred_list_contains(Environment *env, UDFContext *udfc, UDFValue *out){
 	UDFValue arglist, entry;
 	CLIPSValue c_arglist = {.voidValue=VoidConstant(env)};
 	CLIPSValue entry_dupl = {.voidValue=VoidConstant(env)};
-	CLIPSValue items = {.voidValue=VoidConstant(env)};
+	Multifield *items;
 	out->lexemeValue = FalseSymbol(env); //default output
 	if (!UDFFirstArgument(udfc, ANY_TYPE_BITS, &arglist)){
 		RETURNFAIL("list_contains");
@@ -44,13 +44,14 @@ void pred_list_contains(Environment *env, UDFContext *udfc, UDFValue *out){
 		RETURNFAIL("list_contains");
 	}
 	c_arglist.value = arglist.value;
-	if (!retrieve_items(env, c_arglist, &items)){
+	items = retrieve_items(env, c_arglist);
+	if (items == NULL){
 		RETURNFAIL("Cant handle given list.");
 	}
 	entry_dupl.header = entry.header;
-	for(int i = 0; i < items.multifieldValue->length; i++){
+	for(int i = 0; i < items->length; i++){
 		check = internal_equal(env, &entry_dupl,
-				items.multifieldValue->contents + i);
+				items->contents + i);
 		if (check == IEQ_TRUE){
 			out->lexemeValue = CreateBoolean(env, true);
 			break;
@@ -208,7 +209,8 @@ void func_sublist(Environment *env, UDFContext *udfc, UDFValue *out){
 	IEQ_RET check;
 	UDFValue udf_arglist, start_val, end_val;
 	CLIPSValue clips_arglist;
-	CLIPSValue entry_dupl, items;
+	CLIPSValue entry_dupl;
+	Multifield *items;
 	if (!UDFFirstArgument(udfc, ANY_TYPE_BITS, &udf_arglist)){
 		RETURNFAIL("func_sublist");
 	}
@@ -220,13 +222,14 @@ void func_sublist(Environment *env, UDFContext *udfc, UDFValue *out){
 	}
 	if (true){//if number args == 3
 		clips_arglist.value = udf_arglist.value;
-		if (!retrieve_items(env, clips_arglist, &items)){
+		items = retrieve_items(env, clips_arglist);
+		if (items == NULL){
 			RETURNFAIL("Cant handle given list.");
 		}
 	} else {
 		end_val.value = NULL;
 	}
-	length = items.multifieldValue->length;
+	length = items->length;
 	if (!udfvalue_as_integer(start_val, &start)) return;
 	if (end_val.value != NULL){
 		if (!udfvalue_as_integer(end_val, &end)) return;
@@ -237,7 +240,7 @@ void func_sublist(Environment *env, UDFContext *udfc, UDFValue *out){
 	if (end != length && !normalize_index(length, &end)) return;
 	if (start >= end) return;
 	crifi_list_new(env,
-			items.multifieldValue->contents + start,
+			items->contents + start,
 			end - start, &tmpout);
 	out->header = tmpout.header;
 }
@@ -246,21 +249,23 @@ void func_append(Environment *env, UDFContext *udfc, UDFValue *out){
 	size_t listlength;
 	unsigned arglength;
 	UDFValue udf_list, tmparg;
-	CLIPSValue list, clips_list;
+	Multifield *list;
+	CLIPSValue clips_list;
 	CLIPSValue *newvalues, *tmpptr;
 	if (!UDFFirstArgument(udfc, ANY_TYPE_BITS, &udf_list)){
 		RETURNFAIL("func_append");
 	}
 	clips_list.value = udf_list.value;
-	if (!retrieve_items(env, clips_list, &list)){
+	list = retrieve_items(env, clips_list);
+	if (list == NULL){
 		RETURNFAIL("Cant handle given list.");
 	}
 	arglength = UDFArgumentCount(udfc);
-	listlength = list.multifieldValue->length;
+	listlength = list->length;
 	newvalues = calloc(listlength + arglength -1, sizeof(CLIPSValue));
 	tmpptr = newvalues;
 	for (int i=0; i<listlength; i++){
-		tmpptr->value = list.multifieldValue->contents[i].value;
+		tmpptr->value = list->contents[i].value;
 		tmpptr++;
 	}
 	for (int i=1; i<arglength; i++){
@@ -311,7 +316,8 @@ void func_insert_before(Environment *env, UDFContext *udfc, UDFValue *out){
 	unsigned arglength;
 	CLIPSValue tmpout = {.voidValue = VoidConstant(env)};
 	UDFValue udf_list, positionarg, newvalarg;
-	CLIPSValue list, clips_list;
+	Multifield *list;
+	CLIPSValue clips_list;
 	CLIPSValue *newvalues, *tmpptr;
 	if (!UDFFirstArgument(udfc, ANY_TYPE_BITS, &udf_list)){
 		RETURNFAIL("func_insert_before");
@@ -324,23 +330,24 @@ void func_insert_before(Environment *env, UDFContext *udfc, UDFValue *out){
 		RETURNFAIL("func_insert_before");
 	}
 	clips_list.value = udf_list.value;
-	if (!retrieve_items(env, clips_list, &list)){
+	list = retrieve_items(env, clips_list);
+	if (list == NULL){
 		RETURNFAIL("Cant handle given list.");
 	}
-	listlength = list.multifieldValue->length;
+	listlength = list->length;
 	if (!normalize_index(listlength, &position)){
 		RETURNFAIL("cant insert at given position");
 	}
 	newvalues = calloc(listlength + 1, sizeof(CLIPSValue));
 	tmpptr = newvalues;
 	for (int i=0; i<position; i++) {
-		tmpptr->value = list.multifieldValue->contents[i].value;
+		tmpptr->value = list->contents[i].value;
 		tmpptr++;
 	}
 	tmpptr->value = newvalarg.value;
 	tmpptr++;
 	for (int i=position; i<listlength; i++) {
-		tmpptr->value = list.multifieldValue->contents[i].value;
+		tmpptr->value = list->contents[i].value;
 		tmpptr++;
 	}
 	crifi_list_new(env, newvalues, listlength+1, &tmpout);
@@ -391,20 +398,22 @@ void func_reverse(Environment *env, UDFContext *udfc, UDFValue *out){
 	size_t listlength;
 	unsigned arglength;
 	UDFValue udf_list;
-	CLIPSValue list, clips_list;
+	Multifield *list;
+	CLIPSValue clips_list;
 	CLIPSValue *newvalues, *tmpptr;
 	if (!UDFFirstArgument(udfc, ANY_TYPE_BITS, &udf_list)){
 		RETURNFAIL("func_insert_before");
 	}
 	clips_list.value = udf_list.value;
-	if (!retrieve_items(env, clips_list, &list)){
+	list = retrieve_items(env, clips_list);
+	if (list == NULL){
 		RETURNFAIL("Cant handle given list.");
 	}
-	listlength = list.multifieldValue->length;
+	listlength = list->length;
 	newvalues = calloc(listlength, sizeof(CLIPSValue));
 	tmpptr = newvalues;
 	for (int i=listlength-1; i>=0; i--){
-		tmpptr->value = list.multifieldValue->contents[i].value;
+		tmpptr->value = list->contents[i].value;
 		tmpptr++;
 	}
 	CLIPSValue tmpout = {.voidValue = VoidConstant(env)};
@@ -419,17 +428,19 @@ void func_index_of(Environment *env, UDFContext *udfc, UDFValue *out){
 	unsigned long long newvalues_length = 0;
 	unsigned arglength;
 	UDFValue udf_list, cmparg;
-	CLIPSValue list, clips_list;
+	Multifield *list;
+	CLIPSValue clips_list;
 	CLIPSValue *newvalues, *tmpptr;
 	CLIPSValue tmpval, cmpval;
 	if (!UDFFirstArgument(udfc, ANY_TYPE_BITS, &udf_list)){
 		RETURNFAIL("func_insert_before");
 	}
 	clips_list.value = udf_list.value;
-	if (!retrieve_items(env, clips_list, &list)){
+	list = retrieve_items(env, clips_list);
+	if (list == NULL){
 		RETURNFAIL("Cant handle given list.");
 	}
-	listlength = list.multifieldValue->length;
+	listlength = list->length;
 
 	if(!UDFNextArgument(udfc, ANY_TYPE_BITS, &cmparg)){
 		RETURNFAIL("func_insert_before");
@@ -439,7 +450,7 @@ void func_index_of(Environment *env, UDFContext *udfc, UDFValue *out){
 	newvalues = calloc(listlength, sizeof(CLIPSValue));
 	tmpptr = newvalues;
 	for (int i=0; i<listlength; i++){
-		tmpval.value = list.multifieldValue->contents[i].value;
+		tmpval.value = list->contents[i].value;
 		check = internal_equal(env, &tmpval, &cmpval);
 		if(IEQ_TRUE ==check) {
 			newvalues_length++;

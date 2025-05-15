@@ -25,7 +25,7 @@ extern "C" {
 bool crifi_is_list(Environment *env, CLIPSValue *arglist);
 int crifi_list_count(Environment *env, CLIPSValue *list);
 
-bool retrieve_items(Environment *env, CLIPSValue arglist, CLIPSValue *items);
+Multifield* retrieve_items(Environment *env, CLIPSValue arglist);
 
 
 CRIFI_LIST_REMOVE_RET crifi_list_remove(Environment *env, CLIPSValue list, long long index, CLIPSValue *ret);

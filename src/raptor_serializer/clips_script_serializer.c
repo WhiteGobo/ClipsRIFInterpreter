@@ -189,14 +189,15 @@ static CRIFI_SERIALIZE_SCRIPT_RET add_info_to_tree_list(MyContext* cntxt, crifi_
 	CLIPSValue l_val = {.factValue = l};
 	CLIPSValue list_iterator_node = {.voidValue = VoidConstant(graph)};
 	CLIPSValue *tmpval;// = {.voidValue = VoidConstant(graph)};
-	CLIPSValue items = {.voidValue = VoidConstant(graph)};
+	Multifield *items;
 	CLIPSValue clipsval_list = {.factValue = l};
-	length = crifi_list_count(graph, &clipsval_list);
+	items = retrieve_items(graph, l_val);
+	if (items == NULL){
+		return SAT_LISTITEMS;
+	}
+	length = items->length;
 	if (length == 0){ //no further serializing needed
 		return SAT_NOERROR;
-	}
-	if (!retrieve_items(graph, l_val, &items)){
-		return SAT_LISTITEMS;
 	}
 	
 	for (int i = 0; i<length; i++){
@@ -207,7 +208,7 @@ static CRIFI_SERIALIZE_SCRIPT_RET add_info_to_tree_list(MyContext* cntxt, crifi_
 		if (current == NULL){
 			return CRIFI_SERIALIZE_SCRIPT_OBJECT;
 		}
-		tmpval = items.multifieldValue->contents + i;
+		tmpval = items->contents + i;
 		element = clipsvalue_to_raptorterm(cntxt->world, graph, *tmpval);
 		if (element == NULL){
 			return SAT_LISTELEMENTFAILED;

@@ -43,16 +43,16 @@ CRIFI_LIST_GET_RET crifi_list_get(Environment *env, CLIPSValue list, long long i
 	size_t length;
 	long long i = index;
 	CLIPSValue itemscontainer;
-	CLIPSValue *items;
-	if (!retrieve_items(env, list, &itemscontainer)){
+	Multifield *items;
+	items = retrieve_items(env, list);
+	if (items == NULL){
 		return CRIFI_LIST_GET_NOLIST;
 	}
-	items = itemscontainer.multifieldValue->contents;
-	length = crifi_list_count(env, &list);
+	length = items->length;
 	if (!normalize_index(length, &i)){
 		return CRIFI_LIST_GET_INDEX;
 	}
-	ret->value = items[i].value;
+	ret->value = items->contents[i].value;
 	return CRIFI_LIST_GET_NOERROR;
 }
 
@@ -62,16 +62,16 @@ CRIFI_LIST_REMOVE_RET crifi_list_remove(Environment *env, CLIPSValue list, long 
 	int err;
 	CLIPSValue itemscontainer;
 	CLIPSValue tmp;
-	CLIPSValue *items;
+	Multifield *items;
 	CLIPSValue *newitems;
 	if (ret == NULL || env == NULL){
 		return CRIFI_LIST_REMOVE_USAGE;
 	}
-	if (!retrieve_items(env, list, &itemscontainer)){
+	items = retrieve_items(env, list);
+	if (items == NULL){
 		return CRIFI_LIST_REMOVE_NOLIST;
 	}
-	items = itemscontainer.multifieldValue->contents;
-	length = crifi_list_count(env, &list);
+	length = items->length;
 	if (length <= 0){
 		return CRIFI_LIST_REMOVE_EMPTY_LIST;
 	}
@@ -91,7 +91,7 @@ CRIFI_LIST_REMOVE_RET crifi_list_remove(Environment *env, CLIPSValue list, long 
 		if (i == index){
 			ii++;
 		}
-		newitems[i].value = items[ii].value;
+		newitems[i].value = items->contents[ii].value;
 		ii++;
 	}
 	err = crifi_list_new(env, newitems, length - 1, ret);
@@ -104,22 +104,25 @@ CRIFI_LIST_REMOVE_RET crifi_list_remove(Environment *env, CLIPSValue list, long 
 Fact *crifi_list_concatenate(Environment *env, CLIPSValue *listlist, size_t listlist_length){
 	CLIPSValue ret = {.voidValue=VoidConstant(env)};
 	size_t newlist_length = 0;
-	CLIPSValue items[listlist_length];
 	CLIPSValue *newvalues, *tmpptr;
+	Multifield *items;
+	Multifield *listofitems[listlist_length];
 	Fact *newlist;
 	Multifield *tmp_mf;
 	for (int i=0; i<listlist_length; i++){
-		if (!retrieve_items(env, listlist[i], items+i)){
+		items = retrieve_items(env, listlist[i]);
+		if (items == NULL){
 			return NULL;
 		}
-		newlist_length += items[i].multifieldValue->length;
+		newlist_length += items->length;
+		listofitems[i] = items;
 	}
 	newvalues = calloc(newlist_length, sizeof(CLIPSValue));
 	tmpptr = newvalues;
 	for (int i=0; i<listlist_length; i++){
-		tmp_mf = items[i].multifieldValue;
-		for (int j=0; j < tmp_mf->length; j++){
-			tmpptr->value = tmp_mf->contents[j].value;
+		items = listofitems[i];
+		for (int j=0; j < items->length; j++){
+			tmpptr->value = items->contents[j].value;
 			tmpptr++;
 		}
 	}
@@ -137,24 +140,25 @@ Fact *crifi_list_distinct_values(Environment *env, CLIPSValue list){
 	int err;
 	IEQ_RET check;
 	size_t newlist_length = 0;
-	CLIPSValue mf_items, *items;
+	CLIPSValue mf_items;
+	Multifield *items;
 	CLIPSValue *newitems, *tmpptr;
 	CLIPSValue ret = {.voidValue=VoidConstant(env)};
 
-	if (!retrieve_items(env, list, &mf_items)){
+	items = retrieve_items(env, list);
+	if (items == NULL){
 		return NULL;
 	}
-	items = mf_items.multifieldValue->contents;
-	newitems = calloc(mf_items.multifieldValue->length, sizeof(CLIPSValue));
+	newitems = calloc(items->length, sizeof(CLIPSValue));
 	tmpptr = newitems;
-	for (int i=0; i < mf_items.multifieldValue->length; i++){
+	for (int i=0; i < items->length; i++){
 		check = IEQ_FALSE;
 		for (int j=0; j<i; j++){
-			check = internal_equal(env, items + i, items + j);
+			check = internal_equal(env, items->contents + i, items->contents + j);
 			if (check != IEQ_FALSE) break;
 		}
 		if (check == IEQ_FALSE){
-			tmpptr->value = items[i].value;
+			tmpptr->value = items->contents[i].value;
 			newlist_length++;
 			tmpptr++;
 		} else if (check == IEQ_ERROR){
@@ -281,30 +285,33 @@ Fact *crifi_list_intersect(Environment *env, CLIPSValue leftlist, CLIPSValue rig
 	IEQ_RET check;
 	size_t newlist_length = 0;
 	size_t left_items_length, right_items_length;
-	CLIPSValue right_mf_items, *right_items;
-	CLIPSValue left_mf_items, *left_items;
+	CLIPSValue right_mf_items;
+	Multifield *right_items;
+	CLIPSValue left_mf_items;
+	Multifield *left_items;
 
 	CLIPSValue *newitems, *tmpptr;
 	CLIPSValue ret = {.voidValue = VoidConstant(env)};
 
-	if (!retrieve_items(env, leftlist, &left_mf_items)) return NULL;
-	if (!retrieve_items(env, rightlist, &right_mf_items)) return NULL;
+	left_items = retrieve_items(env, leftlist);
+	right_items = retrieve_items(env, rightlist);
+	if (left_items == NULL || right_items == NULL){
+		return NULL;
+	}
 
-	left_items = left_mf_items.multifieldValue->contents;
-	right_items = right_mf_items.multifieldValue->contents;
-	left_items_length = left_mf_items.multifieldValue->length;
-	right_items_length = right_mf_items.multifieldValue->length;
+	left_items_length = left_items->length;
+	right_items_length = right_items->length;
 
 	newitems = calloc(left_items_length, sizeof(CLIPSValue));
 	tmpptr = newitems;
 	for (int i=0; i < left_items_length; i++){
 		check = IEQ_FALSE;
 		for (int j=0; j<right_items_length; j++){
-			check = internal_equal(env, left_items + i, right_items + j);
+			check = internal_equal(env, left_items->contents + i, right_items->contents + j);
 			if (check != IEQ_FALSE) break;
 		}
 		if (check == IEQ_TRUE){
-			tmpptr->value = left_items[i].value;
+			tmpptr->value = left_items->contents[i].value;
 			newlist_length++;
 			tmpptr++;
 		} else if (check == IEQ_ERROR){
@@ -326,29 +333,32 @@ int crifi_list_except(Environment *env, CLIPSValue list, CLIPSValue exceptions, 
 	int err;
 	size_t newlist_length = 0;
 	size_t left_items_length, right_items_length;
-	CLIPSValue right_mf_items, *right_items;
-	CLIPSValue left_mf_items, *left_items;
+	CLIPSValue right_mf_items;
+	Multifield *right_items;
+	CLIPSValue left_mf_items;
+	Multifield *left_items;
 
 	CLIPSValue *newitems, *tmpptr;
 
-	if (!retrieve_items(env, list, &left_mf_items)) return 1;
-	if (!retrieve_items(env, exceptions, &right_mf_items)) return 1;
+	left_items = retrieve_items(env, list);
+	right_items = retrieve_items(env, exceptions);
+	if (left_items == NULL || right_items == NULL){
+		return 1;
+	}
 
-	left_items = left_mf_items.multifieldValue->contents;
-	right_items = right_mf_items.multifieldValue->contents;
-	left_items_length = left_mf_items.multifieldValue->length;
-	right_items_length = right_mf_items.multifieldValue->length;
+	left_items_length = left_items->length;
+	right_items_length = right_items->length;
 
 	newitems = calloc(left_items_length, sizeof(CLIPSValue));
 	tmpptr = newitems;
 	for (int i=0; i < left_items_length; i++){
 		check = IEQ_FALSE;
 		for (int j=0; j<right_items_length; j++){
-			check = internal_equal(env, left_items + i, right_items + j);
+			check = internal_equal(env, left_items->contents + i, right_items->contents + j);
 			if (check != IEQ_FALSE) break;
 		}
 		if (check == IEQ_FALSE){
-			tmpptr->value = left_items[i].value;
+			tmpptr->value = left_items->contents[i].value;
 			newlist_length++;
 			tmpptr++;
 		} else if (check == IEQ_ERROR){
@@ -377,11 +387,12 @@ bool crifi_is_list(Environment *env, CLIPSValue *arglist){
 
 int crifi_list_count(Environment *env, CLIPSValue *list){
 	size_t length;
-	CLIPSValue items;
-	if (!retrieve_items(env, *list, &items)){
+	Multifield *items;
+	items = retrieve_items(env, *list);
+	if (items == NULL){
 		return -1;
 	}
-	length = items.multifieldValue->length;
+	length = items->length;
 	return length;
 }
 
@@ -409,35 +420,36 @@ bool crifi_list_as_identifier(Environment *env, CLIPSValue *val, int index, CLIP
 
 
 
-bool retrieve_items(Environment *env, CLIPSValue arglist, CLIPSValue *items){
+Multifield* retrieve_items(Environment *env, CLIPSValue arglist){
 	Deftemplate *factClass;
 	Fact *superlist;
+	CLIPSValue tmpval;
 	switch (arglist.header->type) {
 		case FACT_ADDRESS_TYPE:
 			superlist = arglist.factValue;
 			break;
 		case MULTIFIELD_TYPE:
-			items->value = arglist.value;
-			return true;
+			return arglist.multifieldValue;
 		case SYMBOL_TYPE:
 			if (0 == strcmp(_RDF_nil_,
 					arglist.lexemeValue->contents))
 			{
-				return 0 == crifi_list_new(env, NULL, 0, items);
+				if(0 == crifi_list_new(env, NULL, 0, &tmpval)){
+					return tmpval.multifieldValue;
+				}
 			}
-			return false;
+			return NULL;
 		default:
-			return false;
+			return NULL;
 	}
 
 	factClass = FactDeftemplate(superlist);
 	if(0 != strcmp("AtomList", DeftemplateName(factClass))){
-		return false;
+		return NULL;
 	}
-	switch (GetFactSlot(superlist, "items", items)) {
+	switch (GetFactSlot(superlist, "items", &tmpval)) {
 		case GSE_NO_ERROR:
-			return true; break;
-		default:
-			return false;
+			return tmpval.multifieldValue;
 	}
+	return NULL;
 }
