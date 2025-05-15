@@ -4,6 +4,7 @@
 #include "own_user_defined_functions.h"
 #include <crifi_lists.h>
 #include <crifi_objects.h>
+#include "crifi_numeric.h"
 
 #include "info_query.h"
 #include "errormanagment.h"
@@ -29,22 +30,6 @@ void pred_is_list(Environment *env, UDFContext *udfc, UDFValue *out){
 	out->lexemeValue = CreateBoolean(env, crifi_is_list(env, &val));
 }
 
-static void my_set_error(Environment *env, const char *errmsg, CLIPSValue *errval){
-	MultifieldBuilder *mb;
-	CLIPSValue msg_part, msg_and_val;
-	msg_part.lexemeValue = CreateString(env, errmsg);
-	if (errval != NULL){
-		mb = CreateMultifieldBuilder(env, 2);
-		MBAppend(mb, &msg_part);
-		MBAppend(mb, errval);
-		msg_and_val.multifieldValue = MBCreate(mb);
-		MBDispose(mb);
-		SetErrorValue(env, msg_and_val.header);
-	} else {
-		SetErrorValue(env, msg_part.header);
-	}
-}
-
 void pred_list_contains(Environment *env, UDFContext *udfc, UDFValue *out){
 	IEQ_RET check;
 	UDFValue arglist, entry;
@@ -60,9 +45,7 @@ void pred_list_contains(Environment *env, UDFContext *udfc, UDFValue *out){
 	}
 	c_arglist.value = arglist.value;
 	if (!retrieve_items(env, c_arglist, &items)){
-		my_set_error(env, "Cant handle given list."
-			"(retrieve_items_udf failed)", &c_arglist);
-		return;
+		RETURNFAIL("Cant handle given list.");
 	}
 	entry_dupl.header = entry.header;
 	for(int i = 0; i < items.multifieldValue->length; i++){
@@ -70,7 +53,7 @@ void pred_list_contains(Environment *env, UDFContext *udfc, UDFValue *out){
 				items.multifieldValue->contents + i);
 		if (check == IEQ_TRUE){
 			out->lexemeValue = CreateBoolean(env, true);
-			return;
+			break;
 		} else if (check == IEQ_ERROR){
 			RETURNFAIL("pred_list_contains");
 		}
@@ -134,8 +117,11 @@ void func_make_list(Environment *env, UDFContext *udfc, UDFValue *out){
 			myval[i].value = tmpval.value;
 		}
 	}
-	crifi_list_new(env, myval, l, &tmpout);
-	out->header = tmpout.header;
+	if (0 == crifi_list_new(env, myval, l, &tmpout)){
+		out->value = tmpout.value;
+	} else {
+		RETURNFAIL("Failed to create new crifi_list.");
+	}
 }
 
 
@@ -176,18 +162,42 @@ static bool normalize_index(size_t length, long long *index){
 
 void func_get(Environment *env, UDFContext *udfc, UDFValue *out){
 	long long i;
-	UDFValue arglist, entry;
-	CLIPSValue val_arglist;
+	int err2;
+	CRIFI_LIST_GET_RET err;
+	UDFValue arglist, udf_index;
+	CLIPSValue val_arglist, clips_index, tmpout;
 	if (!UDFFirstArgument(udfc, ANY_TYPE_BITS, &arglist)){
 		RETURNFAIL("list_contains");
 	}
-	if(!UDFNextArgument(udfc, ANY_TYPE_BITS, &entry)){
+	RETURNONVOID(env, arglist);
+	if(!UDFNextArgument(udfc, ANY_TYPE_BITS, &udf_index)){
 		RETURNFAIL("list_contains");
 	}
+	RETURNONVOID(env, udf_index);
 	val_arglist.value = arglist.value;
-	if (!udfvalue_as_integer(entry, &i)) return;
-	out->value = crifi_list_get(env, val_arglist, i).value;
-	if(out->value == NULL) out->voidValue = VoidConstant(env);
+
+	clips_index.value = udf_index.value;
+	if(!clipsvalue_as_integer(env, clips_index, &i)){
+		RETURNFAIL("func:get expects an integer as second argument.");
+	}
+	err = crifi_list_get(env, val_arglist, i, &tmpout);
+
+	switch (err){
+		case CRIFI_LIST_GET_NOERROR:
+			break;
+		case CRIFI_LIST_GET_INDEX:
+			tmpout.voidValue = VoidConstant(env);
+			//err2 = crifi_list_new(env, NULL, 0, &tmpout);
+			//if (err2 != 0){
+			//	RETURNFAIL("func:get internal error.");
+			//}
+			break;
+		case CRIFI_LIST_GET_NOLIST:
+			RETURNFAIL("func:get expects list as first argument.");
+		default:
+			RETURNFAIL("func:get produced unhandled error.");
+	}
+	out->value = tmpout.value;
 }
 
 void func_sublist(Environment *env, UDFContext *udfc, UDFValue *out){
@@ -196,9 +206,10 @@ void func_sublist(Environment *env, UDFContext *udfc, UDFValue *out){
 	size_t length;
 	Fact *ret;
 	IEQ_RET check;
-	UDFValue arglist, start_val, end_val;
+	UDFValue udf_arglist, start_val, end_val;
+	CLIPSValue clips_arglist;
 	CLIPSValue entry_dupl, items;
-	if (!UDFFirstArgument(udfc, ANY_TYPE_BITS, &arglist)){
+	if (!UDFFirstArgument(udfc, ANY_TYPE_BITS, &udf_arglist)){
 		RETURNFAIL("func_sublist");
 	}
 	if(!UDFNextArgument(udfc, ANY_TYPE_BITS, &start_val)){
@@ -208,9 +219,9 @@ void func_sublist(Environment *env, UDFContext *udfc, UDFValue *out){
 		RETURNFAIL("func_sublist");
 	}
 	if (true){//if number args == 3
-		if (!retrieve_items_udf(env, arglist, &items)){
-			RETURNFAIL("Cant handle given list."
-					"(retrieve_items_udf failed)");
+		clips_arglist.value = udf_arglist.value;
+		if (!retrieve_items(env, clips_arglist, &items)){
+			RETURNFAIL("Cant handle given list.");
 		}
 	} else {
 		end_val.value = NULL;
@@ -234,15 +245,15 @@ void func_sublist(Environment *env, UDFContext *udfc, UDFValue *out){
 void func_append(Environment *env, UDFContext *udfc, UDFValue *out){
 	size_t listlength;
 	unsigned arglength;
-	UDFValue firstarg, tmparg;
-	CLIPSValue list;
+	UDFValue udf_list, tmparg;
+	CLIPSValue list, clips_list;
 	CLIPSValue *newvalues, *tmpptr;
-	if (!UDFFirstArgument(udfc, ANY_TYPE_BITS, &firstarg)){
+	if (!UDFFirstArgument(udfc, ANY_TYPE_BITS, &udf_list)){
 		RETURNFAIL("func_append");
 	}
-	if (!retrieve_items_udf(env, firstarg, &list)){
-		RETURNFAIL("Cant handle given list."
-				"(retrieve_items_udf failed)");
+	clips_list.value = udf_list.value;
+	if (!retrieve_items(env, clips_list, &list)){
+		RETURNFAIL("Cant handle given list.");
 	}
 	arglength = UDFArgumentCount(udfc);
 	listlength = list.multifieldValue->length;
@@ -299,10 +310,10 @@ void func_insert_before(Environment *env, UDFContext *udfc, UDFValue *out){
 	size_t listlength;
 	unsigned arglength;
 	CLIPSValue tmpout = {.voidValue = VoidConstant(env)};
-	UDFValue firstarg, positionarg, newvalarg;
-	CLIPSValue list;
+	UDFValue udf_list, positionarg, newvalarg;
+	CLIPSValue list, clips_list;
 	CLIPSValue *newvalues, *tmpptr;
-	if (!UDFFirstArgument(udfc, ANY_TYPE_BITS, &firstarg)){
+	if (!UDFFirstArgument(udfc, ANY_TYPE_BITS, &udf_list)){
 		RETURNFAIL("func_insert_before");
 	}
 	if(!UDFNextArgument(udfc, ANY_TYPE_BITS, &positionarg)){
@@ -312,9 +323,9 @@ void func_insert_before(Environment *env, UDFContext *udfc, UDFValue *out){
 	if(!UDFNextArgument(udfc, ANY_TYPE_BITS, &newvalarg)){
 		RETURNFAIL("func_insert_before");
 	}
-	if (!retrieve_items_udf(env, firstarg, &list)){
-		RETURNFAIL("Cant handle given list."
-				"(retrieve_items_udf failed)");
+	clips_list.value = udf_list.value;
+	if (!retrieve_items(env, clips_list, &list)){
+		RETURNFAIL("Cant handle given list.");
 	}
 	listlength = list.multifieldValue->length;
 	if (!normalize_index(listlength, &position)){
@@ -342,54 +353,52 @@ void func_remove(Environment *env, UDFContext *udfc, UDFValue *out){
 	size_t listlength;
 	unsigned arglength;
 	UDFValue firstarg, positionarg, newvalarg;
-	CLIPSValue list;
-	CLIPSValue *newvalues, *tmpptr;
+	CLIPSValue list, newlist = {.voidValue = VoidConstant(env)};
 	if (!UDFFirstArgument(udfc, ANY_TYPE_BITS, &firstarg)){
-		RETURNFAIL("func_insert_before");
+		RETURNFAIL("Argument error for func:remove.");
 	}
+	RETURNONVOID(env, firstarg);
+	list.value = firstarg.value;
 	if(!UDFNextArgument(udfc, ANY_TYPE_BITS, &positionarg)){
-		RETURNFAIL("func_insert_before");
+		RETURNFAIL("Argument error for func:remove.");
 	}
+	RETURNONVOID(env, positionarg);
 	if (!udfvalue_as_integer(positionarg, &position)) return;
-	if (!retrieve_items_udf(env, firstarg, &list)){
-		RETURNFAIL("Cant handle given list."
-				"(retrieve_items_udf failed)");
+
+	CRIFI_LIST_REMOVE_RET err;
+	err = crifi_list_remove(env, list, position, &newlist);
+	switch (err){
+		case CRIFI_LIST_REMOVE_NOERROR:
+			break;
+		case CRIFI_LIST_REMOVE_EMPTY_LIST:
+			RETURNFAIL("func:remove cant use an empty list.");
+		case CRIFI_LIST_REMOVE_NOLIST:
+			RETURNFAIL("func:remove expects a list as "
+					"first argument");
+		case CRIFI_LIST_REMOVE_INDEX:
+			RETURNFAIL("func:remove got an index which isnt "
+					"in given list");
+		case CRIFI_LIST_REMOVE_USAGE:
+		case CRIFI_LIST_REMOVE_CREATE_LIST:
+		case CRIFI_LIST_REMOVE_MALLOC:
+		default:
+			RETURNFAIL("func:remove failed with unknown error");
 	}
-	listlength = list.multifieldValue->length;
-	if (listlength < 1){
-		RETURNFAIL("func:remove cant work on empty list.");
-	}
-	if (!normalize_index(listlength, &position)){
-		RETURNFAIL("cant insert at given position");
-	}
-	newvalues = calloc(listlength - 1, sizeof(CLIPSValue));
-	tmpptr = newvalues;
-	for (int i=0; i<position; i++){
-		tmpptr->value = list.multifieldValue->contents[i].value;
-		tmpptr++;
-	}
-	for (int i=position+1; i<listlength; i++){
-		tmpptr->value = list.multifieldValue->contents[i].value;
-		tmpptr++;
-	}
-	CLIPSValue tmpout = {.voidValue = VoidConstant(env)};
-	crifi_list_new(env, newvalues, listlength-1, &tmpout);
-	out->header = tmpout.header;
-	free(newvalues);
+	out->value = newlist.value;
 }
 
 void func_reverse(Environment *env, UDFContext *udfc, UDFValue *out){
 	size_t listlength;
 	unsigned arglength;
-	UDFValue firstarg;
-	CLIPSValue list;
+	UDFValue udf_list;
+	CLIPSValue list, clips_list;
 	CLIPSValue *newvalues, *tmpptr;
-	if (!UDFFirstArgument(udfc, ANY_TYPE_BITS, &firstarg)){
+	if (!UDFFirstArgument(udfc, ANY_TYPE_BITS, &udf_list)){
 		RETURNFAIL("func_insert_before");
 	}
-	if (!retrieve_items_udf(env, firstarg, &list)){
-		RETURNFAIL("Cant handle given list."
-				"(retrieve_items_udf failed)");
+	clips_list.value = udf_list.value;
+	if (!retrieve_items(env, clips_list, &list)){
+		RETURNFAIL("Cant handle given list.");
 	}
 	listlength = list.multifieldValue->length;
 	newvalues = calloc(listlength, sizeof(CLIPSValue));
@@ -409,16 +418,16 @@ void func_index_of(Environment *env, UDFContext *udfc, UDFValue *out){
 	IEQ_RET check;
 	unsigned long long newvalues_length = 0;
 	unsigned arglength;
-	UDFValue firstarg, cmparg;
-	CLIPSValue list;
+	UDFValue udf_list, cmparg;
+	CLIPSValue list, clips_list;
 	CLIPSValue *newvalues, *tmpptr;
 	CLIPSValue tmpval, cmpval;
-	if (!UDFFirstArgument(udfc, ANY_TYPE_BITS, &firstarg)){
+	if (!UDFFirstArgument(udfc, ANY_TYPE_BITS, &udf_list)){
 		RETURNFAIL("func_insert_before");
 	}
-	if (!retrieve_items_udf(env, firstarg, &list)){
-		RETURNFAIL("Cant handle given list."
-				"(retrieve_items_udf failed)");
+	clips_list.value = udf_list.value;
+	if (!retrieve_items(env, clips_list, &list)){
+		RETURNFAIL("Cant handle given list.");
 	}
 	listlength = list.multifieldValue->length;
 

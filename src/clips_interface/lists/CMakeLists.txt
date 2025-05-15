@@ -1,6 +1,8 @@
 add_library(crifi_lists STATIC
 	crifi_lists.c
 	crifi_lists.h
+	#crifi_lists_clipsvalue.c
+	#crifi_lists_clipsvalue.h
 )
 
 set_target_properties(crifi_lists PROPERTIES
@@ -14,7 +16,7 @@ target_include_directories(crifi_lists
 target_include_directories(crifi_lists PRIVATE ${CRIFI_SHARED_HEADER})
 
 target_link_libraries(crifi_lists PUBLIC
-	clips
+	crifi_public_interface
 	crifi_objects
 )
 

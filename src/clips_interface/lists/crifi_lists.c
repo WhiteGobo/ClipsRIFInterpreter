@@ -11,7 +11,12 @@
 static bool normalize_index(size_t length, long long *index){
 	//compare size_t with long long only safe if positive
 	//see `https://stackoverflow.com/questions/3642010/can-i-compare-int-with-size-t-directly-in-c`_
-	if (*index>0 && *index >= length) return false;
+	if (length == 0){
+		return false;
+	}
+	if (*index>0 && *index >= length){
+		return false;
+	}
 	if (*index<0){
 		*index += length;
 		if (*index<0) return false;
@@ -19,16 +24,8 @@ static bool normalize_index(size_t length, long long *index){
 	return true;
 }
 
-/**
- *
- * TODO: consider to use Multifield for items instead
- */
-bool retrieve_items_udf(Environment *env, UDFValue arglist, CLIPSValue *items){
-	CLIPSValue cpy_arglist;
-	cpy_arglist.value = arglist.value;
-	return retrieve_items(env, cpy_arglist, items);
-}
 
+/*
 Fact *clipsvalue_to_list(CLIPSValue val){
 	Deftemplate *factClass;
 	Fact *list;
@@ -39,43 +36,69 @@ Fact *clipsvalue_to_list(CLIPSValue val){
 	}
 	return list;
 }
-
-bool retrieve_items(Environment *env, CLIPSValue arglist, CLIPSValue *items){
-	Deftemplate *factClass;
-	Fact *superlist;
-	switch (arglist.header->type) {
-		case FACT_ADDRESS_TYPE:
-			superlist = arglist.factValue;
-			break;
-		default:
-			return false;
-	}
-
-	factClass = FactDeftemplate(superlist);
-	if(0 != strcmp("AtomList", DeftemplateName(factClass))){
-		return false;
-	}
-	switch (GetFactSlot(superlist, "items", items)) {
-		case GSE_NO_ERROR:
-			return true; break;
-		default:
-			return false;
-	}
-}
+*/
 
 
-CLIPSValue crifi_list_get(Environment *env, CLIPSValue list, long long index){
+CRIFI_LIST_GET_RET crifi_list_get(Environment *env, CLIPSValue list, long long index, CLIPSValue *ret){
 	size_t length;
 	long long i = index;
-	CLIPSValue ret, items;
-	if (!retrieve_items(env, list, &items)){
-		ret.value = NULL;
-		return ret;
+	CLIPSValue itemscontainer;
+	CLIPSValue *items;
+	if (!retrieve_items(env, list, &itemscontainer)){
+		return CRIFI_LIST_GET_NOLIST;
 	}
-	length = items.multifieldValue->length;
-	if (!normalize_index(length, &i)){ret.value =NULL; return ret;}
-	ret.value = items.multifieldValue->contents[i].value;
-	return ret;
+	items = itemscontainer.multifieldValue->contents;
+	length = crifi_list_count(env, &list);
+	if (!normalize_index(length, &i)){
+		return CRIFI_LIST_GET_INDEX;
+	}
+	ret->value = items[i].value;
+	return CRIFI_LIST_GET_NOERROR;
+}
+
+CRIFI_LIST_REMOVE_RET crifi_list_remove(Environment *env, CLIPSValue list, long long index, CLIPSValue *ret){
+	size_t length, newlength;
+	long long i, ii;
+	int err;
+	CLIPSValue itemscontainer;
+	CLIPSValue tmp;
+	CLIPSValue *items;
+	CLIPSValue *newitems;
+	if (ret == NULL || env == NULL){
+		return CRIFI_LIST_REMOVE_USAGE;
+	}
+	if (!retrieve_items(env, list, &itemscontainer)){
+		return CRIFI_LIST_REMOVE_NOLIST;
+	}
+	items = itemscontainer.multifieldValue->contents;
+	length = crifi_list_count(env, &list);
+	if (length <= 0){
+		return CRIFI_LIST_REMOVE_EMPTY_LIST;
+	}
+	if (!normalize_index(length, &index)){
+		return CRIFI_LIST_REMOVE_INDEX;
+	}
+	if (index < 0 || index >= length){
+		return CRIFI_LIST_REMOVE_INDEX;
+	}
+	newlength = length - 1;
+	newitems = malloc(length * sizeof(CLIPSValue));
+	if (newitems == NULL){
+		return CRIFI_LIST_REMOVE_MALLOC;
+	}
+	ii = 0;
+	for (int i = 0; i < newlength; i++){
+		if (i == index){
+			ii++;
+		}
+		newitems[i].value = items[ii].value;
+		ii++;
+	}
+	err = crifi_list_new(env, newitems, length - 1, ret);
+	if (err){
+		return CRIFI_LIST_REMOVE_CREATE_LIST;
+	}
+	return CRIFI_LIST_REMOVE_NOERROR;
 }
 
 Fact *crifi_list_concatenate(Environment *env, CLIPSValue *listlist, size_t listlist_length){
@@ -100,13 +123,18 @@ Fact *crifi_list_concatenate(Environment *env, CLIPSValue *listlist, size_t list
 			tmpptr++;
 		}
 	}
-	crifi_list_new(env, newvalues, newlist_length, &ret);
+	int err = crifi_list_new(env, newvalues, newlist_length, &ret);
 	free(newvalues);
-	return ret.factValue;
+	if (err == 0){
+		return ret.factValue;
+	} else {
+		return NULL;
+	}
 }
 
 
 Fact *crifi_list_distinct_values(Environment *env, CLIPSValue list){
+	int err;
 	IEQ_RET check;
 	size_t newlist_length = 0;
 	CLIPSValue mf_items, *items;
@@ -134,9 +162,13 @@ Fact *crifi_list_distinct_values(Environment *env, CLIPSValue list){
 			return NULL;
 		}
 	}
-	crifi_list_new(env, newitems, newlist_length, &ret);
+	err = crifi_list_new(env, newitems, newlist_length, &ret);
 	free(newitems);
-	return ret.factValue;
+	if (err == 0){
+		return ret.factValue;
+	} else {
+		return NULL;
+	}
 }
 
 
@@ -191,6 +223,9 @@ int crifi_list_new(Environment *env, CLIPSValue *values, size_t values_length, C
 	if (values_length == -1){ //?why does only == -1 work?
 		return 2;
 	}
+	if (values == NULL && values_length > 0){
+		return 4;
+	}
 	mb = CreateMultifieldBuilder(env, values_length);
 	if (mb == NULL){
 		return 3;
@@ -201,6 +236,9 @@ int crifi_list_new(Environment *env, CLIPSValue *values, size_t values_length, C
 	}
 	items = MBCreate(mb);
 	MBDispose(mb);
+	if (items == NULL){
+		return 4;
+	}
 
 	FactBuilder *fb;
 	FactBuilderError err;
@@ -211,20 +249,26 @@ int crifi_list_new(Environment *env, CLIPSValue *values, size_t values_length, C
 		default:
 			FBDispose(fb); return 1;
 	}
-	ret->factValue = FBAssert(fb);
+	errret = 0;
+	Fact *retfact = FBAssert(fb);
 	switch (FBError(env)){
 		case FBE_NO_ERROR:
+			if (retfact != NULL){
+				ret->factValue = retfact;
+			} else {
+				errret = 1;
+			}
 			break;
 		case FBE_COULD_NOT_ASSERT_ERROR:
 			//TODO: Cant assert during pattern-matching
 			ret->multifieldValue = items;
 			break;
 		default:
-			errret = 1;
+			errret = 2;
 			ret->voidValue = VoidConstant(env);
-			errval.lexemeValue = CreateString(env, "make-list "
-					"failed due to unknown reasons.");
-			SetErrorValue(env, errval.header);
+			//errval.lexemeValue = CreateString(env, "make-list "
+			//		"failed due to unknown reasons.");
+			//SetErrorValue(env, errval.header);
 			break;
 	}
 	FBDispose(fb);
@@ -233,6 +277,7 @@ int crifi_list_new(Environment *env, CLIPSValue *values, size_t values_length, C
 
 
 Fact *crifi_list_intersect(Environment *env, CLIPSValue leftlist, CLIPSValue rightlist){
+	int err;
 	IEQ_RET check;
 	size_t newlist_length = 0;
 	size_t left_items_length, right_items_length;
@@ -267,13 +312,18 @@ Fact *crifi_list_intersect(Environment *env, CLIPSValue leftlist, CLIPSValue rig
 			return NULL;
 		}
 	}
-	crifi_list_new(env, newitems, newlist_length, &ret);
+	err = crifi_list_new(env, newitems, newlist_length, &ret);
 	free(newitems);
-	return ret.factValue;
+	if (err == 0){
+		return ret.factValue;
+	} else {
+		return NULL;
+	}
 }
 
 int crifi_list_except(Environment *env, CLIPSValue list, CLIPSValue exceptions, CLIPSValue *ret){
 	IEQ_RET check;
+	int err;
 	size_t newlist_length = 0;
 	size_t left_items_length, right_items_length;
 	CLIPSValue right_mf_items, *right_items;
@@ -306,9 +356,9 @@ int crifi_list_except(Environment *env, CLIPSValue list, CLIPSValue exceptions, 
 			return 1;
 		}
 	}
-	crifi_list_new(env, newitems, newlist_length, ret);
+	err = crifi_list_new(env, newitems, newlist_length, ret);
 	free(newitems);
-	return 0;
+	return err;
 }
 
 bool crifi_is_list(Environment *env, CLIPSValue *arglist){
@@ -355,4 +405,39 @@ bool crifi_list_as_identifier(Environment *env, CLIPSValue *val, int index, CLIP
 
 	err = blanknode_from_idstring(env, ret, target);
 	return err == 0;
+}
+
+
+
+bool retrieve_items(Environment *env, CLIPSValue arglist, CLIPSValue *items){
+	Deftemplate *factClass;
+	Fact *superlist;
+	switch (arglist.header->type) {
+		case FACT_ADDRESS_TYPE:
+			superlist = arglist.factValue;
+			break;
+		case MULTIFIELD_TYPE:
+			items->value = arglist.value;
+			return true;
+		case SYMBOL_TYPE:
+			if (0 == strcmp(_RDF_nil_,
+					arglist.lexemeValue->contents))
+			{
+				return 0 == crifi_list_new(env, NULL, 0, items);
+			}
+			return false;
+		default:
+			return false;
+	}
+
+	factClass = FactDeftemplate(superlist);
+	if(0 != strcmp("AtomList", DeftemplateName(factClass))){
+		return false;
+	}
+	switch (GetFactSlot(superlist, "items", items)) {
+		case GSE_NO_ERROR:
+			return true; break;
+		default:
+			return false;
+	}
 }
