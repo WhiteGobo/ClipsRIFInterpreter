@@ -17,6 +17,8 @@ Document(
             ?rootformula[rdf:type -> rif:Frame]
             ?rootformula[rdf:type -> rif:Atom]
             ?rootformula[rdf:type -> rif:Exists]
+            ?rootformula[rdf:type -> rif:Member]
+            ?rootformula[rdf:type -> rif:Subclass]
           )
           Not (Exists ?deeperroot (Or(
             ?deeperroot[rif:formula -> ?rootformula]

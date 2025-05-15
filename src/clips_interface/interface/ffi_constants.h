@@ -16,6 +16,7 @@
 #define _RDF_first_ _RDF_ "first"
 #define _RDF_rest_ _RDF_ "rest"
 #define _RDF_nil_ _RDF_ "nil"
+#define _RDF_subClassOf_ _RDF_ "subClassOf"
 
 //here defined urls
 #define _CRIFI_ "http://white.gobo/"

@@ -173,6 +173,44 @@ Document(
         )
       )
 
+      Forall ?rifmember ?instance ?class ?exprclass ?exprinstance(
+        If And (
+          ?rifmember[rif:instance -> ?instance]
+          ?rifmember[rif:class -> ?class]
+          ?class[ex:as-expression -> ?exprclass]
+          ?instance[ex:as-expression -> ?exprinstance]
+        ) Then Do (
+          (?factvar New())
+          (?checkmember New())
+
+          (?clipsdeftemplate New())
+          (?anyfactp New())
+          (?query New())
+          (?checkclass New())
+          (?checkinstance New())
+          (?slotclass New())
+          (?slotinstance New())
+          Assert( ?rifmember[ex:as-test-action -> ?anyfactp] )
+          Assert( ?factvar[rdf:type -> cs:Variable] )
+          Assert( ?clipsdeftemplate[cs:deftemplate-name -> "Member"] )
+          Assert( ?clipsdeftemplate[cs:fact-set-member-variable -> ?factvar] )
+          Assert( ?anyfactp[rdf:type -> cs:AnyFactP] )
+          Assert( ?anyfactp[cs:query -> ?query])
+          Assert( ?anyfactp[cs:fact-set-template -> ?clipsdeftemplate] )
+          Assert( ?query[cs:function-name -> "and"] )
+          Assert( ?query[cs:function-args -> External(func:make-list(?checkclass ?checkinstance))] )
+
+          Assert( ?checkclass[cs:function-name -> "eq"] )
+          Assert( ?checkclass[cs:function-args -> External(func:make-list(?slotclass ?exprclass))] )
+          Assert( ?slotclass[cs:member-variable -> ?factvar] )
+          Assert( ?slotclass[cs:member-slot-name -> "class"] )
+
+          Assert( ?checkinstance[cs:function-name -> "eq"] )
+          Assert( ?checkinstance[cs:function-args -> External(func:make-list(?slotinstance ?exprinstance))] )
+          Assert( ?slotinstance[cs:member-variable -> ?factvar] )
+          Assert( ?slotinstance[cs:member-slot-name -> "instance"] )
+        )
+      )
       Forall ?rifframe ?object ?slotlist ?slotkey ?slotvalue ?factindex(
         If And (
           ?rifframe[rif:object -> ?object]
@@ -183,9 +221,6 @@ Document(
           External(pred:list-contains(?slotlist ?slot))
         ) Then Do (
           (?factvar New())
-          (?slotsubj New())
-          (?slotpred New())
-          (?slotobj New())
           (?checktriple New())
 
           (?clipsdeftemplate New())

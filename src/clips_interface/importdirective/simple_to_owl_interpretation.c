@@ -163,6 +163,50 @@ static int transfer_rest_triples(TripleList *first, ImportProcess *sub){
 	return 0;
 }
 
+typedef int SpecialAssert(ImportProcess *process,
+		const char *object, const char *object_suffix,
+		IMPORT_TERM_TYPE object_type,
+		const char *slotkey, const char *slotkey_suffix,
+		IMPORT_TERM_TYPE slotkey_type,
+		const char *slotvalue, const char *slotvalue_suffix,
+		IMPORT_TERM_TYPE slotvalue_type);
+
+static int my_add_first(ImportProcess *process,
+		const char *object, const char *object_suffix,
+		IMPORT_TERM_TYPE object_type,
+		const char *slotkey, const char *slotkey_suffix,
+		IMPORT_TERM_TYPE slotkey_type,
+		const char *slotvalue, const char *slotvalue_suffix,
+		IMPORT_TERM_TYPE slotvalue_type)
+{
+	return add_first(process->simple_to_owl_info->list_info,
+			object, object_suffix, object_type,
+			slotvalue, slotvalue_suffix, slotvalue_type);
+}
+
+static int my_add_rest(ImportProcess *process,
+		const char *object, const char *object_suffix,
+		IMPORT_TERM_TYPE object_type,
+		const char *slotkey, const char *slotkey_suffix,
+		IMPORT_TERM_TYPE slotkey_type,
+		const char *slotvalue, const char *slotvalue_suffix,
+		IMPORT_TERM_TYPE slotvalue_type)
+{
+	return add_rest(process->simple_to_owl_info->list_info,
+			object, object_suffix, object_type,
+			slotvalue, slotvalue_suffix, slotvalue_type);
+}
+
+static SpecialAssert* get_special_assert(const char* id){
+	if (0 == strcmp(id, _RDF_first_)){
+		return my_add_first;
+	} else if (0 == strcmp(id, _RDF_rest_)){
+		return my_add_rest;
+	} else if (0 == strcmp(id, _RDF_subClassOf_)){
+	} else if (0 == strcmp(id, _RDF_type_)){
+	}
+	return NULL;
+}
 
 static int try_special_assert(ImportProcess *process,
 		const char *object, const char *object_suffix,
@@ -172,24 +216,12 @@ static int try_special_assert(ImportProcess *process,
 		const char *slotvalue, const char *slotvalue_suffix,
 		IMPORT_TERM_TYPE slotvalue_type)
 {
-	if (0 == strcmp(slotkey, _RDF_first_)){
-		if (0 == add_first(process->simple_to_owl_info->list_info,
+	SpecialAssert *my_assert = get_special_assert(slotkey);
+	if (my_assert != NULL){
+		return my_assert(process,
 				object, object_suffix, object_type,
-				slotvalue, slotvalue_suffix, slotvalue_type))
-		{
-			return 0;
-		} else {
-			return 2;
-		}
-	} else if (0 == strcmp(slotkey, _RDF_rest_)){
-		if (0 == add_rest(process->simple_to_owl_info->list_info,
-				object, object_suffix, object_type,
-				slotvalue, slotvalue_suffix, slotvalue_type))
-		{
-			return 0;
-		} else {
-			return 2;
-		}
+				slotkey, slotkey_suffix, slotkey_type,
+				slotvalue, slotvalue_suffix, slotvalue_type);
 	}
 	return 1;
 }
