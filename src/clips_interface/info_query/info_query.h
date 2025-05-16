@@ -49,6 +49,8 @@ char *extract_datatype(Environment *env, TypeHeader *head);
 char *extract_lang(Environment *env, TypeHeader *head);
 
 CrifiAssertTripleError assert_triple(Environment *env, CLIPSValue *subject, CLIPSValue *predicate, CLIPSValue *object);
+CrifiAssertTripleError assert_member(Environment *env, CLIPSValue *instance, CLIPSValue *class_);
+CrifiAssertTripleError assert_subclass(Environment *env, CLIPSValue *sub, CLIPSValue *super);
 
 char* genclipscode_iri(Environment *env, char* iri);
 char* genclipscode_lexical(Environment *env, char* value, char* datatype);

@@ -35,6 +35,7 @@ typedef enum {
 typedef enum {
 	CRIFI_IMPORT_ASSERT_NOERROR = 0,
 	CRIFI_IMPORT_ASSERT_INVALID_TERM,
+	CRIFI_IMPORT_ASSERT_UNHANDLED_TRIPLE,
 	CRIFI_IMPORT_ASSERT_UNHANDLED_ERROR
 } CRIFI_IMPORT_ASSERT_RET;
 
@@ -102,7 +103,7 @@ int set_model_id_for_import(crifi_graph *graph, CRIFI_IMPORT_MODEL_ID model_id);
 ImportProcess *start_import_process(crifi_graph *graph, CLIPSValue *input_interpretation);
 
 int end_import_process(ImportProcess *process);
-CRIFI_IMPORT_ASSERT_RET assert_frame(ImportProcess *process,
+CRIFI_IMPORT_ASSERT_RET crifi_import_assert_frame(ImportProcess *process,
 		const char *object, const char *object_suffix,
 		IMPORT_TERM_TYPE object_type,
 		const char *slotkey, const char *slotkey_suffix,
@@ -110,6 +111,17 @@ CRIFI_IMPORT_ASSERT_RET assert_frame(ImportProcess *process,
 		const char *slotvalue, const char *slotvalue_suffix,
 		IMPORT_TERM_TYPE slotvalue_type
 		);
+CRIFI_IMPORT_ASSERT_RET crifi_import_assert_member(ImportProcess *process,
+		const char *instance, const char *instance_suffix,
+		IMPORT_TERM_TYPE instance_type,
+		const char *cls, const char *cls_suffix,
+		IMPORT_TERM_TYPE cls_type);
+
+CRIFI_IMPORT_ASSERT_RET crifi_import_assert_subclass(ImportProcess *process,
+		const char *sub, const char *sub_suffix,
+		IMPORT_TERM_TYPE sub_type,
+		const char *super, const char *super_suffix,
+		IMPORT_TERM_TYPE super_type);
 
 
 RET_CRIFI_IMPORT crifi_execute_import(crifi_graph *graph, CLIPSValue *import_location, CLIPSValue *entailment_regime, CLIPSValue *values, int number_values);

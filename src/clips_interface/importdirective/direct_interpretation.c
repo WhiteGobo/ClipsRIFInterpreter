@@ -109,17 +109,6 @@ CRIFI_IMPORT_ASSERT_RET assert_frame_direct(ImportProcess *process,
 		default:
 			return CRIFI_IMPORT_ASSERT_UNHANDLED_ERROR;
 	}
-	if (0 == strcmp("http://www.w3.org/2007/rif-builtin-function#numeric-add", slotvalue)){
-		fprintf(stderr, "used object %s\n", object);
-		fprintf(stderr, "qwertz found:\n");
-		fprintf(stderr, "assert (");
-		debugprint(stderr, &object_cv);
-		fprintf(stderr, ", ");
-		debugprint(stderr, &slotkey_cv);
-		fprintf(stderr, ", ");
-		debugprint(stderr, &slotvalue_cv);
-		fprintf(stderr, ")\n");
-	}
 	return CRIFI_IMPORT_ASSERT_NOERROR;
 }
 
@@ -190,4 +179,104 @@ static CRIFI_IMPORT_CLIPSVALUE_RETRIEVE_RET get_special_clipsvalue(
 		}
 	}
 	return CRIFI_IMPORT_CLIPSVALUE_RETRIEVE_NOTFOUND;
+}
+
+CRIFI_IMPORT_ASSERT_RET assert_member_direct(ImportProcess *process,
+		const char *instance, const char *instance_suffix,
+		IMPORT_TERM_TYPE instance_type,
+		const char *class, const char *class_suffix,
+		IMPORT_TERM_TYPE class_type)
+{
+	int err;
+	CrifiAssertTripleError err3;
+	CRIFI_IMPORT_CLIPSVALUE_RETRIEVE_RET err2;
+	CLIPSValue instance_cv = {.voidValue = VoidConstant(process->graph)};
+	CLIPSValue class_cv = {.voidValue = VoidConstant(process->graph)};
+	err2 = get_special_clipsvalue(process, instance, instance_suffix,
+					instance_type, &instance_cv);
+	if (err2 == CRIFI_IMPORT_CLIPSVALUE_RETRIEVE_NOTFOUND){
+		err = value_suffix_to_clipsvalue(process,
+					instance, instance_suffix,
+					instance_type, &instance_cv);
+		if (err != 0){
+			return CRIFI_IMPORT_ASSERT_INVALID_TERM;
+		}
+	} else if (err2 == CRIFI_IMPORT_CLIPSVALUE_RETRIEVE_UNHANDLED_ERROR){
+		return CRIFI_IMPORT_ASSERT_INVALID_TERM;
+	}
+	err2 = get_special_clipsvalue(process, class, class_suffix,
+					class_type, &class_cv);
+	if (err2 == CRIFI_IMPORT_CLIPSVALUE_RETRIEVE_NOTFOUND){
+		err = value_suffix_to_clipsvalue(process,
+					class, class_suffix,
+					class_type, &class_cv);
+		if (err != 0){
+			return CRIFI_IMPORT_ASSERT_INVALID_TERM;
+		}
+	} else if (err2 == CRIFI_IMPORT_CLIPSVALUE_RETRIEVE_UNHANDLED_ERROR){
+		return CRIFI_IMPORT_ASSERT_INVALID_TERM;
+	}
+	err3 = assert_member(process->graph, &instance_cv, &class_cv);
+	switch (err3){
+		case CRIFI_ASSTR_NO_ERROR:
+			break;
+		case CRIFI_ASSTR_SUBJECT:
+		case CRIFI_ASSTR_OBJECT:
+			return CRIFI_IMPORT_ASSERT_INVALID_TERM;
+		case CRIFI_ASSTR_PREDICATE:
+		case CRIFI_ASSTR_UNKNOWN:
+		default:
+			return CRIFI_IMPORT_ASSERT_UNHANDLED_ERROR;
+	}
+	return CRIFI_IMPORT_ASSERT_NOERROR;
+}
+
+CRIFI_IMPORT_ASSERT_RET assert_subclass_direct(ImportProcess *process,
+		const char *sub, const char *sub_suffix,
+		IMPORT_TERM_TYPE sub_type,
+		const char *super, const char *super_suffix,
+		IMPORT_TERM_TYPE super_type)
+{
+	int err;
+	CrifiAssertTripleError err3;
+	CRIFI_IMPORT_CLIPSVALUE_RETRIEVE_RET err2;
+	CLIPSValue sub_cv = {.voidValue = VoidConstant(process->graph)};
+	CLIPSValue super_cv = {.voidValue = VoidConstant(process->graph)};
+	err2 = get_special_clipsvalue(process, sub, sub_suffix,
+					sub_type, &sub_cv);
+	if (err2 == CRIFI_IMPORT_CLIPSVALUE_RETRIEVE_NOTFOUND){
+		err = value_suffix_to_clipsvalue(process,
+					sub, sub_suffix,
+					sub_type, &sub_cv);
+		if (err != 0){
+			return CRIFI_IMPORT_ASSERT_INVALID_TERM;
+		}
+	} else if (err2 == CRIFI_IMPORT_CLIPSVALUE_RETRIEVE_UNHANDLED_ERROR){
+		return CRIFI_IMPORT_ASSERT_INVALID_TERM;
+	}
+	err2 = get_special_clipsvalue(process, super, super_suffix,
+					super_type, &super_cv);
+	if (err2 == CRIFI_IMPORT_CLIPSVALUE_RETRIEVE_NOTFOUND){
+		err = value_suffix_to_clipsvalue(process,
+					super, super_suffix,
+					super_type, &super_cv);
+		if (err != 0){
+			return CRIFI_IMPORT_ASSERT_INVALID_TERM;
+		}
+	} else if (err2 == CRIFI_IMPORT_CLIPSVALUE_RETRIEVE_UNHANDLED_ERROR){
+		return CRIFI_IMPORT_ASSERT_INVALID_TERM;
+	}
+	err3 = assert_subclass(process->graph, &sub_cv, &super_cv);
+	switch (err3){
+		case CRIFI_ASSTR_NO_ERROR:
+			break;
+		case CRIFI_ASSTR_SUBJECT:
+		case CRIFI_ASSTR_OBJECT:
+			return CRIFI_IMPORT_ASSERT_INVALID_TERM;
+		case CRIFI_ASSTR_PREDICATE:
+		case CRIFI_ASSTR_UNKNOWN:
+		default:
+			return CRIFI_IMPORT_ASSERT_UNHANDLED_ERROR;
+	}
+	return CRIFI_IMPORT_ASSERT_NOERROR;
 }

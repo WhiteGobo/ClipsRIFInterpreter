@@ -118,7 +118,7 @@ static void my_assert_triple_handler(
 	}
 
 	if (object != NULL && slotkey != NULL && slotvalue != NULL){
-		err = assert_frame(cntxt->process,
+		err = crifi_import_assert_frame(cntxt->process,
 			object, object_suffix, object_type,
 			slotkey, slotkey_suffix, slotkey_type,
 			slotvalue, slotvalue_suffix, slotvalue_type);

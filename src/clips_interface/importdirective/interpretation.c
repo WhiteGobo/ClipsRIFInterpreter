@@ -136,7 +136,7 @@ int end_import_process(ImportProcess *process){
 }
 
 
-CRIFI_IMPORT_ASSERT_RET assert_frame(ImportProcess *process,
+CRIFI_IMPORT_ASSERT_RET crifi_import_assert_frame(ImportProcess *process,
 		const char *object, const char *object_suffix,
 		IMPORT_TERM_TYPE object_type,
 		const char *slotkey, const char *slotkey_suffix,
@@ -163,6 +163,36 @@ CRIFI_IMPORT_ASSERT_RET assert_frame(ImportProcess *process,
 					slotkey, slotkey_suffix, slotkey_type,
 					slotvalue, slotvalue_suffix,
 					slotvalue_type);
+	}
+	return CRIFI_IMPORT_ASSERT_UNHANDLED_ERROR;
+}
+
+CRIFI_IMPORT_ASSERT_RET crifi_import_assert_member(ImportProcess *process,
+		const char *instance, const char *instance_suffix,
+		IMPORT_TERM_TYPE instance_type,
+		const char *class, const char *class_suffix,
+		IMPORT_TERM_TYPE class_type)
+{
+	switch (process->interpreter_id){
+		case CRIFI_IMPORT_IP_DIRECT:
+			return assert_member_direct(process,
+					instance, instance_suffix, instance_type,
+					class, class_suffix, class_type);
+	}
+	return CRIFI_IMPORT_ASSERT_UNHANDLED_ERROR;
+}
+
+CRIFI_IMPORT_ASSERT_RET crifi_import_assert_subclass(ImportProcess *process,
+		const char *sub, const char *sub_suffix,
+		IMPORT_TERM_TYPE sub_type,
+		const char *super, const char *super_suffix,
+		IMPORT_TERM_TYPE super_type)
+{
+	switch (process->interpreter_id){
+		case CRIFI_IMPORT_IP_DIRECT:
+			return assert_subclass_direct(process,
+					sub, sub_suffix, sub_type,
+					super, super_suffix, super_type);
 	}
 	return CRIFI_IMPORT_ASSERT_UNHANDLED_ERROR;
 }

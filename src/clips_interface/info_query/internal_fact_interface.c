@@ -33,3 +33,15 @@ CrifiAssertTripleError assert_triple(Environment *env, CLIPSValue *subject, CLIP
 	}
 	return CRIFI_ASSTR_NO_ERROR;
 }
+
+
+CrifiAssertTripleError assert_member(Environment *env, CLIPSValue *instance, CLIPSValue *class)
+{
+	return CRIFI_ASSTR_UNKNOWN;
+}
+
+
+CrifiAssertTripleError assert_subclass(Environment *env, CLIPSValue *sub, CLIPSValue *super)
+{
+	return CRIFI_ASSTR_UNKNOWN;
+}

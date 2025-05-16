@@ -4,23 +4,13 @@
 #include "triple_list.h"
 #include "rdf_list.h"
 
+#include "simple_to_owl_info.h"
 
-typedef struct simpleToOwlInfo {
-	TripleList *first;
-	TripleList *last;
-	RDFListInfo *list_info;
-} SimpleToOwlInfo;
+#include "simpletoowl_special_assert.h"
 
 static SimpleToOwlInfo* generate_simple_to_owl_info(crifi_graph *graph);
 static void free_SimpleToOwlInfo(SimpleToOwlInfo *info);
 static int transfer_rest_triples(TripleList *first, ImportProcess *sub);
-static int try_special_assert(ImportProcess *process,
-		const char *object, const char *object_suffix,
-		IMPORT_TERM_TYPE object_type,
-		const char *slotkey, const char *slotkey_suffix,
-		IMPORT_TERM_TYPE slotkey_type,
-		const char *slotvalue, const char *slotvalue_suffix,
-		IMPORT_TERM_TYPE slotvalue_type);
 
 ImportProcess *start_import_process_simple_to_owl_interpretation(crifi_graph *graph){
 	ImportProcess *process = malloc(sizeof(ImportProcess));
@@ -77,6 +67,7 @@ CRIFI_IMPORT_ASSERT_RET assert_frame_simple_to_owl(ImportProcess *process,
 		const char *slotvalue, const char *slotvalue_suffix,
 		IMPORT_TERM_TYPE slotvalue_type)
 {
+	CRIFI_IMPORT_ASSERT_RET err;
 	if (process == NULL){
 		return CRIFI_IMPORT_ASSERT_UNHANDLED_ERROR;
 	} else if (process->simple_to_owl_info == NULL){
@@ -89,25 +80,23 @@ CRIFI_IMPORT_ASSERT_RET assert_frame_simple_to_owl(ImportProcess *process,
 		default:
 			return CRIFI_IMPORT_ASSERT_UNHANDLED_ERROR;
 	}
-	switch(try_special_assert(process,
+	err = simpletoowl_special_assert_triple(process,
 				object, object_suffix, object_type,
 				slotkey, slotkey_suffix, slotkey_type,
-				slotvalue, slotvalue_suffix, slotvalue_type)){
-		case 0:
+				slotvalue, slotvalue_suffix, slotvalue_type);
+	switch(err){
+		case CRIFI_IMPORT_ASSERT_NOERROR:
 			return CRIFI_IMPORT_ASSERT_NOERROR;
-		case 1:
+		case CRIFI_IMPORT_ASSERT_UNHANDLED_TRIPLE:
 			break;
 		default:
-			return CRIFI_IMPORT_ASSERT_UNHANDLED_ERROR;
+			return err;
 	}
 	process->simple_to_owl_info->last = crifi_import_append_triple(
 			process->simple_to_owl_info->last,
 			object, object_suffix, object_type,
 			slotkey, slotkey_suffix, slotkey_type,
 			slotvalue, slotvalue_suffix, slotvalue_type);
-	if (0 == strcmp("http://www.w3.org/2007/rif-builtin-function#numeric-add", slotvalue)){
-		fprintf(stderr, "simpletoowl assert (%s, %s, %s)\n", object, slotkey, slotvalue);
-	}
 	if (process->simple_to_owl_info->last == NULL){
 		return CRIFI_IMPORT_ASSERT_UNHANDLED_ERROR;
 	}
@@ -162,67 +151,3 @@ static int transfer_rest_triples(TripleList *first, ImportProcess *sub){
 	}
 	return 0;
 }
-
-typedef int SpecialAssert(ImportProcess *process,
-		const char *object, const char *object_suffix,
-		IMPORT_TERM_TYPE object_type,
-		const char *slotkey, const char *slotkey_suffix,
-		IMPORT_TERM_TYPE slotkey_type,
-		const char *slotvalue, const char *slotvalue_suffix,
-		IMPORT_TERM_TYPE slotvalue_type);
-
-static int my_add_first(ImportProcess *process,
-		const char *object, const char *object_suffix,
-		IMPORT_TERM_TYPE object_type,
-		const char *slotkey, const char *slotkey_suffix,
-		IMPORT_TERM_TYPE slotkey_type,
-		const char *slotvalue, const char *slotvalue_suffix,
-		IMPORT_TERM_TYPE slotvalue_type)
-{
-	return add_first(process->simple_to_owl_info->list_info,
-			object, object_suffix, object_type,
-			slotvalue, slotvalue_suffix, slotvalue_type);
-}
-
-static int my_add_rest(ImportProcess *process,
-		const char *object, const char *object_suffix,
-		IMPORT_TERM_TYPE object_type,
-		const char *slotkey, const char *slotkey_suffix,
-		IMPORT_TERM_TYPE slotkey_type,
-		const char *slotvalue, const char *slotvalue_suffix,
-		IMPORT_TERM_TYPE slotvalue_type)
-{
-	return add_rest(process->simple_to_owl_info->list_info,
-			object, object_suffix, object_type,
-			slotvalue, slotvalue_suffix, slotvalue_type);
-}
-
-static SpecialAssert* get_special_assert(const char* id){
-	if (0 == strcmp(id, _RDF_first_)){
-		return my_add_first;
-	} else if (0 == strcmp(id, _RDF_rest_)){
-		return my_add_rest;
-	} else if (0 == strcmp(id, _RDF_subClassOf_)){
-	} else if (0 == strcmp(id, _RDF_type_)){
-	}
-	return NULL;
-}
-
-static int try_special_assert(ImportProcess *process,
-		const char *object, const char *object_suffix,
-		IMPORT_TERM_TYPE object_type,
-		const char *slotkey, const char *slotkey_suffix,
-		IMPORT_TERM_TYPE slotkey_type,
-		const char *slotvalue, const char *slotvalue_suffix,
-		IMPORT_TERM_TYPE slotvalue_type)
-{
-	SpecialAssert *my_assert = get_special_assert(slotkey);
-	if (my_assert != NULL){
-		return my_assert(process,
-				object, object_suffix, object_type,
-				slotkey, slotkey_suffix, slotkey_type,
-				slotvalue, slotvalue_suffix, slotvalue_type);
-	}
-	return 1;
-}
-

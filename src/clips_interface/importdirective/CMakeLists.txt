@@ -12,8 +12,11 @@ add_library(crifi_import STATIC
 	rdf_to_rif_interpretation/rdf_to_rif_interpretation.h
 	rdf_to_rif_interpretation/rdf_to_rif_commondata.c
 	rdf_to_rif_interpretation/rdf_to_rif_commondata.h
-	simple_to_owl_interpretation.c
-	simple_to_owl_interpretation.h
+	simple_to_owl_interpretation/simple_to_owl_interpretation.c
+	simple_to_owl_interpretation/simple_to_owl_interpretation.h
+	simple_to_owl_interpretation/simple_to_owl_info.h
+	simple_to_owl_interpretation/simpletoowl_special_assert.c
+	simple_to_owl_interpretation/simpletoowl_special_assert.h
 	clipsvalue_interface.c
 	clipsvalue_interface.h
 	triple_list.c
@@ -25,6 +28,7 @@ add_library(crifi_import STATIC
 target_include_directories(crifi_import PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
 
 target_include_directories(crifi_import PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/rdf_to_rif_interpretation/")
+target_include_directories(crifi_import PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/simple_to_owl_interpretation/")
 target_include_directories(crifi_import PRIVATE ${CRIFI_SHARED_HEADER})
 
 target_link_libraries(crifi_import PUBLIC

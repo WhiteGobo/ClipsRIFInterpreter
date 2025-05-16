@@ -28,4 +28,16 @@ CRIFI_IMPORT_ASSERT_RET assert_frame_direct(ImportProcess *process,
 		const char *slotvalue, const char *slotvalue_suffix,
 		IMPORT_TERM_TYPE slotvalue_type);
 
+CRIFI_IMPORT_ASSERT_RET assert_member_direct(ImportProcess *process,
+		const char *instance, const char *instance_suffix,
+		IMPORT_TERM_TYPE instance_type,
+		const char *class, const char *class_suffix,
+		IMPORT_TERM_TYPE class_type);
+
+CRIFI_IMPORT_ASSERT_RET assert_subclass_direct(ImportProcess *process,
+		const char *sub, const char *sub_suffix,
+		IMPORT_TERM_TYPE sub_type,
+		const char *super, const char *super_suffix,
+		IMPORT_TERM_TYPE super_type);
+
 int add_clipsvalue_retriever(ImportProcess *process, clipsvalue_retrieving_function* retriever, void* context);
