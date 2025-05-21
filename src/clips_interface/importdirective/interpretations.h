@@ -10,33 +10,7 @@ typedef enum {
 	CRIFI_IMPORT_IP_UNKNOWN
 } CRIFI_IMPORT_INTERPRETER_ID;
 
-typedef struct rdfToRifInfo {
-	BNodeLookup* bnode_lookup;
-	CLIPSValue document;
-	CLIPSValue group;
-	CLIPSValue rule_list;
-
-	CLIPSValue rdf_type;
-	CLIPSValue rdf_first;
-	CLIPSValue rdf_rest;
-	CLIPSValue rdf_nil;
-
-	CLIPSValue rif_Document;
-	CLIPSValue rif_Group;
-	CLIPSValue rif_payload;
-	CLIPSValue rif_sentences;
-	CLIPSValue rif_Const;
-	CLIPSValue rif_constIRI;
-	CLIPSValue rif_value;
-	CLIPSValue rif_Var;
-	CLIPSValue rif_varname;
-	CLIPSValue rif_Frame;
-	CLIPSValue rif_slots;
-	CLIPSValue rif_Slot;
-	CLIPSValue rif_slotkey;
-	CLIPSValue rif_slotvalue;
-	CLIPSValue rif_object;
-} RdfToRifInfo;
+typedef struct rdfToRifInfo RdfToRifInfo;
 
 typedef struct simpleToOwlInfo SimpleToOwlInfo;
 typedef struct directInterpretationInfo DirectInterpretationInfo;

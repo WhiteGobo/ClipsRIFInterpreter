@@ -31,14 +31,18 @@ ImportProcess *start_import_process_simple_to_owl_interpretation(
 	return process;
 }
 
-int end_import_process_simple_to_owl_interpretation(ImportProcess *process){
+int end_import_process_simple_to_owl_interpretation(ImportProcess *process,
+		ClipsvalueRetrieveFunction *list_retrieve){
 	int err1, err2=1, err3=1, err5;
 	ImportProcess *subprocess;
 
 	if (process == NULL) return 1;
 	subprocess = start_import_process_direct_interpretation(process->graph);
+	if (list_retrieve == NULL){
+		list_retrieve = retrieve_rdf_list;
+	}
 	err1 = add_clipsvalue_retriever(subprocess,
-			retrieve_rdf_list,
+			list_retrieve,
 			process->simple_to_owl_info->list_info);
 	if (err1 == 0){
 		err2 = transfer_rest_triples(

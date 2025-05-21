@@ -5,7 +5,8 @@
 #include "info_query.h"
 
 ImportProcess *start_import_process_simple_to_owl_interpretation(crifi_graph *graph, SimpleStartImportProcesss start_subprocess_function);
-int end_import_process_simple_to_owl_interpretation(ImportProcess *process);
+int end_import_process_simple_to_owl_interpretation(ImportProcess *process,
+		ClipsvalueRetrieveFunction *list_retrieve);
 
 CRIFI_IMPORT_ASSERT_RET assert_frame_simple_to_owl(ImportProcess *process,
 		const char *object, const char *object_suffix,

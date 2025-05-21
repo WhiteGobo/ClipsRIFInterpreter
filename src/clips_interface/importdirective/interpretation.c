@@ -131,7 +131,7 @@ int end_import_process(ImportProcess *process){
 		case CRIFI_IMPORT_IP_DIRECT:
 			return end_import_process_direct_interpretation(process);
 		case CRIFI_IMPORT_IP_SIMPLE_TO_OWL:
-			return end_import_process_simple_to_owl_interpretation(process);
+			return end_import_process_simple_to_owl_interpretation(process, NULL);
 		case CRIFI_IMPORT_IP_SIMPLE_TO_RIF:
 			return end_import_process_rdf_to_rif_interpretation(process);
 		case CRIFI_IMPORT_IP_UNKNOWN:

@@ -19,6 +19,7 @@ add_library(crifi_import STATIC
 	init_data.c
 	direct_interpretation.c
 	direct_interpretation.h
+	rdf_to_rif_interpretation/rdf_to_rif_assertion_strategies.c
 	rdf_to_rif_interpretation/rdf_to_rif_interpretation.c
 	rdf_to_rif_interpretation/rdf_to_rif_interpretation.h
 	rdf_to_rif_interpretation/rdf_to_rif_commondata.c
