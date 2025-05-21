@@ -54,7 +54,8 @@ static CRIFI_IMPORT_INTERPRETER_ID get_interpreter_model_rifgenerator_simple(
 			|| 0 == strcmp(entailment, _RIFENTAIL_RDFS_)
 			|| 0 == strcmp(entailment, _RIFENTAIL_SIMPLE_))
 	{
-		return CRIFI_IMPORT_IP_SIMPLE_TO_RIF;
+		return CRIFI_IMPORT_IP_UNKNOWN;
+		//return CRIFI_IMPORT_IP_SIMPLE_TO_RIF;
 	} else if (0 == strcmp(entailment, _RIFENTAIL_RIF_)){
 		return CRIFI_IMPORT_IP_DIRECT;
 	}
