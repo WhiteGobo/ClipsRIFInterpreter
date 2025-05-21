@@ -1,26 +1,14 @@
 #include "rdf_list.h"
+#include "rdf_list_internal.h"
 #include <raptor.h>
 #include "clipsvalue_interface.h"
 #include "crifi_lists.h"
 #include "ffi_constants.h"
 
-typedef struct rdflistinfo {
-	raptor_avltree* avltree;
-} RDFListInfo;
-
-typedef struct {
-	char *this_id;
-	char* first;
-	char* first_suffix;
-	IMPORT_TERM_TYPE first_type;
-	const char *next_id;
-} ListEntry;
-
 static int compare_list_entry(const ListEntry* new, const ListEntry* old);
 static void free_list_entry(ListEntry*);
 
 static ListEntry* retrieve_list_entry(RDFListInfo *info, const char *list_id);
-static ListEntry* find_list_entry(RDFListInfo* info, const char* list_id);
 
 static int compare_list_entry(const ListEntry* new, const ListEntry* old){
 	int diff;
@@ -188,7 +176,7 @@ CRIFI_IMPORT_GENERATE_RDFLIST get_list_as_clipsvalue(
 }
 
 
-static ListEntry* find_list_entry(RDFListInfo* info, const char* list_id){
+ListEntry* find_list_entry(RDFListInfo* info, const char* list_id){
 	ListEntry *new;
 	ListEntry searcher = {.this_id = (char*) list_id};
 	ListEntry* existing;
