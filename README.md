@@ -10,6 +10,7 @@
     clips headers anymore.
 * rename ffi_clips_interface
 * casting isnt implemented as described in `https://www.w3.org/TR/xpath-functions/#casting-from-primitive-to-primitive`_
+* in testcases2 crifimodela builtins_list, the program first removes 20 unneeded lists which shouldnt be there.
 
 ## Basic usage.
 
