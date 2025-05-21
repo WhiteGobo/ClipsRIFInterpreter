@@ -208,3 +208,27 @@ char *extract_lang(Environment *env, TypeHeader *head){
 	}
 	return NULL;
 }
+
+
+bool crifi_infoquery_unpack_member(Environment *env, CLIPSValue member, CLIPSValue *instance, CLIPSValue *cls)
+{
+	switch (member.header-> type){
+		case FACT_ADDRESS_TYPE:
+			break;
+		default:
+			return false;
+	}
+	switch (GetFactSlot(member.factValue, MEMBERINSTANCE, instance)) {
+		case GSE_NO_ERROR:
+			break;
+		default:
+			return false;
+	}
+	switch (GetFactSlot(member.factValue, MEMBERCLASS, cls)) {
+		case GSE_NO_ERROR:
+			break;
+		default:
+			return false;
+	}
+	return true;
+}

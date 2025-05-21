@@ -2,6 +2,7 @@
 #include "bnode_lookup.h"
 #include <raptor.h>
 #include "info_query.h"
+#include "interpretations.h"
 
 typedef struct bnodelookup{
 	raptor_avltree* avltree;
@@ -66,21 +67,35 @@ static int new_bnode_entry(BNodeLookup *bnode_lookup, const char *id,
 	return err;
 }
 
-int retrieve_blanknode(crifi_graph *graph, const char *bnode_id,
-			BNodeLookup *bnode_lookup, CLIPSValue* retval)
+//int retrieve_blanknode(crifi_graph *graph, const char *bnode_id,
+//			BNodeLookup *bnode_lookup, CLIPSValue* retval)
+CRIFI_IMPORT_CLIPSVALUE_RETRIEVE_RET retrieve_blanknode(
+		ImportProcess *process,
+		ClipsvalueRetriever* node_retriever,
+		const char *bnode_id, const char *suffix, IMPORT_TERM_TYPE type,
+		void* context, //BNodeLookup* bnode_lookup,
+		CLIPSValue* retval)
 {
 	int err;
+	BNodeLookup* bnode_lookup = (BNodeLookup*) context;
+	if (type != CRIFI_IMPORT_TERM_BNODE){
+		return CRIFI_IMPORT_CLIPSVALUE_RETRIEVE_NOTFOUND;
+	}
 	BNodeEntry searcher = {.id = bnode_id};
 	BNodeEntry* existing;
 
 	existing = (BNodeEntry*) raptor_avltree_search(bnode_lookup->avltree, &searcher);
 	if (existing == NULL){
-		err = new_blanknode(graph, retval);
-		if (err != 0) return err;
+		err = new_blanknode(process->graph, retval);
+		if (err != 0){
+			return CRIFI_IMPORT_CLIPSVALUE_RETRIEVE_UNHANDLED_ERROR;
+		}
 		err = new_bnode_entry(bnode_lookup, bnode_id, retval);
-		if (err != 0) return err;
+		if (err != 0){
+			return CRIFI_IMPORT_CLIPSVALUE_RETRIEVE_UNHANDLED_ERROR;
+		}
 	} else {
 		retval->value = existing->clipsnode.value;
 	}
-	return 0;
+	return CRIFI_IMPORT_CLIPSVALUE_RETRIEVE_SUCCESS;
 }

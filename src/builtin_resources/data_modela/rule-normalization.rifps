@@ -13,8 +13,8 @@ Document(
     (* ex:normalize-rules *) Group 90 (
       (* ex:move-pattern-outwards *)Forall ?innerrule ?outerrule ?pattern(
         If And(
-          ?outerrule[rdf:type -> rif:Forall]
-          ?innerrule[rdf:type -> rif:Forall]
+          ?outerrule # rif:Forall
+          ?innerrule # rif:Forall
           ?outerrule[rif:formula -> ?innerrule]
           ?innerrule[rif:pattern -> ?pattern]
         ) Then Do (
@@ -24,8 +24,8 @@ Document(
       )
       (* ex:move-action-outwards *) Forall ?innerrule ?outerrule ?action(
         If And(
-          ?outerrule[rdf:type -> rif:Forall]
-          ?innerrule[rdf:type -> rif:Forall]
+          ?outerrule # rif:Forall
+          ?innerrule # rif:Forall
           ?outerrule[rif:formula -> ?innerrule]
           ?innerrule[rif:formula -> ?action]
           Not( Exists ?pattern ( ?innerrule[rif:pattern -> ?pattern]))
@@ -45,20 +45,20 @@ Document(
           (?newframerest New())
           Retract( ?rifforall[rif:pattern -> ?rifframe] )
           Assert( ?rifforall[rif:pattern -> ?newframefirst] )
-          Assert( ?newframefirst[rdf:type -> rif:Frame] )
+          Assert( ?newframefirst # rif:Frame )
           Assert( ?newframefirst[rif:object -> ?object] )
           Assert( ?newframefirst[rif:slots -> External(func:sublist(?slotlist 0 1))] )
           Assert( ?rifforall[rif:pattern -> ?newframerest] )
-          Assert( ?newframerest[rdf:type -> rif:Frame] )
+          Assert( ?newframerest # rif:Frame )
           Assert( ?newframerest[rif:object -> ?object] )
           Assert( ?newframerest[rif:slots -> External(func:remove(?slotlist 0))] )
         )
       )
       (* ex:expand-implies *) Forall ?implies ?outerrule ?pattern ?action(
         If And(
-          ?outerrule[rdf:type -> rif:Forall]
+          ?outerrule # rif:Forall
           ?outerrule[rif:formula -> ?implies]
-          ?implies[rdf:type -> rif:Implies]
+          ?implies # rif:Implies
           ?implies[rif:if -> ?formula]
           ?implies[rif:then -> ?action]
         ) Then Do (

@@ -161,15 +161,15 @@ static auto petTestdata = testing::Values(
 			W3C_CONCLUSION("Positional_Arguments")),
 			*/
 		TestdataPET("Core_PET_RDF_Combination_Blank_Node",
-			SC_NoCondition,
+			SC_NoCondition | SC_ModelFirst,
 			W3C_PREMISE("RDF_Combination_Blank_Node"),
 			W3C_CONCLUSION("RDF_Combination_Blank_Node")),
 		TestdataPET("Core_PET_RDF_Combination_Constant_Equivalence_1",
-			SC_NoCondition,
+			SC_NoCondition | SC_ModelFirst,
 			W3C_PREMISE("RDF_Combination_Constant_Equivalence_1"),
 			W3C_CONCLUSION("RDF_Combination_Constant_Equivalence_1")),
 		TestdataPET("Core_PET_RDF_Combination_Constant_Equivalence_2",
-			SC_NoCondition,
+			SC_NoCondition | SC_ModelFirst,
 			W3C_PREMISE("RDF_Combination_Constant_Equivalence_2"),
 			W3C_CONCLUSION("RDF_Combination_Constant_Equivalence_2")),
 		TestdataPET("Core_PET_RDF_Combination_Constant_Equivalence_3",
@@ -177,7 +177,7 @@ static auto petTestdata = testing::Values(
 			W3C_PREMISE("RDF_Combination_Constant_Equivalence_3"),
 			W3C_CONCLUSION("RDF_Combination_Constant_Equivalence_3")),
 		TestdataPET("Core_PET_RDF_Combination_Constant_Equivalence_4",
-			SC_NoCondition,
+			SC_NoCondition | SC_ModelFirst,
 			W3C_PREMISE("RDF_Combination_Constant_Equivalence_4"),
 			W3C_CONCLUSION("RDF_Combination_Constant_Equivalence_4")),
 		//Testing hasnt implemented checking directly for rdf graphs
@@ -438,7 +438,12 @@ static void run_and_check(crifi_graph *graph, const char* check_command,
 				bool expect){
 	bool errorstate;
 	struct DynamicValue retval;
-	int number_rules_run = run_rules(graph, 20);
+	eval(graph, "(agenda)");
+	int number_rules_run = run_rules(graph, 40);
+	if (number_rules_run == 0){
+		eval(graph, "(println \"show matches of rule0: \" "
+				"(matches rule0))");
+	}
 	fprintf(stderr, "number of rules during logic: %d\n", number_rules_run);
 	if (graph_in_errorstate(graph, stderr)){
 		FAIL() << "graph ended up in errorstate, while running logic.";
@@ -502,7 +507,7 @@ static void create_logic_into_memory(FILE* tmpmem_f, TestdataPET testdata,
 	load_from_memory_to_graph(create_logic_graph,
 					testdata.premise_uri.c_str());
 
-	//eval(create_logic_graph, "(println \"vbnm\")");
+	//eval(create_logic_graph, "(println \"show matches of one rule:\")");
 	//eval(create_logic_graph, "(agenda)");
 	//eval(create_logic_graph, "(println \"vbnm\")");
 	//eval(create_logic_graph, "(watch rules)");
@@ -600,7 +605,7 @@ static void create_check_into_memory(FILE *tmpmem_f, TestdataPET testdata,
 	load_from_memory_to_graph(create_check_graph,
 					testdata.conclusion_uri.c_str());
 
-	eval(create_check_graph, "(watch rules)");
+	//eval(create_check_graph, "(watch rules)");
 	number_rules_run = run_rules(create_check_graph, 10000);
 	fprintf(stderr, "information in create_check_graph after rules run.\n");
 	//ignore error:

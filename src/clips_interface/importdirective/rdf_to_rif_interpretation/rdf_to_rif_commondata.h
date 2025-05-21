@@ -2,5 +2,7 @@
 
 #include "rdf_to_rif_interpretation.h"
 #include "clipsvalue_interface.h"
+#include "interpretations.h"
 
-int generate_rdf_rif_info(crifi_graph *graph, struct rdfToRifInfo *info);
+struct rdfToRifInfo* generate_rdf_rif_info(crifi_graph *graph);
+void free_rdf_rif_info(struct rdfToRifInfo *info);

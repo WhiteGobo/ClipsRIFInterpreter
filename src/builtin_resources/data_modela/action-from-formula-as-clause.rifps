@@ -18,10 +18,10 @@ Document(
             ?rifrule[rif:formula -> ?clause]
           )
           Or (
-            ?clause[rdf:type -> rif:Frame]
-            ?clause[rdf:type -> rif:Atom]
-            ?clause[rdf:type -> rif:SubClass]
-            ?clause[rdf:type -> rif:Member]
+            ?clause # rif:Frame
+            ?clause # rif:Atom
+            ?clause # rif:SubClass
+            ?clause # rif:Member
           )
         ) Then Do (
           (?clipsaction New())
@@ -31,13 +31,13 @@ Document(
       )
       Forall ?rifassert ?clause (
         If And (
-          ?rifassert[rdf:type -> rif:Assert]
+          ?rifassert # rif:Assert
           ?rifassert[rif:target -> ?clause]
           Or (
-            ?clause[rdf:type -> rif:Frame]
-            ?clause[rdf:type -> rif:Atom]
-            ?clause[rdf:type -> rif:SubClass]
-            ?clause[rdf:type -> rif:Member]
+            ?clause # rif:Frame
+            ?clause # rif:Atom
+            ?clause # rif:SubClass
+            ?clause # rif:Member
           )
         ) Then Do (
           (?clipsaction New())
@@ -47,13 +47,13 @@ Document(
       )
       Forall ?rifretract ?clause (
         If And (
-          ?rifretract[rdf:type -> rif:Retract]
+          ?rifretract # rif:Retract
           ?rifretract[rif:target -> ?clause]
           Or (
-            ?clause[rdf:type -> rif:Frame]
-            ?clause[rdf:type -> rif:Atom]
-            ?clause[rdf:type -> rif:SubClass]
-            ?clause[rdf:type -> rif:Member]
+            ?clause # rif:Frame
+            ?clause # rif:Atom
+            ?clause # rif:SubClass
+            ?clause # rif:Member
           )
         ) Then Do (
           (?clipsaction New())
@@ -65,7 +65,7 @@ Document(
       )
       Forall ?rifretract ?rifterm ?clipsterm(
         If And (
-          ?rifretract[rdf:type -> rif:Retract]
+          ?rifretract # rif:Retract
           ?rifretract[rif:target -> ?rifterm]
           ?rifterm[ex:as-expression -> ?clipsterm]
         ) Then Do (
@@ -81,7 +81,7 @@ Document(
           Assert( ?clipsretract[cs:function-args -> External(func:make-list(?expandtriples))] )
           Assert( ?expandtriples[cs:function-name -> "expand$"] )
           Assert( ?expandtriples[cs:function-args -> External( func:make-list(?findtriples))] )
-          Assert( ?findtriples[rdf:type -> cs:FindAllFacts] )
+          Assert( ?findtriples # cs:FindAllFacts )
           Assert( ?findtriples[cs:fact-set-template -> ?tripletemplate] )
           Assert( ?findtriples[cs:query -> ?triplequery] )
           Assert( ?tripletemplate[cs:deftemplate-name -> "TripleTemplate"] )
@@ -90,14 +90,14 @@ Document(
           Assert( ?triplequery[cs:function-args -> External(func:make-list(?clipsterm ?slotsubj))] )
           Assert( ?slotsubj[cs:member-variable -> ?tmpvar] )
           Assert( ?slotsubj[cs:member-slot-name -> "subject"] )
-          Assert( ?tmpvar[rdf:type -> cs:Variable] )
+          Assert( ?tmpvar # cs:Variable )
         )
       )
       Forall ?rifmodify ?clause ?rifobject ?subjterm (
         If And (
-          ?rifmodify[rdf:type -> rif:Modify]
+          ?rifmodify # rif:Modify
           ?rifmodify[rif:target -> ?clause]
-          ?clause[rdf:type -> rif:Frame]
+          ?clause # rif:Frame
           ?clause[rif:object -> ?rifobject]
           ?rifobject[ex:as-expression -> ?subjterm]
         ) Then Do (
@@ -110,9 +110,9 @@ Document(
           (?comparepredicate New())
           (?comparesubject New())
           (?slotsubj New())
-          Assert( ?tmpvar[rdf:type -> cs:Variable] )
+          Assert( ?tmpvar # cs:Variable )
           Assert( ?rifmodify[ex:as-action -> External(func:make-list(?clipsretractall ?clipsassert))] )
-          Assert( ?clipsretractall[rdf:type -> cs:DoForAllFacts] )
+          Assert( ?clipsretractall # cs:DoForAllFacts )
           Assert( ?clipsretractall[cs:fact-set-template -> ?tripletemplate] )
           Assert( ?tripletemplate[cs:deftemplate-name -> "TripleTemplate"] )
           Assert( ?tripletemplate[cs:fact-set-member-variable -> ?tmpvar] )

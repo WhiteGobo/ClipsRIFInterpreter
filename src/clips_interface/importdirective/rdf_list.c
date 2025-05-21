@@ -129,7 +129,9 @@ void free_RDFListInfo(RDFListInfo* info){
 
 
 CRIFI_IMPORT_GENERATE_RDFLIST get_list_as_clipsvalue(
-			ImportProcess *process, RDFListInfo *info,
+			ImportProcess *process,
+			ClipsvalueRetriever* node_retriever,
+			RDFListInfo *info,
 			const char *listid, const char *listid_suffix,
 			IMPORT_TERM_TYPE listid_type, CLIPSValue *target)
 {
@@ -166,7 +168,7 @@ CRIFI_IMPORT_GENERATE_RDFLIST get_list_as_clipsvalue(
 			tmp != NULL;
 			tmp = find_list_entry(info, tmp->next_id))
 	{
-		err = value_suffix_to_clipsvalue(process,
+		err = value_suffix_to_clipsvalue(process, node_retriever,
 				tmp->first, tmp->first_suffix, tmp->first_type,
 				values + i);
 		i++;
@@ -176,10 +178,6 @@ CRIFI_IMPORT_GENERATE_RDFLIST get_list_as_clipsvalue(
 		}
 	}
 	err = crifi_list_new(process->graph, values, length, target);
-		//err = value_suffix_to_clipsvalue(process,
-		//		"asdf", NULL, CRIFI_IMPORT_TERM_URI,
-		//		target);
-	//err = crifi_list_new(process->graph, NULL, 0, target);
 	free(values);
 	switch (err){
 		case 0:
@@ -240,13 +238,16 @@ static ListEntry* retrieve_list_entry(RDFListInfo *info, const char *list_id)
 
 CRIFI_IMPORT_CLIPSVALUE_RETRIEVE_RET retrieve_rdf_list(
 		ImportProcess *process,
+		ClipsvalueRetriever* node_retriever,
 		const char *id, const char *suffix, IMPORT_TERM_TYPE type,
-		RDFListInfo* context,
+		void* context, //RDFListInfo* context,
 		CLIPSValue* retval)
 {
 	CRIFI_IMPORT_GENERATE_RDFLIST err;
-	err = get_list_as_clipsvalue(process, context,
-					id, suffix, type, retval);
+	err = get_list_as_clipsvalue(
+			process, node_retriever,
+			(RDFListInfo*) context,
+			id, suffix, type, retval);
 	switch(err){
 		case CRIFI_IMPORT_GENERATE_RDFLIST_NOERROR:
 			return CRIFI_IMPORT_CLIPSVALUE_RETRIEVE_SUCCESS;

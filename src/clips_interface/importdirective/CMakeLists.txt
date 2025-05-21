@@ -21,8 +21,11 @@ add_library(crifi_import STATIC
 	clipsvalue_interface.h
 	triple_list.c
 	triple_list.h
+	pair_list.c
+	pair_list.h
 	rdf_list.c
 	rdf_list.h
+	node_retriever.h
 )
 
 target_include_directories(crifi_import PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")

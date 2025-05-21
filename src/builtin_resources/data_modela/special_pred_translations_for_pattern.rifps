@@ -17,7 +17,7 @@ Document(
           ?rifconstiristring[rif:constIRI -> "http://www.w3.org/2007/rif-builtin-predicate#iri-string"^^xs:anyURI]
           ?rifatom[rif:op -> ?rifconstiristring]
           ?rifexternal[rif:content -> ?rifatom]
-          ?rifexternal[rdf:type -> rif:External]
+          ?rifexternal # rif:External
           ?rifexternal[ex:add-as-pattern -> ?defrule]
           Not( ?rifexternal[ex:used-as-pattern-in -> ?defrule] )
           ?rifatom[rif:args -> ?arglist]

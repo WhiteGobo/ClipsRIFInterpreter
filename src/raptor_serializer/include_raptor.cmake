@@ -27,7 +27,7 @@ else()
 	#make raptor somehow static instead
 	FetchContent_Declare(
 		raptor2
-		GIT_REPOSITORY https://github.com/WhiteGobo/raptor.git
+		GIT_REPOSITORY https://github.com/dajobe/raptor.git
 		CMAKE_CACHE_ARGS -DBUILD_SHARED_LIBS=OFF
 	)
 	FetchContent_MakeAvailable(raptor2)

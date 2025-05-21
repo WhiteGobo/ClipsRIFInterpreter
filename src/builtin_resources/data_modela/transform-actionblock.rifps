@@ -13,7 +13,7 @@ Document(
     Group (
       (* ex:transform-retract-var *) Forall ?rifretract ?riftarget ?subj(
         If And(
-          ?rifretract[rdf:type -> rif:Retract]
+          ?rifretract # rif:Retract
           ?rifretract[rif:target -> ?riftarget]
           ?riftarget[ex:as-expression -> ?subj]
         ) Then Do (
@@ -29,7 +29,7 @@ Document(
           Assert( ?clipsretract[cs:function-args -> External( func:make-list(?clipsexpand))] )
           Assert( ?clipsexpand[cs:function-name -> "expand$"] )
           Assert( ?clipsexpand[cs:function-args -> External( func:make-list(?clipsfindfacts))] )
-          Assert( ?clipsfindfacts[rdf:type -> cs:FindAllFacts] )
+          Assert( ?clipsfindfacts # cs:FindAllFacts )
           Assert( ?clipsfindfacts[cs:fact-set-template -> ?clipsdeftemplate] )
           Assert( ?clipsdeftemplate[cs:deftemplate-name -> "TripleTemplate"] )
           Assert( ?clipsdeftemplate[cs:fact-set-member-variable -> ?factvariable] )
@@ -43,9 +43,9 @@ Document(
       )
       (* ex:transform-retract-frame *) Forall ?rifretract ?riftarget(
         If And(
-          ?rifretract[rdf:type -> rif:Retract]
+          ?rifretract # rif:Retract
           ?rifretract[rif:target -> ?riftarget]
-          ?riftarget[rdf:type -> rif:Frame]
+          ?riftarget # rif:Frame
         ) Then Do (
           (?clipsretract New())
           (?clipsexpand New())

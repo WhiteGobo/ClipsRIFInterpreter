@@ -2,7 +2,8 @@
 
 #define CHECK_VALID_CLIPSVALUE(val) true
 
-CrifiAssertTripleError assert_triple(Environment *env, CLIPSValue *subject, CLIPSValue *predicate, CLIPSValue *object){
+CrifiAssertTripleError assert_triple(Environment *env, CLIPSValue *subject, CLIPSValue *predicate, CLIPSValue *object)
+{
 	FactBuilderError error;
 	Fact *factaddress;
         FactBuilder *theFB;
@@ -35,13 +36,63 @@ CrifiAssertTripleError assert_triple(Environment *env, CLIPSValue *subject, CLIP
 }
 
 
-CrifiAssertTripleError assert_member(Environment *env, CLIPSValue *instance, CLIPSValue *class)
+CrifiAssertTripleError assert_member(Environment *env, CLIPSValue *instance, CLIPSValue *cls)
 {
-	return CRIFI_ASSTR_UNKNOWN;
+	FactBuilderError error;
+	Fact *factaddress;
+        FactBuilder *theFB;
+	if (!CHECK_VALID_CLIPSVALUE(instance)) return CRIFI_ASSTR_SUBJECT;
+	if (!CHECK_VALID_CLIPSVALUE(cls)) return CRIFI_ASSTR_OBJECT;
+        theFB = CreateFactBuilder(env, MEMBERTEMPLATE);
+	FBPutSlot(theFB, MEMBERINSTANCE, instance);
+	FBPutSlot(theFB, MEMBERCLASS, cls);
+
+        factaddress = FBAssert(theFB);
+        FBDispose(theFB);
+	if (factaddress == NULL){
+		error = FBError(env);
+		switch (error) {
+			case FBE_NO_ERROR:
+				break;
+			case FBE_NULL_POINTER_ERROR:
+			case FBE_IMPLIED_DEFTEMPLATE_ERROR:
+			case FBE_DEFTEMPLATE_NOT_FOUND_ERROR:
+			case FBE_COULD_NOT_ASSERT_ERROR:
+			case FBE_RULE_NETWORK_ERROR:
+			default:
+				return CRIFI_ASSTR_UNKNOWN;
+		}
+	}
+	return CRIFI_ASSTR_NO_ERROR;
 }
 
 
 CrifiAssertTripleError assert_subclass(Environment *env, CLIPSValue *sub, CLIPSValue *super)
 {
-	return CRIFI_ASSTR_UNKNOWN;
+	FactBuilderError error;
+	Fact *factaddress;
+        FactBuilder *theFB;
+	if (!CHECK_VALID_CLIPSVALUE(sub)) return CRIFI_ASSTR_SUBJECT;
+	if (!CHECK_VALID_CLIPSVALUE(super)) return CRIFI_ASSTR_OBJECT;
+        theFB = CreateFactBuilder(env, SUBCLASSTEMPLATE);
+	FBPutSlot(theFB, SUBCLASSSUB, sub);
+	FBPutSlot(theFB, SUBCLASSSUPER, super);
+
+        factaddress = FBAssert(theFB);
+        FBDispose(theFB);
+	if (factaddress == NULL){
+		error = FBError(env);
+		switch (error) {
+			case FBE_NO_ERROR:
+				break;
+			case FBE_NULL_POINTER_ERROR:
+			case FBE_IMPLIED_DEFTEMPLATE_ERROR:
+			case FBE_DEFTEMPLATE_NOT_FOUND_ERROR:
+			case FBE_COULD_NOT_ASSERT_ERROR:
+			case FBE_RULE_NETWORK_ERROR:
+			default:
+				return CRIFI_ASSTR_UNKNOWN;
+		}
+	}
+	return CRIFI_ASSTR_NO_ERROR;
 }

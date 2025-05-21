@@ -27,7 +27,7 @@ Document(
       )
       Forall ?content ?rifop ?rifarglist ?functionname ?functionsymbol (
         If And (
-          ?rifexternal[rdf:type -> rif:External]
+          ?rifexternal # rif:External
           ?rifexternal[rif:content -> ?content]
           ?content[rif:op -> ?rifop]
           ?rifop[ex:as-expression -> ?functionsymbol]

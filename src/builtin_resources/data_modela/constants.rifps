@@ -36,7 +36,7 @@ Document(
       Group (
         Forall ?factvar (
           If And (
-            ?factvar[rdf:type -> cs:Variable]
+            ?factvar # cs:Variable
             ex:currentfactindex(?factindex)
             Not (Exists ?factname ( ?factvar[cs:variable-name -> ?factname] ))
           ) Then Do (
@@ -91,26 +91,26 @@ Document(
             )
             External(pred:is-list(?childlist))
             Or (
-              ?child[rdf:type -> rif:Group]
-              ?child[rdf:type -> rif:Forall]
-              ?child[rdf:type -> rif:Frame]
-              ?child[rdf:type -> rif:Atom]
-              ?child[rdf:type -> rif:Assert]
-              ?child[rdf:type -> rif:Retract]
-              ?child[rdf:type -> rif:Do]
-              ?child[rdf:type -> rif:Modify]
-              ?child[rdf:type -> rif:Subclass]
-              ?child[rdf:type -> rif:Equal]
-              ?child[rdf:type -> rif:Member]
-              ?child[rdf:type -> rif:Var]
-              ?child[rdf:type -> rif:Const]
-              ?child[rdf:type -> rif:And]
-              ?child[rdf:type -> rif:INeg]
-              ?child[rdf:type -> rif:Or]
-              ?child[rdf:type -> rif:Not]
-              ?child[rdf:type -> rif:Exists]
-              ?child[rdf:type -> rif:External]
-              ?child[rdf:type -> rif:Execute]
+              ?child # rif:Group
+              ?child # rif:Forall
+              ?child # rif:Frame
+              ?child # rif:Atom
+              ?child # rif:Assert
+              ?child # rif:Retract
+              ?child # rif:Do
+              ?child # rif:Modify
+              ?child # rif:Subclass
+              ?child # rif:Equal
+              ?child # rif:Member
+              ?child # rif:Var
+              ?child # rif:Const
+              ?child # rif:And
+              ?child # rif:INeg
+              ?child # rif:Or
+              ?child # rif:Not
+              ?child # rif:Exists
+              ?child # rif:External
+              ?child # rif:Execute
             )
             External(pred:list-contains(?childlist ?child))
           ) Then Do (
@@ -122,7 +122,7 @@ Document(
             ?rifdo[rif:actionVar -> ?actionvar]
             External(pred:is-list(?actionvar))
             ?rifvar[rif:varname -> ?varname]
-            ?rifframe[rdf:type -> rif:Frame]
+            ?rifframe # rif:Frame
             External(pred:list-contains(?actionvar ?rifvar))
             External(pred:list-contains(?actionvar ?rifframe))
           ) Then Do (
@@ -168,7 +168,7 @@ Document(
         )
         Forall ?rifforall ?varlist ?rifvar ?varname (
           If And (
-            ?rifforall[rdf:type -> rif:Forall]
+            ?rifforall # rif:Forall
             ?rifforall[rif:vars -> ?varlist]
             External(pred:is-list(?varlist))
             ?rifvar[rif:varname -> ?varname]
@@ -182,7 +182,7 @@ Document(
         )
         Forall ?rifforall ?varlist ?rifvar ?varname ?rifvarchild(
           If And (
-            ?rifexists[rdf:type -> rif:Exists]
+            ?rifexists # rif:Exists
             ?rifexists[rif:vars -> ?varlist]
             External(pred:is-list(?varlist))
             ?rifvar[rif:varname -> ?varname]
@@ -202,7 +202,7 @@ Document(
         )
         Forall ?rifforall ?varlist ?rifvar ?varname ?rifvarchild ?slotlist ?rifslot(
           If And (
-            ?rifexists[rdf:type -> rif:Exists]
+            ?rifexists # rif:Exists
             ?rifexists[rif:vars -> ?varlist]
             External(pred:is-list(?varlist))
             ?rifvar[rif:varname -> ?varname]
@@ -226,7 +226,7 @@ Document(
         )
         Forall ?rifforall ?varlist ?rifvar ?varname ?rifvarchild ?slotlist ?rifslot(
           If And (
-            ?rifexists[rdf:type -> rif:Exists]
+            ?rifexists # rif:Exists
             ?rifexists[rif:vars -> ?varlist]
             External(pred:is-list(?varlist))
             ?rifvar[rif:varname -> ?varname]

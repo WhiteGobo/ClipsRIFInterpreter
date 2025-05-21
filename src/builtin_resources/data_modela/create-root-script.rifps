@@ -14,23 +14,23 @@ Document(
       Forall ?rootformula (
         If And (
           Or (
-            ?rootformula[rdf:type -> rif:Frame]
-            ?rootformula[rdf:type -> rif:Atom]
-            ?rootformula[rdf:type -> rif:Exists]
-            ?rootformula[rdf:type -> rif:Member]
-            ?rootformula[rdf:type -> rif:Subclass]
+            ?rootformula # rif:Frame
+            ?rootformula # rif:Atom
+            ?rootformula # rif:Exists
+            ?rootformula # rif:Member
+            ?rootformula # rif:Subclass
           )
           Not (Exists ?deeperroot (Or(
             ?deeperroot[rif:formula -> ?rootformula]
           )))
         ) Then Do (
-          Assert( ?rootformula[rdf:type -> ex:rootformula] )
+          Assert( ?rootformula # ex:rootformula )
         )
       )
 
       Forall ?rootformula (
         If And(
-          ?rootformula[rdf:type -> ex:rootformula]
+          ?rootformula # ex:rootformula
           ?rootformula[ex:as-test-action -> ?anyfactp]
         ) Then Do (
           (?rootfunctionargs ex:rootfunction[cs:function-args -> ?rootfunctionargs])

@@ -1,5 +1,6 @@
 #include "simpletoowl_special_assert.h"
 #include "triple_list.h"
+#include "pair_list.h"
 #include "rdf_list.h"
 #include "simple_to_owl_info.h"
 
@@ -45,11 +46,19 @@ static int my_add_member(ImportProcess *process,
 		const char *slotvalue, const char *slotvalue_suffix,
 		IMPORT_TERM_TYPE slotvalue_type)
 {
-	/*
-	return add_member(process->simple_to_owl_info->list_info,
+	PairList *new_last;
+	new_last = crifi_import_append_pair(
+			process->simple_to_owl_info->last_member,
 			object, object_suffix, object_type,
 			slotvalue, slotvalue_suffix, slotvalue_type);
-	*/
+	if (new_last == NULL){
+		return 1;
+	}
+	process->simple_to_owl_info->last_member = new_last;
+	if (process->simple_to_owl_info->first_member == NULL){
+		process->simple_to_owl_info->first_member = new_last;
+	}
+	return 0;
 }
 
 static int my_add_subclass(ImportProcess *process,
@@ -60,11 +69,19 @@ static int my_add_subclass(ImportProcess *process,
 		const char *slotvalue, const char *slotvalue_suffix,
 		IMPORT_TERM_TYPE slotvalue_type)
 {
-	/*
-	return add_subclass(process->simple_to_owl_info->list_info,
+	PairList *new_last;
+	new_last = crifi_import_append_pair(
+			process->simple_to_owl_info->last_subclass,
 			object, object_suffix, object_type,
 			slotvalue, slotvalue_suffix, slotvalue_type);
-	*/
+	if (new_last == NULL){
+		return 1;
+	}
+	process->simple_to_owl_info->last_subclass = new_last;
+	if (process->simple_to_owl_info->first_subclass == NULL){
+		process->simple_to_owl_info->first_subclass = new_last;
+	}
+	return 0;
 }
 
 static SpecialAssert* get_special_assert(const char* id){
@@ -72,10 +89,10 @@ static SpecialAssert* get_special_assert(const char* id){
 		return my_add_first;
 	} else if (0 == strcmp(id, _RDF_rest_)){
 		return my_add_rest;
-	} else if (0 == strcmp(id, _RDF_subClassOf_)){
-		//return my_add_subclass;
+	} else if (0 == strcmp(id, _RDFS_subClassOf_)){
+		return my_add_subclass;
 	} else if (0 == strcmp(id, _RDF_type_)){
-		//return my_add_member;
+		return my_add_member;
 	}
 	return NULL;
 }

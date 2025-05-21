@@ -56,6 +56,30 @@ static bool serialize_triple(raptor_world *world, const raptor_term *subj, const
 	return (err == 0);
 }
 
+static int serialize_member(raptor_world *world, crifi_graph *graph, Fact *member, raptor_serializer *my_serializer){
+	CLIPSValue instance, cls, clips_member = {.factValue=member};
+	raptor_term *type = raptor_new_term_from_uri_string(world, _RDF_type_);
+	raptor_term *term_instance = NULL;
+	raptor_term *term_class = NULL;
+	if (type == NULL){
+		return SAT_SERIALIZEFAILED;
+	}
+	if(!crifi_infoquery_unpack_member(graph, clips_member, &instance, &cls))
+	{
+		return SAT_SERIALIZEFAILED;
+	}
+	term_instance = clipsvalue_to_raptorterm(world, graph, instance);
+	term_class = clipsvalue_to_raptorterm(world, graph, cls);
+	if (term_instance == NULL || term_class == NULL){
+		return SAT_SERIALIZEFAILED;
+	}
+
+	if(!serialize_triple(world, term_instance, type, term_class, my_serializer)){
+		return SAT_SERIALIZEFAILED;
+	}
+	return 0;
+}
+
 static int serialize_list(raptor_world *world, crifi_graph *graph, Fact *l, raptor_serializer *my_serializer){
 	int err, length;
 	bool success;
@@ -171,6 +195,15 @@ static int serialize_all_triples(raptor_world *world, crifi_graph* graph, raptor
 		err = serialize_list(world, graph, l, my_serializer);
 		if (err != SAT_NOERROR){
 			fprintf(stderr, "convert list failed\n");
+			return err;
+		}
+	}
+	for (Fact *member = get_next_member(graph, NULL);
+			member != NULL;
+			member = get_next_member(graph, member))
+	{
+		err = serialize_member(world, graph, member, my_serializer);
+		if (err != SAT_NOERROR){
 			return err;
 		}
 	}

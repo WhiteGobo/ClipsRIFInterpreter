@@ -4,18 +4,6 @@
 #include "interpretations.h"
 #include "info_query.h"
 
-typedef enum {
-	CRIFI_IMPORT_CLIPSVALUE_RETRIEVE_SUCCESS = 0,
-	CRIFI_IMPORT_CLIPSVALUE_RETRIEVE_NOTFOUND,
-	CRIFI_IMPORT_CLIPSVALUE_RETRIEVE_UNHANDLED_ERROR
-} CRIFI_IMPORT_CLIPSVALUE_RETRIEVE_RET;
-
-typedef CRIFI_IMPORT_CLIPSVALUE_RETRIEVE_RET clipsvalue_retrieving_function(
-		ImportProcess *process,
-		const char *id, const char *suffix, IMPORT_TERM_TYPE type,
-		void* context,
-		CLIPSValue* retval);
-
 
 ImportProcess *start_import_process_direct_interpretation(crifi_graph *graph);
 int end_import_process_direct_interpretation(ImportProcess *process);
@@ -40,4 +28,3 @@ CRIFI_IMPORT_ASSERT_RET assert_subclass_direct(ImportProcess *process,
 		const char *super, const char *super_suffix,
 		IMPORT_TERM_TYPE super_type);
 
-int add_clipsvalue_retriever(ImportProcess *process, clipsvalue_retrieving_function* retriever, void* context);

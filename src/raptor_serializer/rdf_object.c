@@ -65,8 +65,8 @@ static int compare_property_pair(const PropertyPairNode* new, const PropertyPair
 
 static void free_property_pair(PropertyPairNode* pp){
 	if (pp == NULL) return;
-	raptor_free_term(pp->prop);
-	raptor_free_term(pp->obj);
+	//raptor_free_term(pp->prop);
+	//raptor_free_term(pp->obj);
 	free(pp);
 }
 
@@ -145,10 +145,11 @@ Node* retrieve_node(NodeList* nodes, raptor_term *id){
 
 int add_triple(NodeList* nodes, raptor_term *subj, raptor_term* prop, raptor_term* obj){
 	int err;
+	Node *n;
 	if (subj == NULL || prop == NULL || obj == NULL){
 		return 1;
 	}
-	Node* n = retrieve_node(nodes, subj);
+	n = retrieve_node(nodes, subj);
 	if (n == NULL) return 2;
 	return add_property(n, prop, obj);
 }

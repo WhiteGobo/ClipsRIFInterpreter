@@ -1,37 +1,50 @@
 #include "direct_interpretation.h"
 #include "clipsvalue_interface.h"
 #include "debug.h"
+#include "node_retriever.h"
 
-static CRIFI_IMPORT_CLIPSVALUE_RETRIEVE_RET get_special_clipsvalue(
-		ImportProcess *process,
-		const char *object, const char *object_suffix,
-		IMPORT_TERM_TYPE object_type, CLIPSValue* target);
-
-typedef struct clipsvalueRetriever {
-	clipsvalue_retrieving_function* function;
-	void *context;
-	struct clipsvalueRetriever* next;
-} ClipsvalueRetriever;
 
 typedef struct directInterpretationInfo {
-	BNodeLookup* bnode_lookup;
+	//BNodeLookup* bnode_lookup;
 	ClipsvalueRetriever* node_retriever;
 } DirectInterpretationInfo;
 
 static DirectInterpretationInfo* generate_direct_interpretation_info(
+				ImportProcess *process,
 				crifi_graph *graph);
 static void free_direct_interpretation_info(DirectInterpretationInfo *info);
+static bool gen_val(ImportProcess *process,
+		const char *object, const char *object_suffix,
+		IMPORT_TERM_TYPE object_type, CLIPSValue *cv);
+static CRIFI_IMPORT_CLIPSVALUE_RETRIEVE_RET get_special_clipsvalue(
+		ImportProcess *process,
+		const char *id, const char *suffix,
+		IMPORT_TERM_TYPE type, CLIPSValue* retval);
 
 ImportProcess *start_import_process_direct_interpretation(crifi_graph *graph){
+	int err1;
 	ImportProcess *process = malloc(sizeof(ImportProcess));
+	BNodeLookup *bnode_lookup;
 	process->graph = graph;
 	process->interpreter_id = CRIFI_IMPORT_IP_DIRECT;
-	process->bnode_lookup = new_bnodelookup();
-	process->direct_info = generate_direct_interpretation_info(graph);
+	process->direct_info = generate_direct_interpretation_info(process, graph);
 	if(process->direct_info == NULL) {
 		free(process);
 		return NULL;
 	}
+	bnode_lookup = new_bnodelookup();
+	if (bnode_lookup == NULL){
+		free(process);
+		return NULL;
+	}
+	err1 = add_clipsvalue_retriever(process, retrieve_blanknode,
+						bnode_lookup);
+						//free_bnodelookup);
+	if (err1 != 0){
+		free(process);
+		return NULL;
+	}
+
 	return process;
 }
 
@@ -40,9 +53,37 @@ int end_import_process_direct_interpretation(ImportProcess *process){
 		return 1;
 	}
 	free_direct_interpretation_info(process->direct_info);
-	free_bnodelookup(process->bnode_lookup);
 	free(process);
 	return 0;
+}
+
+static bool gen_val(ImportProcess *process,
+		const char *object, const char *object_suffix,
+		IMPORT_TERM_TYPE object_type, CLIPSValue *cv)
+{
+	int err;
+	/*
+	CRIFI_IMPORT_CLIPSVALUE_RETRIEVE_RET err2;
+	err2 = get_special_clipsvalue(process, object, object_suffix,
+					object_type, cv);
+	switch (err2){
+		case CRIFI_IMPORT_CLIPSVALUE_RETRIEVE_SUCCESS:
+			return true;
+		case CRIFI_IMPORT_CLIPSVALUE_RETRIEVE_NOTFOUND:
+			break;
+		case CRIFI_IMPORT_CLIPSVALUE_RETRIEVE_UNHANDLED_ERROR:
+		default:
+			return false;
+	}
+	*/
+	err = value_suffix_to_clipsvalue(process,
+			process->direct_info->node_retriever,
+			object, object_suffix,
+			object_type, cv);
+	if (err != 0){
+		return false;
+	}
+	return true;
 }
 
 CRIFI_IMPORT_ASSERT_RET assert_frame_direct(ImportProcess *process,
@@ -58,41 +99,13 @@ CRIFI_IMPORT_ASSERT_RET assert_frame_direct(ImportProcess *process,
 	CLIPSValue object_cv = {.voidValue = VoidConstant(process->graph)};
 	CLIPSValue slotkey_cv = {.voidValue = VoidConstant(process->graph)};
 	CLIPSValue slotvalue_cv = {.voidValue = VoidConstant(process->graph)};
-	err2 = get_special_clipsvalue(process, object, object_suffix,
-					object_type, &object_cv);
-	if (err2 == CRIFI_IMPORT_CLIPSVALUE_RETRIEVE_NOTFOUND){
-		err = value_suffix_to_clipsvalue(process, object, object_suffix,
-					object_type, &object_cv);
-		if (err != 0){
-			return CRIFI_IMPORT_ASSERT_INVALID_TERM;
-		}
-	} else if (err2 == CRIFI_IMPORT_CLIPSVALUE_RETRIEVE_UNHANDLED_ERROR){
+	if (!gen_val(process, object, object_suffix, object_type, &object_cv)){
 		return CRIFI_IMPORT_ASSERT_INVALID_TERM;
 	}
-
-	err2 = get_special_clipsvalue(process, slotkey, slotkey_suffix,
-					slotkey_type, &slotkey_cv);
-	if (err2 == CRIFI_IMPORT_CLIPSVALUE_RETRIEVE_NOTFOUND){
-		err = value_suffix_to_clipsvalue(process, slotkey,
-					slotkey_suffix, slotkey_type,
-					&slotkey_cv);
-		if (err != 0){
-			return CRIFI_IMPORT_ASSERT_INVALID_TERM;
-		}
-	} else if (err2 == CRIFI_IMPORT_CLIPSVALUE_RETRIEVE_UNHANDLED_ERROR){
+	if (!gen_val(process, slotkey, slotkey_suffix, slotkey_type, &slotkey_cv)){
 		return CRIFI_IMPORT_ASSERT_INVALID_TERM;
 	}
-
-	err2 = get_special_clipsvalue(process, slotvalue, slotvalue_suffix,
-					slotvalue_type, &slotvalue_cv);
-	if (err2 == CRIFI_IMPORT_CLIPSVALUE_RETRIEVE_NOTFOUND){
-		err = value_suffix_to_clipsvalue(process, slotvalue,
-					slotvalue_suffix, slotvalue_type,
-					&slotvalue_cv);
-		if (err != 0){
-			return CRIFI_IMPORT_ASSERT_INVALID_TERM;
-		}
-	} else if (err2 == CRIFI_IMPORT_CLIPSVALUE_RETRIEVE_UNHANDLED_ERROR){
+	if (!gen_val(process, slotvalue, slotvalue_suffix, slotvalue_type, &slotvalue_cv)){
 		return CRIFI_IMPORT_ASSERT_INVALID_TERM;
 	}
 
@@ -114,6 +127,7 @@ CRIFI_IMPORT_ASSERT_RET assert_frame_direct(ImportProcess *process,
 
 
 static DirectInterpretationInfo* generate_direct_interpretation_info(
+				ImportProcess *process,
 				crifi_graph *graph){
 	DirectInterpretationInfo *info
 		= malloc(sizeof(DirectInterpretationInfo));
@@ -121,25 +135,31 @@ static DirectInterpretationInfo* generate_direct_interpretation_info(
 		return NULL;
 	}
 	info->node_retriever = NULL;
-	info->bnode_lookup = new_bnodelookup();
-	if(info->bnode_lookup == NULL){
-		free(info);
-		return NULL;
-	}
+	//info->bnode_lookup = new_bnodelookup();
+	//if(info->bnode_lookup == NULL){
+	//	free(info);
+	//	return NULL;
+	//}
 	return info;
 }
 
 
 static void free_direct_interpretation_info(DirectInterpretationInfo *info){
 	if (info == NULL) return;
-	free_bnodelookup(info->bnode_lookup);
+	//free_bnodelookup(info->bnode_lookup);
 	free(info);
 }
 
 
 int add_clipsvalue_retriever(ImportProcess *process,
-		clipsvalue_retrieving_function* retriever, void* context)
+		ClipsvalueRetrieveFunction* retriever, void* context)
 {
+	switch (process->interpreter_id){
+		case CRIFI_IMPORT_IP_DIRECT:
+			break;
+		default:
+			return 1;
+	}
 	ClipsvalueRetriever *tmp, *new;
 	if (retriever == NULL){
 		return 0;
@@ -148,16 +168,8 @@ int add_clipsvalue_retriever(ImportProcess *process,
 	if (new == NULL) return 1;
 	new->function = retriever;
 	new->context = context;
-	new->next = NULL;
-	if(process->direct_info->node_retriever == NULL){
-		process->direct_info->node_retriever = new;
-		return 0;
-	}
-	tmp = process->direct_info->node_retriever;
-	while(tmp->next != NULL){
-		tmp = tmp->next;
-	}
-	tmp->next = new;
+	new->next = process->direct_info->node_retriever;
+	process->direct_info->node_retriever = new;
 	return 0;
 }
 
@@ -172,7 +184,7 @@ static CRIFI_IMPORT_CLIPSVALUE_RETRIEVE_RET get_special_clipsvalue(
 			retriever != NULL;
 			retriever = retriever->next)
 	{
-		err = retriever->function(process, id, suffix, type,
+		err = retriever->function(process, first, id, suffix, type,
 						retriever->context, retval);
 		if (err != CRIFI_IMPORT_CLIPSVALUE_RETRIEVE_NOTFOUND){
 			return err;
@@ -192,28 +204,10 @@ CRIFI_IMPORT_ASSERT_RET assert_member_direct(ImportProcess *process,
 	CRIFI_IMPORT_CLIPSVALUE_RETRIEVE_RET err2;
 	CLIPSValue instance_cv = {.voidValue = VoidConstant(process->graph)};
 	CLIPSValue class_cv = {.voidValue = VoidConstant(process->graph)};
-	err2 = get_special_clipsvalue(process, instance, instance_suffix,
-					instance_type, &instance_cv);
-	if (err2 == CRIFI_IMPORT_CLIPSVALUE_RETRIEVE_NOTFOUND){
-		err = value_suffix_to_clipsvalue(process,
-					instance, instance_suffix,
-					instance_type, &instance_cv);
-		if (err != 0){
-			return CRIFI_IMPORT_ASSERT_INVALID_TERM;
-		}
-	} else if (err2 == CRIFI_IMPORT_CLIPSVALUE_RETRIEVE_UNHANDLED_ERROR){
+	if (!gen_val(process, instance, instance_suffix, instance_type, &instance_cv)){
 		return CRIFI_IMPORT_ASSERT_INVALID_TERM;
 	}
-	err2 = get_special_clipsvalue(process, class, class_suffix,
-					class_type, &class_cv);
-	if (err2 == CRIFI_IMPORT_CLIPSVALUE_RETRIEVE_NOTFOUND){
-		err = value_suffix_to_clipsvalue(process,
-					class, class_suffix,
-					class_type, &class_cv);
-		if (err != 0){
-			return CRIFI_IMPORT_ASSERT_INVALID_TERM;
-		}
-	} else if (err2 == CRIFI_IMPORT_CLIPSVALUE_RETRIEVE_UNHANDLED_ERROR){
+	if (!gen_val(process, class, class_suffix, class_type, &class_cv)){
 		return CRIFI_IMPORT_ASSERT_INVALID_TERM;
 	}
 	err3 = assert_member(process->graph, &instance_cv, &class_cv);
@@ -242,28 +236,10 @@ CRIFI_IMPORT_ASSERT_RET assert_subclass_direct(ImportProcess *process,
 	CRIFI_IMPORT_CLIPSVALUE_RETRIEVE_RET err2;
 	CLIPSValue sub_cv = {.voidValue = VoidConstant(process->graph)};
 	CLIPSValue super_cv = {.voidValue = VoidConstant(process->graph)};
-	err2 = get_special_clipsvalue(process, sub, sub_suffix,
-					sub_type, &sub_cv);
-	if (err2 == CRIFI_IMPORT_CLIPSVALUE_RETRIEVE_NOTFOUND){
-		err = value_suffix_to_clipsvalue(process,
-					sub, sub_suffix,
-					sub_type, &sub_cv);
-		if (err != 0){
-			return CRIFI_IMPORT_ASSERT_INVALID_TERM;
-		}
-	} else if (err2 == CRIFI_IMPORT_CLIPSVALUE_RETRIEVE_UNHANDLED_ERROR){
+	if (!gen_val(process, sub, sub_suffix, sub_type, &sub_cv)){
 		return CRIFI_IMPORT_ASSERT_INVALID_TERM;
 	}
-	err2 = get_special_clipsvalue(process, super, super_suffix,
-					super_type, &super_cv);
-	if (err2 == CRIFI_IMPORT_CLIPSVALUE_RETRIEVE_NOTFOUND){
-		err = value_suffix_to_clipsvalue(process,
-					super, super_suffix,
-					super_type, &super_cv);
-		if (err != 0){
-			return CRIFI_IMPORT_ASSERT_INVALID_TERM;
-		}
-	} else if (err2 == CRIFI_IMPORT_CLIPSVALUE_RETRIEVE_UNHANDLED_ERROR){
+	if (!gen_val(process, super, super_suffix, super_type, &super_cv)){
 		return CRIFI_IMPORT_ASSERT_INVALID_TERM;
 	}
 	err3 = assert_subclass(process->graph, &sub_cv, &super_cv);

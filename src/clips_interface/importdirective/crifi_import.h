@@ -21,7 +21,6 @@ typedef enum {
 	RET_CRIFI_IMPORT_ASSERT_FRAME_FAILED,
 	///Return on unhandled problem
 	RET_CRIFI_IMPORT_UNKNOWN_ERROR
-	
 } RET_CRIFI_IMPORT;
 
 typedef enum {
@@ -67,6 +66,25 @@ typedef struct crifiImportData{
 	CRIFI_IMPORT_MODEL_ID model_id;
 } CRIFIImportData;
 
+typedef enum {
+	CRIFI_IMPORT_CLIPSVALUE_RETRIEVE_SUCCESS = 0,
+	CRIFI_IMPORT_CLIPSVALUE_RETRIEVE_NOTFOUND,
+	CRIFI_IMPORT_CLIPSVALUE_RETRIEVE_UNHANDLED_ERROR
+} CRIFI_IMPORT_CLIPSVALUE_RETRIEVE_RET;
+
+typedef struct clipsvalueRetriever ClipsvalueRetriever;
+
+typedef CRIFI_IMPORT_CLIPSVALUE_RETRIEVE_RET ClipsvalueRetrieveFunction(
+		ImportProcess *process,
+		ClipsvalueRetriever* node_retriever,
+		const char *id, const char *suffix, IMPORT_TERM_TYPE type,
+		void* context,
+		CLIPSValue* retval);
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 
 /** LoadingCRIFIImportData
@@ -74,10 +92,6 @@ typedef struct crifiImportData{
 #define LoadingCRIFIImportData(theEnv) \
 	((struct crifiImportData *) GetEnvironmentData(theEnv, CRIFI_IMPORT_DATA_INDEX))
 
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 bool crifi_importdata_register_data(crifi_graph *graph);
 
@@ -101,6 +115,8 @@ int set_model_id_for_import(crifi_graph *graph, CRIFI_IMPORT_MODEL_ID model_id);
  * TODO: rename input_interpretation to input_entailment
  */
 ImportProcess *start_import_process(crifi_graph *graph, CLIPSValue *input_interpretation);
+
+int add_clipsvalue_retriever(ImportProcess *process, ClipsvalueRetrieveFunction* retriever, void* context);
 
 int end_import_process(ImportProcess *process);
 CRIFI_IMPORT_ASSERT_RET crifi_import_assert_frame(ImportProcess *process,

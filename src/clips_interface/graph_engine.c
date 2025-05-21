@@ -41,9 +41,9 @@ static const char *templates[] = {
 		"	(slot sub)\n"
 		"	(slot super))\n",
 
-	"(deftemplate Member\n"
-		"	(slot instance)\n"
-		"	(slot class))\n",
+	"(deftemplate "MEMBERTEMPLATE"\n"
+		"	(slot "MEMBERINSTANCE")\n"
+		"	(slot "MEMBERCLASS"))\n",
 
 	"(deftemplate Equal\n"
 		"	(slot left)\n"
@@ -61,8 +61,31 @@ static const char *baserules[] = {
 		"	=>\n"
 		"	(assert (Member (instance ?x) (class ?extracls)))\n"
 		")",
-	
+
+	/*
+	"(defrule translate-types\n"
+	"	(declare (salience 1000))\n"
+	"	(TripleTemplate\n"
+	"		(subject ?subj)\n"
+	"		(predicate <"_RDF_type_">)\n"
+	"		(object ?obj))\n"
+	"	=>\n"
+	"	(assert (Member (instance ?subj) (class ?obj)))\n"
+	")",
+
+	"(defrule translate-subclass\n"
+	"	(declare (salience 1000))\n"
+	"	(TripleTemplate\n"
+	"		(subject ?subj)\n"
+	"		(predicate <"_RDFS_subClassOf_">)\n"
+	"		(object ?obj))\n"
+	"	=>\n"
+	"	(assert (Subclass (sub ?subj) (super ?obj)))\n"
+	")",
+
+	*/
 	"(defrule remove-unneeded-atomlists\n"
+	"	(declare (salience 1000))\n"
 	"	?list <- (AtomList)\n"
 	"	(not (TripleTemplate (subject ?list)))\n"
 	"	(not (TripleTemplate (predicate ?list)))\n"

@@ -89,6 +89,9 @@ typedef struct {
 } MyContext;
 
 
+static CRIFI_SERIALIZE_SCRIPT_RET add_info_to_tree_list(MyContext* cntxt, crifi_graph *graph, Fact *l);
+static CRIFI_SERIALIZE_SCRIPT_RET add_info_to_tree_member(MyContext* cntxt, crifi_graph *graph, Fact *l);
+
 static int fprintf_raptor_term(FILE* stream, raptor_term* term){
 	switch(term->type){
 		case RAPTOR_TERM_TYPE_LITERAL:
@@ -297,6 +300,15 @@ static CRIFI_SERIALIZE_SCRIPT_RET add_info_to_tree(MyContext* cntxt,
 	{
 		//fprintf(stderr, "convert list:\n");
 		err = add_info_to_tree_list(cntxt, graph, l);
+		if (err != CRIFI_SERIALIZE_SCRIPT_NOERROR){
+			return err;
+		}
+	}
+	for (Fact *member = get_next_member(graph, NULL);
+			member != NULL;
+			member = get_next_member(graph, member))
+	{
+		err = add_info_to_tree_member(cntxt, graph, member);
 		if (err != CRIFI_SERIALIZE_SCRIPT_NOERROR){
 			return err;
 		}
@@ -656,7 +668,7 @@ static CRIFI_SERIALIZE_SCRIPT_RET fprintf_template_rhs_pattern(MyContext *cntxt,
  * <multifield-RHS-slot> ::= (<slot-name> <RHS-field>*)
  */
 static CRIFI_SERIALIZE_SCRIPT_RET fprintf_rhs_slot(MyContext *cntxt, FILE* stream, Node* n){
-	debug_fprintf_node(stderr, "start fprintf_rhs_slot ", n, "\n");
+	//debug_fprintf_node(stderr, "start fprintf_rhs_slot ", n, "\n");
 	CRIFI_SERIALIZE_SCRIPT_RET err = CRIFI_SERIALIZE_SCRIPT_NOERROR;
 	int i = 0;
 	raptor_term *name, *field, *fields;
@@ -696,7 +708,7 @@ static CRIFI_SERIALIZE_SCRIPT_RET fprintf_rhs_slot(MyContext *cntxt, FILE* strea
 	}*/
 	free_node_iterator(n_iter);
 	fprintf(stream, ")");
-	debug_fprintf_node(stderr, "end fprintf_rhs_slot ", n, "\n");
+	//debug_fprintf_node(stderr, "end fprintf_rhs_slot ", n, "\n");
 	return err;
 }
 
@@ -1111,4 +1123,34 @@ CRIFI_SERIALIZE_SCRIPT_RET serialize_information_as_clips_function(FILE* stream,
 	serialize_err = fprintf_function(cntxt, stream, rootfunction_n);
 	free_context(cntxt);
 	return serialize_err;
+}
+
+
+static CRIFI_SERIALIZE_SCRIPT_RET add_info_to_tree_member(MyContext* cntxt, crifi_graph *graph, Fact *member){
+	int err;
+	CLIPSValue clips_member = {.factValue=member};
+	CLIPSValue instance, cls;
+	raptor_term *type = cntxt->rdf_cntxt->rdf_type;
+	raptor_term *term_instance = NULL;
+	raptor_term *term_class = NULL;
+	if (type == NULL){
+		return SAT_SERIALIZEFAILED;
+	}
+	if(!crifi_infoquery_unpack_member(graph, clips_member, &instance, &cls))
+	{
+		return SAT_SERIALIZEFAILED;
+	}
+	term_instance = clipsvalue_to_raptorterm(cntxt->world, graph, instance);
+	term_class = clipsvalue_to_raptorterm(cntxt->world, graph, cls);
+	if (term_instance == NULL || term_class == NULL){
+		return SAT_SERIALIZEFAILED;
+	}
+
+	err = add_triple(cntxt->nodes, term_instance, type, term_class);
+	switch (err){
+		case 0: break;
+		default: return CRIFI_SERIALIZE_SCRIPT_UNKNOWN;
+	}
+
+	return 0;
 }

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "crifi_import.h"
 #include "bnode_lookup.h"
 
 typedef enum {
@@ -9,7 +10,8 @@ typedef enum {
 	CRIFI_IMPORT_IP_UNKNOWN
 } CRIFI_IMPORT_INTERPRETER_ID;
 
-struct rdfToRifInfo {
+typedef struct rdfToRifInfo {
+	BNodeLookup* bnode_lookup;
 	CLIPSValue document;
 	CLIPSValue group;
 	CLIPSValue rule_list;
@@ -34,7 +36,7 @@ struct rdfToRifInfo {
 	CLIPSValue rif_slotkey;
 	CLIPSValue rif_slotvalue;
 	CLIPSValue rif_object;
-};
+} RdfToRifInfo;
 
 typedef struct simpleToOwlInfo SimpleToOwlInfo;
 typedef struct directInterpretationInfo DirectInterpretationInfo;
@@ -42,10 +44,18 @@ typedef struct directInterpretationInfo DirectInterpretationInfo;
 typedef struct importProcess {
 	crifi_graph *graph;
 	CRIFI_IMPORT_INTERPRETER_ID interpreter_id;
-	BNodeLookup *bnode_lookup;
 	union {
 		DirectInterpretationInfo* direct_info;
-		struct rdfToRifInfo rdf_to_rif_info;
+		RdfToRifInfo *rdf_to_rif_info;
 		SimpleToOwlInfo *simple_to_owl_info;
 	};
 } ImportProcess;
+
+/**
+ * Simplest form of a function, that starts an ImportProcess.
+ *
+ * Some Import processes use other types of import processes for the interaction
+ * to the graph. At the end of those combined import processes the subprocess
+ * is created with a function of this type.
+ */
+typedef ImportProcess* SimpleStartImportProcesss(crifi_graph *graph);

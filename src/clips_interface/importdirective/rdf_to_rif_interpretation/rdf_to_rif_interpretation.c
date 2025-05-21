@@ -3,8 +3,18 @@
 #include "rdf_to_rif_commondata.h"
 
 #define ASSERT_TRIPLE_OR_FAIL(process, s_cv, p_cv, o_cv) \
-	if ( CRIFI_ASSTR_NO_ERROR != assert_triple(process->graph, s_cv, p_cv, o_cv)){ \
-		return CRIFI_IMPORT_ASSERT_UNHANDLED_ERROR;\
+	switch(assert_triple(process->graph, s_cv, p_cv, o_cv)){\
+		case CRIFI_ASSTR_NO_ERROR:\
+			break;\
+		default:\
+			return CRIFI_IMPORT_ASSERT_UNHANDLED_ERROR;\
+	}
+#define ASSERT_MEMBER_OR_FAIL(process, s_cv, o_cv) \
+	switch(assert_member(process->graph, s_cv, o_cv)){\
+		case CRIFI_ASSTR_NO_ERROR:\
+			break;\
+		default:\
+			return CRIFI_IMPORT_ASSERT_UNHANDLED_ERROR;\
 	}
 
 
@@ -12,23 +22,11 @@ ImportProcess *start_import_process_rdf_to_rif_interpretation(
 				crifi_graph *graph,
 				CRIFI_IMPORT_INTERPRETER_ID interpreter_id)
 {
-	CLIPSValue group, document;
 	ImportProcess *process = malloc(sizeof(ImportProcess));
-	document.value = process->rdf_to_rif_info.document.value;
-	group.value = process->rdf_to_rif_info.group.value;
-	if(
-			0 != new_blanknode(graph, &document)
-			|| 0 != new_blanknode(graph, &group))
-	{
-		free(process);
-		return NULL;
-	}
 	process->graph = graph;
 	process->interpreter_id = interpreter_id;
-	process->bnode_lookup = new_bnodelookup();
-
-	if (0 != generate_rdf_rif_info(graph, &(process->rdf_to_rif_info))){
-		free(process->bnode_lookup);
+	process->rdf_to_rif_info = generate_rdf_rif_info(graph);
+	if (process->rdf_to_rif_info == NULL){
 		free(process);
 		return NULL;
 	}
@@ -40,19 +38,22 @@ ImportProcess *start_import_process_rdf_to_rif_interpretation(
 	if ( CRIFI_ASSTR_NO_ERROR != assert_triple(process->graph, s_cv, p_cv, o_cv)){ \
 		return 1;\
 	}
+#define ASSERT_MEMBER_BASE(process, s_cv, o_cv) \
+	if ( CRIFI_ASSTR_NO_ERROR != assert_member(process->graph, s_cv, o_cv)){ \
+		return 1;\
+	}
 static int assert_base_information(ImportProcess *process){
-	CLIPSValue *document = &(process->rdf_to_rif_info.document);
-	CLIPSValue *group = &(process->rdf_to_rif_info.group);
-	CLIPSValue *rule_list = &(process->rdf_to_rif_info.rule_list);
-	CLIPSValue *rif_payload = &(process->rdf_to_rif_info.rif_payload);
-	CLIPSValue *rdf_type = &(process->rdf_to_rif_info.rdf_type);
-	CLIPSValue *rif_sentences = &(process->rdf_to_rif_info.rif_sentences);
-	CLIPSValue *rif_Document = &(process->rdf_to_rif_info.rif_Document);
-	CLIPSValue *rif_Group = &(process->rdf_to_rif_info.rif_Group);
+	CLIPSValue *document = &(process->rdf_to_rif_info->document);
+	CLIPSValue *group = &(process->rdf_to_rif_info->group);
+	CLIPSValue *rule_list = &(process->rdf_to_rif_info->rule_list);
+	CLIPSValue *rif_payload = &(process->rdf_to_rif_info->rif_payload);
+	CLIPSValue *rif_sentences = &(process->rdf_to_rif_info->rif_sentences);
+	CLIPSValue *rif_Document = &(process->rdf_to_rif_info->rif_Document);
+	CLIPSValue *rif_Group = &(process->rdf_to_rif_info->rif_Group);
 	ASSERT_TRIPLE_BASE(process, document, rif_payload, group);
-	ASSERT_TRIPLE_BASE(process, document, rdf_type, rif_Document);
+	ASSERT_MEMBER_BASE(process, document, rif_Document);
 	ASSERT_TRIPLE_BASE(process, group, rif_sentences, rule_list);
-	ASSERT_TRIPLE_BASE(process, group, rdf_type, rif_Group);
+	ASSERT_MEMBER_BASE(process, group, rif_Group);
 	return 0;
 }
 #undef ASSERT_TRIPLE_BASE
@@ -63,7 +64,7 @@ int end_import_process_rdf_to_rif_interpretation(ImportProcess *process){
 		return 1;
 	}
 	err = assert_base_information(process);
-	free_bnodelookup(process->bnode_lookup);
+	free_rdf_rif_info(process->rdf_to_rif_info);
 	free(process);
 	return err;
 }
@@ -75,8 +76,7 @@ static CRIFI_IMPORT_ASSERT_RET assert_term(ImportProcess *process,
 	int err;
 	CLIPSValue term_cv;
 	CLIPSValue value_cv;
-	struct rdfToRifInfo *info = &(process->rdf_to_rif_info);
-	CLIPSValue rdf_type = {.value = info->rdf_type.value};
+	struct rdfToRifInfo *info = process->rdf_to_rif_info;
 	CLIPSValue rif_Const = {.value = info->rif_Const.value};
 	CLIPSValue rif_constIRI = {.value = info->rif_constIRI.value};
 	CLIPSValue rif_value = {.value = info->rif_value.value};
@@ -99,7 +99,7 @@ static CRIFI_IMPORT_ASSERT_RET assert_term(ImportProcess *process,
 			if (err != 0){
 				return CRIFI_IMPORT_ASSERT_UNHANDLED_ERROR;
 			}
-			ASSERT_TRIPLE_OR_FAIL(process, ret, &rdf_type, &rif_Const);
+			ASSERT_MEMBER_OR_FAIL(process, ret, &rif_Const);
 			ASSERT_TRIPLE_OR_FAIL(process, ret, &rif_constIRI, &value_cv);
 			break;
 		case CRIFI_IMPORT_TERM_TYPEDLITERAL:
@@ -110,7 +110,7 @@ static CRIFI_IMPORT_ASSERT_RET assert_term(ImportProcess *process,
 			if (err != 0){
 				return CRIFI_IMPORT_ASSERT_UNHANDLED_ERROR;
 			}
-			ASSERT_TRIPLE_OR_FAIL(process, ret, &rdf_type, &rif_Const);
+			ASSERT_MEMBER_OR_FAIL(process, ret, &rif_Const);
 			ASSERT_TRIPLE_OR_FAIL(process, ret, &rif_value, &value_cv);
 			break;
 		case CRIFI_IMPORT_TERM_LANGLITERAL:
@@ -121,7 +121,7 @@ static CRIFI_IMPORT_ASSERT_RET assert_term(ImportProcess *process,
 			if (err != 0){
 				return CRIFI_IMPORT_ASSERT_UNHANDLED_ERROR;
 			}
-			ASSERT_TRIPLE_OR_FAIL(process, ret, &rdf_type, &rif_Const);
+			ASSERT_MEMBER_OR_FAIL(process, ret, &rif_Const);
 			ASSERT_TRIPLE_OR_FAIL(process, ret, &rif_value, &value_cv);
 			break;
 		case CRIFI_IMPORT_TERM_BNODE:
@@ -132,7 +132,7 @@ static CRIFI_IMPORT_ASSERT_RET assert_term(ImportProcess *process,
 			if (err != 0){
 				return CRIFI_IMPORT_ASSERT_UNHANDLED_ERROR;
 			}
-			ASSERT_TRIPLE_OR_FAIL(process, ret, &rdf_type, &rif_Const);
+			ASSERT_MEMBER_OR_FAIL(process, ret, &rif_Const);
 			ASSERT_TRIPLE_OR_FAIL(process, ret, &rif_value, &value_cv);
 			break;
 		case CRIFI_IMPORT_TERM_UNKNOWN:
@@ -153,8 +153,7 @@ CRIFI_IMPORT_ASSERT_RET assert_frame_rdf_to_rif(ImportProcess *process,
 	int err;
 	CRIFI_IMPORT_ASSERT_RET ret;
 	crifi_graph *graph = process->graph;
-	struct rdfToRifInfo *info = &(process->rdf_to_rif_info);
-	CLIPSValue rdf_type = {.value = info->rdf_type.value};
+	struct rdfToRifInfo *info = process->rdf_to_rif_info;
 	CLIPSValue *rdf_first = &(info->rdf_first);
 	CLIPSValue *rdf_rest = &(info->rdf_rest);
 	CLIPSValue rdf_nil = {.value = info->rdf_nil.value};
@@ -198,12 +197,12 @@ CRIFI_IMPORT_ASSERT_RET assert_frame_rdf_to_rif(ImportProcess *process,
 	if (0 != new_blanknode(graph, &slotlist)){
 		return CRIFI_IMPORT_ASSERT_UNHANDLED_ERROR;
 	}
-	ASSERT_TRIPLE_OR_FAIL(process, &frame, &rdf_type, &rif_Frame);
+	ASSERT_MEMBER_OR_FAIL(process, &frame, &rif_Frame);
 	ASSERT_TRIPLE_OR_FAIL(process, &frame, &rif_object, &object_cv);
 	ASSERT_TRIPLE_OR_FAIL(process, &frame, &rif_slots, &slotlist);
 	ASSERT_TRIPLE_OR_FAIL(process, &slotlist, rdf_first, &slot);
 	ASSERT_TRIPLE_OR_FAIL(process, &slotlist, rdf_rest, &rdf_nil);
-	ASSERT_TRIPLE_OR_FAIL(process, &slot, &rdf_type, &rif_Slot);
+	ASSERT_MEMBER_OR_FAIL(process, &slot, &rif_Slot);
 	ASSERT_TRIPLE_OR_FAIL(process, &slot, &rif_slotkey, &slotkey_cv);
 	ASSERT_TRIPLE_OR_FAIL(process, &slot, &rif_slotvalue, &slotvalue_cv);
 	if (0 != new_blanknode(graph, &new_rule_list)){

@@ -8,6 +8,7 @@
 
 #include "info_query.h"
 #include "errormanagment.h"
+#include "debug.h"
 
 #define RETURNFAIL(failure) \
 		crifi_udf_error(env, failure, out);\
@@ -46,14 +47,14 @@ void pred_list_contains(Environment *env, UDFContext *udfc, UDFValue *out){
 	c_arglist.value = arglist.value;
 	items = retrieve_items(env, c_arglist);
 	if (items == NULL){
-		RETURNFAIL("Cant handle given list.");
+		RETURNFAIL("pred:list-contains Cant handle given list.");
 	}
 	entry_dupl.header = entry.header;
 	for(int i = 0; i < items->length; i++){
 		check = internal_equal(env, &entry_dupl,
 				items->contents + i);
 		if (check == IEQ_TRUE){
-			out->lexemeValue = CreateBoolean(env, true);
+			out->lexemeValue = TrueSymbol(env);
 			break;
 		} else if (check == IEQ_ERROR){
 			RETURNFAIL("pred_list_contains");
@@ -224,7 +225,7 @@ void func_sublist(Environment *env, UDFContext *udfc, UDFValue *out){
 		clips_arglist.value = udf_arglist.value;
 		items = retrieve_items(env, clips_arglist);
 		if (items == NULL){
-			RETURNFAIL("Cant handle given list.");
+			RETURNFAIL("func:sublist Cant handle given list.");
 		}
 	} else {
 		end_val.value = NULL;
@@ -258,7 +259,7 @@ void func_append(Environment *env, UDFContext *udfc, UDFValue *out){
 	clips_list.value = udf_list.value;
 	list = retrieve_items(env, clips_list);
 	if (list == NULL){
-		RETURNFAIL("Cant handle given list.");
+		RETURNFAIL("func:append Cant handle given list.");
 	}
 	arglength = UDFArgumentCount(udfc);
 	listlength = list->length;
@@ -332,7 +333,7 @@ void func_insert_before(Environment *env, UDFContext *udfc, UDFValue *out){
 	clips_list.value = udf_list.value;
 	list = retrieve_items(env, clips_list);
 	if (list == NULL){
-		RETURNFAIL("Cant handle given list.");
+		RETURNFAIL("func:insert-before Cant handle given list.");
 	}
 	listlength = list->length;
 	if (!normalize_index(listlength, &position)){
@@ -402,12 +403,12 @@ void func_reverse(Environment *env, UDFContext *udfc, UDFValue *out){
 	CLIPSValue clips_list;
 	CLIPSValue *newvalues, *tmpptr;
 	if (!UDFFirstArgument(udfc, ANY_TYPE_BITS, &udf_list)){
-		RETURNFAIL("func_insert_before");
+		RETURNFAIL("func:reverse first arg error");
 	}
 	clips_list.value = udf_list.value;
 	list = retrieve_items(env, clips_list);
 	if (list == NULL){
-		RETURNFAIL("Cant handle given list.");
+		RETURNFAIL("func:reverse Cant handle given list.");
 	}
 	listlength = list->length;
 	newvalues = calloc(listlength, sizeof(CLIPSValue));
@@ -433,12 +434,12 @@ void func_index_of(Environment *env, UDFContext *udfc, UDFValue *out){
 	CLIPSValue *newvalues, *tmpptr;
 	CLIPSValue tmpval, cmpval;
 	if (!UDFFirstArgument(udfc, ANY_TYPE_BITS, &udf_list)){
-		RETURNFAIL("func_insert_before");
+		RETURNFAIL("func:index-of");
 	}
 	clips_list.value = udf_list.value;
 	list = retrieve_items(env, clips_list);
 	if (list == NULL){
-		RETURNFAIL("Cant handle given list.");
+		RETURNFAIL("func:index-of Cant handle given list.");
 	}
 	listlength = list->length;
 

@@ -7,6 +7,7 @@
 #define _RDF_PlainLiteral_ "http://www.w3.org/1999/02/22-rdf-syntax-ns#PlainLiteral"
 
 #define _RDF_ "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+#define _RDFS_ "http://www.w3.org/2000/01/rdf-schema#"
 #define _PRED_ "http://www.w3.org/2007/rif-builtin-predicate#"
 #define _FUNC_ "http://www.w3.org/2007/rif-builtin-function#"
 
@@ -16,7 +17,7 @@
 #define _RDF_first_ _RDF_ "first"
 #define _RDF_rest_ _RDF_ "rest"
 #define _RDF_nil_ _RDF_ "nil"
-#define _RDF_subClassOf_ _RDF_ "subClassOf"
+#define _RDFS_subClassOf_ _RDFS_ "subClassOf"
 
 //here defined urls
 #define _CRIFI_ "http://white.gobo/"

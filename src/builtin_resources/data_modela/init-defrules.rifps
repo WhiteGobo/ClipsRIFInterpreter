@@ -15,8 +15,8 @@ Document(
         If And(
           ?group[rif:sentences -> ?sentences]
           Or (
-            ?rule[rdf:type -> rif:Implies]
-            ?rule[rdf:type -> rif:Forall]
+            ?rule # rif:Implies
+            ?rule # rif:Forall
           )
           External(pred:is-list(?sentences))
           External(pred:list-contains(?sentences ?rule))
@@ -25,7 +25,7 @@ Document(
           (?actionlist New())
           Assert( ?rule[ex:as-defrule -> ?defrule] )
           Assert( ?rule[ex:add-rule-info -> ?defrule] )
-          Assert( ?defrule[rdf:type -> cs:Defrule] )
+          Assert( ?defrule # cs:Defrule )
           Assert( ?defrule[cs:conditional-element -> External(func:make-list())])
         )
       )
@@ -52,8 +52,8 @@ Document(
           ?rifrule[ex:add-rule-info -> ?defrule]
           ?rifrule[rif:formula -> ?rifclause]
           Or (
-            ?rifclause[rdf:type -> rif:Forall]
-            ?rifclause[rdf:type -> rif:Implies]
+            ?rifclause # rif:Forall
+            ?rifclause # rif:Implies
           )
         ) Then Do (
           Assert( ?rifclause[ex:add-rule-info -> ?defrule] )
@@ -70,20 +70,20 @@ Document(
       Forall ?rifrule ?defrule ?condition ?clipspattern ?formulalist(
         If And (
           ?rifcondition[ex:add-as-pattern -> ?defrule]
-          ?rifcondition[rdf:type -> rif:And]
-          ?defrule[rdf:type -> cs:Defrule]
+          ?rifcondition # rif:And
+          ?defrule # cs:Defrule
           ?rifcondition[rif:formulas -> ?formulalist]
           External(pred:is-list(?formulalist))
           Or (
-            ?formula[rdf:type -> rif:And]
-            ?formula[rdf:type -> rif:Or]
-            ?formula[rdf:type -> rif:Exists]
-            ?formula[rdf:type -> rif:External]
-            ?formula[rdf:type -> rif:INeg]
-            ?formula[rdf:type -> rif:Frame]
-            ?formula[rdf:type -> rif:Atom]
-            ?formula[rdf:type -> rif:SubClass]
-            ?formula[rdf:type -> rif:Equal]
+            ?formula # rif:And
+            ?formula # rif:Or
+            ?formula # rif:Exists
+            ?formula # rif:External
+            ?formula # rif:INeg
+            ?formula # rif:Frame
+            ?formula # rif:Atom
+            ?formula # rif:SubClass
+            ?formula # rif:Equal
           )
           External(pred:list-contains(?formulalist ?formula))
         ) Then Do (
@@ -95,10 +95,26 @@ Document(
         If And (
           ?rifrule[ex:add-rule-info -> ?defrule]
           ?rifrule[rif:then -> ?rifclause]
-          ?rifclause[rdf:type -> rif:Implies]
+          ?rifclause # rif:Implies
         ) Then Do (
           Assert( ?rifclause[ex:add-rule-info -> ?defrule] )
         )
+      )
+      Group (
+        Forall ?defrule ?defruleindex (
+          If And (
+            ?factvar # cs:Defrule
+            ex:currentdefruleindex(?defruleindex)
+            Not (Exists ?defrulename ( ?defrule[cs:rule-name -> ?defrulename] ))
+          ) Then Do (
+            Retract( ex:currentdefruleindex(?defruleindex) )
+
+            Assert( ex:currentdefruleindex(External(func:numeric-add(?defruleindex 1))))
+            Assert( ?factvar[cs:rule-name -> External(func:concat("rule" ?defruleindex))] )
+
+          )
+        )
+        ex:currentdefruleindex(0)
       )
     )
 )

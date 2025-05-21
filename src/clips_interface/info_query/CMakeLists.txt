@@ -4,6 +4,7 @@ add_library(info_query STATIC
 	blanknodes.c
 	genclipscode.c
 	internal_fact_interface.c
+	fact_interface.c
 )
 
 set_target_properties(info_query PROPERTIES

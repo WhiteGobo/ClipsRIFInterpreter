@@ -23,7 +23,7 @@ Document(
       )
       Forall ?defrule ?conditionallist ?pattern ?bindsvar (
         If And (
-          ?defrule[rdf:type -> cs:Defrule]
+          ?defrule # cs:Defrule
           ?defrule[cs:conditional-element -> ?conditionallist]
           External(pred:is-list(?conditionallist))
           ?pattern[ex:binds-variable -> ?bindsvar]
@@ -68,7 +68,7 @@ Document(
         Forall ?rifexternal ?action ?defrule (
           If And (
             ?rifexternal[ex:add-as-pattern -> ?defrule]
-            ?rifexternal[rdf:type -> rif:External]
+            ?rifexternal # rif:External
             ?rifexternal[ex:as-expression -> ?action]
             Not (Exists ?var ( And(
               ?action[ex:needs-variable -> ?var]
@@ -77,7 +77,7 @@ Document(
           ) Then Do (
             (?pattern New())
             (?oldpatternlist ?defrule[cs:conditional-element -> ?oldpatternlist])
-            Assert( ?pattern[rdf:type -> cs:TestCE] )
+            Assert( ?pattern # cs:TestCE )
             Modify( ?defrule[cs:conditional-element -> External(func:append(?oldpatternlist ?pattern))] )
             Assert( ?rifexternal[ex:used-as-pattern-in -> ?defrule])
             Assert( ?pattern[cs:function-call -> ?action] )
@@ -151,7 +151,7 @@ Document(
             (?pattern New())
             (?action New())
             (?oldpatternlist ?defrule[cs:conditional-element -> ?oldpatternlist])
-            Assert( ?pattern[rdf:type -> cs:TestCE] )
+            Assert( ?pattern # cs:TestCE )
             Modify( ?defrule[cs:conditional-element -> External(func:append(?oldpatternlist ?pattern))] )
             Assert( ?rifequal[ex:used-as-pattern-in -> ?defrule])
             Assert(?pattern[cs:function-call -> ?action])
@@ -172,7 +172,7 @@ Document(
             (?slotop New())
             (?slotargs New())
             Assert( ?rifatom[ex:as-lhs-pattern -> ?pattern] )
-            Assert( ?pattern[rdf:type -> cs:TemplatePatternCE])
+            Assert( ?pattern # cs:TemplatePatternCE )
             Assert( ?pattern[cs:deftemplate-name -> "Atom"] )
             Assert( ?pattern[cs:slot -> External(func:make-list(?slotop ?slotargs))] )
             Assert( ?slotop[cs:slot-name -> "op"] )
@@ -202,7 +202,7 @@ Document(
         Forall ?defrule ?rifatom ?slotargs (
           If And (
             ?rifatom[ex:add-as-pattern -> ?defrule]
-            ?rifatom[rdf:type -> rif:Atom]
+            ?rifatom # rif:Atom
             ?rifatom[ex:as-lhs-pattern -> ?pattern]
             ?pattern[cs:slot -> ?slotlist]
             ?slotargs[cs:constraints -> ?slotargsconstraints]
@@ -250,7 +250,7 @@ Document(
             (?slotpredicate New())
             (?slotobject New())
             (?oldpatternlist ?defrule[cs:conditional-element -> ?oldpatternlist])
-            Assert( ?pattern[rdf:type -> cs:TemplatePatternCE])
+            Assert( ?pattern # cs:TemplatePatternCE )
             Assert( ?pattern[cs:deftemplate-name -> "TripleTemplate"] )
             Assert( ?pattern[cs:slot -> External(func:make-list(?slotsubject ?slotpredicate ?slotobject))] )
             Assert( ?slotsubject[cs:slot-name -> "subject"] )
@@ -270,7 +270,7 @@ Document(
       Forall ?defrule ?rifineg ?formula ?clipsconditional (
         If And (
           ?rifineg[ex:add-as-pattern -> ?defrule]
-          ?rifineg[rdf:type -> rif:INeg]
+          ?rifineg # rif:INeg
           ?rifineg[rif:formula -> ?formula]
           ?formula[ex:as-conditional -> ?clipsconditional]
         ) Then Do (
@@ -279,7 +279,7 @@ Document(
           Modify( ?defrule[cs:conditional-element -> External(func:append(?oldpatternlist ?notCE))] )
           Assert( ?rifineg[ex:used-as-pattern-in -> ?defrule])
           Assert( ?rifineg[ex:as-conditional -> External(func:make-list(?notCE))])
-          Assert( ?notCE[rdf:type -> cs:NotCE] )
+          Assert( ?notCE # cs:NotCE )
           Assert( ?notCE[cs:conditional-element -> ?clipsconditional] )
         )
       )

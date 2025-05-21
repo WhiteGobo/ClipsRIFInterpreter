@@ -27,15 +27,17 @@ int add_rest(RDFListInfo* info,
 		IMPORT_TERM_TYPE target_type);
 
 CRIFI_IMPORT_GENERATE_RDFLIST get_list_as_clipsvalue(
-			ImportProcess *process, RDFListInfo *info,
+			ImportProcess *process,
+			ClipsvalueRetriever* node_retriever,
+			RDFListInfo *info,
 			const char *listid, const char *listid_suffix,
-			IMPORT_TERM_TYPE listid_type,
-			CLIPSValue *target);
+			IMPORT_TERM_TYPE listid_type, CLIPSValue *target);
 
 void free_RDFListInfo(RDFListInfo* info);
 
 CRIFI_IMPORT_CLIPSVALUE_RETRIEVE_RET retrieve_rdf_list(
 		ImportProcess *process,
+		ClipsvalueRetriever* node_retriever,
 		const char *id, const char *suffix, IMPORT_TERM_TYPE type,
-		RDFListInfo* context,
+		void* context, //RDFListInfo* context,
 		CLIPSValue* retval);

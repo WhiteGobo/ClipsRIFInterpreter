@@ -95,17 +95,22 @@ ImportProcess *start_import_process(crifi_graph *graph,
 				CLIPSValue *input_interpretation)
 {
 	ImportProcess * ret = NULL;
-	CRIFI_IMPORT_INTERPRETER_ID interpreter_id = get_interpreter(graph,
-							input_interpretation);
+	SimpleStartImportProcesss *subprocess_starter;
+	CRIFI_IMPORT_INTERPRETER_ID interpreter_id;
+
+	interpreter_id = get_interpreter(graph, input_interpretation);
 	switch (interpreter_id){
 		case CRIFI_IMPORT_IP_DIRECT:
 			ret = start_import_process_direct_interpretation(graph);
 			break;
 		case CRIFI_IMPORT_IP_SIMPLE_TO_OWL:
-			ret = start_import_process_simple_to_owl_interpretation(graph);
+			subprocess_starter = start_import_process_direct_interpretation;
+			ret = start_import_process_simple_to_owl_interpretation(
+						graph, subprocess_starter);
 			break;
 		case CRIFI_IMPORT_IP_SIMPLE_TO_RIF:
-			ret = start_import_process_rdf_to_rif_interpretation(graph, interpreter_id);
+			ret = start_import_process_rdf_to_rif_interpretation(
+						graph, interpreter_id);
 			break;
 		case CRIFI_IMPORT_IP_UNKNOWN:
 		default:

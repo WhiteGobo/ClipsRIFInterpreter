@@ -13,7 +13,7 @@ Document(
     Group (
       Forall ?frame (
         If And (
-          ?frame[rdf:type -> rif:Frame]
+          ?frame # rif:Frame
         ) Then Do (
           Assert( ?frame # ex:construct-as-conditional )
           Assert( ?frame[ex:in-as-conditional -> External(func:make-list())])
@@ -25,7 +25,7 @@ Document(
           ?rifnode[rif:slots -> ?slotlist]
           ?rifnode[ex:in-as-conditional -> ?existingconditionals]
           Not(Exists ?slot( And(
-            ?slot[rdf:type -> rif:Slot]
+            ?slot # rif:Slot
             External(pred:list-contains(?slotlist ?slot))
             Not(?rifnode[ex:used-slot-for-conditional -> ?slot])
           )))
@@ -35,7 +35,7 @@ Document(
       )
       (* ex:add-slot-transform-rif-frame *) Forall ?rifnode ?slotlist ?slot ?currentconditionalelement ?clipsrestraint ?slotvalue ?slotkey ?constraintsubject(
         If And (
-          ?rifnode[rdf:type -> rif:Frame]
+          ?rifnode # rif:Frame
           ?rifnode[rif:object -> ?object]
           ?object[ex:as-constraint -> ?constraintsubject]
           ?rifnode[rif:slots -> ?slotlist]
@@ -71,7 +71,7 @@ Document(
           ])
           Assert( ?rifnode[ex:binds-variables -> List()] )
           Assert( ?rifnode[ex:unbound-variables -> List()] )
-          Assert( ?clipsconditionalelement[rdf:type -> cs:TemplatePatternCE])
+          Assert( ?clipsconditionalelement # cs:TemplatePatternCE)
           Assert( ?clipsconditionalelement[cs:deftemplate-name -> "TripleTemplate"] )
           Assert( ?clipsconditionalelement[cs:slot -> External(func:make-list(?slotsubject ?slotpredicate ?slotobject))] )
           Assert( ?slotsubject[cs:slot-name -> "subject"] )
@@ -125,16 +125,16 @@ Document(
               External(pred:is-list(?sentences))
               Exists ?factable ( And(
                 Or(
-                  ?factable[rdf:type -> rif:Frame]
-                  ?factable[rdf:type -> rif:Member]
-                  ?factable[rdf:type -> rif:Atom]
+                  ?factable # rif:Frame
+                  ?factable # rif:Member
+                  ?factable # rif:Atom
                 )
                 External(pred:list-contains(?sentences ?factable))
               ))
             ) Then Do (
               (?deffacts New())
               Assert( ?group[ex:combine-deffacts-in -> ?deffacts] )
-              Assert( ?deffacts[rdf:type -> cs:Deffacts] )
+              Assert( ?deffacts # cs:Deffacts )
               Assert( ?deffacts[cs:rhs-pattern -> External(func:make-list())] )
             )
           )
@@ -143,9 +143,9 @@ Document(
               ?group[rif:sentences -> ?sentences]
               ?group[ex:combine-deffacts-in -> ?deffacts]
               Or(
-                ?factable[rdf:type -> rif:Frame]
-                ?factable[rdf:type -> rif:Member]
-                ?factable[rdf:type -> rif:Atom]
+                ?factable # rif:Frame
+                ?factable # rif:Member
+                ?factable # rif:Atom
               )
               External(pred:is-list(?sentences))
               External(pred:list-contains(?sentences ?factable))

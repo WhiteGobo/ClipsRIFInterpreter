@@ -31,7 +31,7 @@ Document(
           Assert( ex:rootfunction[cs:fact-set-template -> ?clipsdeftemplate] )
           Assert( ?clipsdeftemplate[cs:deftemplate-name -> "Atom"] )
           Assert( ?clipsdeftemplate[cs:fact-set-member-variable -> ?factvar] )
-          Assert( ?factvar[rdf:type -> cs:Variable] )
+          Assert( ?factvar # cs:Variable )
 
           Assert( ?varop[cs:member-variable -> ?factvar] )
           Assert( ?varop[cs:member-slot-name -> "op"] )
@@ -44,7 +44,7 @@ Document(
 
           Assert( ?generateargscompare[cs:function-name -> "create$"] )
           Assert( ?generateargscompare[cs:function-args -> External(func:make-list())] )
-          Assert( ?anyfactp[rdf:type -> cs:AnyFactP] )
+          Assert( ?anyfactp # cs:AnyFactP )
           Assert( ?anyfactp[cs:query -> ?query])
           Assert( ?anyfactp[cs:fact-set-template -> ?clipsdeftemplate] )
           Assert( ?query[cs:function-name -> "and"] )
@@ -72,7 +72,7 @@ Document(
           Assert( ex:rootfunction[cs:fact-set-template -> ?clipsdeftemplate] )
           Assert( ?clipsdeftemplate[cs:deftemplate-name -> "Atom"] )
           Assert( ?clipsdeftemplate[cs:fact-set-member-variable -> ?factvar] )
-          Assert( ?factvar[rdf:type -> cs:Variable] )
+          Assert( ?factvar # cs:Variable )
 
           Assert( ?varop[cs:member-variable -> ?factvar] )
           Assert( ?varop[cs:member-slot-name -> "op"] )
@@ -87,7 +87,7 @@ Document(
           Assert( ?generateargscompare[cs:function-args -> External(func:make-list())] )
           Assert( ?generateargscompare[ex:add-expressions-as-args -> ?arglist] )
 
-          Assert( ?anyfactp[rdf:type -> cs:AnyFactP] )
+          Assert( ?anyfactp # cs:AnyFactP )
           Assert( ?anyfactp[cs:query -> ?query])
           Assert( ?anyfactp[cs:fact-set-template -> ?clipsdeftemplate] )
           Assert( ?query[cs:function-name -> "and"] )
@@ -191,10 +191,10 @@ Document(
           (?slotclass New())
           (?slotinstance New())
           Assert( ?rifmember[ex:as-test-action -> ?anyfactp] )
-          Assert( ?factvar[rdf:type -> cs:Variable] )
+          Assert( ?factvar # cs:Variable )
           Assert( ?clipsdeftemplate[cs:deftemplate-name -> "Member"] )
           Assert( ?clipsdeftemplate[cs:fact-set-member-variable -> ?factvar] )
-          Assert( ?anyfactp[rdf:type -> cs:AnyFactP] )
+          Assert( ?anyfactp # cs:AnyFactP )
           Assert( ?anyfactp[cs:query -> ?query])
           Assert( ?anyfactp[cs:fact-set-template -> ?clipsdeftemplate] )
           Assert( ?query[cs:function-name -> "and"] )
@@ -228,11 +228,11 @@ Document(
           (?query New())
 
           Assert( ?rifframe[ex:as-test-action -> ?anyfactp] )
-          Assert( ?factvar[rdf:type -> cs:Variable] )
+          Assert( ?factvar # cs:Variable )
           Assert( ?clipsdeftemplate[cs:deftemplate-name -> "TripleTemplate"] )
           Assert( ?clipsdeftemplate[cs:fact-set-member-variable -> ?factvar] )
 
-          Assert( ?anyfactp[rdf:type -> cs:AnyFactP] )
+          Assert( ?anyfactp # cs:AnyFactP )
           Assert( ?anyfactp[cs:query -> ?query])
           Assert( ?anyfactp[cs:fact-set-template -> ?clipsdeftemplate] )
           Assert( ?query[cs:function-name -> "and"] )
@@ -250,7 +250,7 @@ Document(
 
       Forall ?rifexists ?hastestaction ?testaction (
         If And (
-          ?rifexists[rdf:type -> rif:Exists]
+          ?rifexists # rif:Exists
           ?rifexists[rif:formula -> ?hastestaction]
           ?hastestaction[ex:as-test-action -> ?testaction]
         ) Then Do (
