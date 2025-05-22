@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.5)
 message(WARNING "putting models into directory: @MODEL_LOCATION@")
 
 foreach(name @MODELNAMES@)
-	message(WARNING "recreate model ${name}")
+	message(WARNING "recreate model ${name}\noverwrite: \"@MODEL_LOCATION@/${name}.clp\"")
 	execute_process(
 		COMMAND @PROGRAM_LOCATION@ "--${name}"
 		OUTPUT_FILE "@MODEL_LOCATION@/${name}.clp"

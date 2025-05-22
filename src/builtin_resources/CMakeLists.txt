@@ -42,7 +42,6 @@ target_link_libraries(generate_builtin_model PRIVATE
 
 
 list(APPEND MODELNAMES "modelA" "modelAchecker")
-#set(MODEL_LOCATION "${CRIFI_GRAPH_MODELS_MODELPATH}")
 set(MODEL_LOCATION "${CMAKE_SOURCE_DIR}/clips_interface/graph_models")
 set(PROGRAM_LOCATION "${CMAKE_CURRENT_BINARY_DIR}/generate_builtin_model")
 configure_file(
