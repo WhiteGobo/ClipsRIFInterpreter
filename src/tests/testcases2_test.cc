@@ -91,7 +91,7 @@ static auto petTestdata = testing::Values(
 			W3C_PREMISE("Builtins_Numeric"),
 			W3C_CONCLUSION("Builtins_Numeric")),
 		TestdataPET("Core_PET_Builtins_PlainLiteral",
-			SC_ModelA,
+			SC_NoCondition,
 			W3C_PREMISE("Builtins_PlainLiteral"),
 			W3C_CONCLUSION("Builtins_PlainLiteral")),
 		TestdataPET("Core_PET_Builtins_String",

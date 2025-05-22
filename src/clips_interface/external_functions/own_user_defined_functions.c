@@ -109,27 +109,16 @@ void clipsudf_literal_to_clipsconstant(Environment *env, UDFContext *udfc, UDFVa
 	char *lexical, *result, *datatype;
 	CLIPSValue outclipsval;
 	UDFValue input;
+	CLIPSValue tmp_cv;
 	if (!UDFFirstArgument(udfc, ANY_TYPE_BITS, &input)) return;
 
-	lexical = extract_lexical(env, input.header);
-	if (lexical == NULL) return;
-	datatype = extract_datatype(env, input.header);
-	if (datatype == NULL){
-		free(datatype);
-		return;
-	}
-
-	result = genclipscode_lexical(env, lexical, datatype);
+	tmp_cv.value = input.value;
+	result = genclipscode_lexical(env, tmp_cv);
 	if (result == NULL){
-		free(lexical);
-		free(datatype);
 		return;
 	}
-
 	err = value_and_datatype_to_clipsvalue(env,
 			result, strlen(result), NULL, 0, &outclipsval);
-	free(datatype);
-	free(lexical);
 	free(result);
 	if (err==0){
 		out->value = outclipsval.value;

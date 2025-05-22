@@ -8,24 +8,71 @@ char* genclipscode_iri(Environment *env, char* iri){
 	return result;
 }
 
-char* genclipscode_lexical(Environment *env, char* value, char* datatype){
+char* genclipscode_lexical(Environment *env, CLIPSValue clipsvalue){
+	int err;
 	size_t datatype_length, value_length;
+	char *value, *datatype = NULL, *lang, *lexical;
+	char *valuestring;
 	char *clipsstring, *result;
-	value_length = strlen(value);
-	if (datatype != NULL){
-		datatype_length = strlen(datatype);
+	CLIPSValue tmp_cv;
+
+	lexical = extract_lexical(env, clipsvalue.header);
+	if (lexical == NULL) return NULL;
+	lang = extract_lang(env, clipsvalue.header);
+	if (lang != NULL){
+		err = value_and_lang_to_clipsvalue(env,
+				lexical, strlen(lexical),
+				lang, strlen(lang), &tmp_cv);
+		if (err != 0){
+			return NULL;
+		}
 	} else {
-		datatype_length = 0;
+		datatype = extract_datatype(env, clipsvalue.header);
+		if (datatype == NULL){
+			free(datatype);
+			return NULL;
+		}
+		if (datatype != NULL){
+			datatype_length = strlen(datatype);
+		} else {
+			datatype_length = 0;
+		}
+		err = value_and_datatype_to_clipsvalue(env,
+				lexical, strlen(lexical),
+				datatype, datatype_length, &tmp_cv);
+		if (err != 0){
+			return NULL;
+		}
 	}
-	clipsstring = value_and_datatype_to_string(value, value_length,
-						datatype, datatype_length);
-	if (clipsstring == NULL){
-		return NULL;
+	free(lexical);
+	free(datatype);
+	free(lang);
+
+	switch(tmp_cv.header->type){
+                case SYMBOL_TYPE:
+			valuestring = tmp_cv.lexemeValue->contents;
+			result = malloc(strlen(valuestring) + 5);
+			if (result == NULL) return NULL;
+			sprintf(result, "<%s>", valuestring);
+			break;
+		case STRING_TYPE:
+			valuestring = tmp_cv.lexemeValue->contents;
+			result = malloc(strlen(valuestring) + 5);
+			if (result == NULL) return NULL;
+			sprintf(result, "\"%s\"", valuestring);
+			break;
+		case INTEGER_TYPE:
+			result = malloc(30);
+			if (result == NULL) return NULL;
+			sprintf(result, "%d", tmp_cv.integerValue->contents);
+			break;
+		case FLOAT_TYPE:
+			result = malloc(30);
+			if (result == NULL) return NULL;
+			sprintf(result, "%f", tmp_cv.floatValue->contents);
+			break;
+		default:
+			return NULL;
 	}
-	result = malloc(strlen(clipsstring) + sizeof("\"\" "));
-	if (result != NULL){
-		sprintf(result, "\"%s\"", clipsstring);
-	}
-	free(clipsstring);
 	return result;
 }
