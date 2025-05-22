@@ -145,6 +145,7 @@ Document(
               Or(
                 ?factable # rif:Frame
                 ?factable # rif:Member
+                ?factable # rif:Subclass
                 ?factable # rif:Atom
               )
               External(pred:is-list(?sentences))

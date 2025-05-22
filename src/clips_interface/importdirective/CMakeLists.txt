@@ -1,3 +1,10 @@
+set(SIMPLETOOWL_SRC
+	simple_to_owl_interpretation/simple_to_owl_interpretation.c
+	simple_to_owl_interpretation/simple_to_owl_interpretation.h
+	simple_to_owl_interpretation/simple_to_owl_info.h
+	simple_to_owl_interpretation/simpletoowl_special_assert.c
+	simple_to_owl_interpretation/simpletoowl_special_assert.h
+)
 set(UTILS_SRC
 	utils/bnode_lookup.c
 	utils/bnode_lookup.h
@@ -8,12 +15,15 @@ set(UTILS_SRC
 	utils/rdf_list.c
 	utils/rdf_list.h
 	utils/rdf_list_internal.h
+	utils/cv_snake.c
+	utils/cv_snake.h
 )
 
 add_library(crifi_import STATIC
 	crifi_import.c
 	crifi_import.h
 	${UTILS_SRC}
+	${SIMPLETOOWL_SRC}
 	interpretation.c
 	interpretations.h
 	init_data.c
@@ -24,11 +34,8 @@ add_library(crifi_import STATIC
 	rdf_to_rif_interpretation/rdf_to_rif_interpretation.h
 	rdf_to_rif_interpretation/rdf_to_rif_commondata.c
 	rdf_to_rif_interpretation/rdf_to_rif_commondata.h
-	simple_to_owl_interpretation/simple_to_owl_interpretation.c
-	simple_to_owl_interpretation/simple_to_owl_interpretation.h
-	simple_to_owl_interpretation/simple_to_owl_info.h
-	simple_to_owl_interpretation/simpletoowl_special_assert.c
-	simple_to_owl_interpretation/simpletoowl_special_assert.h
+	rdf_to_rif_interpretation/rdf_to_rif_special_assert.c
+	rdf_to_rif_interpretation/rdf_to_rif_special_assert.h
 	clipsvalue_interface.c
 	clipsvalue_interface.h
 	node_retriever.h

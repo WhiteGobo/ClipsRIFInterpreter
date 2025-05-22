@@ -269,5 +269,43 @@ Document(
           Assert( ?slotobject[cs:field -> External(func:make-list(?expressionobject))])
         )
       )
+      Forall ?rifmember ?instance ?cls ?expressioninstance ?expressioncls (
+        If And (
+          ?rifmember[rif:instance -> ?instance]
+          ?instance[ex:as-expression -> ?expressioninstance]
+          ?rifmember[rif:class -> ?cls]
+          ?cls[ex:as-expression -> ?expressioncls]
+        ) Then Do (
+          (?rhspattern New())
+          (?slotinstance New())
+          (?slotcls New())
+          Assert( ?rifmember[ex:as-rhspattern -> ?rhspattern] )
+          Assert( ?rhspattern[cs:deftemplate-name -> "Member"] )
+          Assert( ?rhspattern[cs:slot -> External(func:make-list(?slotinstance ?slotcls))] )
+          Assert( ?slotinstance[cs:slot-name -> "instance"] )
+          Assert( ?slotinstance[cs:field -> External(func:make-list(?expressioninstance))] )
+          Assert( ?slotcls[cs:slot-name -> "class"] )
+          Assert( ?slotcls[cs:field -> External(func:make-list(?expressioncls))] )
+        )
+      )
+      Forall ?rifsubclass ?sub ?super ?expressionsub ?expressionsuper (
+        If And (
+          ?rifsuperclass[rif:sub -> ?sub]
+          ?sub[ex:as-expression -> ?expressionsub]
+          ?rifsuperclass[rif:super -> ?super]
+          ?super[ex:as-expression -> ?expressionsuper]
+        ) Then Do (
+          (?rhspattern New())
+          (?slotsub New())
+          (?slotsuper New())
+          Assert( ?rifsuperclass[ex:as-rhspattern -> ?rhspattern] )
+          Assert( ?rhspattern[cs:deftemplate-name -> "Subclass"] )
+          Assert( ?rhspattern[cs:slot -> External(func:make-list(?slotsub ?slotsuper))] )
+          Assert( ?slotsub[cs:slot-name -> "sub"] )
+          Assert( ?slotsub[cs:field -> External(func:make-list(?expressionsub))] )
+          Assert( ?slotsuper[cs:slot-name -> "super"] )
+          Assert( ?slotsuper[cs:field -> External(func:make-list(?expressionsuper))] )
+        )
+      )
     )
 )

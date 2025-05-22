@@ -6,6 +6,7 @@
 #include "triple_list.h"
 #include "pair_list.h"
 #include "rdf_list.h"
+#include "cv_snake.h"
 
 typedef struct rdfToRifInfo {
 	BNodeLookup* bnode_lookup;
@@ -20,12 +21,13 @@ typedef struct rdfToRifInfo {
 
 	CLIPSValue document;
 	CLIPSValue group;
-	CLIPSValue rule_list;
+	//CLIPSValue rule_list;
+	CVSnake *rule_list;
 
 	CLIPSValue rdf_type;
-	CLIPSValue rdf_first;
-	CLIPSValue rdf_rest;
-	CLIPSValue rdf_nil;
+	//CLIPSValue rdf_first;
+	//CLIPSValue rdf_rest;
+	//CLIPSValue rdf_nil;
 
 	CLIPSValue rif_Document;
 	CLIPSValue rif_Group;
@@ -42,6 +44,12 @@ typedef struct rdfToRifInfo {
 	CLIPSValue rif_slotkey;
 	CLIPSValue rif_slotvalue;
 	CLIPSValue rif_object;
+	CLIPSValue rif_Member;
+	CLIPSValue rif_instance;
+	CLIPSValue rif_class;
+	CLIPSValue rif_Subclass;
+	CLIPSValue rif_super;
+	CLIPSValue rif_sub;
 } RdfToRifInfo;
 
 struct rdfToRifInfo* generate_rdf_rif_info(crifi_graph *graph);

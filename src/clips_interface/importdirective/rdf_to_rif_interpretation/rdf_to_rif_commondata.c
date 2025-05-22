@@ -16,6 +16,8 @@ RdfToRifInfo* generate_rdf_rif_info(crifi_graph *graph){
 	info->first_subclass = NULL;
 	info->last_subclass = NULL;
 
+	info->rule_list = NULL;
+
 	if(!init_clipsvalues(graph, info)){
 		free(info);
 		return NULL;
@@ -38,23 +40,23 @@ static bool init_clipsvalues(crifi_graph *graph, RdfToRifInfo *info){
 	if (0 != new_blanknode(graph, &(info->group))){
 		return false;
 	}
-	if (0 != new_blanknode(graph, &(info->rule_list))){
-		return false;
-	}
+	//if (0 != new_blanknode(graph, &(info->rule_list))){
+	//	return false;
+	//}
 
-	err = uri_to_clipsvalue(graph, _RDF_nil_, strlen(_RDF_nil_),
-			&(info->rdf_nil));
-	if (err != 0){
-		return false;
-	}
-	info->rule_list.value = info->rdf_nil.value;
+	//err = uri_to_clipsvalue(graph, _RDF_nil_, strlen(_RDF_nil_),
+	//		&(info->rdf_nil));
+	//if (err != 0){
+	//	return false;
+	//}
+	//info->rule_list.value = info->rdf_nil.value;
 
 	err = uri_to_clipsvalue(graph, _RDF_type_, strlen(_RDF_type_),
 			&(info->rdf_type));
 	if (err != 0){
 		return false;
 	}
-	err = uri_to_clipsvalue(graph, _RDF_first_, strlen(_RDF_first_),
+	/*err = uri_to_clipsvalue(graph, _RDF_first_, strlen(_RDF_first_),
 			&(info->rdf_first));
 	if (err != 0){
 		return false;
@@ -63,7 +65,7 @@ static bool init_clipsvalues(crifi_graph *graph, RdfToRifInfo *info){
 			&(info->rdf_rest));
 	if (err != 0){
 		return false;
-	}
+	}*/
 
 	err = uri_to_clipsvalue(graph, _RIF_Document_, strlen(_RIF_Document_),
 			&(info->rif_Document));
@@ -141,11 +143,43 @@ static bool init_clipsvalues(crifi_graph *graph, RdfToRifInfo *info){
 	if (err != 0){
 		return false;
 	}
+	err = uri_to_clipsvalue(graph, _RIF_Member_, strlen(_RIF_Member_),
+			&(info->rif_Member));
+	if (err != 0){
+		return false;
+	}
+	err = uri_to_clipsvalue(graph, _RIF_instance_, strlen(_RIF_instance_),
+			&(info->rif_instance));
+	if (err != 0){
+		return false;
+	}
+	err = uri_to_clipsvalue(graph, _RIF_class_, strlen(_RIF_class_),
+			&(info->rif_class));
+	if (err != 0){
+		return false;
+	}
+	err = uri_to_clipsvalue(graph, _RIF_Subclass_, strlen(_RIF_Subclass_),
+			&(info->rif_Subclass));
+	if (err != 0){
+		return false;
+	}
+	err = uri_to_clipsvalue(graph, _RIF_super_, strlen(_RIF_super_),
+			&(info->rif_super));
+	if (err != 0){
+		return false;
+	}
+	err = uri_to_clipsvalue(graph, _RIF_sub_, strlen(_RIF_sub_),
+			&(info->rif_sub));
+	if (err != 0){
+		return false;
+	}
+
 	return true;
 }
 
 void free_rdf_rif_info(struct rdfToRifInfo *info){
 	free_bnodelookup(info->bnode_lookup);
 	free_RDFListInfo(info->list_info);
+	free_cvsnake(info->rule_list);
 	free(info);
 }

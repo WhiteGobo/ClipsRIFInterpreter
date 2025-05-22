@@ -55,7 +55,7 @@ static const char *templates[] = {
 };
 
 static const char *baserules[] = {
-	"(defrule rule1\n"
+	"(defrule transfer-superclasses\n"
 		"	(Subclass (sub ?cls) (super ?extracls))\n"
 		"	(Member (instance ?x) (class ?cls))\n"
 		"	=>\n"

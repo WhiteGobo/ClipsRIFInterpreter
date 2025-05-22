@@ -314,6 +314,12 @@
 #define _RIF_Var_ _RIF_ "Var"
 #define _RIF_varname_ _RIF_ "varname"
 #define _RIF_local_ _RIF_ "local"
+#define _RIF_Member_ _RIF_ "Member"
+#define _RIF_instance_ _RIF_ "instance"
+#define _RIF_class_ _RIF_ "class"
+#define _RIF_Subclass_ _RIF_ "Subclass"
+#define _RIF_super_ _RIF_ "super"
+#define _RIF_sub_ _RIF_ "sub"
 
 
 #define _SYNTAX_ "http://www.w3.org/ns/formats/"

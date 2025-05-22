@@ -442,7 +442,8 @@ static void run_and_check(crifi_graph *graph, const char* check_command,
 	int number_rules_run = run_rules(graph, 40);
 	if (number_rules_run == 0){
 		eval(graph, "(println \"show matches of rule0: \" "
-				"(matches rule0))");
+				"(matches transfer-superclasses))");
+				//"(matches rule0))");
 	}
 	fprintf(stderr, "number of rules during logic: %d\n", number_rules_run);
 	if (graph_in_errorstate(graph, stderr)){
@@ -511,6 +512,7 @@ static void create_logic_into_memory(FILE* tmpmem_f, TestdataPET testdata,
 	//eval(create_logic_graph, "(agenda)");
 	//eval(create_logic_graph, "(println \"vbnm\")");
 	//eval(create_logic_graph, "(watch rules)");
+	//eval(create_logic_graph, "(watch facts)");
 	//eval(create_logic_graph, "(println \"vbnm\")");
 	//eval(create_logic_graph, "(facts)");
 	//eval(create_logic_graph, "(println \"vbnm\")");
@@ -518,6 +520,7 @@ static void create_logic_into_memory(FILE* tmpmem_f, TestdataPET testdata,
 	//eval(create_logic_graph, "(println \"vbnm\")");
 
 	number_rules_run = run_rules(create_logic_graph, 10000);
+	//eval(create_logic_graph, "(facts)");
 	fprintf(stderr, "information in create_logic_graph after rules run.\n");
 	//ignore error:
 	crifi_serialize_all_triples(create_logic_graph, stderr, "turtle", "");
