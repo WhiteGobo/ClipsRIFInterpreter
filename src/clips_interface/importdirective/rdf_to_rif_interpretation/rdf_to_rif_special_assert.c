@@ -88,14 +88,17 @@ static int my_add_subclass(ImportProcess *process,
 	return 0;
 }
 
-static SpecialAssert* get_special_assert(const char* id){
-	if (0 == strcmp(id, _RDF_first_)){
+static SpecialAssert* get_special_assert(const char* pred, const char* obj){
+	if (0 == strcmp(pred, _RDF_first_)){
 		return my_add_first;
-	} else if (0 == strcmp(id, _RDF_rest_)){
+	} else if (0 == strcmp(pred, _RDF_rest_)){
 		return my_add_rest;
-	} else if (0 == strcmp(id, _RDFS_subClassOf_)){
+	} else if (0 == strcmp(pred, _RDFS_subClassOf_)){
 		return my_add_subclass;
-	} else if (0 == strcmp(id, _RDF_type_)){
+	} else if (0 == strcmp(pred, _RDF_type_)){
+		//on owl direct use subject as ontology id
+		if (0 == strcmp(obj, _OWL_Ontology_)){
+		}
 		return my_add_member;
 	}
 	return NULL;
@@ -112,7 +115,7 @@ CRIFI_IMPORT_ASSERT_RET rdf_to_rif_special_assert_triple(
 		IMPORT_TERM_TYPE slotvalue_type)
 {
 	int err;
-	SpecialAssert *my_assert = get_special_assert(slotkey);
+	SpecialAssert *my_assert = get_special_assert(slotkey, slotvalue);
 	if (my_assert != NULL){
 		err = my_assert(process,
 				object, object_suffix, object_type,

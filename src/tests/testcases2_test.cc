@@ -147,7 +147,7 @@ static auto petTestdata = testing::Values(
 			W3C_PREMISE("Modeling_Brain_Anatomy"),
 			W3C_CONCLUSION("Modeling_Brain_Anatomy")),
 		TestdataPET("Core_PET_OWL_Combination_Vocabulary_Separation_Inconsistency_1",
-			SC_InconsistencyError,
+			SC_All | SC_InconsistencyError,
 			W3C_PREMISE("OWL_Combination_Vocabulary_Separation_Inconsistency_1"),
 			W3C_CONCLUSION("OWL_Combination_Vocabulary_Separation_Inconsistency_1")),
 		TestdataPET("Core_PET_OWL_Combination_Vocabulary_Separation_Inconsistency_2",
