@@ -62,6 +62,30 @@ static const char *baserules[] = {
 		"	(assert (Member (instance ?x) (class ?extracls)))\n"
 		")",
 
+	"(defrule rdfs-domain-entail\n"
+		"	(TripleTemplate\n"
+		"		(subject ?pred)\n"
+		"		(predicate <http://www.w3.org/2000/01/rdf-schema#domain>)\n"
+		"		(object ?cls))\n"
+		"	(TripleTemplate\n"
+		"		(subject ?subj)\n"
+		"		(predicate ?pred))\n"
+		"	=>\n"
+		"	(assert (Member (instance ?subj) (class ?cls)))\n"
+		")",
+
+	"(defrule rdfs-range-entail\n"
+		"	(TripleTemplate\n"
+		"		(subject ?pred)\n"
+		"		(predicate <http://www.w3.org/2000/01/rdf-schema#range>)\n"
+		"		(object ?cls))\n"
+		"	(TripleTemplate\n"
+		"		(object ?obj)\n"
+		"		(predicate ?pred))\n"
+		"	=>\n"
+		"	(assert (Member (instance ?obj) (class ?cls)))\n"
+		")",
+
 	/*
 	"(defrule translate-types\n"
 	"	(declare (salience 1000))\n"

@@ -21,7 +21,7 @@ _:N1b0833157d4c4edea9f3e1d35f338c1c <http://www.w3.org/2007/rif#slotkey> _:Na779
 _:N87f7e4649b424cd28c029099fb8cc571 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2007/rif#Var> .
 _:N3f3f7a87acf14bc7bfed76b9f58ff251 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2007/rif#Const> .
 _:N9500755e4d1b421881a7d02043e0a97f <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> <http://www.w3.org/1999/02/22-rdf-syntax-ns#nil> .
-_:Nc23fa9f82998425c8d90da730c4f1203 <http://www.w3.org/2007/rif#location> "http://www.w3.org/2005/rules/test/repository/tc/Modeling_Brain_Anatomy/Modeling_Brain_Anatomy-import001.rdf" .
+_:Nc23fa9f82998425c8d90da730c4f1203 <http://www.w3.org/2007/rif#location> "http://www.w3.org/2005/rules/test/repository/tc/Modeling_Brain_Anatomy/Modeling_Brain_Anatomy-import001" .
 _:Nbd5348e4f7304699bc14add3c6b598d6 <http://www.w3.org/2007/rif#slots> _:N7fb61033d3f04bdb9ac9ca71636a6221 .
 _:Ncaa246f83d8e4413b3360ffcbc464ec1 <http://www.w3.org/2007/rif#formula> _:N972d34a66e184aaeb9c5470c5e9d2444 .
 _:N8edde496d19b40c2af4a12a5f75f496b <http://www.w3.org/2007/rif#constIRI> "http://example.org/testOntology.owl#isMAEBoundedBy"^^<http://www.w3.org/2001/XMLSchema#anyURI> .

@@ -142,9 +142,8 @@ static auto petTestdata = testing::Values(
 			SC_ModelFirst,
 			W3C_PREMISE("Guards_and_subtypes"),
 			W3C_CONCLUSION("Guards_and_subtypes")),
-		/*
 		TestdataPET("Core_PET_Modeling_Brain_Anatomy",
-			SC_All,
+			SC_ModelFirst,
 			W3C_PREMISE("Modeling_Brain_Anatomy"),
 			W3C_CONCLUSION("Modeling_Brain_Anatomy")),
 		TestdataPET("Core_PET_OWL_Combination_Vocabulary_Separation_Inconsistency_1",
@@ -159,7 +158,6 @@ static auto petTestdata = testing::Values(
 			SC_All,
 			W3C_PREMISE("Positional_Arguments"),
 			W3C_CONCLUSION("Positional_Arguments")),
-			*/
 		TestdataPET("Core_PET_RDF_Combination_Blank_Node",
 			SC_NoCondition | SC_ModelFirst,
 			W3C_PREMISE("RDF_Combination_Blank_Node"),
@@ -440,11 +438,10 @@ static void run_and_check(crifi_graph *graph, const char* check_command,
 	struct DynamicValue retval;
 	eval(graph, "(agenda)");
 	int number_rules_run = run_rules(graph, 40);
-	if (number_rules_run == 0){
+	//if (number_rules_run == 0){
 		eval(graph, "(println \"show matches of rule0: \" "
-				"(matches transfer-superclasses))");
-				//"(matches rule0))");
-	}
+				"(matches rule0))");
+	//}
 	fprintf(stderr, "number of rules during logic: %d\n", number_rules_run);
 	if (graph_in_errorstate(graph, stderr)){
 		FAIL() << "graph ended up in errorstate, while running logic.";

@@ -11,35 +11,80 @@ Document(
     Prefix(rif <http://www.w3.org/2007/rif#>)
     Prefix(entailment <http://www.w3.org/ns/entailment/>)
     Prefix(xs <http://www.w3.org/2001/XMLSchema#>)
-    Group -1 (
-      Forall ?rifexternal ?rifatom ?rifopiristring ?defrule ?arglist ?targetiri ?targetstring ?varname ?clipsvar ?clipsexpression (
-        If And(
-          ?rifconstiristring[rif:constIRI -> "http://www.w3.org/2007/rif-builtin-predicate#iri-string"^^xs:anyURI]
-          ?rifatom[rif:op -> ?rifconstiristring]
-          ?rifexternal[rif:content -> ?rifatom]
-          ?rifexternal # rif:External
-          ?rifexternal[ex:add-as-pattern -> ?defrule]
-          Not( ?rifexternal[ex:used-as-pattern-in -> ?defrule] )
-          ?rifatom[rif:args -> ?arglist]
-          External(pred:is-list(?arglist))
+    Group (
+      Group 50 (
+        Forall ?rifframe ?slot ?defrule ?slotkey ?slotvalue (
+          If And (
+            ?rifframe[ex:add-as-pattern -> ?defrule]
+            ?rifframe[rif:object -> ?frameobject]
+            ?rifframe[rif:slots -> ?slotlist]
+            External(pred:is-list(?slotlist))
+            ?slot[rif:slotkey -> ?slotkey]
+            ?slotkey[rif:constIRI -> "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"^^xs:anyURI]
+            ?slot[rif:slotvalue -> ?slotvalue]
+            External(pred:list-contains(?slotlist ?slot))
+            ?frameobject[ex:as-constraint -> ?constraintsubject]
+            ?slotvalue[ex:as-constraint -> ?constraintobject]
+            Not (Exists ?x ( And(
+              ?constraintsubject[ex:needs-variable -> ?x]
+              Not( ?defrule[ex:bound-variable -> ?x] )
+            )))
+            Not (Exists ?z ( And(
+              ?constraintobject[ex:needs-variable -> ?z]
+              Not( ?defrule[ex:bound-variable -> ?z] )
+            )))
+            Not(?slot[ex:used-as-pattern-in -> ?defrule])
+          ) Then Do (
+            (?pattern New())
+            (?slotinstance New())
+            (?slotcls New())
+            (?oldpatternlist ?defrule[cs:conditional-element -> ?oldpatternlist])
+            Assert(?slot[ex:used-as-pattern-in -> ?defrule])
+            Assert(?rifframe[ex:used-as-pattern-in -> ?defrule])
 
-          ?targetiri[rif:varname -> ?varname]
-          ?targetiri[ex:as-expression -> ?clipsvar]
-          Not( ?defrule[ex:bound-variable -> ?clipsvar] )
-          ?targetstring[ex:as-expression -> ?clipsexpression]
-          ?targetiri = External(func:get(?arglist 0))
-          ?targetstring = External(func:get(?arglist 1))
-          Not ( Exists ?x (And (
-            ?clipsexpression[ex:needs-variable -> ?x]
-            Not( ?defrule[ex:bound-variable -> ?x] )
-          )))
-          Not ( And (
-            Exists ?tmp (?clipsexpression[cs:variable-name -> ?tmp])
-            Not( ?defrule[ex:bound-variable -> ?clipsexpression] )
-          ))
-        ) Then Do (
-          Assert( ?rifexternal[ex:used-as-pattern-in -> ?defrule] )
-          Assert( ?clipsvar[cs:var-as-const-expr -> ?clipsexpression] )
+            Assert( ?pattern # cs:TemplatePatternCE )
+            Assert( ?pattern[cs:deftemplate-name -> "Member"] )
+            Assert( ?pattern[cs:slot -> External(func:make-list(?slotinstance ?slotcls))] )
+            Assert( ?slotinstance[cs:slot-name -> "instance"] )
+            Assert( ?slotinstance[cs:constraint -> ?constraintsubject] )
+            Assert( ?slotcls[cs:slot-name -> "class"] )
+            Assert( ?slotcls[cs:constraint -> ?constraintobject] )
+            Modify( ?defrule[cs:conditional-element -> External(func:append(?oldpatternlist ?pattern))] )
+            Assert( ?defrule[ex:transfer-bound-variables-from -> ?constraintsubject])
+            Assert( ?defrule[ex:transfer-bound-variables-from -> ?constraintobject])
+          )
+        )
+      )
+      Group -1 (
+        Forall ?rifexternal ?rifatom ?rifopiristring ?defrule ?arglist ?targetiri ?targetstring ?varname ?clipsvar ?clipsexpression (
+          If And(
+            ?rifconstiristring[rif:constIRI -> "http://www.w3.org/2007/rif-builtin-predicate#iri-string"^^xs:anyURI]
+            ?rifatom[rif:op -> ?rifconstiristring]
+            ?rifexternal[rif:content -> ?rifatom]
+            ?rifexternal # rif:External
+            ?rifexternal[ex:add-as-pattern -> ?defrule]
+            Not( ?rifexternal[ex:used-as-pattern-in -> ?defrule] )
+            ?rifatom[rif:args -> ?arglist]
+            External(pred:is-list(?arglist))
+
+            ?targetiri[rif:varname -> ?varname]
+            ?targetiri[ex:as-expression -> ?clipsvar]
+            Not( ?defrule[ex:bound-variable -> ?clipsvar] )
+            ?targetstring[ex:as-expression -> ?clipsexpression]
+            ?targetiri = External(func:get(?arglist 0))
+            ?targetstring = External(func:get(?arglist 1))
+            Not ( Exists ?x (And (
+              ?clipsexpression[ex:needs-variable -> ?x]
+              Not( ?defrule[ex:bound-variable -> ?x] )
+            )))
+            Not ( And (
+              Exists ?tmp (?clipsexpression[cs:variable-name -> ?tmp])
+              Not( ?defrule[ex:bound-variable -> ?clipsexpression] )
+            ))
+          ) Then Do (
+            Assert( ?rifexternal[ex:used-as-pattern-in -> ?defrule] )
+            Assert( ?clipsvar[cs:var-as-const-expr -> ?clipsexpression] )
+          )
         )
       )
     )

@@ -244,12 +244,16 @@ Document(
               ?constraintobject[ex:needs-variable -> ?z]
               Not( ?defrule[ex:bound-variable -> ?z] )
             )))
+            Not(?slot[ex:used-as-pattern-in -> ?defrule])
           ) Then Do (
             (?pattern New())
             (?slotsubject New())
             (?slotpredicate New())
             (?slotobject New())
             (?oldpatternlist ?defrule[cs:conditional-element -> ?oldpatternlist])
+            Assert(?slot[ex:used-as-pattern-in -> ?defrule])
+            Assert(?rifframe[ex:used-as-pattern-in -> ?defrule])
+
             Assert( ?pattern # cs:TemplatePatternCE )
             Assert( ?pattern[cs:deftemplate-name -> "TripleTemplate"] )
             Assert( ?pattern[cs:slot -> External(func:make-list(?slotsubject ?slotpredicate ?slotobject))] )

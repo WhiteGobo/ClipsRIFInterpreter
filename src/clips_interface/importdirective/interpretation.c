@@ -68,12 +68,12 @@ static CRIFI_IMPORT_INTERPRETER_ID get_interpreter_model_rifgenerator(
 	if (
 			0 == strcmp(entailment, _RIFENTAIL_RDF_)
 			|| 0 == strcmp(entailment, _RIFENTAIL_RDFS_)
-			|| 0 == strcmp(entailment, _RIFENTAIL_SIMPLE_))
+			|| 0 == strcmp(entailment, _RIFENTAIL_SIMPLE_)
+			|| 0 == strcmp(entailment, _RIFENTAIL_OWLDIRECT_))
 	{
 		return CRIFI_IMPORT_IP_SIMPLE_TO_RIF;
 	} else if (0 == strcmp(entailment, _RIFENTAIL_RIF_)){
 		return CRIFI_IMPORT_IP_SIMPLE_TO_OWL;
-		return CRIFI_IMPORT_IP_DIRECT;
 	}
 	return CRIFI_IMPORT_IP_UNKNOWN;
 }
