@@ -40,13 +40,13 @@ target_link_libraries(generate_builtin_model PRIVATE
 
 #set(MODELA "${CMAKE_CURRENT_BINARY_DIR}/modelA.clp")
 
-if(CRIFI_RECREATE_BUILTIN_MODELS)
-	add_custom_target(modelA.clp ALL
-		COMMAND generate_builtin_model "--modelA" > modelA.clp
-		DEPENDS generate_builtin_model
-	)
-	add_custom_target(modelAchecker.clp ALL
-		COMMAND generate_builtin_model "--modelAchecker" > modelAchecker.clp
-		DEPENDS generate_builtin_model
-	)
-endif()
+
+list(APPEND MODELNAMES "modelA" "modelAchecker")
+#set(MODEL_LOCATION "${CRIFI_GRAPH_MODELS_MODELPATH}")
+set(MODEL_LOCATION "${CMAKE_SOURCE_DIR}/clips_interface/graph_models")
+set(PROGRAM_LOCATION "${CMAKE_CURRENT_BINARY_DIR}/generate_builtin_model")
+configure_file(
+	"${CMAKE_CURRENT_SOURCE_DIR}/overwrite_builtin_models.cmake.in"
+	"${CMAKE_BINARY_DIR}/overwrite_builtin_models.cmake"
+	@ONLY
+)

@@ -22,9 +22,6 @@ ifdef BUILD_SHARED_LIBS
 else
 	CMAKE_CONFIGURE_OPT += -DBUILD_SHARED_LIBS=ON
 endif
-ifdef CRIFI_RECREATE_BUILTIN_MODELS
-	CMAKE_CONFIGURE_OPT += -DCRIFI_RECREATE_BUILTIN_MODELS=${CRIFI_RECREATE_BUILTIN_MODELS}
-endif
 ifdef prefix
 	CMAKE_CONFIGURE_OPT += --install-prefix ${prefix}
 endif
@@ -67,6 +64,10 @@ endif
 
 default: configure build test
 
+.PHONY: recreate_builtin_model_data
+recreate_builtin_model_data:
+	make -C src/builtin_resources/data_modela/
+
 QQTEST = ${TMPDIR}/testinstall
 tt:
 	-rm -rf ${QQTEST}
@@ -80,7 +81,7 @@ install:
 
 include resources.mk
 
-configure:
+configure: recreate_builtin_model_data
 	${CMAKE} -S ${SRC} -B ${BUILD} ${CMAKE_CONFIGURE_OPT}
 .PHONY: configure
 
@@ -130,6 +131,9 @@ ${TMPDIR}/clips.patch: ${CLIPSPATHDIRECTORY} ${CLIPSPATCHFILES}
 	echo ${CLIPSPATCHFILES}
 	-cd ${CLIPSPATHDIRECTORY}/ && diff -ruN original/ clips-src/ > ../clips.patch
 
+.PHONY: overwrite_builtin_models
+overwrite_builtin_models: build/overwrite_builtin_models.cmake
+	cmake -P $<
 
 .PHONY: opendoc
 opendoc:
