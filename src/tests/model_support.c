@@ -15,3 +15,10 @@ bool skip_model_first(long unsigned int condition){
 	return false;
 }
 
+
+bool expects_handling_inconsistency(long unsigned int condition){
+	if (condition & SC_InconsistencyError){
+		return true;
+	}
+	return false;
+}

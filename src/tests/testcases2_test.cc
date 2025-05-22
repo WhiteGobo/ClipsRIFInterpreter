@@ -147,11 +147,11 @@ static auto petTestdata = testing::Values(
 			W3C_PREMISE("Modeling_Brain_Anatomy"),
 			W3C_CONCLUSION("Modeling_Brain_Anatomy")),
 		TestdataPET("Core_PET_OWL_Combination_Vocabulary_Separation_Inconsistency_1",
-			SC_All,
+			SC_InconsistencyError,
 			W3C_PREMISE("OWL_Combination_Vocabulary_Separation_Inconsistency_1"),
 			W3C_CONCLUSION("OWL_Combination_Vocabulary_Separation_Inconsistency_1")),
 		TestdataPET("Core_PET_OWL_Combination_Vocabulary_Separation_Inconsistency_2",
-			SC_All,
+			SC_All | SC_InconsistencyError,
 			W3C_PREMISE("OWL_Combination_Vocabulary_Separation_Inconsistency_2"),
 			W3C_CONCLUSION("OWL_Combination_Vocabulary_Separation_Inconsistency_2")),
 		TestdataPET("Core_PET_Positional_Arguments",
@@ -432,8 +432,9 @@ static void create_new_logic(crifi_graph *create_logic_graph, FILE *memory){
 	}
 }
 
-static void run_and_check(crifi_graph *graph, const char* check_command,
-				bool expect){
+static void run_and_check(TestdataPET testdata,
+		crifi_graph *graph, const char* check_command)
+{
 	bool errorstate;
 	struct DynamicValue retval;
 	eval(graph, "(agenda)");
@@ -442,6 +443,11 @@ static void run_and_check(crifi_graph *graph, const char* check_command,
 		eval(graph, "(println \"show matches of rule0: \" "
 				"(matches rule0))");
 	//}
+	
+	if(expects_handling_inconsistency(testdata.skip_c)){
+		FAIL() << "incosnsistency thingie";
+		return;
+	}
 	fprintf(stderr, "number of rules during logic: %d\n", number_rules_run);
 	if (graph_in_errorstate(graph, stderr)){
 		FAIL() << "graph ended up in errorstate, while running logic.";
@@ -469,7 +475,7 @@ static void run_and_check(crifi_graph *graph, const char* check_command,
 			}
 			break;
 		case CTC_DYNAMIC_BOOL:
-			EXPECT_EQ(retval.val.boolean, expect)
+			EXPECT_EQ(retval.val.boolean, testdata.result)
 				<< "check command didnt returned expected "
 				"value. check command was:\n"
 				<< check_command;
@@ -664,7 +670,7 @@ TEST_P(officialw3cPETTestCases_Test, CreateAndTestModelWithModelA) {
 
 	maingraph = init_graph();
 	load_new_logic(maingraph, tmpmem, strlen(tmpmem));
-	run_and_check(maingraph, tmpcheckmem, testdata.result);
+	run_and_check(testdata, maingraph, tmpcheckmem);
 	close_graph(maingraph);
 	//FAIL() << "testfail";
 }
@@ -675,7 +681,10 @@ TEST_P(officialw3cPETTestCases_Test, CreateAndTestModelWithModelFirst) {
 	int number_rules_run;
 	char tmpmem[memory_size]; //script size maximal a megabyte
 	char tmpcheckmem[memory_size]; //check command size maximal a megabyte
-	if(skip_model_first(testdata.skip_c)){
+	if(
+			skip_model_first(testdata.skip_c)
+			|| expects_handling_inconsistency(testdata.skip_c))
+	{
 		GTEST_SKIP() << "skip on modelFirst";
 	}
 	tmpmem[memory_size-1] = '\0';
@@ -706,7 +715,7 @@ TEST_P(officialw3cPETTestCases_Test, CreateAndTestModelWithModelFirst) {
 
 	maingraph = init_graph();
 	load_new_logic(maingraph, tmpmem, strlen(tmpmem));
-	run_and_check(maingraph, tmpcheckmem, testdata.result);
+	run_and_check(testdata, maingraph, tmpcheckmem);
 	close_graph(maingraph);
 	//FAIL() << "testfail";
 }
