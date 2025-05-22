@@ -619,6 +619,7 @@ static CRIFI_SERIALIZE_SCRIPT_RET fprintf_lhs_slot(MyContext *cntxt, FILE* strea
 		//fprintf_raptor_term(stream, constraint);
 	} else {
 		constraints = get_object(n, cntxt->clips_constraints);
+		if (constraints == NULL) return CRIFI_SERIALIZE_BROKEN_GRAPH;
 		n_iter = new_rdflist_iterator(cntxt->rdf_cntxt, cntxt->nodes, constraints);
 		for(Node* x = node_iterator_get(n_iter);
 				x != NULL;
@@ -703,8 +704,9 @@ static CRIFI_SERIALIZE_SCRIPT_RET fprintf_rhs_slot(MyContext *cntxt, FILE* strea
 	}
 	/*
 	if (i == 0){
-		fprintf(stderr, "list for cs:field must be non empty.\n");
-		return CRIFI_SERIALIZE_BROKEN_GRAPH;
+		fprintf(stderr, "qwertz found empty cs:field\n");
+		//fprintf(stderr, "list for cs:field must be non empty.\n");
+		//return CRIFI_SERIALIZE_BROKEN_GRAPH;
 	}*/
 	free_node_iterator(n_iter);
 	fprintf(stream, ")");
