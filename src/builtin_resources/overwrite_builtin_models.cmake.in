@@ -5,6 +5,13 @@ foreach(name @MODELNAMES@)
 	message(WARNING "recreate model ${name}\noverwrite: \"@MODEL_LOCATION@/${name}.clp\"")
 	execute_process(
 		COMMAND @PROGRAM_LOCATION@ "--${name}"
-		OUTPUT_FILE "@MODEL_LOCATION@/${name}.clp"
+		OUTPUT_VARIABLE clipsprogram
+		ERROR_VARIABLE errormsg
+		RESULT_VARIABLE errorval
 	)
+	if (errorval EQUAL 0)
+		file(WRITE "@MODEL_LOCATION@/${name}.clp" "${clipsprogram}")
+	else()
+		message(FATAL_ERROR "Failed to execute '@PROGRAM_LOCATION@ --${name}'\noutput:\n${clipsprogram}\n\nerror message:\n${errormsg}")
+	endif()
 endforeach()
