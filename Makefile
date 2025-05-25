@@ -67,6 +67,7 @@ default: configure build test
 .PHONY: recreate_builtin_model_data
 recreate_builtin_model_data:
 	make -C src/builtin_resources/data_modela/
+	make -C src/tests/owntestdata/
 
 QQTEST = ${TMPDIR}/testinstall
 tt:
