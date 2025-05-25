@@ -1592,6 +1592,9 @@
 	(if (eq ?t RIFAnd) then
 		(return (str-cat "(not" (send ?self:formula create-pattern) ")"))
 	)
+	(if (eq ?t RIFMember) then
+		(return (str-cat "(not" (send ?self:formula create-pattern) ")"))
+	)
 	(set-error (str-cat "create-pattern in rifineg not implemented for " ?t))
 	(return "")
 )
