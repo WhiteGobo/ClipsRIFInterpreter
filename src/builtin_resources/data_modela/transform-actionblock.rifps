@@ -24,6 +24,8 @@ Document(
           (?factvariable New())
           (?factquery New())
           (?slotsubj New())
+          Assert( ?factvariable # cs:Variable )
+          Assert( ?factvariable # ex:Unknown-Variable )
           Assert( ?rifretract[ex:as-action -> External(func:make-list(?clipsretract))] )
           Assert( ?clipsretract[cs:function-name -> "retract"] )
           Assert( ?clipsretract[cs:function-args -> External( func:make-list(?clipsexpand))] )
@@ -41,7 +43,7 @@ Document(
           Assert( ?slotsubj[cs:member-slot-name -> "subject"] )
         )
       )
-      (* ex:transform-retract-frame *) Forall ?rifretract ?riftarget(
+      (* ex:toberemoved-transform-retract-frame *) Forall ?rifretract ?riftarget(
         If And(
           ?rifretract # rif:Retract
           ?rifretract[rif:target -> ?riftarget]

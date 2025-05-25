@@ -32,6 +32,7 @@ Document(
           Assert( ?clipsdeftemplate[cs:deftemplate-name -> "Atom"] )
           Assert( ?clipsdeftemplate[cs:fact-set-member-variable -> ?factvar] )
           Assert( ?factvar # cs:Variable )
+          Assert( ?rifatom[ex:as-expression -> ?factvar] )
 
           Assert( ?varop[cs:member-variable -> ?factvar] )
           Assert( ?varop[cs:member-slot-name -> "op"] )
@@ -73,6 +74,7 @@ Document(
           Assert( ?clipsdeftemplate[cs:deftemplate-name -> "Atom"] )
           Assert( ?clipsdeftemplate[cs:fact-set-member-variable -> ?factvar] )
           Assert( ?factvar # cs:Variable )
+          Assert( ?rifatom[ex:as-expression -> ?factvar] )
 
           Assert( ?varop[cs:member-variable -> ?factvar] )
           Assert( ?varop[cs:member-slot-name -> "op"] )
@@ -192,6 +194,7 @@ Document(
           (?slotinstance New())
           Assert( ?rifmember[ex:as-test-action -> ?anyfactp] )
           Assert( ?factvar # cs:Variable )
+          Assert( ?rifmember[ex:as-expression -> ?factvar] )
           Assert( ?clipsdeftemplate[cs:deftemplate-name -> "Member"] )
           Assert( ?clipsdeftemplate[cs:fact-set-member-variable -> ?factvar] )
           Assert( ?anyfactp # cs:AnyFactP )
@@ -229,6 +232,7 @@ Document(
 
           Assert( ?rifframe[ex:as-test-action -> ?anyfactp] )
           Assert( ?factvar # cs:Variable )
+          Assert( ?rifframe[ex:as-expression -> ?factvar] )
           Assert( ?clipsdeftemplate[cs:deftemplate-name -> "TripleTemplate"] )
           Assert( ?clipsdeftemplate[cs:fact-set-member-variable -> ?factvar] )
 

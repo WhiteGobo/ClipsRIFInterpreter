@@ -91,6 +91,7 @@ Document(
           Assert( ?slotsubj[cs:member-variable -> ?tmpvar] )
           Assert( ?slotsubj[cs:member-slot-name -> "subject"] )
           Assert( ?tmpvar # cs:Variable )
+          Assert( ?tmpvar # ex:Unknown-Variable )
         )
       )
       Forall ?rifmodify ?clause ?rifobject ?subjterm (
@@ -111,6 +112,7 @@ Document(
           (?comparesubject New())
           (?slotsubj New())
           Assert( ?tmpvar # cs:Variable )
+          Assert( ?clause[ex:as-expression -> ?tmpvar])
           Assert( ?rifmodify[ex:as-action -> External(func:make-list(?clipsretractall ?clipsassert))] )
           Assert( ?clipsretractall # cs:DoForAllFacts )
           Assert( ?clipsretractall[cs:fact-set-template -> ?tripletemplate] )
@@ -191,7 +193,6 @@ Document(
           Assert( ?slotargs[cs:slot-name -> "args"] )
           Assert( ?slotargs[cs:field -> External(func:make-list())] )
           Assert( ?slotargs[ex:add-atom-args-rhspattern -> ?arglist] )
-          Assert( ?slotargs[ex:brubru -> ?arglist] )
         )
       )
       Forall ?rifatom ?op ?expressionop (

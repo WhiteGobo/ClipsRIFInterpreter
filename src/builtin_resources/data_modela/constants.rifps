@@ -18,7 +18,16 @@ Document(
             Not( Exists ?clipsnode (?rifvar[ex:as-expression -> ?clipsnode]))
             Not( Exists ?clipsnode (?rifvar[ex:provides-expression -> ?clipsnode]))
           ) Then Do (
-            Execute(crifi:set-graph-in-errorstate(External(func:concat("Missing binding for variable with name " ?varname))))
+            Execute(crifi:set-graph-in-errorstate(External(func:concat("Missing binding for rif:Variable with name " ?varname))))
+          )
+        )
+        Forall ?clipsvar (
+          If And (
+            ?clipsvar # cs:Variable
+            Not( Exists ?varname (?clipsvar[cs:variable-name -> ?varname]))
+            Not( Exists ?varname (?clipsvar[cs:var-as-const-expr -> ?varname]))
+          ) Then Do (
+            Execute(crifi:set-graph-in-errorstate("A cs:Variable has no expression. missing cs:variable-name or cs:var-as-const-expr."))
           )
         )
         Forall ?rifvar ?varname ?rifvarchild ?clipsvar(
@@ -37,8 +46,30 @@ Document(
         Forall ?factvar (
           If And (
             ?factvar # cs:Variable
+            ?factvar # ex:Unknown-Variable
             ex:currentfactindex(?factindex)
             Not (Exists ?factname ( ?factvar[cs:variable-name -> ?factname] ))
+          ) Then Do (
+            Retract( ex:currentfactindex(?factindex) )
+
+            Assert( ex:currentfactindex(External(func:numeric-add(?factindex 1))))
+            Assert( ?factvar[cs:variable-name -> External(func:concat("fct" ?factindex))] )
+
+          )
+        )
+        Forall ?factvar ?rifformula (
+          If And (
+            ?factvar # cs:Variable
+            ex:currentfactindex(?factindex)
+            Not (Exists ?factname ( ?factvar[cs:variable-name -> ?factname] ))
+            Or (
+              ?rifformula # rif:Frame
+              ?rifformula # rif:Atom
+              ?rifformula # rif:Member
+              ?rifformula # rif:Subclass
+              ?rifformula # rif:Equal
+            )
+            ?rifformula[ex:as-expression -> ?factvar]
           ) Then Do (
             Retract( ex:currentfactindex(?factindex) )
 
@@ -64,6 +95,7 @@ Document(
               ?parent[rif:pattern -> ?child]
               ?parent[rif:left -> ?child]
               ?parent[rif:right -> ?child]
+              ?parent[rif:rest -> ?child]
             )
           ) Then Do (
             Assert( ?parent[ex:inherits-data -> ?child] )
@@ -175,9 +207,28 @@ Document(
             External(pred:list-contains(?varlist ?rifvar))
           ) Then Do (
             (?clipsnode New())
+            Assert(?clipsnode # cs:Variable)
             Assert(?rifvar[ex:provides-expression -> ?clipsnode])
-            Assert(?clipsnode[cs:variable-name -> ?varname])
             Assert(?clipsnode[ex:as-constraint-needs-additional-conditionals -> External(func:make-list())])
+          )
+        )
+        Forall ?rifvar ?varname ?clipsvar ?clipspattern (
+          If And (
+            ?rifvar[rif:varname -> ?varname]
+            ?rifvar[ex:provides-expression -> ?clipsvar]
+            ?clipspattern[cs:constraint -> ?clipsvar]
+          ) Then Do (
+            Assert(?clipsvar[cs:variable-name -> ?varname])
+          )
+        )
+        Forall ?rifvar ?varname ?clipsvar ?clipspattern (
+          If And (
+            ?rifvar[rif:varname -> ?varname]
+            ?rifvar[ex:provides-expression -> ?clipsvar]
+            ?clipspattern[cs:constraints -> ?constraintlist]
+            External(pred:list-contains(?constraintlist ?clipsvar))
+          ) Then Do (
+            Assert(?clipsvar[cs:variable-name -> ?varname])
           )
         )
         Forall ?rifforall ?varlist ?rifvar ?varname ?rifvarchild(

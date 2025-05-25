@@ -32,26 +32,26 @@ Document(
           Assert( ?defrule[ex:bound-variable -> ?bindsvar] )
         )
       )
-      Forall ?templatepattern ?slotlist ?var ?varname ?constraintlist(
+      Forall ?templatepattern ?slotlist ?var ?constraintlist(
         If And (
           ?templatepattern[cs:slot -> ?slotlist]
           External(pred:is-list(?slotlist))
           ?slot[cs:constraints -> ?constraintlist]
           External(pred:list-contains(?slotlist ?slot))
           External(pred:is-list(?constraintlist))
-          ?var[cs:variable-name -> ?varname]
+          ?var # cs:Variable
           External(pred:list-contains(?constraintlist ?var))
         ) Then Do (
           Assert( ?templatepattern[ex:binds-variable -> ?var] )
         )
       )
-      Forall ?templatepattern ?slotlist ?var ?varname (
+      Forall ?templatepattern ?slotlist ?var (
         If And (
           ?templatepattern[cs:slot -> ?slotlist]
           External(pred:is-list(?slotlist))
           ?slot[cs:constraint -> ?var]
           External(pred:list-contains(?slotlist ?slot))
-          ?var[cs:variable-name -> ?varname]
+          ?var # cs:Variable
         ) Then Do (
           Assert( ?templatepattern[ex:binds-variable -> ?var] )
         )
@@ -92,14 +92,14 @@ Document(
               ?rifequal[rif:right -> ?right]
               ?left[ex:as-expression -> ?leftexpr]
               ?right[ex:as-expression -> ?rightexpr]
-              ?leftexpr[cs:variable-name -> ?varname]
+              ?leftexpr # cs:Variable
               Not( ?defrule[ex:bound-variable -> ?leftexpr] )
               Not (Exists ?var ( And(
                 ?rightexpr[ex:needs-variable -> ?var]
                 Not (?defrule[ex:bound-variable -> ?var])
               )))
               Not ( And (
-                Exists ?tmp (?rightexpr[cs:variable-name -> ?tmp])
+                ?rightexpr # cs:Variable
                 Not( ?defrule[ex:bound-variable -> ?rightexpr] )
               ))
             ) Then Do (
@@ -116,14 +116,14 @@ Document(
               ?rifequal[rif:right -> ?right]
               ?left[ex:as-expression -> ?leftexpr]
               ?right[ex:as-expression -> ?rightexpr]
-              ?rightexpr[cs:variable-name -> ?varname]
+              ?rightexpr # cs:Variable
               Not( ?defrule[ex:bound-variable -> ?rightexpr] )
               Not (Exists ?var ( And(
                 ?leftexpr[ex:needs-variable -> ?var]
                 Not (?defrule[ex:bound-variable -> ?var])
               )))
               Not ( And (
-                Exists ?tmp (?leftexpr[cs:variable-name -> ?tmp])
+                ?leftexpr # cs:Variable
                 Not( ?defrule[ex:bound-variable -> ?leftexpr] )
               ))
             ) Then Do (
@@ -141,12 +141,8 @@ Document(
             ?rifequal[rif:right -> ?right]
             ?left[ex:as-expression -> ?leftexpr]
             ?right[ex:as-expression -> ?rightexpr]
-            Not( Exists ?varname (
-              ?leftexpr[cs:variable-name -> ?varname]
-            ))
-            Not( Exists ?varname (
-              ?rightexpr[cs:variable-name -> ?varname]
-            ))
+            Not( ?leftexpr # cs:Variable )
+            Not( ?rightexpr # cs:Variable )
           ) Then Do (
             (?pattern New())
             (?action New())
@@ -289,11 +285,11 @@ Document(
       )
 
       Group 50 (
-        Forall ?clipsfunction ?arglist ?arg ?varname (
+        Forall ?clipsfunction ?arglist ?arg (
           If And (
             ?clipsfunction[cs:function-args -> ?arglist]
             External(pred:is-list(?arglist))
-            ?arg[cs:variable-name -> ?varname]
+            ?arg # cs:Variable
             External(pred:list-contains(?arglist ?arg))
           ) Then Do (
             Assert( ?clipsfunction[ex:needs-variable -> ?arg] )
