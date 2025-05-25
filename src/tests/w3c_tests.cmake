@@ -1,8 +1,13 @@
 
 set(PREFIX_TESTDATA_W3C_IMPORT
 	"http://www.w3.org/2005/rules/test/repository/tc/")
+set(PREFIX_TESTDATA_OWN_IMPORT
+	"http://white.gobo/crifi/owntestdata/")
 set(TESTDATA_W3C_AS_HEADER
 	"${CMAKE_CURRENT_BINARY_DIR}/testdata_w3c_as_header.h")
+
+list(APPEND targetendings "-conclusion" "-premise" "-import001" "-nonconclusion" "-input")
+list(APPEND rdfformats "ttl" "ntriples")
 
 
 #find_file(qq "AssertRetract-conclusion.ntriples" HINTS "${CMAKE_CURRENT_SOURCE_DIR}/data/" NO_CACHE)
@@ -12,8 +17,26 @@ set(TESTDATA_W3C_AS_HEADER
 #set(qq2 "${qq}")
 #message(FATAL_ERROR "brubru ${qq1} ${qq2}")
 
+list(APPEND owntargets
+	openlist_as_pattern
+)
 
-list(APPEND mytargets
+foreach(base ${owntargets})
+	foreach(ending ${targetendings})
+		unset(targetfile)
+		set(targeturi "${PREFIX_TESTDATA_OWN_IMPORT}${base}/${base}${ending}")
+		foreach(fmt ${rdfformats})
+			set(targetfilename "${base}${ending}.${fmt}")
+			find_file(targetfile "${targetfilename}" HINTS "owntestdata/" NO_CACHE)
+			if(targetfile)
+				list(APPEND compilelist ${targeturi} ${targetfile})
+				break()
+			endif()
+		endforeach()
+	endforeach()
+endforeach()
+
+list(APPEND w3ctargets
 	AssertRetract
 	Arbitrary_Entailment
 	Assert
@@ -98,11 +121,12 @@ list(APPEND mytargets
 	Retract
 	YoungParentDiscount_1
 )
-set(compilelist)
+
+#set(compilelist)
 #list(APPEND targetendings "-conclusion.ntriples" "-premise.ntriples" "-import001.ntriples" "-nonconclusion.ntriples" "-input.ntriples" "-conclusion.ttl" "-premise.ttl")
-list(APPEND targetendings "-conclusion" "-premise" "-import001" "-nonconclusion" "-input")
-list(APPEND rdfformats "ttl" "ntriples")
-foreach(base ${mytargets})
+#list(APPEND targetendings "-conclusion" "-premise" "-import001" "-nonconclusion" "-input")
+#list(APPEND rdfformats "ttl" "ntriples")
+foreach(base ${w3ctargets})
 	foreach(ending ${targetendings})
 		unset(targetfile)
 		set(targeturi "${PREFIX_TESTDATA_W3C_IMPORT}${base}/${base}${ending}")

@@ -118,7 +118,8 @@ static auto syntaxTestdata = testing::Values(
 typedef enum {
 	CREATELOGIC_NOERROR = 0,
 	CREATELOGIC_UNKNOWN_GRAPHERRORSTATE,
-	CREATELOGIC_NOTRUN
+	CREATELOGIC_NOTRUN,
+	CREATELOGIC_FAILED_SERIALIZATION
 } CREATELOGICERROR;
 
 
@@ -129,7 +130,7 @@ static void create_logic_into_memory(FILE* tmpmem_f, TestdataSyntax testdata,
 static void load_from_memory_to_graph(crifi_graph *graph,
 					const char *source_uri);
 
-static void create_new_logic(crifi_graph *create_logic_graph, FILE *memory);
+static bool create_new_logic(crifi_graph *create_logic_graph, FILE *memory);
 
 
 TEST_P(officialw3cSyntaxTestCases_Test, CreateModelWithModelA) {
@@ -176,6 +177,16 @@ TEST_P(officialw3cSyntaxTestCases_Test, CreateModelWithModelA) {
 		case CREATELOGIC_NOTRUN:
 			FAIL() << "Create logic didnt run.";
 			break;
+		case CREATELOGIC_FAILED_SERIALIZATION:
+			if (!testdata.result){
+				FAIL() << "Syntax accepted. Expected failure. "
+					"But serialization as clips script "
+					"failed.";
+			} else {
+				FAIL() << "Unhandled error during serialization"
+					" of graphinformation as clips script.";
+			}
+			break;
 		default:
 			FAIL() << "unspecified logic error state";
 	}
@@ -189,7 +200,8 @@ INSTANTIATE_TEST_SUITE_P(
 
 
 static void create_logic_into_memory(FILE* tmpmem_f, TestdataSyntax testdata,
-					GraphGenerator *graph_generator, CREATELOGICERROR* logicerror)
+					GraphGenerator *graph_generator,
+					CREATELOGICERROR* logicerror)
 {
 	int number_rules_run;
 	crifi_graph *create_logic_graph = graph_generator();
@@ -212,10 +224,12 @@ static void create_logic_into_memory(FILE* tmpmem_f, TestdataSyntax testdata,
 	if (graph_in_errorstate(create_logic_graph, stderr)){
 		*logicerror = CREATELOGIC_UNKNOWN_GRAPHERRORSTATE;
 	} else {
-		*logicerror = CREATELOGIC_NOERROR;
+		if (create_new_logic(create_logic_graph, tmpmem_f)){
+			*logicerror = CREATELOGIC_NOERROR;
+		} else {
+			*logicerror = CREATELOGIC_FAILED_SERIALIZATION;
+		}
 	}
-
-	create_new_logic(create_logic_graph, tmpmem_f);
 	close_graph(create_logic_graph);
 	create_logic_graph = NULL;
 	//FAIL() << "testfail";
@@ -264,11 +278,12 @@ static void load_from_memory_to_graph(crifi_graph *graph,
 }
 
 
-static void create_new_logic(crifi_graph *create_logic_graph, FILE *memory){
+static bool create_new_logic(crifi_graph *create_logic_graph, FILE *memory){
 	CRIFI_SERIALIZE_SCRIPT_RET err;
 	err = serialize_information_as_clips_script(memory, create_logic_graph);
 	switch(err){
 		case CRIFI_SERIALIZE_SCRIPT_NOERROR:
+			return true;
 			break;
 		case CRIFI_SERIALIZE_MALLOC_ERROR:
 		case CRIFI_SERIALIZE_BROKEN_GRAPH:
@@ -282,7 +297,6 @@ static void create_new_logic(crifi_graph *create_logic_graph, FILE *memory){
 		case CRIFI_SERIALIZE_SCRIPT_INPUT:
 		case CRIFI_SERIALIZE_SCRIPT_UNKNOWN:
 		default:
-			FAIL() << "Unhandled error during serialization of "
-				"graphinformation as clips script.";
+			return false;
 	}
 }

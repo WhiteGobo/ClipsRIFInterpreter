@@ -1,0 +1,11 @@
+Document(
+    Prefix(ex <http://example.org/example#>)
+    Prefix(xs <http://www.w3.org/2001/XMLSchema#>) 
+
+    Group ( 
+        Forall ?X ?rest (
+          ex:smaller-list(?rest) :- ex:bigger-list(List(?X | ?rest))
+        )
+        ex:bigger-list(1 2 3 4)
+      )
+)

@@ -17,6 +17,11 @@
 #define W3C_PREMISE(id) _W3C_TESTDATA_ id "/" id "-premise"
 #define W3C_CONCLUSION(id) _W3C_TESTDATA_ id "/" id "-conclusion"
 #define W3C_NONCONCLUSION(id) _W3C_TESTDATA_ id "/" id "-nonconclusion"
+#define _OWN_TESTDATA_ "http://white.gobo/crifi/owntestdata/"
+#define OWN_PREMISE(id) _OWN_TESTDATA_ id "/" id "-premise"
+#define OWN_CONCLUSION(id) _OWN_TESTDATA_ id "/" id "-conclusion"
+#define OWN_NONCONCLUSION(id) _OWN_TESTDATA_ id "/" id "-nonconclusion"
+
 
 typedef crifi_graph *GraphGenerator();
 
@@ -74,6 +79,10 @@ class officialw3cPETTestCases_Test : public testing::TestWithParam<TestdataPET> 
 };
 
 static auto petTestdata = testing::Values(
+		TestdataPET("Own_BLD_PET_openlist_as_pattern",
+			SC_NoCondition | SC_ModelFirst,
+			OWN_PREMISE("openlist_as_pattern"),
+			OWN_CONCLUSION("openlist_as_pattern")),
 		TestdataPET("Core_PET_Builtin_literal-not-identical",
 			SC_NoCondition,
 			W3C_PREMISE("Builtin_literal-not-identical"),
