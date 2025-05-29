@@ -470,6 +470,17 @@ int new_blanknode(Environment *env, CLIPSValue* result){
 	return 0;
 }
 
+int local_blanknode(Environment *env, const char* context, const char* value, CLIPSValue *result){
+	char *bnodeid = malloc(strlen(context) + strlen(value) + 10);
+	if (bnodeid == NULL){
+		return 1;
+	}
+	sprintf(bnodeid, "_:l%s_n%s", context, value);
+	result->lexemeValue = CreateSymbol(env, bnodeid);
+	free(bnodeid);
+	return 0;
+}
+
 int blanknode_from_idstring(Environment *env, const char* id, CLIPSValue *result){
 	unsigned int graph_id = (unsigned int) env;
 	char bnodeid[30 + strlen(id)];

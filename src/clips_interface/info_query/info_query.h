@@ -46,6 +46,7 @@ CrifiAssertTripleError assert_subclass(Environment *env, CLIPSValue *sub, CLIPSV
 
 char* genclipscode_iri(Environment *env, char* iri);
 char* genclipscode_lexical(Environment *env, CLIPSValue clipsvalue);
+char* genclipscode_local(Environment *env, CLIPSValue context, const char *value);
 
 
 bool crifi_infoquery_unpack_member(Environment *env, CLIPSValue member, CLIPSValue *instance, CLIPSValue *cls);

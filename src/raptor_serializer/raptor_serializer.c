@@ -185,7 +185,12 @@ static int serialize_all_triples(raptor_world *world, crifi_graph* graph, raptor
 		raptor_free_term(pred);
 		raptor_free_term(obj);
 		if (!success){
-			return SAT_SERIALIZEFAILED;
+			//TODO: Here a description which triple
+			//failed should be emitted.
+			//eg. turle fails bnode in predicate
+
+			//ignore for now
+			//return SAT_SERIALIZEFAILED;
 		}
 	}
 	for(Fact *l = get_next_list(graph, NULL);

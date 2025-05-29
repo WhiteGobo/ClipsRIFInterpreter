@@ -80,6 +80,8 @@ typedef struct {
 
 	raptor_term *clips_symbol;
 	raptor_term *clips_string;
+	raptor_term *clips_MultifieldVariable;
+	raptor_term *clips_Variable;
 	raptor_term *clips_variable_name;
 	raptor_term *clips_var_as_const_expr;
 	raptor_term *clips_Function;
@@ -166,6 +168,9 @@ static MyContext* init_context(){
 	//constant thingies
 	cntxt->clips_symbol = URI(world, CLIPS("symbol"));
 	cntxt->clips_string = URI(world, CLIPS("string"));
+	
+	cntxt->clips_MultifieldVariable = URI(world, CLIPS("MultifieldVariable"));
+	cntxt->clips_Variable = URI(world, CLIPS("Variable"));
 	cntxt->clips_variable_name = URI(world, CLIPS("variable-name"));
 	cntxt->clips_var_as_const_expr = URI(world, CLIPS("var-as-const-expr"));
 	return cntxt;
@@ -847,7 +852,12 @@ static CRIFI_SERIALIZE_SCRIPT_RET fprintf_variable(MyContext *cntxt, FILE* strea
 	}
 	varname = get_object(n, cntxt->clips_variable_name);
 	if (varname != NULL){
-		fprintf(stream, " ?");
+		if (check_property(n, cntxt->rdf_type,
+					cntxt->clips_MultifieldVariable)){
+			fprintf(stream, " $?");
+		} else {
+			fprintf(stream, " ?");
+		}
 		fprintf_raptor_term(stream, varname);
 		fprintf(stream, " ");
 		return CRIFI_SERIALIZE_SCRIPT_NOERROR;

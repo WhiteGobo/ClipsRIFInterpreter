@@ -76,3 +76,22 @@ char* genclipscode_lexical(Environment *env, CLIPSValue clipsvalue){
 	}
 	return result;
 }
+
+
+char* genclipscode_local(Environment *env, CLIPSValue context, const char *value){
+	char *cntxt_str;
+	char* result;
+	switch(context.header->type){
+                case SYMBOL_TYPE:
+		case STRING_TYPE:
+			cntxt_str = context.lexemeValue->contents;
+			break;
+		default:
+			return NULL;
+	}
+	result = malloc(strlen(value) + strlen(cntxt_str) + sizeof(10));
+	if (result != NULL) {
+		sprintf(result, "_:l%sn%s", cntxt_str, value);
+	}
+	return result;
+}

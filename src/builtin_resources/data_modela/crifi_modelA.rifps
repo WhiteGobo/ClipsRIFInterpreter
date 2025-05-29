@@ -10,4 +10,5 @@ Document(
 
   Import(<http://white.gobo/crifi/built_resources/data_modela#process-external> <http://www.w3.org/ns/entailment/RIF>)
   Import(<http://white.gobo/crifi/built_resources/data_modela#special_pred_translations_for_pattern> <http://www.w3.org/ns/entailment/RIF>)
+  Import(<http://white.gobo/crifi/built_resources/data_modela#process_lists> <http://www.w3.org/ns/entailment/RIF>)
 )

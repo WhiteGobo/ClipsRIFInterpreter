@@ -45,7 +45,6 @@ Document(
       Group (
         Forall ?factvar (
           If And (
-            ?factvar # cs:Variable
             ?factvar # ex:Unknown-Variable
             ex:currentfactindex(?factindex)
             Not (Exists ?factname ( ?factvar[cs:variable-name -> ?factname] ))
@@ -120,6 +119,7 @@ Document(
               ?parent[rif:formulas -> ?childlist]
               ?parent[rif:actions -> ?childlist]
               ?parent[rif:args -> ?childlist]
+              ?parent[rif:items -> ?childlist]
             )
             External(pred:is-list(?childlist))
             Or (
@@ -331,6 +331,18 @@ Document(
             Assert( ?rifnode[ex:as-expression -> ?clipsnode] )
             Assert( ?clipsnode[cs:symbol -> External( crifi:iri-to-clipsconstant(?iristring))] )
             Assert(?clipsnode[ex:as-constraint-needs-additional-conditionals -> External(func:make-list())])
+          )
+        )
+        Forall ?riflocal ?name ?rifdocument(
+          If And(
+            ?rifdocument # rif:Document
+            ?rifdocument[ex:inherits-data -> ?riflocal]
+            ?riflocal[rif:constname -> ?name]
+          ) Then Do (
+            (?clipsnode New())
+            Assert( ?riflocal[ex:as-constraint -> ?clipsnode] )
+            Assert( ?riflocal[ex:as-expression -> ?clipsnode] )
+            Assert( ?clipsnode[cs:symbol -> External( crifi:local-to-clipsconstant(?rifdocument ?name))] )
           )
         )
       )

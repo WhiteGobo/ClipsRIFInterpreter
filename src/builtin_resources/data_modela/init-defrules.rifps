@@ -65,6 +65,7 @@ Document(
           ?rifrule[rif:if -> ?rifcondition]
         ) Then Do (
           Assert( ?rifcondition[ex:add-as-pattern -> ?defrule] )
+          Assert( ?rifcondition # ex:ConstraintGenerator )
         )
       )
       Forall ?rifrule ?defrule ?condition ?clipspattern ?formulalist(
@@ -88,6 +89,7 @@ Document(
           External(pred:list-contains(?formulalist ?formula))
         ) Then Do (
           Assert( ?formula[ex:add-as-pattern -> ?defrule] )
+          Assert( ?formula # ex:ConstraintGenerator )
           Assert( ?rifcondition[ex:used-as-pattern-in -> ?defrule] )
         )
       )

@@ -259,6 +259,9 @@
 (defclass RIFConstValue (is-a RIFConst)
 	(slot represents (type STRING)))
 
+(defclass RIFLocalValue (is-a RIFConst)
+	(slot represents (type STRING)))
+
 (defclass RIFVar (is-a RIFConst)
 	(slot varname (type STRING)))
 
@@ -402,6 +405,21 @@
 	(bind ?x (RIFConst_ExtractURI ?representedNode))
 	(bind ?x (make-instance of RIFConstIRI (node ?node)
 		(represents ?representedNode)))
+	(assert (RIFRepresentation (node ?node) (object ?x)))
+)
+
+(defrule RIFprocess_LocalValue
+        (TripleTemplate
+                (subject ?node)
+		(predicate <http://www.w3.org/1999/02/22-rdf-syntax-ns#type>)
+                (object <http://www.w3.org/2007/rif#Const>))
+	(TripleTemplate
+		(subject ?node)
+		(predicate <http://www.w3.org/2007/rif#constname>)
+		(object ?name))
+	=>
+	(bind ?x (make-instance of RIFLocalValue (node ?node)
+		(represents ?name)))
 	(assert (RIFRepresentation (node ?node) (object ?x)))
 )
 
@@ -1067,6 +1085,9 @@
 
 (defmessage-handler RIFConstValue as_term ()
 	(return (str-cat "\"" ?self:represents "\"")))
+
+(defmessage-handler RIFLocalValue as_term ()
+	(return (sym-cat "_:qq" ?self:represents)))
 
 (defmessage-handler RIFVar as_term () (return (str-cat "?" ?self:varname)))
 

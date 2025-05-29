@@ -1,0 +1,117 @@
+Document(
+    Prefix(func <http://www.w3.org/2007/rif-builtin-function#>) 
+    Prefix(pred <http://www.w3.org/2007/rif-builtin-predicate#>) 
+    Prefix(owl <http://www.w3.org/2002/07/owl#>)
+    Prefix(deffact <http://white.gobo/crifi/resource-manager/deffacts#>)
+    Prefix(rema <http://white.gobo/crifi/resource-manager#>)
+    Prefix(cs <http://clips.script/>)
+    Prefix(crifi <http://white.gobo/>)
+    Prefix(ex <http://example.com/>)
+    Prefix(triplestordf <http://example.com/triples-to-rdf#>)
+    Prefix(rif <http://www.w3.org/2007/rif#>)
+    Prefix(entailment <http://www.w3.org/ns/entailment/>)
+    Group (
+      Forall ?riflist ?rest (
+        If And (
+          ?riflist[rif:rest -> ?rest]
+          Not (?rest # rif:Variable)
+        ) Then Do (
+            Execute(crifi:set-graph-in-errorstate("rif:rest is only implemented for domain of type rif:Variable"))
+        )
+      )
+      Forall ?riflist ?itemlist (
+        If And (
+          ?riflist[rif:items -> ?itemlist]
+          External(pred:is-list(?itemlist))
+          Not( Exists ?rest (?riflist[rif:rest -> ?rest]))
+        ) Then Do (
+          (?function New())
+          Assert( ?riflist[ex:as-expression -> ?function] )
+          Assert( ?function[cs:function-name -> "<http://www.w3.org/2007/rif-builtin-function#make-list>"] )
+          Assert( ?function[cs:function-args -> External(func:make-list())] )
+          Assert( ?function["add-args-as-expression-from"^^rif:local -> ?itemlist] )
+        )
+      )
+      (* ex:complete-add-args-as-expression-to-list *) Group (
+        Forall ?itemlist ?function ?rest(
+          If And (
+            ?function["add-args-as-expression-from"^^rif:local -> ?itemlist]
+            ?function[cs:function-args -> ?currentexprlist]
+            External(pred:numeric-greater-than(External(func:count(?itemlist)) 0))
+            ?firstarg[ex:as-expression -> ?firstasexpression]
+            ?firstarg = External(func:get(?itemlist 0))
+          ) Then Do (
+            Modify(?function[cs:function-args -> External(func:append(?currentexprlist ?firstasexpression))])
+            Modify(?function["add-args-as-expression-from"^^rif:local -> External(func:remove(?itemlist 0))])
+          )
+        )
+        Forall ?itemlist ?function ?rest ?currentexprlist(
+          If And (
+            ?function["add-args-as-expression-from"^^rif:local -> ?itemlist]
+            External(pred:is-list(?itemlist))
+            0 = External(func:count(?itemlist))
+          ) Then Do (
+            Retract(?function["add-args-as-expression-from"^^rif:local -> ?itemlist])
+          )
+        )
+      )
+
+      Forall ?riflist ?itemlist ?rest (
+        If And (
+          ?riflist[rif:items -> ?itemlist]
+          ?riflist # ex:ConstraintGenerator
+          ?rifrule[ex:inherits-data -> ?riflist]
+          ?rifrule[ex:as-defrule -> ?defrule]
+
+          External(pred:is-list(?itemlist))
+          ?riflist[rif:rest -> ?rest]
+          External(pred:is-list(?rest))
+        ) Then Do (
+          (?listasvar New())
+          (?slotitems New())
+          (?pattern New())
+          Assert( ?riflist[ex:as-constraint -> ?listasvar] )
+          Assert( ?riflist[ex:add-as-pattern -> ?defrule] )
+          Assert( ?riflist # ex:ConstraintGenerator )
+
+          Assert( ?listasvar # cs:Variable )
+
+          Assert( ?pattern # cs:TemplatePatternCE )
+          Assert( ?pattern[cs:deftemplate-name -> "AtomList"] )
+          Assert( ?pattern[cs:slot -> External(func:make-list(?slotitems))] )
+          Assert( ?slotitems[cs:slot-name -> "items"] )
+          Assert( ?slotitems[cs:constraints -> External(func:make-list())] )
+
+          Assert( ?slotitems["add-args-as-constraints-from"^^rif:local -> ?itemlist] )
+          Assert( ?slotitems["rest"^^rif:local -> ?rest] )
+        )
+      )
+        Forall ?itemlist ?slotitems ?firstarg (
+          If And (
+            ?slotitems["add-args-as-constraints-from"^^rif:local -> ?itemlist]
+            ?slotitems[cs:constraints -> ?listconstraints]
+            External(pred:is-list(?itemlist))
+            External(pred:numeric-greater-than(External(func:count(?itemlist)) 0))
+            ?firstarg[ex:as-constraint -> ?clipsconstraint]
+            ?firstarg = External(func:get(?itemlist 0))
+          ) Then Do (
+
+            Modify(?slotitems[cs:function-args -> External(func:append(?listconstraints ?clipsconstraint))])
+            Modify(?slotitems["add-args-as-constraints-from"^^rif:local -> External(func:remove(?itemlist 0))])
+          )
+        )
+        Forall ?itemlist ?slotitems ?rest(
+          If And (
+            ?slotitems["add-args-as-constraints-from"^^rif:local -> ?itemlist]
+            External(pred:is-list(?itemlist))
+            0 = External(func:count(?itemlist))
+            ?slotitems["rest"^^rif:local -> ?rest]
+            ?rest # rif:Variable
+          ) Then Do (
+            (?tmp New())
+            Assert( ?tmp # cs:MultifieldVariable )
+            Assert( ?tmp # ex:Unknown-Variable )
+          )
+        )
+  )
+)

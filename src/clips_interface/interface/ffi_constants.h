@@ -28,8 +28,10 @@
 #define _CRIFI_success_ _CRIFI_ "success"
 #define _CRIFI_percent_encode_ _CRIFI_ "percent-encode"
 #define _CRIFI_new_blanknode_ _CRIFI_ "new-blanknode"
+#define _CRIFI_generate_local_node_ _CRIFI_ "generate-local-node"
 #define _CRIFI_iri_to_clipsconstant_ _CRIFI_ "iri-to-clipsconstant"
 #define _CRIFI_literal_to_clipsconstant_ _CRIFI_ "literal-to-clipsconstant"
+#define _CRIFI_local_to_clipsconstant_ _CRIFI_ "local-to-clipsconstant"
 #define _CRIFI_import_ _CRIFI_ "import"
 #define _CRIFI_set_graph_in_errorstate_ _CRIFI_ "set-graph-in-errorstate"
 

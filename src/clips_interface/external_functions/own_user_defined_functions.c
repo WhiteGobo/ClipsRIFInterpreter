@@ -83,12 +83,34 @@ void clipsudf_new_blanknode(Environment *env, UDFContext *udfc, UDFValue *out){
 void clipsudf_generate_local_node(Environment *env, UDFContext *udfc, UDFValue *out){
 	UDFValue input;
 	char *lexical_context, *lexical_value;
+	char *document_id;
+	char prefix_document_id;
 	CLIPSValue out_cv, input_cv;
 	if (!UDFFirstArgument(udfc, ANY_TYPE_BITS, &input)){
 		RETURNFAIL("Argument error during crifi:generate_local");
 	}
 	//input_cv.value = input.value;
-	lexical_context = extract_lexical(env, input.header);
+	document_id = extract_uri(env, input.header);
+	if (document_id != NULL){
+		prefix_document_id = 'u';
+	} else {
+		document_id = extract_bnodeid(env, input.header);
+		if (document_id != NULL){
+			prefix_document_id = 'b';
+		} else {
+			document_id = extract_lexical(env, input.header);
+			prefix_document_id = 'l';
+		}
+	}
+	if (document_id == NULL){
+		RETURNFAIL("Argument error during crifi:generate_local");
+	}
+	lexical_context = malloc(2 + strlen(document_id));
+	if (lexical_context == NULL){
+		RETURNFAIL("Internal error during malloc.");
+	}
+	sprintf(lexical_context, "%c%s", prefix_document_id, document_id);
+
 	if (!UDFNextArgument(udfc, ANY_TYPE_BITS, &input)){
 		RETURNFAIL("Argument error during crifi:generate_local");
 	}

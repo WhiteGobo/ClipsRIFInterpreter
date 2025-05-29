@@ -528,7 +528,7 @@ static void create_logic_into_memory(FILE* tmpmem_f, TestdataPET testdata,
 	//eval(create_logic_graph, "(println \"vbnm\")");
 	//eval(create_logic_graph, "(facts)");
 	//eval(create_logic_graph, "(println \"vbnm\")");
-	//crifi_serialize_all_triples(create_logic_graph, stdout, "turtle", "");
+	//crifi_serialize_all_triples(create_logic_graph, stderr, "turtle", "");
 	//eval(create_logic_graph, "(println \"vbnm\")");
 
 	number_rules_run = run_rules(create_logic_graph, 10000);

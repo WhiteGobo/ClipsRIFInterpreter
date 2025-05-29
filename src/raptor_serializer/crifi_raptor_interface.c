@@ -5,7 +5,7 @@
 raptor_term* clipsvalue_to_raptorterm(raptor_world *world, crifi_graph* graph, CLIPSValue val)
 {
 	//fprintf(stderr, "clipsvalue_to_raptorterm\n");
-	raptor_term *retval;
+	raptor_term *retval = NULL;
 	char *uri, *lexical, *lang, *datatype, *bnodeid;
 	raptor_uri *dt_uri;
 	if (clipsvalue_is_uri(graph, val)){
@@ -13,7 +13,6 @@ raptor_term* clipsvalue_to_raptorterm(raptor_world *world, crifi_graph* graph, C
 		uri = extract_uri(graph, val.header);
 		retval = raptor_new_term_from_uri_string(world, uri);
 		free(uri);
-		return retval;
 	} else if (clipsvalue_is_literal(graph, val)){
 		//fprintf(stderr, "is literal\n");
 		lexical = extract_lexical(graph, val.header);
@@ -45,7 +44,6 @@ raptor_term* clipsvalue_to_raptorterm(raptor_world *world, crifi_graph* graph, C
 			free(datatype);
 		}
 		free(lexical);
-		return retval;
 	} else if (clipsvalue_is_bnode(graph, val)){
 		//fprintf(stderr, "is bnode\n");
 		bnodeid = extract_bnodeid(graph, val.header);
@@ -56,8 +54,16 @@ raptor_term* clipsvalue_to_raptorterm(raptor_world *world, crifi_graph* graph, C
 		//fprintf(stderr, "brubru %s\n", bnodeid);
 		retval = raptor_new_term_from_blank(world, bnodeid);
 		free(bnodeid);
-		return retval;
 	}
-		fprintf(stderr, "failed\n");
-	return NULL;
+	if (retval == NULL) {
+		return NULL;
+	}
+	switch(retval->type){
+		case RAPTOR_TERM_TYPE_URI:
+		case RAPTOR_TERM_TYPE_LITERAL:
+		case RAPTOR_TERM_TYPE_BLANK:
+			return retval;
+		default:
+			return NULL;
+	}
 }

@@ -128,6 +128,7 @@ char* value_and_datatype_to_string(const char* value, size_t value_length, const
 int value_and_datatype_to_clipsvalue(Environment *env, const char* value, size_t value_length, const char* datatype, size_t datatype_length, CLIPSValue *result);
 
 int new_blanknode(Environment *env, CLIPSValue *target);
+int local_blanknode(Environment *env, const char* context, const char* value, CLIPSValue *target);
 int blanknode_from_idstring(Environment *env, const char* id, CLIPSValue *target);
 int uri_to_clipsvalue(Environment *env, const char* uri, size_t uri_length, CLIPSValue *result);
 

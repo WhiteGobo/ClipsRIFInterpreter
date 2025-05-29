@@ -18,6 +18,7 @@ list(APPEND mytargets
 	action-from-formula-as-clause
 	process-external
 	special_pred_translations_for_pattern
+	process_lists
 )
 
 set(compilelist)
