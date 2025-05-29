@@ -8,7 +8,9 @@ void clipsudf_import(Environment *env, UDFContext *udfc, UDFValue *out);
 
 void clipsudf_set_graph_in_errorstate(Environment *env, UDFContext *udfc, UDFValue *out);
 void clipsudf_new_blanknode(Environment *env, UDFContext *udfc, UDFValue *out);
+void clipsudf_generate_local_node(Environment *env, UDFContext *udfc, UDFValue *out);
 
 void clipsudf_iri_to_clipsconstant(Environment *env, UDFContext *udfc, UDFValue *out);
 
 void clipsudf_literal_to_clipsconstant(Environment *env, UDFContext *udfc, UDFValue *out);
+void clipsudf_local_to_clipsconstant(Environment *env, UDFContext *udfc, UDFValue *out);

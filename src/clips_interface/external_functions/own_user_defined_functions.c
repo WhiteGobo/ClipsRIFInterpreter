@@ -80,6 +80,32 @@ void clipsudf_new_blanknode(Environment *env, UDFContext *udfc, UDFValue *out){
 	}
 }
 
+void clipsudf_generate_local_node(Environment *env, UDFContext *udfc, UDFValue *out){
+	UDFValue input;
+	char *lexical_context, *lexical_value;
+	CLIPSValue out_cv, input_cv;
+	if (!UDFFirstArgument(udfc, ANY_TYPE_BITS, &input)){
+		RETURNFAIL("Argument error during crifi:generate_local");
+	}
+	//input_cv.value = input.value;
+	lexical_context = extract_lexical(env, input.header);
+	if (!UDFNextArgument(udfc, ANY_TYPE_BITS, &input)){
+		RETURNFAIL("Argument error during crifi:generate_local");
+	}
+	//input_cv.value = input.value;
+	lexical_value = extract_lexical(env, input.header);
+
+	if(0 == local_blanknode(env, lexical_context, lexical_value, &out_cv)){
+		free(lexical_context);
+		free(lexical_value);
+		out->value = out_cv.value;
+	} else {
+		free(lexical_context);
+		free(lexical_value);
+		RETURNFAIL("internal error during crifi:generate_local");
+	}
+}
+
 void clipsudf_iri_to_clipsconstant(Environment *env, UDFContext *udfc, UDFValue *out){
 	int err;
 	char *lexical, *result;
@@ -116,6 +142,34 @@ void clipsudf_literal_to_clipsconstant(Environment *env, UDFContext *udfc, UDFVa
 	result = genclipscode_lexical(env, tmp_cv);
 	if (result == NULL){
 		return;
+	}
+	err = value_and_datatype_to_clipsvalue(env,
+			result, strlen(result), NULL, 0, &outclipsval);
+	free(result);
+	if (err==0){
+		out->value = outclipsval.value;
+	}
+}
+
+void clipsudf_local_to_clipsconstant(Environment *env, UDFContext *udfc, UDFValue *out){
+	int err;
+	char *value, *result;
+	CLIPSValue outclipsval;
+	UDFValue value_udf, cntxt_udf;
+	CLIPSValue value_cv, cntxt_cv;
+	if (!UDFFirstArgument(udfc, ANY_TYPE_BITS, &cntxt_udf)){
+		RETURNFAIL("argument error for crifi:local-to-clipsconstant");
+	}
+	cntxt_cv.value = cntxt_udf.value;
+
+	if (!UDFNextArgument(udfc, ANY_TYPE_BITS, &value_udf)){
+		RETURNFAIL("argument error for crifi:local-to-clipsconstant");
+	}
+	value_cv.value = value_udf.value;
+	value = extract_lexical(env, value_cv.header);
+	result = genclipscode_local(env, cntxt_cv, value);
+	if (result == NULL){
+		RETURNFAIL("internal error for crifi:local-to-clipsconstant");
 	}
 	err = value_and_datatype_to_clipsvalue(env,
 			result, strlen(result), NULL, 0, &outclipsval);

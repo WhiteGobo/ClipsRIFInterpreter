@@ -361,6 +361,7 @@ void func_remove(Environment *env, UDFContext *udfc, UDFValue *out){
 	size_t listlength;
 	unsigned arglength;
 	UDFValue firstarg, positionarg, newvalarg;
+	UDFValue firstarg_cv, positionarg_cv;
 	CLIPSValue list, newlist = {.voidValue = VoidConstant(env)};
 	if (!UDFFirstArgument(udfc, ANY_TYPE_BITS, &firstarg)){
 		RETURNFAIL("Argument error for func:remove.");
@@ -371,7 +372,10 @@ void func_remove(Environment *env, UDFContext *udfc, UDFValue *out){
 		RETURNFAIL("Argument error for func:remove.");
 	}
 	RETURNONVOID(env, positionarg);
-	if (!udfvalue_as_integer(positionarg, &position)) return;
+	positionarg_cv.value = positionarg.value;
+	if (!udfvalue_as_integer(positionarg, &position)){
+		RETURNFAIL("Argument error for func:remove.");
+	}
 
 	CRIFI_LIST_REMOVE_RET err;
 	err = crifi_list_remove(env, list, position, &newlist);
@@ -379,7 +383,8 @@ void func_remove(Environment *env, UDFContext *udfc, UDFValue *out){
 		case CRIFI_LIST_REMOVE_NOERROR:
 			break;
 		case CRIFI_LIST_REMOVE_EMPTY_LIST:
-			RETURNFAIL("func:remove cant use an empty list.");
+			crifi_list_new(env, NULL, 0, &newlist);
+			break;
 		case CRIFI_LIST_REMOVE_NOLIST:
 			RETURNFAIL("func:remove expects a list as "
 					"first argument");
