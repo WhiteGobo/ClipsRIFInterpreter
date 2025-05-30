@@ -177,6 +177,7 @@ Document(
 
       Forall ?rifatom ?op ?expressionop ?arglist (
         If And (
+          ?rifatom # ex:RHSPatternGenerator
           ?rifatom[rif:op -> ?op]
           ?op[ex:as-expression -> ?expressionop]
           ?rifatom[rif:args -> ?arglist]

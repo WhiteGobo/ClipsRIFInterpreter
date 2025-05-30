@@ -236,6 +236,7 @@ int crifi_list_new(Environment *env, CLIPSValue *values, size_t values_length, C
 	}
 
 	for (int i=0; i<values_length; i++){
+		//Multifield are extended automaticly
 		MBAppend(mb, values + i);
 	}
 	items = MBCreate(mb);

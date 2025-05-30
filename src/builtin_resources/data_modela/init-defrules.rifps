@@ -65,7 +65,6 @@ Document(
           ?rifrule[rif:if -> ?rifcondition]
         ) Then Do (
           Assert( ?rifcondition[ex:add-as-pattern -> ?defrule] )
-          Assert( ?rifcondition # ex:ConstraintGenerator )
         )
       )
       Forall ?rifrule ?defrule ?condition ?clipspattern ?formulalist(
@@ -89,10 +88,10 @@ Document(
           External(pred:list-contains(?formulalist ?formula))
         ) Then Do (
           Assert( ?formula[ex:add-as-pattern -> ?defrule] )
-          Assert( ?formula # ex:ConstraintGenerator )
           Assert( ?rifcondition[ex:used-as-pattern-in -> ?defrule] )
         )
       )
+
       Forall ?rifrule ?defrule ?rifclause (
         If And (
           ?rifrule[ex:add-rule-info -> ?defrule]
@@ -117,6 +116,82 @@ Document(
           )
         )
         ex:currentdefruleindex(0)
+      )
+
+      Forall ?rifformula ?rifparent (
+        If And (
+          Or (
+            ?rifparent[rif:then -> ?rifformula]
+            ?rifparent[rif:target -> ?rifformula]
+          )
+          Or (
+            ?rifformula # rif:Atom
+            ?rifformula # rif:Frame
+          )
+        ) Then Do (
+          Assert(?rifformula # ex:RHSPatternGenerator)
+        )
+      )
+      Forall ?rifformula ?rifparent (
+        If And (
+          ?rifparent[rif:sentences -> ?sentencelist]
+          Or (
+            ?rifformula # rif:Atom
+            ?rifformula # rif:Frame
+          )
+          External(pred:list-contains(?sentencelist ?rifformula))
+        ) Then Do (
+          Assert(?rifformula # ex:RHSPatternGenerator)
+        )
+      )
+
+      Forall ?rifformula ?defrule ?constraintlist (
+        If And (
+          ?rifformula[ex:add-as-pattern -> ?defrule]
+          ?rifformula[rif:args -> ?constraintlist]
+          Or (
+            ?rifterm # rif:Var
+            ?rifterm # rif:Const
+            ?rifterm # rif:List
+            ?rifterm # rif:External
+          )
+          External(pred:list-contains(?constraintlist ?rifterm))
+        ) Then Do (
+          Assert(?rifterm # ex:ConstraintGenerator)
+        )
+      )
+      Forall ?rifformula ?defrule ?slotlist ?slot(
+        If And (
+          ?rifformula[ex:add-as-pattern -> ?defrule]
+          ?rifformula[rif:slots -> ?slotlist]
+          ?slot[rif:slotvalue -> ?rifterm]
+          External(pred:list-contains(?slotlist ?slot))
+        ) Then Do (
+          Assert(?rifterm # ex:ConstraintGenerator)
+        )
+      )
+      Forall ?rifformula ?defrule ?slotlist ?slot(
+        If And (
+          ?rifformula[ex:add-as-pattern -> ?defrule]
+          ?rifformula[rif:slots -> ?slotlist]
+          ?slot[rif:slotkey -> ?rifterm]
+          External(pred:list-contains(?slotlist ?slot))
+        ) Then Do (
+          Assert(?rifterm # ex:ConstraintGenerator)
+        )
+      )
+      Forall ?rifformula ?defrule (
+        If And (
+          ?rifformula[ex:add-as-pattern -> ?defrule]
+          Or (
+            ?rifformula[rif:left -> ?rifterm]
+            ?rifformula[rif:right -> ?rifterm]
+            ?rifformula[rif:op -> ?rifterm]
+            ?rifformula[rif:object -> ?rifterm]
+          )
+        ) Then Do (
+          Assert(?rifterm # ex:ConstraintGenerator)
+        )
       )
     )
 )

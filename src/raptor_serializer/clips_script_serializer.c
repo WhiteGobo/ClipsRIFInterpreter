@@ -50,6 +50,8 @@ typedef struct {
 	raptor_term *clips_rhs_pattern;
 	
 	raptor_term *clips_pattern_ce;
+	raptor_term *clips_fact_var_symbol;
+	raptor_term *clips_AssignedPatternCE;
 	raptor_term *clips_TemplatePatternCE;
 	raptor_term *clips_NotCE;
 	raptor_term *clips_AndCE;
@@ -134,6 +136,10 @@ static MyContext* init_context(){
 
 	cntxt->clips_conditional_element = URI(world, CLIPS("conditional-element"));
 	cntxt->clips_action = URI(world, CLIPS("action"));
+
+	cntxt->clips_pattern_ce = URI(world, CLIPS("pattern-ce"));
+	cntxt->clips_fact_var_symbol = URI(world, CLIPS("fact-var-symbol"));
+	cntxt->clips_AssignedPatternCE = URI(world, CLIPS("AssignedPatternCE"));
 	cntxt->clips_TemplatePatternCE = URI(world, CLIPS("TemplatePatternCE"));
 	cntxt->clips_NotCE = URI(world, CLIPS("NotCE"));
 	cntxt->clips_AndCE = URI(world, CLIPS("AndCE"));
@@ -327,6 +333,7 @@ static CRIFI_SERIALIZE_SCRIPT_RET add_info_to_tree(MyContext* cntxt,
 #define FUNC_DESC(funcname) static CRIFI_SERIALIZE_SCRIPT_RET funcname(MyContext *cntxt, FILE* stream, Node* n)
 
 FUNC_DESC(fprintf_lhs_slot);
+FUNC_DESC(fprintf_assigned_pattern_ce);
 FUNC_DESC(fprintf_template_pattern_ce);
 FUNC_DESC(fprintf_conditional_element);
 FUNC_DESC(fprintf_not_ce);
@@ -748,6 +755,33 @@ FUNC_DESC(fprintf_rhs_field){
 }
 
 
+FUNC_DESC(fprintf_assigned_pattern_ce){
+	CRIFI_SERIALIZE_SCRIPT_RET err;
+	raptor_term *pattern, *var;
+	Node *pattern_n, *var_n;
+	var = get_object(n, cntxt->clips_fact_var_symbol);
+	var_n = retrieve_node(cntxt->nodes, var);
+	if (var_n == NULL){
+		return CRIFI_SERIALIZE_BROKEN_GRAPH;
+	}
+	err = fprintf_variable(cntxt, stream, var_n);
+	if (err != CRIFI_SERIALIZE_SCRIPT_NOERROR){
+		return err;
+	}
+
+	fprintf(stream, " <- ");
+
+	pattern = get_object(n, cntxt->clips_pattern_ce);
+	pattern_n = retrieve_node(cntxt->nodes, pattern);
+	if (pattern_n == NULL){
+		return CRIFI_SERIALIZE_BROKEN_GRAPH;
+	}
+	if (check_property(pattern_n, cntxt->rdf_type, cntxt->clips_TemplatePatternCE)){
+		return fprintf_template_pattern_ce(cntxt, stream, pattern_n);
+	}
+	return CRIFI_SERIALIZE_BROKEN_GRAPH;
+}
+
 static CRIFI_SERIALIZE_SCRIPT_RET fprintf_template_pattern_ce(MyContext *cntxt, FILE* stream, Node* n){
 	CRIFI_SERIALIZE_SCRIPT_RET err;
 	raptor_term *name, *slots;
@@ -782,7 +816,9 @@ static CRIFI_SERIALIZE_SCRIPT_RET fprintf_template_pattern_ce(MyContext *cntxt, 
  * 			<forall-CE>
  */
 static CRIFI_SERIALIZE_SCRIPT_RET fprintf_conditional_element(MyContext *cntxt, FILE* stream, Node* n){
-	if (check_property(n, cntxt->rdf_type, cntxt->clips_TemplatePatternCE)){
+	if (check_property(n, cntxt->rdf_type, cntxt->clips_AssignedPatternCE)){
+		return fprintf_assigned_pattern_ce(cntxt, stream, n);
+	} else if (check_property(n, cntxt->rdf_type, cntxt->clips_TemplatePatternCE)){
 		return fprintf_template_pattern_ce(cntxt, stream, n);
 	} else if (check_property(n, cntxt->rdf_type, cntxt->clips_TestCE)){
 		return fprintf_test_ce(cntxt, stream, n);

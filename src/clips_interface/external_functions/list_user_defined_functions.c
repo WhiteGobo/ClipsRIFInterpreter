@@ -112,14 +112,20 @@ void func_make_list(Environment *env, UDFContext *udfc, UDFValue *out){
 			RETURNFAIL("func_make_list");
 		}
 		myval[0].value = tmpval.value;
+		debugprint(stderr, &(myval[0]));
 		for (int i=1; i<l; i++){
 			if(!UDFNextArgument(udfc, ANY_TYPE_BITS, &tmpval)){
 				RETURNFAIL("func_make_list");
 			}
 			myval[i].value = tmpval.value;
+			debugprint(stderr, &(myval[i]));
 		}
+		fprintf(stderr, "\n");
 	}
 	if (0 == crifi_list_new(env, myval, l, &tmpout)){
+		fprintf(stderr, "make list(l: %d): ", l);
+		debugprint(stderr, &tmpout);
+		fprintf(stderr, "\n");
 		out->value = tmpout.value;
 	} else {
 		RETURNFAIL("Failed to create new crifi_list.");

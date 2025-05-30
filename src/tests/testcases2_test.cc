@@ -447,6 +447,7 @@ static void run_and_check(TestdataPET testdata,
 	bool errorstate;
 	struct DynamicValue retval;
 	eval(graph, "(agenda)");
+	fprintf(stderr, "\nstarting run rules\n");
 	int number_rules_run = run_rules(graph, 40);
 	//if (number_rules_run == 0){
 		eval(graph, "(println \"show matches of rule0: \" "

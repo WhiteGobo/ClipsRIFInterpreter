@@ -175,24 +175,24 @@ Document(
             Assert( ?slotop[cs:constraint -> ?constraintop] )
             Assert( ?slotargs[cs:slot-name -> "args"] )
             Assert( ?slotargs[cs:constraints -> External(func:make-list())] )
-            Assert( ?slotargs[ex:add-atom-args -> ?arglist] )
+            Assert( ?slotargs[ex:add-atom-args-as-constraint -> ?arglist] )
           )
         )
         Group 10 (
           Forall ?slotargs ?arglist ?firstarg ?clipsexpr(
             If And (
-              ?slotargs[ex:add-atom-args -> ?arglist]
-              ?firstarg[ex:as-expression -> ?clipsexpr]
+              ?slotargs[ex:add-atom-args-as-constraint -> ?arglist]
+              ?firstarg[ex:as-constraint -> ?clipsexpr]
               ?firstarg = External(func:get(?arglist 0))
             ) Then Do (
               (?oldconstraints ?slotargs[cs:constraints -> ?oldconstraints])
-              Modify(?slotargs[ex:add-atom-args -> External(func:remove(?arglist 0))])
+              Modify(?slotargs[ex:add-atom-args-as-constraint -> External(func:remove(?arglist 0))])
               Modify( ?slotargs[cs:constraints -> External(func:append(?oldconstraints ?clipsexpr))] )
             )
           )
           Forall ?slotargs (
-            If ?slotargs[ex:add-atom-args -> List()]
-            Then Do(Retract(?slotargs[ex:add-atom-args -> List()]))
+            If ?slotargs[ex:add-atom-args-as-constraint -> List()]
+            Then Do(Retract(?slotargs[ex:add-atom-args-as-constraint -> List()]))
           )
         )
         Forall ?defrule ?rifatom ?slotargs (
@@ -203,7 +203,7 @@ Document(
             ?pattern[cs:slot -> ?slotlist]
             ?slotargs[cs:constraints -> ?slotargsconstraints]
             External(pred:list-contains(?slotlist ?slotargs))
-            Not( ?slotargs[ex:add-atom-args -> ?arglist] )
+            Not( ?slotargs[ex:add-atom-args-as-constraint -> ?arglist] )
             Not (Exists ?x ?singleconstraint( And(
               ?singleconstraint[ex:needs-variable -> ?x]
               External(pred:list-contains(?slotargsconstraints ?singleconstraint))

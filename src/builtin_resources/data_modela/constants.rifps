@@ -18,7 +18,7 @@ Document(
             Not( Exists ?clipsnode (?rifvar[ex:as-expression -> ?clipsnode]))
             Not( Exists ?clipsnode (?rifvar[ex:provides-expression -> ?clipsnode]))
           ) Then Do (
-            Execute(crifi:set-graph-in-errorstate(External(func:concat("Missing binding for rif:Variable with name " ?varname))))
+            Execute(crifi:set-graph-in-errorstate(External(func:concat("Missing binding for rif:Var with name " ?varname))))
           )
         )
         Forall ?clipsvar (
@@ -52,7 +52,7 @@ Document(
             Retract( ex:currentfactindex(?factindex) )
 
             Assert( ex:currentfactindex(External(func:numeric-add(?factindex 1))))
-            Assert( ?factvar[cs:variable-name -> External(func:concat("fct" ?factindex))] )
+            Assert( ?factvar[cs:variable-name -> External(func:concat("fcct" ?factindex))] )
 
           )
         )
@@ -136,6 +136,7 @@ Document(
               ?child # rif:Member
               ?child # rif:Var
               ?child # rif:Const
+              ?child # rif:List
               ?child # rif:And
               ?child # rif:INeg
               ?child # rif:Or

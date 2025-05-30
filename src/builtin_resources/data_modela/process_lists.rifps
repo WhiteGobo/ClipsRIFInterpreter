@@ -14,9 +14,9 @@ Document(
       Forall ?riflist ?rest (
         If And (
           ?riflist[rif:rest -> ?rest]
-          Not (?rest # rif:Variable)
+          Not (?rest # rif:Var)
         ) Then Do (
-            Execute(crifi:set-graph-in-errorstate("rif:rest is only implemented for domain of type rif:Variable"))
+            Execute(crifi:set-graph-in-errorstate("rif:rest is only implemented for domain of type rif:Var"))
         )
       )
       Forall ?riflist ?itemlist (
@@ -65,7 +65,6 @@ Document(
 
           External(pred:is-list(?itemlist))
           ?riflist[rif:rest -> ?rest]
-          External(pred:is-list(?rest))
         ) Then Do (
           (?listasvar New())
           (?slotitems New())
@@ -75,7 +74,9 @@ Document(
           Assert( ?riflist # ex:ConstraintGenerator )
 
           Assert( ?listasvar # cs:Variable )
+          Assert( ?listasvar # ex:Unknown-Variable )
 
+          Assert( ?riflist[ex:as-lhs-pattern -> ?pattern] )
           Assert( ?pattern # cs:TemplatePatternCE )
           Assert( ?pattern[cs:deftemplate-name -> "AtomList"] )
           Assert( ?pattern[cs:slot -> External(func:make-list(?slotitems))] )
@@ -96,21 +97,105 @@ Document(
             ?firstarg = External(func:get(?itemlist 0))
           ) Then Do (
 
-            Modify(?slotitems[cs:function-args -> External(func:append(?listconstraints ?clipsconstraint))])
+            Modify(?slotitems[cs:constraints -> External(func:append(?listconstraints ?clipsconstraint))])
             Modify(?slotitems["add-args-as-constraints-from"^^rif:local -> External(func:remove(?itemlist 0))])
           )
         )
-        Forall ?itemlist ?slotitems ?rest(
+        Forall ?itemlist ?slotitems ?rest (
           If And (
             ?slotitems["add-args-as-constraints-from"^^rif:local -> ?itemlist]
             External(pred:is-list(?itemlist))
             0 = External(func:count(?itemlist))
             ?slotitems["rest"^^rif:local -> ?rest]
-            ?rest # rif:Variable
+            ?rest # rif:Var
+            ?slotitems[cs:constraints -> ?listconstraints]
           ) Then Do (
-            (?tmp New())
-            Assert( ?tmp # cs:MultifieldVariable )
-            Assert( ?tmp # ex:Unknown-Variable )
+            (?clipsrestvar New())
+            Assert( ?clipsrestvar # cs:MultifieldVariable )
+            Assert( ?clipsrestvar # ex:Unknown-Variable )
+            Assert( "combine-multifield-as-list"^^rif:local( ?rest ?clipsrestvar) )
+            Retract( ?slotitems["rest"^^rif:local -> ?rest] )
+            Modify( ?slotitems[cs:constraints -> External(func:append(?listconstraints ?clipsrestvar))] )
+          )
+        )
+
+        Forall ?aslist ?multifieldvar ?rest ?clipsrestvar (
+          If And (
+            ?riflist[rif:rest -> ?rest]
+            ?riflist[ex:add-as-pattern -> ?defrule]
+            Not (?defrule[ex:bound-variable -> ?clipsrestvar])
+            ?rest[ex:as-expression -> ?clipsrestvar]
+            "combine-multifield-as-list"^^rif:local( ?rest ?multifieldvar )
+            ?rest # rif:Var
+          ) Then Do (
+            (?function New())
+            (?expand New())
+            Assert( ?clipsrestvar[cs:var-as-const-expr -> ?function] )
+            Assert( ?function[cs:function-name -> "<http://www.w3.org/2007/rif-builtin-function#make-list>"] )
+            Assert( ?function[cs:function-args -> External(func:make-list(?expand))] )
+            Assert( ?expand[cs:function-name -> "expand$"] )
+            Assert( ?expand[cs:function-args -> External(func:make-list(?multifieldvar))] )
+
+            Assert( ?riflist[ex:binds-variable -> ?clipsrestvar] )
+          )
+        )
+        Group -1 (
+          Forall ?defrule ?riflist ?pattern ?listasvar (
+            If And (
+              ?riflist # rif:List
+              ?riflist[ex:add-as-pattern -> ?defrule]
+              ?riflist[ex:as-lhs-pattern -> ?pattern]
+              ?riflist[ex:as-constraint -> ?listasvar]
+              Not( ?defrule[ex:bound-variable -> ?listasvar] )
+              Not (Exists ?x ( And(
+                ?pattern[ex:needs-variable -> ?x]
+                Not( ?defrule[ex:bound-variable -> ?x] )
+              )))
+              Not( ?riflist[ex:used-as-pattern-in -> ?defrule] )
+            ) Then Do (
+              (?assignpattern New())
+              (?oldpatternlist ?defrule[cs:conditional-element -> ?oldpatternlist])
+              Assert( ?riflist[ex:used-as-pattern-in -> ?defrule] )
+              Assert( ?assignpattern # cs:AssignedPatternCE )
+              Assert( ?assignpattern[cs:pattern-ce -> ?pattern] )
+              Assert( ?assignpattern[cs:fact-var-symbol -> ?listasvar] )
+              Modify( ?defrule[cs:conditional-element -> External(func:append(?oldpatternlist ?assignpattern))] )
+              Assert( ?defrule[ex:transfer-bound-variables-from -> ?pattern] )
+            )
+          )
+          Forall ?defrule ?riflist ?pattern ?listasvar (
+            If And (
+              ?riflist # rif:List
+              ?riflist[ex:add-as-pattern -> ?defrule]
+              ?riflist[ex:as-lhs-pattern -> ?pattern]
+              ?riflist[ex:as-constraint -> ?listasvar]
+              ?defrule[ex:bound-variable -> ?listasvar]
+              Not (Exists ?x ( And(
+                ?pattern[ex:needs-variable -> ?x]
+                Not( ?defrule[ex:bound-variable -> ?x] )
+              )))
+              Not( ?riflist[ex:used-as-pattern-in -> ?defrule] )
+            ) Then Do (
+              (?assignpattern New())
+              (?tmplistasvar New())
+              (?testvarpattern New())
+              (?testvaraction New())
+              (?oldpatternlist ?defrule[cs:conditional-element -> ?oldpatternlist])
+              Assert( ?tmplistasvar # cs:Variable )
+              Assert( ?tmplistasvar # ex:Unknown-Variable )
+
+              Assert( ?testvarpattern # cs:TestCE )
+              Assert(?testvarpattern[cs:function-call -> ?testvaraction])
+              Assert(?testvaraction[cs:function-name -> "eq"])
+              Assert(?testvaraction[cs:function-args -> External(func:make-list( ?listasvar ?tmplistasvar))])
+
+              Assert( ?riflist[ex:used-as-pattern-in -> ?defrule] )
+              Assert( ?assignpattern # cs:AssignedPatternCE )
+              Assert( ?assignpattern[cs:pattern-ce -> ?pattern] )
+              Assert( ?assignpattern[cs:fact-var-symbol -> ?tmplistasvar] )
+              Modify( ?defrule[cs:conditional-element -> External(func:append(?oldpatternlist ?assignpattern ?testvarpattern))] )
+              Assert( ?defrule[ex:transfer-bound-variables-from -> ?pattern] )
+            )
           )
         )
   )

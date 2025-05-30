@@ -6,6 +6,6 @@ Document(
         Forall ?X ?rest (
           ex:smaller-list(?rest) :- ex:bigger-list(List(?X | ?rest))
         )
-        ex:bigger-list(1 2 3 4)
+        ex:bigger-list(List(1 2 3 4))
       )
 )
