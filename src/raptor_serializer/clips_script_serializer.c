@@ -336,7 +336,7 @@ FUNC_DESC(fprintf_lhs_slot);
 FUNC_DESC(fprintf_assigned_pattern_ce);
 FUNC_DESC(fprintf_template_pattern_ce);
 FUNC_DESC(fprintf_conditional_element);
-FUNC_DESC(fprintf_not_ce);
+FUNC_DESC(fprintf_multi_ce);
 FUNC_DESC(fprintf_variable);
 FUNC_DESC(fprintf_variableslot);
 FUNC_DESC(fprintf_expression);
@@ -823,19 +823,31 @@ static CRIFI_SERIALIZE_SCRIPT_RET fprintf_conditional_element(MyContext *cntxt, 
 	} else if (check_property(n, cntxt->rdf_type, cntxt->clips_TestCE)){
 		return fprintf_test_ce(cntxt, stream, n);
 	} else if (check_property(n, cntxt->rdf_type, cntxt->clips_NotCE)){
-		return fprintf_not_ce(cntxt, stream, n);
+		return fprintf_multi_ce(cntxt, stream, n);
+	} else if (check_property(n, cntxt->rdf_type, cntxt->clips_AndCE)){
+		return fprintf_multi_ce(cntxt, stream, n);
+	} else if (check_property(n, cntxt->rdf_type, cntxt->clips_OrCE)){
+		return fprintf_multi_ce(cntxt, stream, n);
 	}
 	debug_fprintf_node(stderr, "failed conditional element ", n, "\n");
 	return CRIFI_SERIALIZE_BROKEN_GRAPH;
 }
 
-FUNC_DESC(fprintf_not_ce){
+FUNC_DESC(fprintf_multi_ce){
 	CRIFI_SERIALIZE_SCRIPT_RET err = CRIFI_SERIALIZE_SCRIPT_NOERROR;
 	raptor_term *targets;
 	NodeIterator* n_iter;
 	bool at_least_one = false;
 
-	fprintf(stream, "(not\n");
+	if (check_property(n, cntxt->rdf_type, cntxt->clips_NotCE)){
+		fprintf(stream, "(not\n");
+	} else if (check_property(n, cntxt->rdf_type, cntxt->clips_AndCE)){
+		fprintf(stream, "(and\n");
+	} else if (check_property(n, cntxt->rdf_type, cntxt->clips_OrCE)){
+		fprintf(stream, "(or\n");
+	} else {
+		return CRIFI_SERIALIZE_BROKEN_GRAPH;
+	}
 	targets = get_object(n, cntxt->clips_conditional_element);
 	n_iter = new_rdflist_iterator(cntxt->rdf_cntxt, cntxt->nodes, targets);
 	if(n_iter == NULL){
