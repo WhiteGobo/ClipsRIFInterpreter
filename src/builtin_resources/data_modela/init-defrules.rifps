@@ -11,8 +11,9 @@ Document(
     Prefix(rif <http://www.w3.org/2007/rif#>)
     Prefix(entailment <http://www.w3.org/ns/entailment/>)
     (* ex:init-defrules *) Group 10 (
-      (* ex:init-defrule-per-implies *) Forall ?group ?rule ?formula(
+      (* ex:init-defrule-per-implies *) Forall ?group ?rule ?sentences(
         If And(
+          "always-false"^^rif:local()
           ?group[rif:sentences -> ?sentences]
           Or (
             ?rule # rif:Implies
@@ -29,7 +30,7 @@ Document(
           Assert( ?defrule[cs:conditional-element -> External(func:make-list())])
         )
       )
-      Forall ?rifrule ?defrule ?action (
+      Forall ?rifrule ?defrule ?action ?rifaction (
         If And (
           ?rifrule[ex:add-rule-info -> ?defrule]
           ?rifrule[rif:then -> ?rifaction]
@@ -59,7 +60,7 @@ Document(
           Assert( ?rifclause[ex:add-rule-info -> ?defrule] )
         )
       )
-      Forall ?rifrule ?defrule ?condition ?clipspattern (
+      Forall ?rifrule ?defrule ?rifcondition (
         If And (
           ?rifrule[ex:add-rule-info -> ?defrule]
           ?rifrule[rif:if -> ?rifcondition]
@@ -67,7 +68,7 @@ Document(
           Assert( ?rifcondition[ex:add-as-pattern -> ?defrule] )
         )
       )
-      Forall ?rifrule ?defrule ?condition ?clipspattern ?formulalist(
+      Forall ?rifcondition ?defrule ?formulalist ?formula (
         If And (
           ?rifcondition[ex:add-as-pattern -> ?defrule]
           ?rifcondition # rif:And

@@ -1,0 +1,18 @@
+Document(
+    Prefix(ex <http://example.org/example#>)
+    Prefix(xs <http://www.w3.org/2001/XMLSchema#>) 
+    Group ( 
+        Forall ?i (
+          If And (
+            ex:ok(?i)
+            Or (
+              ex:a(?i)
+              ex:b(?i)
+            )
+          ) Then ex:ok(External(func:numeric-add(?i 1)))
+        )
+        ex:a(0)
+        ex:b(1)
+        ex:ok(0)
+      )
+)

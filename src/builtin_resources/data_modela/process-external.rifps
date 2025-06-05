@@ -10,37 +10,58 @@ Document(
     Prefix(triplestordf <http://example.com/triples-to-rdf#>)
     Prefix(rif <http://www.w3.org/2007/rif#>)
     Prefix(entailment <http://www.w3.org/ns/entailment/>)
-    Group 10 (
-      Group 15 (
-        Forall ?function ?rifarglist ?firstarg (
-          If And (
-            ?function[ex:add-args-from -> ?rifarglist]
-            External(pred:is-list(?rifarglist))
-            ?firstarg[ex:as-expression -> ?clipsexpression]
-            ?firstarg = External(func:get(?rifarglist 0))
-          ) Then Do (
-            (?functionargs ?function[cs:function-args -> ?functionargs])
-            Modify(?function[cs:function-args -> External(func:append(?functionargs ?clipsexpression))])
-            Modify(?function[ex:add-args-from -> External(func:remove(?rifarglist 0))])
-          )
+    Prefix(modelA <http://white.gobo/modelA#>)
+    Group (
+      Forall ?rifexternal (
+        If And (
+          ?rifexternal # modelA:TestPatternExternalGenerator
+        ) Then Do (
+          Assert(?rifexternal # modelA:ExpressionGenerator)
         )
       )
-      Forall ?content ?rifop ?rifarglist ?functionname ?functionsymbol (
+      Forall ?rifexternal ?rifatom ?op ?arglist ?actionsymbol(
         If And (
-          ?rifexternal # rif:External
-          ?rifexternal[rif:content -> ?content]
-          ?content[rif:op -> ?rifop]
-          ?rifop[ex:as-expression -> ?functionsymbol]
-          ?functionsymbol[cs:symbol -> ?functionname]
-          ?content[rif:args -> ?rifarglist]
-          External(pred:is-list(?rifarglist))
+          ?rifexternal # modelA:TestPatternExternalGenerator
+          ?rifexternal[ex:as-expression -> ?action]
         ) Then Do (
-          (?function New())
-          Assert( ?rifexternal[ex:as-action -> External(func:make-list(?function))] )
-          Assert( ?rifexternal[ex:as-expression -> ?function] )
-          Assert( ?function[cs:function-name -> ?functionname] )
-          Assert( ?function[cs:function-args -> External(func:make-list())] )
-          Assert( ?function[ex:add-args-from -> ?rifarglist] )
+          (?pattern New())
+          Assert( ?rifexternal[modelA:as-lhs-pattern -> ?pattern] )
+          Assert( ?pattern # cs:TestCE )
+          Assert( ?pattern[cs:function-call -> ?action] )
+        )
+      )
+      Group 10 (
+        Group 15 (
+          Forall ?function ?rifarglist ?firstarg (
+            If And (
+              ?function[ex:add-args-from -> ?rifarglist]
+              External(pred:is-list(?rifarglist))
+              ?firstarg[ex:as-expression -> ?clipsexpression]
+              ?firstarg = External(func:get(?rifarglist 0))
+            ) Then Do (
+              (?functionargs ?function[cs:function-args -> ?functionargs])
+              Modify(?function[cs:function-args -> External(func:append(?functionargs ?clipsexpression))])
+              Modify(?function[ex:add-args-from -> External(func:remove(?rifarglist 0))])
+            )
+          )
+        )
+        Forall ?content ?rifop ?rifarglist ?functionname ?functionsymbol (
+          If And (
+            ?rifexternal # rif:External
+            ?rifexternal[rif:content -> ?content]
+            ?content[rif:op -> ?rifop]
+            ?rifop[ex:as-expression -> ?functionsymbol]
+            ?functionsymbol[cs:symbol -> ?functionname]
+            ?content[rif:args -> ?rifarglist]
+            External(pred:is-list(?rifarglist))
+          ) Then Do (
+            (?function New())
+            Assert( ?rifexternal[ex:as-action -> External(func:make-list(?function))] )
+            Assert( ?rifexternal[ex:as-expression -> ?function] )
+            Assert( ?function[cs:function-name -> ?functionname] )
+            Assert( ?function[cs:function-args -> External(func:make-list())] )
+            Assert( ?function[ex:add-args-from -> ?rifarglist] )
+          )
         )
       )
     )

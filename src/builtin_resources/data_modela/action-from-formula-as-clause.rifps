@@ -232,7 +232,8 @@ Document(
               ?clipsfunction[ex:add-atom-args-rhspattern -> ?rifrestargs]
               External( pred:numeric-not-equal(0 External(func:count(?rifrestargs))) )
             ) Then Do (
-              Execute(crifi:set-graph-in-errorstate("Translation of rif:Atom to rhs-pattern failed. Didnt translated all rif:args."))
+              Assert(?clipsfunction # ex:cant-translate-atom-as-rhspattern)
+              Execute(crifi:set-graph-in-errorstate("Translation of rif:Atom to rhs-pattern failed. Didnt translated all rif:args.(ex:cant-translate-atom-as-rhspattern)"))
             )
           )
         )

@@ -1,0 +1,51 @@
+Document(
+    Prefix(func <http://www.w3.org/2007/rif-builtin-function#>) 
+    Prefix(pred <http://www.w3.org/2007/rif-builtin-predicate#>) 
+    Prefix(owl <http://www.w3.org/2002/07/owl#>)
+    Prefix(deffact <http://white.gobo/crifi/resource-manager/deffacts#>)
+    Prefix(rema <http://white.gobo/crifi/resource-manager#>)
+    Prefix(cs <http://clips.script/>)
+    Prefix(crifi <http://white.gobo/>)
+    Prefix(modelA <http://white.gobo/modelA#>)
+    Prefix(triplestordf <http://example.com/triples-to-rdf#>)
+    Prefix(rif <http://www.w3.org/2007/rif#>)
+    Prefix(entailment <http://www.w3.org/ns/entailment/>)
+    Prefix(ex <http://example.com/>)
+    Group (
+      Forall ?rifatom (
+        If And (
+          ?rifatom # modelA:AtomPatternGenerator
+          ?rifatom[rif:op -> ?op]
+          ?rifatom[rif:args -> ?arglist]
+          External(pred:is-list(?arglist))
+          ?op[ex:as-constraint -> ?constraintop]
+        ) Then Do (
+          (?pattern New())
+          (?slotop New())
+          (?slotargs New())
+          Assert( ?rifatom[modelA:as-lhs-pattern -> ?pattern] )
+          Assert( ?pattern # cs:TemplatePatternCE )
+          Assert( ?pattern[cs:deftemplate-name -> "Atom"] )
+          Assert( ?pattern[cs:slot -> External(func:make-list(?slotop ?slotargs))] )
+          Assert( ?slotop[cs:slot-name -> "op"] )
+          Assert( ?slotop[cs:constraint -> ?constraintop] )
+          Assert( ?slotargs[cs:slot-name -> "args"] )
+          Assert( ?slotargs[cs:constraints -> External(func:make-list())] )
+          Assert( ?slotargs["add-atom-args-as-constraint"^^rif:local -> ?arglist] )
+        )
+      )
+      Group 10 (
+        Forall ?slotargs ?arglist ?firstarg ?clipsexpr(
+          If And (
+            ?slotargs["add-atom-args-as-constraint"^^rif:local -> ?arglist]
+            ?firstarg[ex:as-constraint -> ?clipsexpr]
+            ?firstarg = External(func:get(?arglist 0))
+          ) Then Do (
+            (?oldconstraints ?slotargs[cs:constraints -> ?oldconstraints])
+            Modify(?slotargs["add-atom-args-as-constraint"^^rif:local -> External(func:remove(?arglist 0))])
+            Modify( ?slotargs[cs:constraints -> External(func:append(?oldconstraints ?clipsexpr))] )
+          )
+        )
+      )
+    )
+)

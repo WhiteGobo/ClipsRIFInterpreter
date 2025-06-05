@@ -1,0 +1,219 @@
+Document(
+    Prefix(func <http://www.w3.org/2007/rif-builtin-function#>) 
+    Prefix(pred <http://www.w3.org/2007/rif-builtin-predicate#>) 
+    Prefix(owl <http://www.w3.org/2002/07/owl#>)
+    Prefix(deffact <http://white.gobo/crifi/resource-manager/deffacts#>)
+    Prefix(rema <http://white.gobo/crifi/resource-manager#>)
+    Prefix(cs <http://clips.script/>)
+    Prefix(crifi <http://white.gobo/>)
+    Prefix(modelA <http://white.gobo/modelA#>)
+    Prefix(triplestordf <http://example.com/triples-to-rdf#>)
+    Prefix(rif <http://www.w3.org/2007/rif#>)
+    Prefix(entailment <http://www.w3.org/ns/entailment/>)
+    Prefix(ex <http://example.com/>)
+    Prefix(exa <http://example.com/a#>)
+    Group (
+      Forall ?group ?rifrule (
+        If And (
+          ?group[rif:sentences -> ?sentences]
+          Or (
+            ?rifrule # rif:Implies
+            ?rifrule # rif:Forall
+          )
+          External(pred:is-list(?sentences))
+          External(pred:list-contains(?sentences ?rifrule))
+        ) Then Do(
+          Assert(?rifrule # modelA:RuleGenerator)
+        )
+      )
+      Forall ?group ?rifformula ?rifclause (
+        If And (
+          ?group[rif:sentences -> ?sentences]
+          Or (
+            ?rifclause # rif:Equal
+          )
+          External(pred:is-list(?sentences))
+          External(pred:list-contains(?sentences ?rifclause))
+        ) Then Do(
+          Assert( ?rifclause # ex:equal-not-implemented-as-clause )
+          Execute(crifi:set-graph-in-errorstate("modelA cant process rif:Equal as clause(ex:equal-not-implemented-as-clause)"))
+        )
+      )
+      Forall ?group ?sentences ?rifclause (
+        If And (
+          ?group[rif:sentences -> ?sentences]
+          Or (
+            ?rifclause # rif:Frame
+            ?rifclause # rif:Atom
+            ?rifclause # rif:Member
+            ?rifclause # rif:Subclass
+          )
+          External(pred:is-list(?sentences))
+          External(pred:list-contains(?sentences ?rifclause))
+        ) Then Do(
+          Assert(?rifclause # modelA:RHSPatternGenerator)
+        )
+      )
+      Forall ?rifframe ?slot ?slotlist (
+        If And (
+          ?rifframe # modelA:RHSPatternGenerator
+          ?rifframe[rif:slots -> ?slotlist]
+          ?slot # rif:Slot
+          External(pred:list-contains(?slotlist ?slot))
+        ) Then Do (
+          Assert( ?slot # modelA:RHSPatternGenerator )
+        )
+      )
+      Forall ?patterngen ?term (
+        If And (
+          ?patterngen # modelA:RHSPatternGenerator
+          ?patterngen[rif:args -> ?arglist]
+          Or (
+            ?term # rif:List
+            ?term # rif:External
+          )
+          External(pred:list-contains(?arglist ?term))
+        ) Then Do (
+          Assert(?term # ex:ExpressionGenerator)
+        )
+      )
+      Forall ?patterngen ?term (
+        If And (
+          ?patterngen # modelA:RHSPatternGenerator
+          Or (
+            ?pattergen[rif:op -> ?term]
+            ?pattergen[rif:object -> ?term]
+            ?pattergen[rif:slotkey -> ?term]
+            ?pattergen[rif:slotvalue -> ?term]
+            ?pattergen[rif:left -> ?term]
+            ?pattergen[rif:right -> ?term]
+            ?pattergen[rif:class -> ?term]
+            ?pattergen[rif:instance -> ?term]
+            ?pattergen[rif:sub -> ?term]
+            ?pattergen[rif:super -> ?term]
+          )
+        ) Then Do (
+          Assert(?term # ex:ExpressionGenerator)
+        )
+      )
+      Forall ?rifimply ?formula (
+        If Or(
+          ?rifimply[rif:if -> ?formula]
+          ?rifimply[rif:pattern -> ?formula]
+        ) Then Do (Assert( ?formula # modelA:PatternGenerator))
+      )
+      Forall ?formula ?child (
+        If And (
+          ?formula # modelA:PatternGenerator
+          ?formula[ex:inherits-data -> ?child]
+          ?formula[rif:formulas -> ?formulalist]
+          External(pred:list-contains(?formulalist ?child))
+        ) Then Do (
+          Assert( ?child # modelA:PatternGenerator )
+        )
+      )
+      Forall ?formula ?child (
+        If And (
+          ?formula # modelA:PatternGenerator
+          ?formula[rif:formula -> ?child]
+        ) Then Do (
+          Assert( ?child # modelA:PatternGenerator )
+        )
+      )
+      Forall ?formula ?child (
+        If And (
+          ?formula # modelA:PatternGenerator
+          ?formula[ex:inherits-data -> ?child]
+          Or (
+            ?child # rif:And
+            ?child # rif:Or
+            ?child # rif:Exists
+            ?child # rif:External
+            ?child # rif:INeg
+            ?child # rif:Frame
+            ?child # rif:Atom
+            ?child # rif:SubClass
+            ?child # rif:Equal
+            ?child # rif:Slot
+          )
+        ) Then Do (
+          Assert( ?child # modelA:PatternGenerator )
+        )
+      )
+      Forall ?rifformula ?child (
+        If And (
+          ?rifformula # modelA:PatternGenerator
+          ?rifformula[rif:slots -> ?slotlist]
+          ?slot # rif:Slot
+          External(pred:list-contains(?slotlist ?slot))
+        ) Then Do (
+          Assert( ?slot # modelA:PatternGenerator )
+        )
+      )
+      Forall ?rifformula ?child (
+        If And (
+          ?rifformula # modelA:PatternGenerator
+          Or (
+            ?rifformula[rif:object -> ?child]
+            ?rifformula[rif:left -> ?child]
+            ?rifformula[rif:right -> ?child]
+            ?rifformula[rif:op -> ?child]
+            ?rifformula[rif:instance -> ?child]
+            ?rifformula[rif:class -> ?child]
+            ?rifformula[rif:sub -> ?child]
+            ?rifformula[rif:super -> ?child]
+            ?rifformula[rif:slotkey -> ?child]
+            ?rifformula[rif:slotvalue -> ?child]
+          )
+        ) Then Do (
+          Assert( ?child # modelA:ConstraintGenerator )
+        )
+      )
+      Forall ?rifformula ?child (
+        If And (
+          ?rifformula # modelA:PatternGenerator
+          ?rifformula[rif:args -> ?arglist]
+          Or (
+            ?child # rif:External
+            ?child # rif:List
+          )
+          External(pred:list-contains(?arglist ?child))
+        ) Then Do (
+          Assert( ?child # modelA:ConstraintGenerator )
+        )
+      )
+      Forall ?rifimply ?action (
+        If ?rifimply[rif:then -> ?action]
+        Then Do (Assert( ?action # modelA:ActionGenerator))
+      )
+      Forall ?rifdo ?action ?actionlist (
+        If Or (
+            ?action # rif:Assert
+            ?action # rif:Retract
+            ?action # rif:Modify
+            ?action # rif:Execute
+        ) Then Do (
+          Assert( ?action # modelA:ActionGenerator)
+        )
+      )
+      Forall ?rifforall ?action (
+        If And(
+          ?rifforall # rif:Forall
+          ?rifforall[rif:formula -> ?action]
+          Not(?action # rif:Implies)
+          Not(?action # rif:Forall)
+        )
+        Then Do (Assert( ?action # modelA:ActionGenerator))
+      )
+      Forall ?rifexternal ?rifatom (
+        If And (
+          ?rifexternal # rif:External
+          ?rifexternal[rif:content -> ?rifatom]
+          ?rifexternal[ex:inherits-data -> ?child]
+          Not(?child # rif:Var)
+        ) Then Do (
+          Assert(?child # ex:ExpressionGenerator)
+        )
+      )
+    )
+)

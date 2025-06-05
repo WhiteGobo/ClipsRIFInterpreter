@@ -10,6 +10,7 @@ Document(
     Prefix(triplestordf <http://example.com/triples-to-rdf#>)
     Prefix(rif <http://www.w3.org/2007/rif#>)
     Prefix(entailment <http://www.w3.org/ns/entailment/>)
+    Prefix(modelA <http://white.gobo/modelA#>)
     Group (
       Forall ?riflist ?rest (
         If And (
@@ -21,6 +22,7 @@ Document(
       )
       Forall ?riflist ?itemlist (
         If And (
+          ?riflist # ex:ExpressionGenerator
           ?riflist[rif:items -> ?itemlist]
           External(pred:is-list(?itemlist))
           Not( Exists ?rest (?riflist[rif:rest -> ?rest]))
@@ -53,6 +55,57 @@ Document(
           ) Then Do (
             Retract(?function["add-args-as-expression-from"^^rif:local -> ?itemlist])
           )
+        )
+      )
+
+      Forall ?riflist (
+        If And (
+          ?riflist # modelA:ConstraintGenerator
+          ?riflist # rif:List
+        ) Then Do (
+          (?listasvar New())
+          Assert( ?riflist[ex:as-constraint -> ?listasvar] )
+          Assert( ?listasvar # cs:Variable )
+          Assert( ?listasvar # ex:Unknown-Variable )
+          Assert( ?riflist # modelA:ConstraintNeedsAdditionalPatterns )
+        )
+      )
+      Forall ?riflist ?formula ?assign ?listvar ?itemlist (
+        If And (
+          ?formula[modelA:binds-var -> ?assign]
+          ?riflist # modelA:ConstraintGenerator
+          ?riflist # rif:List
+          ?riflist[rif:rest -> ?rest]
+          ?riflist[ex:as-constraint -> ?listvar]
+          ?rest[ex:as-constraint -> ?assign]
+          ?riflist[rif:items -> ?itemlist]
+        ) Then Do (
+          (?function New())
+          (?position New())
+          Assert( ?assign[cs:var-as-const-expr -> ?function] )
+          Assert( ?function[cs:function-name -> "<http://www.w3.org/2007/rif-builtin-function#sublist>"] )
+          Assert( ?function[cs:function-args -> External(func:make-list(?listvar ?position))] )
+          Assert( ?position[cs:string -> External(crifi:literal-to-clipsconstant(External(func:count(?itemlist))))])
+
+        )
+      )
+      Forall ?riflist ?formula ?assign ?listvar ?itemlist (
+        If And (
+          ?formula[modelA:binds-var -> ?assign]
+          ?riflist # modelA:ConstraintGenerator
+          ?riflist # rif:List
+          ?riflist[ex:as-constraint -> ?listvar]
+          ?rifvar[ex:as-constraint -> ?assign]
+          ?riflist[rif:items -> ?itemlist]
+          External(pred:list-contains(?itemlist ?rifvar))
+        ) Then Do (
+          (?function New())
+          (?position New())
+          Assert( ?assign[cs:var-as-const-expr -> ?function] )
+          Assert( ?function[cs:function-name -> "<http://www.w3.org/2007/rif-builtin-function#get>"] )
+          Assert( ?function[cs:function-args -> External(func:make-list(?listvar ?position))] )
+          Assert( ?position[cs:string -> External(crifi:literal-to-clipsconstant(External(func:index-of(?itemlist ?rifvar))))])
+
         )
       )
 

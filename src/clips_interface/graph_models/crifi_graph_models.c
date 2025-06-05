@@ -44,6 +44,7 @@ crifi_graph *init_graph_model_first(){
 	}
 	err = set_model_id_for_import(graph,
 				CRIFI_IMPORT_MODEL_RIFGENERATOR_SIMPLE);
+	//err = set_model_id_for_import(graph, CRIFI_IMPORT_MODEL_RIFGENERATOR);
 	if (err != 0){
 		close_graph(graph);
 		return NULL;

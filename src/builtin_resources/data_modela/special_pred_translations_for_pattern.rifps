@@ -13,7 +13,7 @@ Document(
     Prefix(xs <http://www.w3.org/2001/XMLSchema#>)
     Group (
       Group 50 (
-        Forall ?rifframe ?slot ?defrule ?slotkey ?slotvalue (
+        Forall ?rifframe ?slot ?defrule ?slotkey ?slotvalue ?frameobject (
           If And (
             ?rifframe[ex:add-as-pattern -> ?defrule]
             ?rifframe[rif:object -> ?frameobject]
@@ -57,7 +57,7 @@ Document(
       )
       Group -1 (
         Forall ?rifexternal ?rifatom ?rifopiristring ?defrule ?arglist ?targetiri ?targetstring ?varname ?clipsvar ?clipsexpression (
-          If And(
+          If And (
             ?rifconstiristring[rif:constIRI -> "http://www.w3.org/2007/rif-builtin-predicate#iri-string"^^xs:anyURI]
             ?rifatom[rif:op -> ?rifconstiristring]
             ?rifexternal[rif:content -> ?rifatom]

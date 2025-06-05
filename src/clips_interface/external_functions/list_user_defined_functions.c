@@ -112,20 +112,14 @@ void func_make_list(Environment *env, UDFContext *udfc, UDFValue *out){
 			RETURNFAIL("func_make_list");
 		}
 		myval[0].value = tmpval.value;
-		debugprint(stderr, &(myval[0]));
 		for (int i=1; i<l; i++){
 			if(!UDFNextArgument(udfc, ANY_TYPE_BITS, &tmpval)){
 				RETURNFAIL("func_make_list");
 			}
 			myval[i].value = tmpval.value;
-			debugprint(stderr, &(myval[i]));
 		}
-		fprintf(stderr, "\n");
 	}
 	if (0 == crifi_list_new(env, myval, l, &tmpout)){
-		fprintf(stderr, "make list(l: %d): ", l);
-		debugprint(stderr, &tmpout);
-		fprintf(stderr, "\n");
 		out->value = tmpout.value;
 	} else {
 		RETURNFAIL("Failed to create new crifi_list.");
@@ -218,34 +212,42 @@ void func_sublist(Environment *env, UDFContext *udfc, UDFValue *out){
 	CLIPSValue clips_arglist;
 	CLIPSValue entry_dupl;
 	Multifield *items;
+	unsigned argcount = UDFArgumentCount(udfc);
 	if (!UDFFirstArgument(udfc, ANY_TYPE_BITS, &udf_arglist)){
-		RETURNFAIL("func_sublist");
+		RETURNFAIL("Argument error for func:sublist");
 	}
 	if(!UDFNextArgument(udfc, ANY_TYPE_BITS, &start_val)){
-		RETURNFAIL("func_sublist");
+		RETURNFAIL("Argument error for func:sublist");
 	}
-	if(!UDFNextArgument(udfc, ANY_TYPE_BITS, &end_val)){
-		RETURNFAIL("func_sublist");
-	}
-	if (true){//if number args == 3
-		clips_arglist.value = udf_arglist.value;
-		items = retrieve_items(env, clips_arglist);
-		if (items == NULL){
-			RETURNFAIL("func:sublist Cant handle given list.");
-		}
-	} else {
-		end_val.value = NULL;
+	clips_arglist.value = udf_arglist.value;
+	items = retrieve_items(env, clips_arglist);
+	if (items == NULL){
+		RETURNFAIL("func:sublist Cant handle given list.");
 	}
 	length = items->length;
-	if (!udfvalue_as_integer(start_val, &start)) return;
-	if (end_val.value != NULL){
-		if (!udfvalue_as_integer(end_val, &end)) return;
+	if (!udfvalue_as_integer(start_val, &start)){
+		RETURNFAIL("func:sublist needs integer for 2");
+	}
+	if (!normalize_index(length, &start)){
+		RETURNFAIL("func:sublist start was invalid integer");
+	}
+
+	if (argcount == 3){
+		if(!UDFNextArgument(udfc, ANY_TYPE_BITS, &end_val)){
+			RETURNFAIL("Argument error for func:sublist");
+		}
+		if (!udfvalue_as_integer(end_val, &end)){
+			RETURNFAIL("func:sublist needs integer for 3");
+		}
+		if (end != length && !normalize_index(length, &end)){
+			RETURNFAIL("func:sublist end was invalid integer.");
+		}
 	} else {
 		end = length;
 	}
-	if (!normalize_index(length, &start)) return;
-	if (end != length && !normalize_index(length, &end)) return;
-	if (start >= end) return;
+	if (start >= end){
+		RETURNFAIL("func:sublist start >= end.");
+	}
 	crifi_list_new(env,
 			items->contents + start,
 			end - start, &tmpout);

@@ -11,6 +11,14 @@ Document(
     Prefix(rif <http://www.w3.org/2007/rif#>)
     Prefix(entailment <http://www.w3.org/ns/entailment/>)
     Group(
+      Forall ?term (
+        If Or (
+          ?term # rif:External
+          ?term # rif:List
+        ) Then Do (
+          Assert(?term # ex:ExpressionGenerator )
+        )
+      )
 
       Forall ?rifatom ?rifop ?op (
         If And (
@@ -214,7 +222,7 @@ Document(
           Assert( ?slotinstance[cs:member-slot-name -> "instance"] )
         )
       )
-      Forall ?rifframe ?object ?slotlist ?slotkey ?slotvalue ?factindex(
+      Forall ?rifframe ?object ?slotlist ?slotkey ?slotvalue ?factindex ?slot (
         If And (
           ?rifframe[rif:object -> ?object]
           ?rifframe[rif:slots -> ?slotlist]

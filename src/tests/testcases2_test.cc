@@ -83,6 +83,10 @@ static auto petTestdata = testing::Values(
 			SC_NoCondition | SC_ModelFirst,
 			OWN_PREMISE("openlist_as_pattern"),
 			OWN_CONCLUSION("openlist_as_pattern")),
+		TestdataPET("Own_BLD_PET_stacked_conditionals1",
+			SC_NoCondition | SC_ModelFirst,
+			OWN_PREMISE("stacked_conditionals1"),
+			OWN_CONCLUSION("stacked_conditionals1")),
 		TestdataPET("Core_PET_Builtin_literal-not-identical",
 			SC_NoCondition,
 			W3C_PREMISE("Builtin_literal-not-identical"),
@@ -686,6 +690,51 @@ TEST_P(officialw3cPETTestCases_Test, CreateAndTestModelWithModelA) {
 }
 
 TEST_P(officialw3cPETTestCases_Test, CreateAndTestModelWithModelFirst) {
+	/*
+	TestdataPET testdata = GetParam();
+
+	if(skip_model_first(testdata.skip_c)){
+		GTEST_SKIP() << "skip on modelA";
+	}
+
+	size_t memory_size = 1000000;
+	int number_rules_run;
+	char tmpmem[memory_size]; //script size maximal a megabyte
+	char tmpcheckmem[memory_size]; //check command size maximal a megabyte
+	tmpmem[memory_size-1] = '\0';
+	tmpmem[0] = '\0';
+	tmpcheckmem[memory_size-1] = '\0';
+	tmpcheckmem[0] = '\0';
+	FILE *tmpmem_f, *tmpcheckmem_f;
+	crifi_graph *maingraph;
+
+	tmpmem_f = fmemopen(tmpmem, memory_size-1, "w");
+	ASSERT_NE(tmpmem_f, nullptr) << "Couldnt open memory. broken test.";
+	create_logic_into_memory(tmpmem_f, testdata, init_graph_model_first);
+	fclose(tmpmem_f);
+	if (HasFatalFailure()) return;
+	if (HasFailure()) return;
+	fprintf(stderr, "<created script>:\n%s\n</created script>\n", tmpmem);
+	ASSERT_NE(strlen(tmpmem), 0) << "no logic script created";
+
+	tmpcheckmem_f = fmemopen(tmpcheckmem, memory_size-1, "w");
+	ASSERT_NE(tmpcheckmem_f, nullptr) << "Couldnt open memory.broken test.";
+	create_check_into_memory(tmpcheckmem_f, testdata,
+				init_graph_modelcheckA);
+	fclose(tmpcheckmem_f);
+
+	if (HasFatalFailure()) return;
+	fprintf(stderr, "check command:\n%s\n", tmpcheckmem);
+	ASSERT_NE(strlen(tmpcheckmem), 0) << "no check command created.";
+
+
+	maingraph = init_graph();
+	load_new_logic(maingraph, tmpmem, strlen(tmpmem));
+	run_and_check(testdata, maingraph, tmpcheckmem);
+	close_graph(maingraph);
+	//FAIL() << "testfail";
+	
+	*/
 	TestdataPET testdata = GetParam();
 	size_t memory_size = 1000000;
 	int number_rules_run;

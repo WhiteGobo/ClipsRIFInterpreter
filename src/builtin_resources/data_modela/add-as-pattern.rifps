@@ -11,11 +11,11 @@ Document(
     Prefix(rif <http://www.w3.org/2007/rif#>)
     Prefix(entailment <http://www.w3.org/ns/entailment/>)
     Group (
-      (* ex:errordiagnose-in-pattern-creation *) Group -100 (
-        Forall ?defrule ?formula (
+      (* ex:errordiagnose-in-pattern-creation *) Group -101 (
+        Forall ?defrule ?formula ?patterntype (
           If And (
-            ?rifatom[ex:add-as-pattern -> ?defrule]
-            Not(?rifatom[ex:used-as-pattern-in -> ?defrule])
+            ?formula[ex:add-as-pattern -> ?defrule]
+            Not(?formula[ex:used-as-pattern-in -> ?defrule])
           ) Then Do (
             Execute(crifi:set-graph-in-errorstate("A pattern wasnt used in defrule"))
           )
@@ -216,7 +216,7 @@ Document(
           )
         )
 
-        Forall ?rifframe ?slot ?defrule ?slotkey ?slotvalue (
+        Forall ?rifframe ?slot ?defrule ?slotkey ?slotvalue ?frameobject (
           If And (
             ?rifframe[ex:add-as-pattern -> ?defrule]
             ?rifframe[rif:object -> ?frameobject]

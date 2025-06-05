@@ -1,0 +1,83 @@
+Document(
+    Prefix(func <http://www.w3.org/2007/rif-builtin-function#>) 
+    Prefix(pred <http://www.w3.org/2007/rif-builtin-predicate#>) 
+    Prefix(owl <http://www.w3.org/2002/07/owl#>)
+    Prefix(deffact <http://white.gobo/crifi/resource-manager/deffacts#>)
+    Prefix(rema <http://white.gobo/crifi/resource-manager#>)
+    Prefix(cs <http://clips.script/>)
+    Prefix(crifi <http://white.gobo/>)
+    Prefix(modelA <http://white.gobo/modelA#>)
+    Prefix(triplestordf <http://example.com/triples-to-rdf#>)
+    Prefix(rif <http://www.w3.org/2007/rif#>)
+    Prefix(entailment <http://www.w3.org/ns/entailment/>)
+    Prefix(ex <http://example.com/>)
+    Group (
+      Forall ?rifequal ?rifleft (
+        If And (
+          ?rifequal # modelA:TestPatternRightAssignGenerator
+          ?rifequal[rif:left -> ?rifleft]
+        ) Then Do (
+          Assert(?rifleft # modelA:ExpressionGenerator)
+        )
+      )
+      Forall ?rifequal ?rifright (
+        If And (
+          ?rifequal # modelA:TestPatternLeftAssignGenerator
+          ?rifequal[rif:right -> ?rifright]
+        ) Then Do (
+          Assert(?rifright # modelA:ExpressionGenerator)
+        )
+      )
+      Forall ?rifequal ?rifleft ?assignvar ?rifright ?rightexpr (
+        If And (
+          ?rifequal # modelA:TestPatternLeftAssignGenerator
+          ?rifequal[rif:left -> ?rifleft]
+          ?rifleft[ex:as-expression -> ?assignvar]
+          ?rifequal[rif:right -> ?rifright]
+          ?rifright[ex:as-expression -> ?rightexpr]
+        ) Then Do (
+          Assert( ?assignvar[cs:var-as-const-expr -> ?rightexpr] )
+        )
+      )
+      Forall ?rifequal ?rifleft ?assignvar ?rifright ?leftexpr (
+        If And (
+          ?rifequal # modelA:TestPatternRightAssignGenerator
+          ?rifequal[rif:right -> ?rifright]
+          ?rifright[ex:as-expression -> ?assignvar]
+          ?rifequal[rif:left -> ?rifleft]
+          ?rifleft[ex:as-expression -> ?leftexpr]
+        ) Then Do (
+          Assert( ?assignvar[cs:var-as-const-expr -> ?leftexpr] )
+        )
+      )
+      Forall ?rifequal ?rifleft ?rifright (
+        If And (
+          ?rifequal # modelA:TestPatternEqualGenerator
+          ?rifequal[rif:left -> ?rifleft]
+          ?rifequal[rif:right -> ?rifright]
+        ) Then Do (
+          Assert(?rifleft # modelA:ExpressionGenerator)
+          Assert(?rifright # modelA:ExpressionGenerator)
+        )
+      )
+      Forall ?rifequal ?rifleft ?leftexpr ?rifright ?rightexpr (
+        If And (
+          ?rifequal # modelA:TestPatternEqualGenerator
+          ?rifequal[rif:left -> ?rifleft]
+          ?rifleft[ex:as-expression -> ?leftexpr]
+          ?rifequal[rif:right -> ?rifright]
+          ?rifright[ex:as-expression -> ?rightexpr]
+          Not( Exists ?x ( ?rifequal[modelA:as-lhs-pattern -> ?x] ))
+        ) Then Do (
+          (?pattern New())
+          (?action New())
+
+          Assert( ?rifequal[modelA:as-lhs-pattern -> ?pattern] )
+          Assert( ?pattern # cs:TestCE )
+          Assert( ?pattern[cs:function-call -> ?action] )
+          Assert( ?action[cs:function-name -> "eq"] )
+          Assert( ?action[cs:function-args -> External(func:make-list(?leftexpr ?rightexpr))] )
+        )
+      )
+    )
+)

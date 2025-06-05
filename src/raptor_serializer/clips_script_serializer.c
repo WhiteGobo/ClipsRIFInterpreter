@@ -826,6 +826,8 @@ static CRIFI_SERIALIZE_SCRIPT_RET fprintf_conditional_element(MyContext *cntxt, 
 		return fprintf_multi_ce(cntxt, stream, n);
 	} else if (check_property(n, cntxt->rdf_type, cntxt->clips_AndCE)){
 		return fprintf_multi_ce(cntxt, stream, n);
+	} else if (check_property(n, cntxt->rdf_type, cntxt->clips_ExistsCE)){
+		return fprintf_multi_ce(cntxt, stream, n);
 	} else if (check_property(n, cntxt->rdf_type, cntxt->clips_OrCE)){
 		return fprintf_multi_ce(cntxt, stream, n);
 	}
@@ -845,6 +847,8 @@ FUNC_DESC(fprintf_multi_ce){
 		fprintf(stream, "(and\n");
 	} else if (check_property(n, cntxt->rdf_type, cntxt->clips_OrCE)){
 		fprintf(stream, "(or\n");
+	} else if (check_property(n, cntxt->rdf_type, cntxt->clips_ExistsCE)){
+		fprintf(stream, "(exists\n");
 	} else {
 		return CRIFI_SERIALIZE_BROKEN_GRAPH;
 	}

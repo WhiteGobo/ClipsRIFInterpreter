@@ -19,6 +19,12 @@ list(APPEND mytargets
 	process-external
 	special_pred_translations_for_pattern
 	process_lists
+
+	variable-binding
+	process_Atom
+	process-Frames
+	process-equal
+	apply-generator
 )
 
 set(compilelist)

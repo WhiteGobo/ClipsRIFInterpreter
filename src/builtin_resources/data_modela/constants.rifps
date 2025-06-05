@@ -10,6 +10,7 @@ Document(
     Prefix(triplestordf <http://example.com/triples-to-rdf#>)
     Prefix(rif <http://www.w3.org/2007/rif#>)
     Prefix(entailment <http://www.w3.org/ns/entailment/>)
+    Prefix(modelA <http://white.gobo/modelA#>)
     Group(
       Group -100 (
         Forall ?rifvar ?varname (
@@ -18,16 +19,20 @@ Document(
             Not( Exists ?clipsnode (?rifvar[ex:as-expression -> ?clipsnode]))
             Not( Exists ?clipsnode (?rifvar[ex:provides-expression -> ?clipsnode]))
           ) Then Do (
-            Execute(crifi:set-graph-in-errorstate(External(func:concat("Missing binding for rif:Var with name " ?varname))))
+            Assert( ?rifvar # modelA:missing-var-binding )
+            Execute(crifi:set-graph-in-errorstate(External(func:concat("Missing binding for rif:Var with name " ?varname " (modelA:missing-var-binding)"))))
           )
         )
+      )
+      Group -102 (
         Forall ?clipsvar (
           If And (
             ?clipsvar # cs:Variable
             Not( Exists ?varname (?clipsvar[cs:variable-name -> ?varname]))
             Not( Exists ?varname (?clipsvar[cs:var-as-const-expr -> ?varname]))
           ) Then Do (
-            Execute(crifi:set-graph-in-errorstate("A cs:Variable has no expression. missing cs:variable-name or cs:var-as-const-expr."))
+            Assert( ?clipsvar # modelA:missing-var-expression )
+            Execute(crifi:set-graph-in-errorstate("A cs:Variable has no expression. missing cs:variable-name or cs:var-as-const-expr.(modelA:missing-var-expression)"))
           )
         )
         Forall ?rifvar ?varname ?rifvarchild ?clipsvar(
@@ -80,7 +85,7 @@ Document(
         ex:currentfactindex(1)
       )
       (* ex:rif-inheritance *) Group (
-        Forall ?parent ?child (
+        Forall ?parent ?child ?x (
           If And (
             Or (
               ?parent[rif:formula -> ?child]
@@ -88,7 +93,6 @@ Document(
               ?parent[rif:if -> ?child]
               ?parent[rif:then -> ?child]
               ?parent[rif:target -> ?child]
-              ?parent[rif:content -> ?child]
               ?parent[rif:op -> ?child]
               ?parent[rif:payload -> ?child]
               ?parent[rif:pattern -> ?child]
@@ -96,6 +100,26 @@ Document(
               ?parent[rif:right -> ?child]
               ?parent[rif:rest -> ?child]
             )
+            Not(?child[rif:constIRI -> ?x])
+            Not(?child[rif:value -> ?x])
+          ) Then Do (
+            Assert( ?parent[ex:inherits-data -> ?child] )
+          )
+        )
+        Forall ?parent ?atom ?childlist ?child (
+          If And (
+            ?parent[rif:content -> ?atom]
+            ?atom[rif:args -> ?childlist]
+            External(pred:is-list(?childlist))
+            Or (
+              ?child # rif:Var
+              ?child # rif:Const
+              ?child # rif:List
+              ?child # rif:External
+            )
+            Not(?child[rif:constIRI -> ?x])
+            Not(?child[rif:value -> ?x])
+            External(pred:list-contains(?childlist ?child))
           ) Then Do (
             Assert( ?parent[ex:inherits-data -> ?child] )
           )
@@ -105,10 +129,22 @@ Document(
             ?parent[rif:slots -> ?slotlist]
             External(pred:is-list(?slotlist))
             ?slot[rif:slotkey -> ?childkey]
-            ?slot[rif:slotvalue -> ?childvalue]
+            Not(?childkey[rif:constIRI -> ?x])
+            Not(?childkey[rif:value -> ?x])
             External(pred:list-contains(?slotlist ?slot))
           ) Then Do (
             Assert( ?parent[ex:inherits-data -> ?childkey] )
+          )
+        )
+        Forall ?parent ?slotlist ?slot ?childkey ?childvalue (
+          If And (
+            ?parent[rif:slots -> ?slotlist]
+            External(pred:is-list(?slotlist))
+            ?slot[rif:slotvalue -> ?childvalue]
+            Not(?childvalue[rif:constIRI -> ?x])
+            Not(?childvalue[rif:value -> ?x])
+            External(pred:list-contains(?slotlist ?slot))
+          ) Then Do (
             Assert( ?parent[ex:inherits-data -> ?childvalue] )
           )
         )
@@ -145,6 +181,8 @@ Document(
               ?child # rif:External
               ?child # rif:Execute
             )
+            Not(?child[rif:constIRI -> ?x])
+            Not(?child[rif:value -> ?x])
             External(pred:list-contains(?childlist ?child))
           ) Then Do (
             Assert( ?parent[ex:inherits-data -> ?child] )

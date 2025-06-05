@@ -54,7 +54,7 @@ Document(
           Assert( ?newframerest[rif:slots -> External(func:remove(?slotlist 0))] )
         )
       )
-      (* ex:expand-implies *) Forall ?implies ?outerrule ?pattern ?action(
+      (* ex:expand-implies *) Forall ?implies ?outerrule ?pattern ?action ?formula (
         If And(
           ?outerrule # rif:Forall
           ?outerrule[rif:formula -> ?implies]

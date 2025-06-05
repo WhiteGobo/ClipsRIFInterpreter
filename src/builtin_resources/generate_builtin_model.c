@@ -105,26 +105,28 @@ static int printout_generated_rulesa(){
 }
 
 static int run_imported_rules(){
+	int err = 0;
 	bool errorstate;
 	int number_rules_run = 1;
 	time_t now;
 	time(&now);
 	fprintf(stderr, "Starting rules at %s", ctime(&now));
 	while (number_rules_run > 0){
-		number_rules_run = run_rules(graph, 10000);
+		number_rules_run = run_rules(graph, 100000);
 		time(&now);
 		fprintf(stderr, "Run further %d at %s", number_rules_run, ctime(&now));
-	}
-	if(graph_in_errorstate(graph, stderr)){
-		fprintf(stderr, "graph ended in errorstate after rules have run.");
-		return 1;
+		if(graph_in_errorstate(graph, stderr)){
+			fprintf(stderr, "graph ended in errorstate after rules have run.");
+			err = 1;
+			number_rules_run = -1;
+			break;
+		}
 	}
 	if (verbosity > 0){
-		fprintf(stderr, "printing information after %d rules have "
-				"run\n", number_rules_run);
+		fprintf(stderr, "printing information after run:\n");
 		crifi_serialize_all_triples(graph, stderr, "turtle", "");
 	}
-	return 0;
+	return err;
 }
 
 static int init_graph_with_import(){
@@ -200,8 +202,7 @@ static int import_base_information(){
 		return 1;
 	}
 	if (verbosity > 1){
-		fprintf(stderr, "printing information after base import "
-				"before rules run\n");
+		fprintf(stderr, "printing information before rules run\n");
 		crifi_serialize_all_triples(graph, stderr, "turtle", "");
 	}
 	return 0;

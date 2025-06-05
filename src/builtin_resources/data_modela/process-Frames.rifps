@@ -1,0 +1,80 @@
+Document(
+    Prefix(func <http://www.w3.org/2007/rif-builtin-function#>) 
+    Prefix(pred <http://www.w3.org/2007/rif-builtin-predicate#>) 
+    Prefix(owl <http://www.w3.org/2002/07/owl#>)
+    Prefix(deffact <http://white.gobo/crifi/resource-manager/deffacts#>)
+    Prefix(rema <http://white.gobo/crifi/resource-manager#>)
+    Prefix(cs <http://clips.script/>)
+    Prefix(crifi <http://white.gobo/>)
+    Prefix(modelA <http://white.gobo/modelA#>)
+    Prefix(triplestordf <http://example.com/triples-to-rdf#>)
+    Prefix(rif <http://www.w3.org/2007/rif#>)
+    Prefix(entailment <http://www.w3.org/ns/entailment/>)
+    Prefix(ex <http://example.com/>)
+    Prefix(xs <http://www.w3.org/2001/XMLSchema#>)
+    Group (
+      Forall ?rifframe ?slotlist ?slot ?frameobject ?constraintsubj ?slotkey ?constraintpred ?slotvalue ?constraintobj (
+        If And (
+          ?rifframe[rif:slots -> ?slotlist]
+          ?slot # modelA:TripleTemplateGenerator
+          External(pred:list-contains(?slotlist ?slot))
+
+          ?rifframe[rif:object -> ?frameobject]
+          ?frameobject[ex:as-constraint -> ?constraintsubj]
+          ?slot[rif:slotkey -> ?slotkey]
+          ?slotkey[ex:as-constraint -> ?constraintpred]
+          Not (
+            ?slotkey[rif:constIRI ->"http://www.w3.org/1999/02/22-rdf-syntax-ns#type"^^xs:anyURI]
+          )
+          ?slot[rif:slotvalue -> ?slotvalue]
+          ?slotvalue[ex:as-constraint -> ?constraintobj]
+          Not( Exists ?x ( ?slot[modelA:as-lhs-pattern -> ?x] ))
+
+        ) Then Do (
+          (?pattern New())
+          (?slotsubj New())
+          (?slotpred New())
+          (?slotobj New())
+          Assert( ?slot[modelA:as-lhs-pattern -> ?pattern] )
+          Assert( ?pattern # cs:TemplatePatternCE )
+          Assert( ?pattern[cs:deftemplate-name -> "TripleTemplate"] )
+          Assert( ?pattern[cs:slot -> External(func:make-list(?slotsubj ?slotpred ?slotobj))] )
+          Assert( ?slotsubj[cs:slot-name -> "subject"] )
+          Assert( ?slotsubj[cs:constraint -> ?constraintsubj] )
+          Assert( ?slotpred[cs:slot-name -> "predicate"] )
+          Assert( ?slotpred[cs:constraint -> ?constraintpred] )
+          Assert( ?slotobj[cs:slot-name -> "object"] )
+          Assert( ?slotobj[cs:constraint -> ?constraintobj] )
+        )
+      )
+
+      Forall ?rifframe ?slotlist ?slot ?frameobject ?constraintsubj ?slotkey ?slotvalue ?constraintobj (
+        If And (
+          ?rifframe[rif:slots -> ?slotlist]
+          ?slot # modelA:TripleTemplateGenerator
+          External(pred:list-contains(?slotlist ?slot))
+
+          ?rifframe[rif:object -> ?frameobject]
+          ?frameobject[ex:as-constraint -> ?constraintsubj]
+          ?slot[rif:slotkey -> ?slotkey]
+          ?slotkey[rif:constIRI ->"http://www.w3.org/1999/02/22-rdf-syntax-ns#type"^^xs:anyURI]
+          ?slot[rif:slotvalue -> ?slotvalue]
+          ?slotvalue[ex:as-constraint -> ?constraintobj]
+          Not( Exists ?x ( ?slot[modelA:as-lhs-pattern -> ?x] ))
+
+        ) Then Do (
+          (?pattern New())
+          (?slotinstance New())
+          (?slotclass New())
+          Assert( ?slot[modelA:as-lhs-pattern -> ?pattern] )
+          Assert( ?pattern # cs:TemplatePatternCE )
+          Assert( ?pattern[cs:deftemplate-name -> "Member"] )
+          Assert( ?pattern[cs:slot -> External(func:make-list(?slotinstance ?slotclass))] )
+          Assert( ?slotinstance[cs:slot-name -> "instance"] )
+          Assert( ?slotinstance[cs:constraint -> ?constraintsubj] )
+          Assert( ?slotclass[cs:slot-name -> "class"] )
+          Assert( ?slotclass[cs:constraint -> ?constraintobj] )
+        )
+      )
+    )
+)
