@@ -82,9 +82,9 @@ install:
 
 include resources.mk
 
+.PHONY: configure
 configure: recreate_builtin_model_data
 	${CMAKE} -S ${SRC} -B ${BUILD} ${CMAKE_CONFIGURE_OPT}
-.PHONY: configure
 
 build:
 	${CMAKE} --build ${BUILD} ${CMAKE_BUILD_OPT}
@@ -133,7 +133,7 @@ ${TMPDIR}/clips.patch: ${CLIPSPATHDIRECTORY} ${CLIPSPATCHFILES}
 	-cd ${CLIPSPATHDIRECTORY}/ && diff -ruN original/ clips-src/ > ../clips.patch
 
 .PHONY: overwrite_builtin_models
-overwrite_builtin_models: build/overwrite_builtin_models.cmake
+overwrite_builtin_models: build/overwrite_builtin_models.cmake configure build
 	cmake -P $<
 
 .PHONY: opendoc
