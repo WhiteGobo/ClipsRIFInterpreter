@@ -87,6 +87,15 @@ static auto petTestdata = testing::Values(
 			SC_NoCondition | SC_ModelFirst,
 			OWN_PREMISE("stacked_conditionals1"),
 			OWN_CONCLUSION("stacked_conditionals1")),
+		TestdataPET("Own_BLD_PET_circular_patterns1",
+			SC_NoCondition | SC_ModelFirst,
+			OWN_PREMISE("circular_patterns1"),
+			OWN_CONCLUSION("circular_patterns1")),
+		TestdataPET("Own_BLD_PET_circular_patterns2",
+			SC_NoCondition | SC_ModelFirst,
+			OWN_PREMISE("circular_patterns2"),
+			OWN_NONCONCLUSION("circular_patterns2"),
+			false),
 		TestdataPET("Core_PET_Builtin_literal-not-identical",
 			SC_NoCondition,
 			W3C_PREMISE("Builtin_literal-not-identical"),
@@ -452,7 +461,7 @@ static void run_and_check(TestdataPET testdata,
 	struct DynamicValue retval;
 	eval(graph, "(agenda)");
 	fprintf(stderr, "\nstarting run rules\n");
-	int number_rules_run = run_rules(graph, 40);
+	int number_rules_run = run_rules(graph, 100);
 	//if (number_rules_run == 0){
 		eval(graph, "(println \"show matches of rule0: \" "
 				"(matches rule0))");
@@ -536,7 +545,7 @@ static void create_logic_into_memory(FILE* tmpmem_f, TestdataPET testdata,
 	//crifi_serialize_all_triples(create_logic_graph, stderr, "turtle", "");
 	//eval(create_logic_graph, "(println \"vbnm\")");
 
-	number_rules_run = run_rules(create_logic_graph, 10000);
+	number_rules_run = run_rules(create_logic_graph, 100000);
 	//eval(create_logic_graph, "(facts)");
 	fprintf(stderr, "information in create_logic_graph after rules run.\n");
 	//ignore error:
@@ -592,7 +601,7 @@ static void create_logic_into_memory_model_first(
 	load_from_memory_to_graph(create_logic_graph,
 				testdata.premise_uri.c_str());
 
-	number_rules_run = run_rules(create_logic_graph, 10000);
+	number_rules_run = run_rules(create_logic_graph, 100000);
 	fprintf(stderr, "information in create_logic_graph after rules run.\n");
 	//ignore error:
 	crifi_serialize_all_triples(create_logic_graph, stderr, "turtle", "");
@@ -626,7 +635,7 @@ static void create_check_into_memory(FILE *tmpmem_f, TestdataPET testdata,
 					testdata.conclusion_uri.c_str());
 
 	//eval(create_check_graph, "(watch rules)");
-	number_rules_run = run_rules(create_check_graph, 10000);
+	number_rules_run = run_rules(create_check_graph, 100000);
 	fprintf(stderr, "information in create_check_graph after rules run.\n");
 	//ignore error:
 	crifi_serialize_all_triples(create_check_graph, stderr, "turtle", "");

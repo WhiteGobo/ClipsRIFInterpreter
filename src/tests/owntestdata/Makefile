@@ -1,4 +1,4 @@
-default: openlist_as_pattern-premise.ttl openlist_as_pattern-conclusion.ttl stacked_conditionals1-premise.ttl stacked_conditionals1-conclusion.ttl
+default: openlist_as_pattern-premise.ttl openlist_as_pattern-conclusion.ttl stacked_conditionals1-premise.ttl stacked_conditionals1-conclusion.ttl circular_patterns1-premise.ttl circular_patterns1-conclusion.ttl circular_patterns2-premise.ttl circular_patterns2-nonconclusion.ttl
 
 %.ttl: %.rifps
 	rdfpipe -i rifps -o ntriples $< > $@

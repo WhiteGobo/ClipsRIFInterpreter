@@ -36,6 +36,7 @@ Document(
           Assert( ?clipsdeftemplate[cs:deftemplate-name -> "TripleTemplate"] )
           Assert( ?clipsdeftemplate[cs:fact-set-member-variable -> ?factvariable] )
           Assert( ?clipsfindfacts[cs:query -> ?factquery] )
+          Assert( ?factvariable # cs:Variable )
           Assert( ?factvariable[cs:variable-name -> "fct"] )
           Assert( ?factquery[cs:function-name -> "eq"] )
           Assert( ?factquery[cs:function-args -> External(func:make-list(?slotsubj ?subj))] )

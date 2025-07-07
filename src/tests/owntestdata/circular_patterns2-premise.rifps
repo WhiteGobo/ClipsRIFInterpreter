@@ -1,0 +1,17 @@
+Document(
+    Prefix(ex <http://example.org/example#>)
+    Prefix(xs <http://www.w3.org/2001/XMLSchema#>) 
+
+    Group ( 
+        Forall ?a ?b ?c ?d (
+          If And (
+            ex:a(List(?a ?b ?d))
+            ex:b(List(?b ?c ?d))
+            ex:c(List(?d ?d))
+          ) Then ex:d(?a ?b ?c)
+        )
+        ex:a(List(1 2 4))
+        ex:b(List(2 3 4))
+        ex:c(List(3 1))
+      )
+)

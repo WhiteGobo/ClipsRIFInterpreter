@@ -20,6 +20,8 @@ list(APPEND rdfformats "ttl" "ntriples")
 list(APPEND owntargets
 	openlist_as_pattern
 	stacked_conditionals1
+	circular_patterns1
+	circular_patterns2
 )
 
 foreach(base ${owntargets})

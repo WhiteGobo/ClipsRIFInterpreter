@@ -169,11 +169,11 @@ void func_get(Environment *env, UDFContext *udfc, UDFValue *out){
 	UDFValue arglist, udf_index;
 	CLIPSValue val_arglist, clips_index, tmpout;
 	if (!UDFFirstArgument(udfc, ANY_TYPE_BITS, &arglist)){
-		RETURNFAIL("list_contains");
+		RETURNFAIL("Argument error for func:get");
 	}
 	RETURNONVOID(env, arglist);
 	if(!UDFNextArgument(udfc, ANY_TYPE_BITS, &udf_index)){
-		RETURNFAIL("list_contains");
+		RETURNFAIL("Argument error for func:get");
 	}
 	RETURNONVOID(env, udf_index);
 	val_arglist.value = arglist.value;

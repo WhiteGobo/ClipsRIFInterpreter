@@ -111,7 +111,7 @@ static auto syntaxTestdata = testing::Values(
 			SC_NoCondition,
 			W3C_INPUT("Core_Safeness_2")),
 		TestdataSyntax("Core_PST_Core_Safeness_3",
-			SC_NoCondition,
+			SC_NoCondition | SC_All,
 			W3C_INPUT("Core_Safeness_3"))
 		);
 

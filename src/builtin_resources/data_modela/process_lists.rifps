@@ -11,7 +11,7 @@ Document(
     Prefix(rif <http://www.w3.org/2007/rif#>)
     Prefix(entailment <http://www.w3.org/ns/entailment/>)
     Prefix(modelA <http://white.gobo/modelA#>)
-    Group (
+    Group 10 (
       Forall ?riflist ?rest (
         If And (
           ?riflist[rif:rest -> ?rest]
@@ -72,13 +72,15 @@ Document(
       )
       Forall ?riflist ?formula ?assign ?listvar ?itemlist (
         If And (
-          ?formula[modelA:binds-var -> ?assign]
+          ?riflist # modelA:ListAsConstraint
+          ?formula[modelA:pattern-uses-constraint -> ?riflist]
           ?riflist # modelA:ConstraintGenerator
           ?riflist # rif:List
           ?riflist[rif:rest -> ?rest]
           ?riflist[ex:as-constraint -> ?listvar]
           ?rest[ex:as-constraint -> ?assign]
           ?riflist[rif:items -> ?itemlist]
+          Not(?formula[modelA:bound-variable -> ?assign])
         ) Then Do (
           (?function New())
           (?position New())
@@ -91,20 +93,76 @@ Document(
       )
       Forall ?riflist ?formula ?assign ?listvar ?itemlist (
         If And (
-          ?formula[modelA:binds-var -> ?assign]
+          ?formula[modelA:pattern-uses-constraint -> ?riflist]
+          ?riflist # modelA:ConstraintGenerator
+          ?riflist # rif:List
+          ?riflist[rif:rest -> ?rest]
+          ?riflist[ex:as-constraint -> ?listvar]
+          ?rest[ex:as-constraint -> ?assign]
+          ?riflist[rif:items -> ?itemlist]
+          ?formula[modelA:bound-variable -> ?assign]
+        ) Then Do (
+          (?testpattern New())
+          (?eq New())
+          (?function New())
+          (?position New())
+          Assert( ?testpattern # cs:TestCE )
+          Assert( ?testpattern[cs:function-call -> ?eq] )
+          Assert( ?formula[modelA:lhs-pattern-after-conditions -> ?testpattern])
+
+          Assert( ?eq[cs:function-name -> "eq"] )
+          Assert( ?eq[cs:function-args -> External(func:make-list(?assign ?function))] )
+
+          Assert( ?function[cs:function-name -> "<http://www.w3.org/2007/rif-builtin-function#sublist>"] )
+          Assert( ?function[cs:function-args -> External(func:make-list(?listvar ?position))] )
+          Assert( ?position[cs:string -> External(crifi:literal-to-clipsconstant(External(func:count(?itemlist))))])
+
+        )
+      )
+      Forall ?riflist ?formula ?assign ?listvar ?itemlist (
+        If And (
+          ?formula[modelA:pattern-uses-constraint -> ?riflist]
           ?riflist # modelA:ConstraintGenerator
           ?riflist # rif:List
           ?riflist[ex:as-constraint -> ?listvar]
           ?rifvar[ex:as-constraint -> ?assign]
           ?riflist[rif:items -> ?itemlist]
           External(pred:list-contains(?itemlist ?rifvar))
+          Not(?formula[modelA:bound-variable -> ?assign])
         ) Then Do (
           (?function New())
           (?position New())
           Assert( ?assign[cs:var-as-const-expr -> ?function] )
           Assert( ?function[cs:function-name -> "<http://www.w3.org/2007/rif-builtin-function#get>"] )
           Assert( ?function[cs:function-args -> External(func:make-list(?listvar ?position))] )
-          Assert( ?position[cs:string -> External(crifi:literal-to-clipsconstant(External(func:index-of(?itemlist ?rifvar))))])
+          Assert( ?position[cs:string -> External(crifi:literal-to-clipsconstant(External(func:get(External(func:index-of(?itemlist ?rifvar)) 0))))])
+
+        )
+      )
+      Forall ?riflist ?formula ?assign ?listvar ?itemlist (
+        If And (
+          ?formula[modelA:pattern-uses-constraint -> ?riflist]
+          ?riflist # modelA:ConstraintGenerator
+          ?riflist # rif:List
+          ?riflist[ex:as-constraint -> ?listvar]
+          ?rifvar[ex:as-constraint -> ?assign]
+          ?riflist[rif:items -> ?itemlist]
+          External(pred:list-contains(?itemlist ?rifvar))
+          ?formula[modelA:bound-variable -> ?assign]
+        ) Then Do (
+          (?testpattern New())
+          (?eq New())
+          (?function New())
+          (?position New())
+          Assert( ?testpattern # cs:TestCE )
+          Assert( ?testpattern[cs:function-call -> ?eq] )
+          Assert( ?formula[modelA:lhs-pattern-after-conditions -> ?testpattern])
+
+          Assert( ?eq[cs:function-name -> "eq"] )
+          Assert( ?eq[cs:function-args -> External(func:make-list(?assign ?function))] )
+          Assert( ?function[cs:function-name -> "<http://www.w3.org/2007/rif-builtin-function#get>"] )
+          Assert( ?function[cs:function-args -> External(func:make-list(?listvar ?position))] )
+          Assert( ?position[cs:string -> External(crifi:literal-to-clipsconstant(External(func:get(External(func:index-of(?itemlist ?rifvar)) 0))))])
 
         )
       )
@@ -118,6 +176,7 @@ Document(
 
           External(pred:is-list(?itemlist))
           ?riflist[rif:rest -> ?rest]
+          "always-false"^^rif:local()
         ) Then Do (
           (?listasvar New())
           (?slotitems New())
@@ -162,6 +221,7 @@ Document(
             ?slotitems["rest"^^rif:local -> ?rest]
             ?rest # rif:Var
             ?slotitems[cs:constraints -> ?listconstraints]
+          "always-false"^^rif:local()
           ) Then Do (
             (?clipsrestvar New())
             Assert( ?clipsrestvar # cs:MultifieldVariable )
@@ -176,6 +236,7 @@ Document(
           If And (
             ?riflist[rif:rest -> ?rest]
             ?riflist[ex:add-as-pattern -> ?defrule]
+            ?riflist[modelA:binds-variable -> ?clipsrestvar]
             Not (?defrule[ex:bound-variable -> ?clipsrestvar])
             ?rest[ex:as-expression -> ?clipsrestvar]
             "combine-multifield-as-list"^^rif:local( ?rest ?multifieldvar )
@@ -189,7 +250,6 @@ Document(
             Assert( ?expand[cs:function-name -> "expand$"] )
             Assert( ?expand[cs:function-args -> External(func:make-list(?multifieldvar))] )
 
-            Assert( ?riflist[ex:binds-variable -> ?clipsrestvar] )
           )
         )
         Group -1 (
