@@ -43,7 +43,7 @@ int end_import_process_simple_to_owl_interpretation(ImportProcess *process,
 	}
 	err1 = add_clipsvalue_retriever(subprocess,
 			list_retrieve,
-			process->simple_to_owl_info->list_info);
+			process->simple_to_owl_info->list_info, NULL);
 	if (err1 == 0){
 		err2 = transfer_rest_triples(
 				process->simple_to_owl_info->first,

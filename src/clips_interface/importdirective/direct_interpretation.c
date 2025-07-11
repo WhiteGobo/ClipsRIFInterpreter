@@ -20,6 +20,7 @@ static CRIFI_IMPORT_CLIPSVALUE_RETRIEVE_RET get_special_clipsvalue(
 		ImportProcess *process,
 		const char *id, const char *suffix,
 		IMPORT_TERM_TYPE type, CLIPSValue* retval);
+static void free_clipsvalue_retriever(ClipsvalueRetriever*);
 
 ImportProcess *start_import_process_direct_interpretation(crifi_graph *graph){
 	int err1;
@@ -38,8 +39,8 @@ ImportProcess *start_import_process_direct_interpretation(crifi_graph *graph){
 		return NULL;
 	}
 	err1 = add_clipsvalue_retriever(process, retrieve_blanknode,
-						bnode_lookup);
-						//free_bnodelookup);
+						bnode_lookup,
+						(CRIFIImportDataCleanupFunction*) free_bnodelookup);
 	if (err1 != 0){
 		free(process);
 		return NULL;
@@ -146,13 +147,14 @@ static DirectInterpretationInfo* generate_direct_interpretation_info(
 
 static void free_direct_interpretation_info(DirectInterpretationInfo *info){
 	if (info == NULL) return;
-	//free_bnodelookup(info->bnode_lookup);
+	free_clipsvalue_retriever(info->node_retriever);
 	free(info);
 }
 
 
 int add_clipsvalue_retriever(ImportProcess *process,
-		ClipsvalueRetrieveFunction* retriever, void* context)
+		ClipsvalueRetrieveFunction* retriever, void* context,
+		CRIFIImportDataCleanupFunction *cleanup_function)
 {
 	switch (process->interpreter_id){
 		case CRIFI_IMPORT_IP_DIRECT:
@@ -169,8 +171,18 @@ int add_clipsvalue_retriever(ImportProcess *process,
 	new->function = retriever;
 	new->context = context;
 	new->next = process->direct_info->node_retriever;
+	new->cleanup_function = cleanup_function;
 	process->direct_info->node_retriever = new;
 	return 0;
+}
+
+static void free_clipsvalue_retriever(ClipsvalueRetriever *target){
+	if (target->next != NULL){
+		free_clipsvalue_retriever(target->next);
+	}
+	if (target->context != NULL && target->cleanup_function != NULL){
+		target->cleanup_function(target->context);
+	}
 }
 
 static CRIFI_IMPORT_CLIPSVALUE_RETRIEVE_RET get_special_clipsvalue(

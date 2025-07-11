@@ -116,7 +116,7 @@ int set_model_id_for_import(crifi_graph *graph, CRIFI_IMPORT_MODEL_ID model_id);
  */
 ImportProcess *start_import_process(crifi_graph *graph, CLIPSValue *input_interpretation);
 
-int add_clipsvalue_retriever(ImportProcess *process, ClipsvalueRetrieveFunction* retriever, void* context);
+int add_clipsvalue_retriever(ImportProcess *process, ClipsvalueRetrieveFunction* retriever, void* context, CRIFIImportDataCleanupFunction *cleanup_function);
 
 int end_import_process(ImportProcess *process);
 CRIFI_IMPORT_ASSERT_RET crifi_import_assert_frame(ImportProcess *process,
