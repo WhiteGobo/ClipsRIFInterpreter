@@ -65,6 +65,7 @@ RET_CRIFI_IMPORT crifi_execute_import(crifi_graph *graph,
 
 	process = start_import_process(graph, entailment_regime);
 	if (process == NULL){
+		free(import_location_str);
 		return RET_CRIFI_IMPORT_REJECTED_PROFILE;
 	}
 
@@ -75,6 +76,7 @@ RET_CRIFI_IMPORT crifi_execute_import(crifi_graph *graph,
 			break;
 		}
 	}
+	free(import_location_str);
 
 	process_err = end_import_process(process);
 	if (err != RET_CRIFI_IMPORT_NOERROR){

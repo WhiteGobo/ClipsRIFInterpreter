@@ -39,8 +39,8 @@ ImportProcess *start_import_process_direct_interpretation(crifi_graph *graph){
 		return NULL;
 	}
 	err1 = add_clipsvalue_retriever(process, retrieve_blanknode,
-						bnode_lookup,
-						(CRIFIImportDataCleanupFunction*) free_bnodelookup);
+			bnode_lookup,
+			(CRIFIImportDataCleanupFunction*) free_bnodelookup);
 	if (err1 != 0){
 		free(process);
 		return NULL;
@@ -183,6 +183,7 @@ static void free_clipsvalue_retriever(ClipsvalueRetriever *target){
 	if (target->context != NULL && target->cleanup_function != NULL){
 		target->cleanup_function(target->context);
 	}
+	free(target);
 }
 
 static CRIFI_IMPORT_CLIPSVALUE_RETRIEVE_RET get_special_clipsvalue(
