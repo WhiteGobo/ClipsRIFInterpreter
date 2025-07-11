@@ -16,7 +16,7 @@ static RET_CRIFI_IMPORT myimportfunction(crifi_graph *graph,
 	const char *filepath;
 	GetfileImportidPair *tmpmethod;
 	RET_CRIFI_IMPORT import_err;
-	char *id = import_location;
+	const char *id = import_location;
 	struct data *mydata = (struct data*) context;
 	FILE *f = NULL;
 	if (context == NULL) return RET_CRIFI_IMPORT_INVALIDCONTEXT;
@@ -36,7 +36,6 @@ static RET_CRIFI_IMPORT myimportfunction(crifi_graph *graph,
 				} else {
 					import_err = RET_CRIFI_IMPORT_COULDNT_LOCATE_SOURCE;
 				}
-				free(id);
 				return import_err;
 			}
 		}
@@ -58,12 +57,10 @@ static RET_CRIFI_IMPORT myimportfunction(crifi_graph *graph,
 				} else {
 					import_err = RET_CRIFI_IMPORT_COULDNT_LOCATE_SOURCE;
 				}
-				free(id);
 				return import_err;
 			}
 		}
 	}
-	free(id);
 	return RET_CRIFI_IMPORT_UNHANDLED;
 }
 
