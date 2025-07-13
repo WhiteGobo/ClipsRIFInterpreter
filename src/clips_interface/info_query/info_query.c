@@ -13,6 +13,7 @@ Fact *get_next_list(Environment *env, Fact *f){
 }
 
 static bool clipsfact_to_identifier(Environment *env, Fact *f, CLIPSValue *result) {
+	bool truth;
 	if (f == NULL || result == NULL){
 		return false;
 	}
@@ -25,6 +26,8 @@ static bool clipsfact_to_identifier(Environment *env, Fact *f, CLIPSValue *resul
 
 bool clipsvalue_is_uri(Environment *env, CLIPSValue val){
 	const char *cntnt;
+	char *uri;
+	bool truth;
 	//if (val == NULL) return false;
         switch (val.header->type) {
                 case SYMBOL_TYPE:
@@ -42,8 +45,10 @@ bool clipsvalue_is_uri(Environment *env, CLIPSValue val){
 			}
 			break;
 		case FACT_ADDRESS_TYPE:
-			return NULL != extract_uri(env, val.header);
-			break;
+			uri = extract_uri(env, val.header);
+			truth = NULL != uri;
+			free(uri);
+			return truth;
 	}
 	return false;
 }

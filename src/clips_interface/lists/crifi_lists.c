@@ -413,10 +413,11 @@ bool crifi_list_as_identifier(Environment *env, CLIPSValue *val, int index, CLIP
        	f = val->factValue;
 	factindex = FactIndex(f);
 	ret = malloc(24 + 12 + sizeof("factlistp") + 1);
-	if (ret == NULL) return NULL;
+	if (ret == NULL) return false;
 	sprintf(ret, "factlist%ldp%d", factindex, index);
 
 	err = blanknode_from_idstring(env, ret, target);
+	free(ret);
 	return err == 0;
 }
 
