@@ -109,7 +109,6 @@ static int fprintf_raptor_term(FILE* stream, raptor_term* term){
 	return CRIFI_SERIALIZE_SCRIPT_NOERROR;
 }
 
-
 #define URI raptor_new_term_from_uri_string
 static MyContext* init_context(){
 	MyContext *cntxt = malloc(sizeof(MyContext));
@@ -182,12 +181,64 @@ static MyContext* init_context(){
 	return cntxt;
 }
 
+
 static void free_context(MyContext* cntxt){
-	if (cntxt != NULL){
-		free_nodelist(cntxt->nodes);
-		raptor_free_world(cntxt->world);
-		free(cntxt);
-	}
+	if (cntxt == NULL) return;
+	raptor_free_term(cntxt->rdf_type);
+	raptor_free_term(cntxt->rdf_first);
+	raptor_free_term(cntxt->rdf_rest);
+	raptor_free_term(cntxt->rdf_nil);
+	raptor_free_term(cntxt->ex_rootfunction);
+	raptor_free_term(cntxt->clips_Defrule);
+	raptor_free_term(cntxt->clips_rule_name);
+	raptor_free_term(cntxt->clips_Deffacts);
+	raptor_free_term(cntxt->clips_deffacts_name );
+	raptor_free_term(cntxt->clips_rhs_pattern );
+	raptor_free_term(cntxt->clips_conditional_element );
+	raptor_free_term(cntxt->clips_action );
+	raptor_free_term(cntxt->clips_pattern_ce );
+	raptor_free_term(cntxt->clips_fact_var_symbol );
+	raptor_free_term(cntxt->clips_AssignedPatternCE );
+	raptor_free_term(cntxt->clips_TemplatePatternCE );
+	raptor_free_term(cntxt->clips_NotCE );
+	raptor_free_term(cntxt->clips_AndCE );
+	raptor_free_term(cntxt->clips_OrCE );
+	raptor_free_term(cntxt->clips_ExistsCE );
+	raptor_free_term(cntxt->clips_TestCE );
+	raptor_free_term(cntxt->clips_FunctionCall );
+	raptor_free_term(cntxt->clips_deftemplate_name );
+	raptor_free_term(cntxt->clips_slot );
+	raptor_free_term(cntxt->clips_slot_name );
+	raptor_free_term(cntxt->clips_constraint );
+	raptor_free_term(cntxt->clips_constraints );
+	raptor_free_term(cntxt->clips_field );
+	raptor_free_term(cntxt->clips_SingleWildcard );
+	raptor_free_term(cntxt->clips_MultiWildcard );
+	raptor_free_term(cntxt->clips_function_name );
+	raptor_free_term(cntxt->clips_function_args );
+	raptor_free_term(cntxt->clips_assert );
+	raptor_free_term(cntxt->clips_find_all_facts );
+	raptor_free_term(cntxt->clips_any_factp );
+	raptor_free_term(cntxt->clips_do_for_all_facts );
+	raptor_free_term(cntxt->clips_fact_set_template );
+	raptor_free_term(cntxt->clips_fact_set_member_variable );
+	raptor_free_term(cntxt->clips_member_variable );
+	raptor_free_term(cntxt->clips_member_slot_name );
+	raptor_free_term(cntxt->clips_query );
+	raptor_free_term(cntxt->clips_function_call );
+
+	raptor_free_term(cntxt->clips_symbol );
+	raptor_free_term(cntxt->clips_string );
+	
+	raptor_free_term(cntxt->clips_MultifieldVariable );
+	raptor_free_term(cntxt->clips_Variable );
+	raptor_free_term(cntxt->clips_variable_name);
+	raptor_free_term(cntxt->clips_var_as_const_expr);
+
+	free_nodelist(cntxt->nodes);
+	free_rdf_context(cntxt->rdf_cntxt);
+	raptor_free_world(cntxt->world);
+	free(cntxt);
 }
 
 
@@ -228,17 +279,18 @@ static CRIFI_SERIALIZE_SCRIPT_RET add_info_to_tree_list(MyContext* cntxt, crifi_
 			return SAT_LISTELEMENTFAILED;
 		}
 		err = add_triple(cntxt->nodes, current, first, element);
+		raptor_free_term(element);
 		switch (err){
 			case 0: break;
 			default: return CRIFI_SERIALIZE_SCRIPT_UNKNOWN;
 		}
 		if (last != NULL){
 			err = add_triple(cntxt->nodes, last, rest, current);
+			raptor_free_term(last);
 			switch (err){
 				case 0: break;
 				default: return CRIFI_SERIALIZE_SCRIPT_UNKNOWN;
 			}
-			raptor_free_term(last);
 		}
 		last = current;
 		current = NULL;
@@ -296,6 +348,9 @@ static CRIFI_SERIALIZE_SCRIPT_RET add_info_to_tree(MyContext* cntxt,
 		//					subj, pred, obj, NULL);
 
 		err = add_triple(cntxt->nodes, subj, pred, obj);
+		raptor_free_term(subj);
+		raptor_free_term(pred);
+		raptor_free_term(obj);
 		switch (err){
 			case 0:
 				break;
@@ -412,7 +467,7 @@ FUNC_DESC(fprintf_function){
 	NodeIterator* n_iter;
 	raptor_term *name, *args, *assert;
 	assert = get_object(n, cntxt->clips_assert);
-	raptor_term *rt = raptor_new_term_from_uri_string(cntxt->world, "http://clips.script/FindAllFacts");
+	raptor_term *rt = cntxt->clips_find_all_facts;
 	if (assert != NULL){
 		return fprintf_assert(cntxt, stream, n);
 	} else if (check_property(n, cntxt->rdf_type, cntxt->clips_find_all_facts)
@@ -1185,6 +1240,8 @@ CRIFI_SERIALIZE_SCRIPT_RET serialize_information_as_clips_function(FILE* stream,
 		return CRIFI_SERIALIZE_MALLOC_ERROR;
 	}
 	serialize_err = fprintf_function(cntxt, stream, rootfunction_n);
+
+	//raptor_free_term(cntxt->ex_rootfunction);
 	free_context(cntxt);
 	return serialize_err;
 }
@@ -1211,6 +1268,8 @@ static CRIFI_SERIALIZE_SCRIPT_RET add_info_to_tree_member(MyContext* cntxt, crif
 	}
 
 	err = add_triple(cntxt->nodes, term_instance, type, term_class);
+	raptor_free_term(term_instance);
+	raptor_free_term(term_class);
 	switch (err){
 		case 0: break;
 		default: return CRIFI_SERIALIZE_SCRIPT_UNKNOWN;

@@ -530,25 +530,6 @@ Document(
         )
       )
 
-      Group -100 (
-      Forall ?superpattern ?formulacontainer ?formulalist ?subpattern ?formula ?patternlist (
-        If And (
-          Or (
-            ?superpattern # cs:AndCE
-            ?superpattern # cs:OrCE
-            ?superpattern # cs:Defrule
-          )
-          Or (
-            ?formulacontainer[modelA:as-defrule -> ?superpattern]
-            ?formulacontainer[modelA:as-lhs-pattern -> ?superpattern]
-          )
-          ?formulacontainer["formulalist"^^rif:local -> ?formulalist]
-          ?formula[modelA:as-lhs-pattern -> ?subpattern]
-        ) Then Do (
-          Assert(?superpattern[exa:wantstoaddlist -> ?formulalist])
-          Assert(?superpattern[exa:wantstoadd -> ?formula])
-        )
-      ))
       Group -1 (
         Forall ?superpattern ?formulacontainer ?formulalist ?subpattern ?formula ?patternlist (
           If And (

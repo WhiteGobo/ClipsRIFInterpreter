@@ -21,6 +21,46 @@ enum {
 	SAT_SERIALIZEFAILED
 };
 
+typedef struct crifi_rs_context_s {
+	raptor_world *world;
+	crifi_graph *graph;
+	raptor_serializer* serializer;
+	raptor_term *first;
+	raptor_term *rest;
+	raptor_term *nil;
+	raptor_term *type;
+} crifi_rs_context;
+
+static crifi_rs_context* init_context(raptor_world *world,
+		crifi_graph *graph,
+		raptor_serializer* serializer)
+{
+	crifi_rs_context* cntxt;
+	if (world == NULL || graph == NULL || serializer == NULL){
+		return NULL;
+	}
+	cntxt = malloc(sizeof(crifi_rs_context));
+	cntxt->world = world;
+	cntxt->graph = graph;
+	cntxt->serializer = serializer;
+
+	cntxt->first = raptor_new_term_from_uri_string(world, _RDF_first_);
+	cntxt->rest = raptor_new_term_from_uri_string(world, _RDF_rest_);
+	cntxt->nil = raptor_new_term_from_uri_string(world, _RDF_nil_);
+	cntxt->type = raptor_new_term_from_uri_string(world, _RDF_type_);
+	return cntxt;
+}
+
+static void free_context(crifi_rs_context* cntxt){
+	if (cntxt != NULL){
+		raptor_free_term(cntxt->first);
+		raptor_free_term(cntxt->rest);
+		raptor_free_term(cntxt->nil);
+		raptor_free_term(cntxt->type);
+		free(cntxt);
+	}
+}
+
 static void errprint_clips_value(CLIPSValue *val){
         switch (val->header->type) {
 		case FLOAT_TYPE:
@@ -56,9 +96,12 @@ static bool serialize_triple(raptor_world *world, const raptor_term *subj, const
 	return (err == 0);
 }
 
-static int serialize_member(raptor_world *world, crifi_graph *graph, Fact *member, raptor_serializer *my_serializer){
+static int serialize_member(crifi_rs_context* cntxt, Fact *member){
 	CLIPSValue instance, cls, clips_member = {.factValue=member};
-	raptor_term *type = raptor_new_term_from_uri_string(world, _RDF_type_);
+	raptor_world *world = cntxt->world;
+	crifi_graph *graph = cntxt->graph;
+	raptor_serializer *my_serializer = cntxt->serializer;
+	raptor_term *type = cntxt->type;
 	raptor_term *term_instance = NULL;
 	raptor_term *term_class = NULL;
 	if (type == NULL){
@@ -77,15 +120,20 @@ static int serialize_member(raptor_world *world, crifi_graph *graph, Fact *membe
 	if(!serialize_triple(world, term_instance, type, term_class, my_serializer)){
 		return SAT_SERIALIZEFAILED;
 	}
+	raptor_free_term(term_instance);
+	raptor_free_term(term_class);
 	return 0;
 }
 
-static int serialize_list(raptor_world *world, crifi_graph *graph, Fact *l, raptor_serializer *my_serializer){
+static int serialize_list(crifi_rs_context* cntxt, Fact *l){
 	int err, length;
 	bool success;
-	raptor_term *first = raptor_new_term_from_uri_string(world,_RDF_first_);
-	raptor_term *rest = raptor_new_term_from_uri_string(world, _RDF_rest_);
-	raptor_term *nil = raptor_new_term_from_uri_string(world, _RDF_nil_);
+	raptor_world *world = cntxt->world;
+	crifi_graph *graph = cntxt->graph;
+	raptor_serializer *my_serializer = cntxt->serializer;
+	raptor_term *first = cntxt->first;
+	raptor_term *rest = cntxt->rest;
+	raptor_term *nil = cntxt->nil;
 	raptor_term *last = NULL;
 	raptor_term *current = NULL;
 	raptor_term *element = NULL;
@@ -119,6 +167,8 @@ static int serialize_list(raptor_world *world, crifi_graph *graph, Fact *l, rapt
 		if(!serialize_triple(world, current, first, element, my_serializer)){
 			return SAT_SERIALIZEFAILED;
 		}
+
+		raptor_free_term(element);
 		if (last != NULL){
 			if(!serialize_triple(world, last, rest, current, my_serializer)){
 				return SAT_SERIALIZEFAILED;
@@ -144,12 +194,14 @@ static int serialize_list(raptor_world *world, crifi_graph *graph, Fact *l, rapt
 static int serialize_all_triples(raptor_world *world, crifi_graph* graph, raptor_serializer *my_serializer){
 	int err;
 	bool success;
+	crifi_rs_context* cntxt;
 	if (world == NULL || my_serializer == NULL){
 		return -2;
 	}
 	CLIPSValue tmpValue;
 	raptor_statement *triple;
 	raptor_term *subj, *pred, *obj;
+	cntxt = init_context(world, graph, my_serializer);
 	for(Fact *f = get_next_triple(graph, NULL);
 			f != NULL;
 			f = get_next_triple(graph, f))
@@ -197,7 +249,7 @@ static int serialize_all_triples(raptor_world *world, crifi_graph* graph, raptor
 			l != NULL;
 			l = get_next_list(graph, l))
 	{
-		err = serialize_list(world, graph, l, my_serializer);
+		err = serialize_list(cntxt, l);
 		if (err != SAT_NOERROR){
 			fprintf(stderr, "convert list failed\n");
 			return err;
@@ -207,11 +259,12 @@ static int serialize_all_triples(raptor_world *world, crifi_graph* graph, raptor
 			member != NULL;
 			member = get_next_member(graph, member))
 	{
-		err = serialize_member(world, graph, member, my_serializer);
+		err = serialize_member(cntxt, member);
 		if (err != SAT_NOERROR){
 			return err;
 		}
 	}
+	free_context(cntxt);
 	return SAT_NOERROR;
 }
 
@@ -246,6 +299,10 @@ CRIFI_SERIALIZE_RET crifi_serialize_all_triples(crifi_graph* graph,
 	raptor_free_serializer(rdf_serializer);
 
 	raptor_free_uri(uri);
+	raptor_free_term(rif_ns);
+	raptor_free_term(clips_ns);
+	raptor_free_term(ex_ns);
+	raptor_free_term(xs_ns);
 	raptor_free_world(world);
 	return CRIFI_SERIALIZE_NOERROR;
 }

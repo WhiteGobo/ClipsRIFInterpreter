@@ -12,6 +12,13 @@ crifi_implement_clips_program_in_build(
 	init_graph_modelA_internal
 )
 
+set(STABLE_MODEL_HEADER "${CMAKE_CURRENT_BINARY_DIR}/stablemodel.h")
+crifi_implement_clips_program_in_build(
+	${STABLE_MODEL_HEADER}
+	"${CMAKE_CURRENT_SOURCE_DIR}/stablemodel.clp"
+	init_graph_stable_model_internal
+)
+
 set(MODEL_CHECK_A_HEADER "${CMAKE_CURRENT_BINARY_DIR}/modelcheckA.h")
 crifi_implement_clips_program_in_build(
 	${MODEL_CHECK_A_HEADER}
@@ -22,6 +29,7 @@ crifi_implement_clips_program_in_build(
 add_library(crifi_graph_models STATIC
 	crifi_graph_models.c
 	crifi_graph_models.h
+	${STABLE_MODEL_HEADER}
 	${MODEL_A_HEADER}
 	${MODEL_CHECK_A_HEADER}
 	${MODEL_FIRST_HEADER}

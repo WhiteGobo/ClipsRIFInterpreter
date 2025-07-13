@@ -6,6 +6,8 @@
 extern "C" {
 #endif
 
+crifi_graph *init_graph_stable_model();
+
 crifi_graph *init_graph_modelA();
 
 crifi_graph *init_graph_modelcheckA();

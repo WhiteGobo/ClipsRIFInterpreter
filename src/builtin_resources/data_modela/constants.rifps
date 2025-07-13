@@ -85,7 +85,7 @@ Document(
         )
         ex:currentfactindex(1)
       )
-      (* ex:rif-inheritance *) Group (
+      (* ex:rif-inheritance *) Group 100 (
         Forall ?parent ?child ?x (
           If And (
             Or (

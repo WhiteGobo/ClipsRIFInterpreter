@@ -81,6 +81,9 @@ char* genclipscode_lexical(Environment *env, CLIPSValue clipsvalue){
 char* genclipscode_local(Environment *env, CLIPSValue context, const char *value){
 	char *cntxt_str;
 	char* result;
+	if (value == NULL) {
+		return NULL;
+	}
 	switch(context.header->type){
                 case SYMBOL_TYPE:
 		case STRING_TYPE:

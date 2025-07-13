@@ -10,7 +10,7 @@ Document(
     Prefix(triplestordf <http://example.com/triples-to-rdf#>)
     Prefix(rif <http://www.w3.org/2007/rif#>)
     Prefix(entailment <http://www.w3.org/ns/entailment/>)
-    Group (
+    Group 1000 (
       Forall ?directive ?location ?profile (
         If And (
           ?directive[rif:location -> ?location]

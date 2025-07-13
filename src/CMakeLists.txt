@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.14)
 
 project(clips_rif_interpreter_library VERSION 0.1.0 LANGUAGES C CXX)
+add_compile_options(-g)
 
 option(LINKED_CLIPS_LIB "Build with linked clips library" ON)
 option(BUILD_TESTING "default testing" ON)

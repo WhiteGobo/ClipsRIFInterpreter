@@ -7,6 +7,8 @@
 #include "crifi_graph_models.h"
 #include <time.h>
 
+//#define USEMODELFIRST
+
 #define _CRIFI_MODELA_DATA_BASEURI_ "http://white.gobo/crifi/built_resources/data_modela#"
 #define _CRIFI_BUILTIN_MODEL_GENERATE_MODELA_ _CRIFI_MODELA_DATA_BASEURI_ "crifi_modelA"
 #define _CRIFI_BUILTIN_MODEL_GENERATE_MODELA_CHECKER_ _CRIFI_MODELA_DATA_BASEURI_ "crifi_modelA_checker"
@@ -23,6 +25,8 @@ MODEL_TYPE modeltype = GBM_UNKNOWN_MODEL;
 crifi_graph* graph = NULL;
 FILE *out_f;
 int verbosity = 0;
+long long cycle_size = 30000;
+long long maximal_number_rules_run = 300000;
 
 static int parse(int argc, char* argv[]);
 static int init_graph_with_import();
@@ -50,7 +54,17 @@ int main(int argc, char* argv[]){
 	exit(err);
 }
 
+static int printout_generated_rules_first();
+static int printout_generated_rules_stable();
+
 static int printout_generated_rules(){
+#ifdef USEMODELFIRST
+	return printout_generated_rules_first();
+#else
+	return printout_generated_rules_stable();
+#endif
+}
+static int printout_generated_rules_first(){
 	bool errorstate;
 	struct DynamicValue retval;
 	retval = eval(graph, "(create-script-rif-logic \"mydescription\")");
@@ -79,7 +93,7 @@ static int printout_generated_rules(){
 	return 0;
 }
 
-static int printout_generated_rulesa(){
+static int printout_generated_rules_stable(){
 	CRIFI_SERIALIZE_SCRIPT_RET err;
 	err = serialize_information_as_clips_script(out_f, graph);
 	switch(err){
@@ -107,33 +121,54 @@ static int printout_generated_rulesa(){
 static int run_imported_rules(){
 	int err = 0;
 	bool errorstate;
-	int number_rules_run = 1;
+	long long number_rules_run = 1;
+	long long total_number = 0;
 	time_t now;
 	time(&now);
 	fprintf(stderr, "Starting rules at %s", ctime(&now));
 	while (number_rules_run > 0){
-		number_rules_run = run_rules(graph, 100000);
+		fprintf(stderr, "next run\n");
+		if (verbosity > 3){
+			fprintf(stdout, "current agenda:\n");
+			eval(graph, "(agenda MAIN)");
+		}
+		number_rules_run = run_rules(graph, cycle_size);
 		time(&now);
-		fprintf(stderr, "Run further %d at %s", number_rules_run, ctime(&now));
+		fprintf(stderr, "Run further %d at %s\n", number_rules_run, ctime(&now));
 		if(graph_in_errorstate(graph, stderr)){
-			fprintf(stderr, "graph ended in errorstate after rules have run.");
+			fprintf(stderr, "graph ended in errorstate after "
+					"rules have run.\n");
+			err = 1;
+			number_rules_run = -1;
+			break;
+		}
+		total_number += number_rules_run;
+		if (total_number > maximal_number_rules_run){
+			fprintf(stderr, "maximal number of rule execution "
+					"reached.\n");
 			err = 1;
 			number_rules_run = -1;
 			break;
 		}
 	}
+	time(&now);
+	fprintf(stderr, "Run in total %d rules at %s\n",
+			total_number, ctime(&now));
+	/*
 	if (verbosity > 0){
 		fprintf(stderr, "printing information after run:\n");
 		crifi_serialize_all_triples(graph, stderr, "turtle", "");
 	}
+	*/
 	return err;
 }
 
 static int init_graph_with_import(){
-	//graph = init_graph();
-	//graph = init_graph_first();
+#ifdef USEMODELFIRST
 	graph = init_graph_model_first();
-	//graph = init_graph_modelA();
+#else
+	graph = init_graph_stable_model();
+#endif
 	if (graph == NULL){
 		fprintf(stderr, "Couldnt initialize graph. Broken library?\n");
 		return 1;

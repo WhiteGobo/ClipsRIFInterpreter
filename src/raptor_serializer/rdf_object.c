@@ -65,8 +65,8 @@ static int compare_property_pair(const PropertyPairNode* new, const PropertyPair
 
 static void free_property_pair(PropertyPairNode* pp){
 	if (pp == NULL) return;
-	//raptor_free_term(pp->prop);
-	//raptor_free_term(pp->obj);
+	raptor_free_term(pp->prop);
+	raptor_free_term(pp->obj);
 	free(pp);
 }
 
@@ -130,6 +130,7 @@ Node* retrieve_node(NodeList* nodes, raptor_term *id){
 	Node searcher = {.id = id};
 	Node *existing = nodelist_search(nodes, &searcher);
 	if (existing == NULL){
+		//existing = new_node(raptor_term_copy(id));
 		existing = new_node(id);
 		if (existing == NULL){
 			return NULL;
@@ -252,17 +253,28 @@ void debug_fprintf_node(FILE* stream, char* before, Node* n, char* after){
 	fprintf(stream, after);
 }
 
+/*
+static newURI(raptor_world *world, char* uri_string){
+	raptor_term *t;
+	raptor_uri* uri;
+	uri = 
+	t = raptor_new_term_from_uri(world, uri);
+  	raptor_free_uri(uri);
+	return t;
+}*/
 
 #define RDF(suffix) "http://www.w3.org/1999/02/22-rdf-syntax-ns#" suffix
 #define RDFS(suffix) "http://www.w3.org/2000/01/rdf-schema#" suffix
 
 #define URI raptor_new_term_from_uri_string
+
 RDFContext* init_rdf_context(raptor_world *world){
 	RDFContext *cntxt;
 	if (world == NULL) return NULL;
 	cntxt = malloc(sizeof(RDFContext));
 	if (cntxt == NULL) return NULL;
 	cntxt->rdf_type = URI(world, RDF("type"));
+	fprintf(stderr, "init in cntxt: %d, rdftype: %d\n", cntxt, cntxt->rdf_type);
 	cntxt->rdf_first = URI(world, RDF("first"));
 	cntxt->rdf_rest = URI(world, RDF("rest"));
 	cntxt->rdf_nil = URI(world, RDF("nil"));
@@ -270,6 +282,12 @@ RDFContext* init_rdf_context(raptor_world *world){
 }
 
 void free_rdf_context(RDFContext* cntxt){
+	fprintf(stderr, "free in cntxt: %d, rdftype: %d\n", cntxt, cntxt->rdf_type);
+	fprintf(stderr, "brubru free_rdf_context\n");
+	raptor_free_term(cntxt->rdf_type);
+	raptor_free_term(cntxt->rdf_first);
+	raptor_free_term(cntxt->rdf_rest);
+	raptor_free_term(cntxt->rdf_nil);
 	free(cntxt);
 }
 
