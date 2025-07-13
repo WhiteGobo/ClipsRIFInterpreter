@@ -731,6 +731,10 @@ static int numeric_list_calculator(Environment *env, UDFContext *udfc, UDFValue 
 	}
 
 	myval_h = crifi_numeric_to_clipsvalue2(env, val_in);
+	if (val_in != &val1){
+		//TODO: shitty desgin rework
+		free(val_in);
+	}
 	out->value = myval_h.value;
 	return 0;
 }
