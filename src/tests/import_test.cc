@@ -33,6 +33,7 @@ static void execute_import(crifi_graph* graph, const char *address, const char *
 	sprintf(qq, "(<" _CRIFI_import_ "> <%s> <%s>)", address, entailment);
 	retval = eval(graph, qq);
 	in_errorstate = graph_in_errorstate(graph, stderr);
+	free(qq);
 	switch (retval.type){
 		case CTC_DYNAMIC_BOOL:
 			ASSERT_EQ(retval.val.boolean, true)
