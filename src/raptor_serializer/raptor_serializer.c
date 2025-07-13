@@ -85,14 +85,19 @@ static void errprint_clips_value(CLIPSValue *val){
 
 static bool serialize_triple(raptor_world *world, const raptor_term *subj, const raptor_term *pred, const raptor_term *obj, raptor_serializer *my_serializer){
 	int err;
+	raptor_term *c_subj = raptor_term_copy(subj);
+	raptor_term *c_pred = raptor_term_copy(pred);
+	raptor_term *c_obj = raptor_term_copy(obj);
 	raptor_statement *triple = raptor_new_statement_from_nodes(world,
-						subj, pred, obj, NULL);
+						c_subj, c_pred, c_obj, NULL);
 	if (triple == NULL){
+		raptor_free_term(c_subj);
+		raptor_free_term(c_pred);
+		raptor_free_term(c_obj);
 		return false;
 	}
 	err = raptor_serializer_serialize_statement(my_serializer, triple);
-	// This would free all raptor_terms which is not ok
-	//raptor_free_statement(triple);
+	raptor_free_statement(triple);
 	return (err == 0);
 }
 
