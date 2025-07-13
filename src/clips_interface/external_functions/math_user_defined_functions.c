@@ -684,7 +684,7 @@ static bool numeric_value_to_n3(Environment *env, numeric_value val, UDFValue *o
 
 static int numeric_list_calculator(Environment *env, UDFContext *udfc, UDFValue *out, Calculation *action){
 	//const char* argerr = "Argument Error for "actionname;
-	NumericValue val1, val2, val3;
+	NumericValue val1, val2;
 	NumericValue *val_in, *val_out, *val_h;
 	UDFValue myval;
 	CLIPSValue myval_h;
@@ -703,7 +703,6 @@ static int numeric_list_calculator(Environment *env, UDFContext *udfc, UDFValue 
 		return 2;
 	}
 	val_in = &val1;
-	val_out = &val3;
 	for (int i=1; i<l; i++){
 		if(!UDFNextArgument(udfc, ANY_TYPE_BITS, &myval)){
 			//Writeln(env, argerr);
@@ -724,9 +723,11 @@ static int numeric_list_calculator(Environment *env, UDFContext *udfc, UDFValue 
 			UDFThrowError(udfc);
 			return 2;
 		}
-		val_h = val_in;
+		if (val_in != &val1){
+			//TODO: shitty desgin rework
+			free(val_in);
+		}
 		val_in = val_out;
-		val_out = val_h;
 	}
 
 	myval_h = crifi_numeric_to_clipsvalue2(env, val_in);
