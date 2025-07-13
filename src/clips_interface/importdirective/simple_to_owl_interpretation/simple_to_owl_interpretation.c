@@ -142,6 +142,9 @@ static void free_SimpleToOwlInfo(SimpleToOwlInfo *info){
 	if (info == NULL) return;
 	crifi_import_free_TripleList(info->first);
 	free_RDFListInfo(info->list_info);
+
+	crifi_import_free_PairList(info->first_member);
+	crifi_import_free_PairList(info->first_subclass);
 	free(info);
 }
 

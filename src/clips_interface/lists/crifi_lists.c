@@ -95,6 +95,7 @@ CRIFI_LIST_REMOVE_RET crifi_list_remove(Environment *env, CLIPSValue list, long 
 		ii++;
 	}
 	err = crifi_list_new(env, newitems, length - 1, ret);
+	free(newitems);
 	if (err){
 		return CRIFI_LIST_REMOVE_CREATE_LIST;
 	}
