@@ -181,5 +181,8 @@ void free_rdf_rif_info(struct rdfToRifInfo *info){
 	free_bnodelookup(info->bnode_lookup);
 	free_RDFListInfo(info->list_info);
 	free_cvsnake(info->rule_list);
+	crifi_import_free_PairList(info->first_member);
+	crifi_import_free_PairList(info->first_subclass);
+	crifi_import_free_TripleList(info->first_triple);
 	free(info);
 }

@@ -76,6 +76,7 @@ int end_import_process_rdf_to_rif_interpretation(ImportProcess *process){
 		return 1;\
 	}
 static int assert_base_information(ImportProcess *process){
+	int err;
 	RdfToRifInfo* info = process->rdf_to_rif_info;
 	CLIPSValue *document = &(info->document);
 	CLIPSValue *group = &(process->rdf_to_rif_info->group);
@@ -88,8 +89,9 @@ static int assert_base_information(ImportProcess *process){
 	CLIPSValue *rif_Group = &(process->rdf_to_rif_info->rif_Group);
 
 	rules = cv_snake_to_list(info->rule_list, &number_rules);
-	if(0 != crifi_list_new(process->graph, rules, number_rules, &rule_list))
-	{
+	err = crifi_list_new(process->graph, rules, number_rules, &rule_list);
+	free(rules);
+	if (0 != err) {
 		return CRIFI_IMPORT_ASSERT_UNHANDLED_ERROR;
 	}
 
