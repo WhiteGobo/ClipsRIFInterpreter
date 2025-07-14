@@ -25,8 +25,8 @@ MODEL_TYPE modeltype = GBM_UNKNOWN_MODEL;
 crifi_graph* graph = NULL;
 FILE *out_f;
 int verbosity = 0;
-long long cycle_size = 30000;
-long long maximal_number_rules_run = 300000;
+long long cycle_size = 100000;
+long long maximal_number_rules_run = 0;
 
 static int parse(int argc, char* argv[]);
 static int init_graph_with_import();
@@ -143,7 +143,10 @@ static int run_imported_rules(){
 			break;
 		}
 		total_number += number_rules_run;
-		if (total_number > maximal_number_rules_run){
+		if (
+				maximal_number_rules_run > 0
+				&& total_number > maximal_number_rules_run)
+		{
 			fprintf(stderr, "maximal number of rule execution "
 					"reached.\n");
 			err = 1;
