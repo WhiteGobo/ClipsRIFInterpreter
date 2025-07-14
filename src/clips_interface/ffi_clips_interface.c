@@ -183,6 +183,7 @@ FFI_PLUGIN_EXPORT int build(crifi_graph* graph, Utf8String command){
 static void fprint_dynamic_value(crifi_graph *graph, FILE* f, struct DynamicValue retval);
 
 FFI_PLUGIN_EXPORT bool graph_in_errorstate(crifi_graph* graph, FILE* f){
+	bool in_errorstate = true;
 	struct DynamicValue retval = eval(graph, "(get-error)");
 	switch (retval.type){
 		case CTC_DYNAMIC_BOOL:
@@ -191,7 +192,8 @@ FFI_PLUGIN_EXPORT bool graph_in_errorstate(crifi_graph* graph, FILE* f){
 				fprint_dynamic_value(graph, f, retval);
 				fprintf(f, "\n");
 			}
-			return retval.val.boolean;
+			in_errorstate = retval.val.boolean;
+			break;
 		case CTC_DYNAMIC_STRING:
 		case CTC_DYNAMIC_LIST:
 		case CTC_DYNAMIC_ERROR:
@@ -203,8 +205,11 @@ FFI_PLUGIN_EXPORT bool graph_in_errorstate(crifi_graph* graph, FILE* f){
 				fprint_dynamic_value(graph, f, retval);
 				fprintf(f, "\n");
 			}
-			return true;
+			in_errorstate = true;
+			break;
 	}
+	free_dynamic_value(retval);
+	return in_errorstate;
 }
 
 FFI_PLUGIN_EXPORT struct DynamicValue eval(crifi_graph* graph, Utf8String command){

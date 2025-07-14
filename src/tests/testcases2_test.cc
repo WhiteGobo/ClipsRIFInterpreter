@@ -578,10 +578,13 @@ static void fprintf_model_first_created_rules(FILE* out_f, crifi_graph *graph){
 			fprintf(out_f, "%s", retval.val.string);
 			break;
 		case CTC_DYNAMIC_ERROR:
+			free_dynamic_value(retval);
 			FAIL() << "oops something went wrong";
 		default:
+			free_dynamic_value(retval);
 			FAIL() << "oop somethign went wrong2";
 	}
+	free_dynamic_value(retval);
 	if(errorstate){
 		FAIL() << "graph ended in errorstate after rules have run.";
 	}

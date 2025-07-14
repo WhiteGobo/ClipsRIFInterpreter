@@ -92,9 +92,11 @@ void fprintf_command_result(FILE *f, const char *command){
 			break;
 		case CTC_DYNAMIC_LIST:
 		default:
+			free_dynamic_value(retval);
 			FAIL() << "command returned unexpected value. Used: "
 				<< command;
 	}
+	free_dynamic_value(retval);
 	if (errorstate){
 		FAIL() << "graph ended up in errorstate after eval. Used:\n"
 			<< command;
