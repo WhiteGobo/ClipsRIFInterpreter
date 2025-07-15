@@ -22,6 +22,7 @@ list(APPEND owntargets
 	stacked_conditionals1
 	circular_patterns1
 	circular_patterns2
+	assign_var1
 )
 
 foreach(base ${owntargets})

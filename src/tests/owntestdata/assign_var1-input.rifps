@@ -1,0 +1,10 @@
+Document(
+    Prefix(ex <http://example.com/>)
+    Group (
+      Forall ?rif ?pattern (
+        If And (
+          ?rif[ex:prop -> ?pattern]
+        ) Then ex:ok()
+      )
+    )
+)

@@ -16,6 +16,8 @@
 
 #define _W3C_TESTDATA_ "http://www.w3.org/2005/rules/test/repository/tc/"
 #define W3C_INPUT(id) _W3C_TESTDATA_ id "/" id "-input"
+#define _OWN_TESTDATA_ "http://white.gobo/crifi/owntestdata/"
+#define OWN_INPUT(id) _OWN_TESTDATA_ id "/" id "-input"
 
 typedef crifi_graph *GraphGenerator();
 
@@ -68,6 +70,9 @@ class officialw3cSyntaxTestCases_Test : public testing::TestWithParam<TestdataSy
 };
 
 static auto syntaxTestdata = testing::Values(
+		TestdataSyntax("assign_var1",
+			SC_NoCondition,
+			OWN_INPUT("assign_var1")),
 		TestdataSyntax("Core_IRT_Multiple_Context_Error",
 			SC_NoCondition | SC_ModelA,
 			W3C_INPUT("Multiple_Context_Error"),

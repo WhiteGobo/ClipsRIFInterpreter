@@ -100,6 +100,8 @@ Document(
               ?parent[rif:left -> ?child]
               ?parent[rif:right -> ?child]
               ?parent[rif:rest -> ?child]
+              ?parent[rif:class -> ?child]
+              ?parent[rif:instance -> ?child]
             )
             Not(?child[rif:constIRI -> ?x])
             Not(?child[rif:value -> ?x])

@@ -24,6 +24,7 @@ typedef enum {
 MODEL_TYPE modeltype = GBM_UNKNOWN_MODEL;
 crifi_graph* graph = NULL;
 FILE *out_f;
+char *out_filename_after_run_info = NULL;
 int verbosity = 0;
 long long cycle_size = 100000;
 long long maximal_number_rules_run = 0;
@@ -123,6 +124,7 @@ static int run_imported_rules(){
 	bool errorstate;
 	long long number_rules_run = 1;
 	long long total_number = 0;
+	FILE* out_f_after_run_info = NULL;
 	time_t now;
 	time(&now);
 	fprintf(stderr, "Starting rules at %s", ctime(&now));
@@ -157,12 +159,19 @@ static int run_imported_rules(){
 	time(&now);
 	fprintf(stderr, "Run in total %d rules at %s\n",
 			total_number, ctime(&now));
-	/*
-	if (verbosity > 0){
+	if (out_filename_after_run_info != NULL) {
+		out_f_after_run_info = fopen(out_filename_after_run_info, "w");
+		if (out_f_after_run_info != NULL){
+			crifi_serialize_all_triples(graph,
+					out_f_after_run_info,
+					"turtle", "");
+			fclose(out_f_after_run_info);
+		}
+	}
+	if (verbosity > 3){
 		fprintf(stderr, "printing information after run:\n");
 		crifi_serialize_all_triples(graph, stderr, "turtle", "");
 	}
-	*/
 	return err;
 }
 
@@ -250,6 +259,7 @@ static struct option parse_options[] = {
 	{"modelA", no_argument, NULL, GBM_MODELA},
 	{"modelAchecker", no_argument, NULL, GBM_MODELA_CHECKER},
 	{"modelB", no_argument, NULL, GBM_MODELB},
+	{"save-info-in", required_argument, NULL, 's'},
 	{NULL, 0, NULL, 0}
 };
 
@@ -257,7 +267,7 @@ static int parse(int argc, char* argv[]){
 	int c;
 	int option_index = 0;
 	while (1){
-		c = getopt_long(argc, argv, "aAbv",
+		c = getopt_long(argc, argv, "aAbvs",
 				parse_options, &option_index);
 		if (c == -1){
 			break;
@@ -276,6 +286,9 @@ static int parse(int argc, char* argv[]){
 				break;
 			case 'v':
 				verbosity++;
+				break;
+			case 's':
+				out_filename_after_run_info = optarg;
 				break;
 			default:
 				fprintf(stderr, "wrong argument\n");
