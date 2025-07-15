@@ -200,22 +200,6 @@ Document(
           External(pred:list-contains(?arglist ?rifvar))
         ) Then ?rifatom["constraints-needs-variable"^^rif:local -> ?clipsvar]
       )
-      Forall ?qq (
-        If ?qq["constraint-binds-var"^^rif:local -> ?clipsvar]
-        Then ?qq[exa:qq2 -> ?clipsvar]
-      )
-      Forall ?qq (
-        If ?qq["constraint-needs-var"^^rif:local -> ?clipsvar]
-        Then ?qq[exa:qq3 -> ?clipsvar]
-      )
-      Forall ?qq (
-        If ?qq["constraints-needs-variable"^^rif:local -> ?clipsvar]
-        Then ?qq[exa:qq4 -> ?clipsvar]
-      )
-      Forall ?qq (
-        If ?qq["bound-variable"^^rif:local -> ?clipsvar]
-        Then ?qq[exa:qq1 -> ?clipsvar]
-      )
       Forall ?rifframe ?clipsconstraint ?slotlist ?rifvar ?slot (
         If And (
           ?rifframe[rif:slots -> ?slotlist]
@@ -260,14 +244,6 @@ Document(
           ?subformula[modelA:binds-var -> ?clipsconstraint]
           External(pred:list-contains(?formulalist ?subformula))
         ) Then ?rifand[modelA:binds-var -> ?clipsconstraint]
-      )
-
-      Forall ?rifexists ?subformula ?clipsconstraint (
-        If And (
-          "always-false"^^rif:local()
-          ?rifexists # rif:Exists
-          ?subformula[modelA:binds-var -> ?clipsconstraint]
-        ) Then ?rifexists[modelA:binds-var -> ?clipsconstraint]
       )
 
       Forall ?x (
@@ -615,13 +591,6 @@ Document(
           Assert(?formula["bound-variable"^^rif:local -> ?clipsvar])
         )
       )
-      Forall ?qq (
-        If And (
-          ?rifequal["constraints-needs-variable"^^rif:local -> ?x]
-        ) Then Do (
-          Assert(?rifequal[exa:qq -> ?x])
-        )
-      )
 
       Forall ?riflist ?unboundvar (
         If And (
@@ -725,26 +694,6 @@ Document(
             )
             Assert(?rifexternal # modelA:TestPatternExternalGenerator)
             Assert(?rifexternal # modelA:PatternGenerator)
-          )
-        )
-        Forall ?rifmember ?formulacontainer (
-          If And (
-            "always-false"^^rif:local()
-            ?formulacontainer["add-pattern-from"^^rif:local -> ?rifmember]
-            ?rifmember # rif:Member
-            Not(?formulacontainer["added-pattern-from"^^rif:local -> ?rifmember])
-            Not (Exists ?x ( And(
-              ?rifmember["constraints-needs-variable"^^rif:local -> ?x]
-              Not( ?rifmember["bound-variable"^^rif:local -> ?x] )
-            )))
-            ?formulacontainer["formulalist"^^rif:local -> ?formulalist]
-          ) Then Do (
-            Assert( ?formulacontainer["added-pattern-from"^^rif:local -> ?rifmember] )
-            Modify(
-              ?formulacontainer["formulalist"^^rif:local -> External(func:append(?formulalist ?rifmember))]
-            )
-            Assert(?rifmember # modelA:MemberGenerator)
-            Assert(?rifmember # modelA:PatternGenerator)
           )
         )
         Forall ?rifequal ?formulacontainer (
@@ -852,26 +801,6 @@ Document(
             Assert(?targetstring # modelA:ExpressionGenerator)
             Assert( ?formulacontainer["added-pattern-from"^^rif:local -> ?rifexternal] )
             Assert(?formulacontainer["bound-variable"^^rif:local -> ?targetstring])
-          )
-        )
-
-        Forall ?sub ?super ?formulalist (
-          If And (
-            "always-false"^^rif:local()
-            ?super["add-pattern-from"^^rif:local -> ?sub]
-            ?sub # "patterncontainer"^^rif:local
-            ?super # "patterncontainer"^^rif:local
-            Not( ?super["added-pattern-from"^^rif:local -> ?sub] )
-            Not (Exists ?x ( And(
-              ?sub["constraints-needs-variable"^^rif:local -> ?x]
-              Not( ?sub["bound-variable"^^rif:local -> ?x] )
-            )))
-            ?super["formulalist"^^rif:local -> ?formulalist]
-          ) Then Do (
-            Assert( ?super["added-pattern-from"^^rif:local -> ?sub] )
-            Modify(
-              ?super["formulalist"^^rif:local -> External(func:append(?formulalist ?sub))]
-            )
           )
         )
 

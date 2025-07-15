@@ -14,7 +14,6 @@ list(APPEND mytargets
 	formula-as-test
 	import-rules
 	init-defrules
-	add-as-pattern
 	action-from-formula-as-clause
 	process-external
 	special_pred_translations_for_pattern

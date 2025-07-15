@@ -11,38 +11,13 @@ Document(
     Prefix(rif <http://www.w3.org/2007/rif#>)
     Prefix(entailment <http://www.w3.org/ns/entailment/>)
     (* ex:init-defrules *) Group 10 (
-      (* ex:init-defrule-per-implies *) Forall ?group ?rule ?sentences(
-        If And(
-          "always-false"^^rif:local()
-          ?group[rif:sentences -> ?sentences]
-          Or (
-            ?rule # rif:Implies
-            ?rule # rif:Forall
-          )
-          External(pred:is-list(?sentences))
-          External(pred:list-contains(?sentences ?rule))
-        ) Then Do (
-          (?defrule New())
-          (?actionlist New())
-          Assert( ?rule[ex:as-defrule -> ?defrule] )
-          Assert( ?rule[ex:add-rule-info -> ?defrule] )
-          Assert( ?defrule # cs:Defrule )
-          Assert( ?defrule[cs:conditional-element -> External(func:make-list())])
-        )
-      )
       Forall ?rifrule ?defrule ?action ?rifaction (
         If And (
           ?rifrule[ex:add-rule-info -> ?defrule]
-          ?rifrule[rif:then -> ?rifaction]
-          ?rifaction[ex:as-action -> ?action]
-        ) Then Do (
-          Assert( ?defrule[cs:action -> ?action] )
-        )
-      )
-      Forall ?rifrule ?defrule ?action (
-        If And (
-          ?rifrule[ex:add-rule-info -> ?defrule]
-          ?rifrule[rif:formula -> ?rifaction]
+          Or (
+            ?rifrule[rif:then -> ?rifaction]
+            ?rifrule[rif:formula -> ?rifaction]
+          )
           ?rifaction[ex:as-action -> ?action]
         ) Then Do (
           Assert( ?defrule[cs:action -> ?action] )

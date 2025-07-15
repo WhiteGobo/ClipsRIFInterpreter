@@ -167,38 +167,6 @@ Document(
         )
       )
 
-      Forall ?riflist ?itemlist ?rest (
-        If And (
-          ?riflist[rif:items -> ?itemlist]
-          ?riflist # ex:ConstraintGenerator
-          ?rifrule[ex:inherits-data -> ?riflist]
-          ?rifrule[ex:as-defrule -> ?defrule]
-
-          External(pred:is-list(?itemlist))
-          ?riflist[rif:rest -> ?rest]
-          "always-false"^^rif:local()
-        ) Then Do (
-          (?listasvar New())
-          (?slotitems New())
-          (?pattern New())
-          Assert( ?riflist[ex:as-constraint -> ?listasvar] )
-          Assert( ?riflist[ex:add-as-pattern -> ?defrule] )
-          Assert( ?riflist # ex:ConstraintGenerator )
-
-          Assert( ?listasvar # cs:Variable )
-          Assert( ?listasvar # ex:Unknown-Variable )
-
-          Assert( ?riflist[ex:as-lhs-pattern -> ?pattern] )
-          Assert( ?pattern # cs:TemplatePatternCE )
-          Assert( ?pattern[cs:deftemplate-name -> "AtomList"] )
-          Assert( ?pattern[cs:slot -> External(func:make-list(?slotitems))] )
-          Assert( ?slotitems[cs:slot-name -> "items"] )
-          Assert( ?slotitems[cs:constraints -> External(func:make-list())] )
-
-          Assert( ?slotitems["add-args-as-constraints-from"^^rif:local -> ?itemlist] )
-          Assert( ?slotitems["rest"^^rif:local -> ?rest] )
-        )
-      )
         Forall ?itemlist ?slotitems ?firstarg (
           If And (
             ?slotitems["add-args-as-constraints-from"^^rif:local -> ?itemlist]
@@ -211,24 +179,6 @@ Document(
 
             Modify(?slotitems[cs:constraints -> External(func:append(?listconstraints ?clipsconstraint))])
             Modify(?slotitems["add-args-as-constraints-from"^^rif:local -> External(func:remove(?itemlist 0))])
-          )
-        )
-        Forall ?itemlist ?slotitems ?rest (
-          If And (
-            ?slotitems["add-args-as-constraints-from"^^rif:local -> ?itemlist]
-            External(pred:is-list(?itemlist))
-            0 = External(func:count(?itemlist))
-            ?slotitems["rest"^^rif:local -> ?rest]
-            ?rest # rif:Var
-            ?slotitems[cs:constraints -> ?listconstraints]
-          "always-false"^^rif:local()
-          ) Then Do (
-            (?clipsrestvar New())
-            Assert( ?clipsrestvar # cs:MultifieldVariable )
-            Assert( ?clipsrestvar # ex:Unknown-Variable )
-            Assert( "combine-multifield-as-list"^^rif:local( ?rest ?clipsrestvar) )
-            Retract( ?slotitems["rest"^^rif:local -> ?rest] )
-            Modify( ?slotitems[cs:constraints -> External(func:append(?listconstraints ?clipsrestvar))] )
           )
         )
 
