@@ -7,8 +7,6 @@
 #include "crifi_graph_models.h"
 #include <time.h>
 
-//#define USEMODELFIRST
-
 #define _CRIFI_MODELA_DATA_BASEURI_ "http://white.gobo/crifi/built_resources/data_modela#"
 #define _CRIFI_BUILTIN_MODEL_GENERATE_MODELA_ _CRIFI_MODELA_DATA_BASEURI_ "crifi_modelA"
 #define _CRIFI_BUILTIN_MODEL_GENERATE_MODELA_CHECKER_ _CRIFI_MODELA_DATA_BASEURI_ "crifi_modelA_checker"
@@ -18,7 +16,8 @@ typedef enum {
 	GBM_UNKNOWN_MODEL,
 	GBM_MODELA = 'a',
 	GBM_MODELA_CHECKER = 'A',
-	GBM_MODELB = 'b'
+	GBM_MODELB = 'b',
+	HELP
 } MODEL_TYPE;
 
 MODEL_TYPE modeltype = GBM_UNKNOWN_MODEL;
@@ -28,12 +27,14 @@ char *out_filename_after_run_info = NULL;
 int verbosity = 0;
 long long cycle_size = 100000;
 long long maximal_number_rules_run = 0;
+bool use_alternative_building_model = false;
 
 static int parse(int argc, char* argv[]);
 static int init_graph_with_import();
 static int import_base_information();
 static int printout_generated_rules();
 static int run_imported_rules();
+static void print_help(char* argv[]);
 
 int main(int argc, char* argv[]){
 	int err = EXIT_SUCCESS;
@@ -59,11 +60,11 @@ static int printout_generated_rules_first();
 static int printout_generated_rules_stable();
 
 static int printout_generated_rules(){
-#ifdef USEMODELFIRST
-	return printout_generated_rules_first();
-#else
-	return printout_generated_rules_stable();
-#endif
+	if (!use_alternative_building_model){
+		return printout_generated_rules_first();
+	} else {
+		return printout_generated_rules_stable();
+	}
 }
 static int printout_generated_rules_first(){
 	bool errorstate;
@@ -176,11 +177,11 @@ static int run_imported_rules(){
 }
 
 static int init_graph_with_import(){
-#ifdef USEMODELFIRST
-	graph = init_graph_model_first();
-#else
-	graph = init_graph_stable_model();
-#endif
+	if (!use_alternative_building_model){
+		graph = init_graph_model_first();
+	} else {
+		graph = init_graph_stable_model();
+	}
 	if (graph == NULL){
 		fprintf(stderr, "Couldnt initialize graph. Broken library?\n");
 		return 1;
@@ -256,10 +257,12 @@ static int import_base_information(){
 }
 
 static struct option parse_options[] = {
+	{"help", no_argument, NULL, HELP},
 	{"modelA", no_argument, NULL, GBM_MODELA},
 	{"modelAchecker", no_argument, NULL, GBM_MODELA_CHECKER},
 	{"modelB", no_argument, NULL, GBM_MODELB},
 	{"save-info-in", required_argument, NULL, 's'},
+	{"alternative-builder", no_argument, NULL, 'x'},
 	{NULL, 0, NULL, 0}
 };
 
@@ -278,11 +281,15 @@ static int parse(int argc, char* argv[]){
 			case GBM_MODELB:
 				if (modeltype != GBM_UNKNOWN_MODEL
 						&& modeltype != c){
+					print_help(argv);
 					fprintf(stderr, "only one model can "
 							"be chosen.\n");
 					return 1;
 				}
 				modeltype = c;
+				break;
+			case 'x':
+				use_alternative_building_model = true;
 				break;
 			case 'v':
 				verbosity++;
@@ -290,10 +297,29 @@ static int parse(int argc, char* argv[]){
 			case 's':
 				out_filename_after_run_info = optarg;
 				break;
+			case HELP:
+				print_help(argv);
+				return 1;
 			default:
 				fprintf(stderr, "wrong argument\n");
+				print_help(argv);
 				return 1;
 		}
 	}
 	return 0;
+}
+
+
+static void print_help(char* argv[]){
+	fprintf(stderr, "Usage: %s [options] model [--help]\n"
+			"  --help Printout this help and exit\n"
+			"  model: one option of\n"
+			"    -a, --modelA\n"
+			"    -A, --modelAchecker\n"
+			"    -b, --modelB\n"
+			"  options:\n"
+			"    --alternative-builder\n"
+			"    -s, --safe-info-in infofile\n"
+			"    -v[vvv] Verbosity\n",
+			argv[0]);
 }
