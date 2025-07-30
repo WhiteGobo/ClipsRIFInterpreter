@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.10)
 
 message(INFO "Use ${name}_add_importlocations to add import capabilities "
 	"to graph.")

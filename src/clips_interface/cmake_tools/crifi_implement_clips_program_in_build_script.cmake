@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.10)
 set(self "CRIFI_IMPLEMENT_CLIPS_PROGRAM_IN_BUILD_SCRIPT")
 
 if(NOT DEFINED outputfile)
