@@ -13,7 +13,7 @@ Document(
     Prefix(ex <http://example.com/>)
     Prefix(exa <http://example.com/a#>)
     Group (
-      Forall ?group ?rifrule (
+      Forall ?group ?rifrule ?sentences (
         If And (
           ?group[rif:sentences -> ?sentences]
           Or (
@@ -26,7 +26,7 @@ Document(
           Assert(?rifrule # modelA:RuleGenerator)
         )
       )
-      Forall ?group ?rifformula ?rifclause (
+      Forall ?group ?sentences ?rifclause (
         If And (
           ?group[rif:sentences -> ?sentences]
           Or (
@@ -64,7 +64,7 @@ Document(
           Assert( ?slot # modelA:RHSPatternGenerator )
         )
       )
-      Forall ?patterngen ?term (
+      Forall ?patterngen ?arglist ?term (
         If And (
           ?patterngen # modelA:RHSPatternGenerator
           ?patterngen[rif:args -> ?arglist]
@@ -81,16 +81,16 @@ Document(
         If And (
           ?patterngen # modelA:RHSPatternGenerator
           Or (
-            ?pattergen[rif:op -> ?term]
-            ?pattergen[rif:object -> ?term]
-            ?pattergen[rif:slotkey -> ?term]
-            ?pattergen[rif:slotvalue -> ?term]
-            ?pattergen[rif:left -> ?term]
-            ?pattergen[rif:right -> ?term]
-            ?pattergen[rif:class -> ?term]
-            ?pattergen[rif:instance -> ?term]
-            ?pattergen[rif:sub -> ?term]
-            ?pattergen[rif:super -> ?term]
+            ?patterngen[rif:op -> ?term]
+            ?patterngen[rif:object -> ?term]
+            ?patterngen[rif:slotkey -> ?term]
+            ?patterngen[rif:slotvalue -> ?term]
+            ?patterngen[rif:left -> ?term]
+            ?patterngen[rif:right -> ?term]
+            ?patterngen[rif:class -> ?term]
+            ?patterngen[rif:instance -> ?term]
+            ?patterngen[rif:sub -> ?term]
+            ?patterngen[rif:super -> ?term]
           )
         ) Then Do (
           Assert(?term # ex:ExpressionGenerator)
@@ -103,7 +103,7 @@ Document(
           ?rifimply[rif:pattern -> ?formula]
         )) Then Do (Assert( ?formula # modelA:ConditionGenerator))
       )
-      Forall ?formula ?child (
+      Forall ?formula ?child ?formulalist (
         If And (
           ?formula # modelA:ConditionGenerator
           ?formula[ex:inherits-data -> ?child]
@@ -121,7 +121,7 @@ Document(
           Assert( ?child # modelA:ConditionGenerator )
         )
       )
-      Forall ?rifformula ?child (
+      Forall ?rifformula ?slotlist ?slot (
         If And (
           ?rifformula # modelA:ConditionGenerator
           ?rifformula[rif:slots -> ?slotlist]
@@ -162,7 +162,7 @@ Document(
           Assert(?rifformula # modelA:PatternGenerator )
         )
       )
-      Forall ?rifformula ?child (
+      Forall ?rifformula ?child ?arglist(
         If And (
           ?rifformula # modelA:PatternGenerator
           ?rifformula[rif:args -> ?arglist]
@@ -205,7 +205,7 @@ Document(
         If ?rifimply[rif:then -> ?action]
         Then Do (Assert( ?action # modelA:ActionGenerator))
       )
-      Forall ?rifdo ?action ?actionlist (
+      Forall ?action (
         If Or (
             ?action # rif:Assert
             ?action # rif:Retract
@@ -224,7 +224,7 @@ Document(
         )
         Then Do (Assert( ?action # modelA:ActionGenerator))
       )
-      Forall ?rifexternal ?rifatom (
+      Forall ?rifexternal ?rifatom ?child (
         If And (
           ?rifexternal # rif:External
           ?rifexternal[rif:content -> ?rifatom]
