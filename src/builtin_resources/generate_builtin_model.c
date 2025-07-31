@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <getopt.h>
 #include "ffi_constants.h"
 #include "crifi_builtin_resources.h"
@@ -270,7 +271,7 @@ static int parse(int argc, char* argv[]){
 	int c;
 	int option_index = 0;
 	while (1){
-		c = getopt_long(argc, argv, "aAbvs",
+		c = getopt_long(argc, argv, "aAbvs:",
 				parse_options, &option_index);
 		if (c == -1){
 			break;
@@ -296,6 +297,9 @@ static int parse(int argc, char* argv[]){
 				break;
 			case 's':
 				out_filename_after_run_info = optarg;
+				fprintf(stderr, "printing information after run "
+						"to: %s\n",
+						out_filename_after_run_info);
 				break;
 			case HELP:
 				print_help(argv);
