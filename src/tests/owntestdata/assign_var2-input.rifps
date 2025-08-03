@@ -1,0 +1,18 @@
+Document(
+    Prefix(ex <http://example.com/>)
+    Group (
+      Forall ?rif ?pattern (
+        If And (
+          ?rif[ex:prop -> ?pattern]
+        ) Then ex:ok()
+      )
+      Forall ?frame (
+        If And (
+          ex:find-frame(?frame)
+          Not (Exists ?x (
+            ?frame[ex:b -> ?x]
+          ))
+        ) Then ex:ok()
+      )
+    )
+)

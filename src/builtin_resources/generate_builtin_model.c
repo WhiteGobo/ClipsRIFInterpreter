@@ -297,9 +297,6 @@ static int parse(int argc, char* argv[]){
 				break;
 			case 's':
 				out_filename_after_run_info = optarg;
-				fprintf(stderr, "printing information after run "
-						"to: %s\n",
-						out_filename_after_run_info);
 				break;
 			case HELP:
 				print_help(argv);

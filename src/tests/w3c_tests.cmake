@@ -23,6 +23,7 @@ list(APPEND owntargets
 	circular_patterns1
 	circular_patterns2
 	assign_var1
+	assign_var2
 )
 
 foreach(base ${owntargets})
