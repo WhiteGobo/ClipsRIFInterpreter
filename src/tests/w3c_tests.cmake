@@ -15,7 +15,6 @@ list(APPEND rdfformats "ttl" "ntriples")
 #set(qq)
 #find_file(qq "Arbitrary_Entailment-conclusion.ntriples" HINTS "${CMAKE_CURRENT_SOURCE_DIR}/data/" NO_CACHE)
 #set(qq2 "${qq}")
-#message(FATAL_ERROR "brubru ${qq1} ${qq2}")
 
 list(APPEND owntargets
 	openlist_as_pattern

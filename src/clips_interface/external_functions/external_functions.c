@@ -10,7 +10,7 @@ static bool AddUDF_witherrorprint(
 	if (CT_static == qq.contextType){
 		cntxt = qq.context;
 	} else if (CT_generate == qq.contextType ) {
-		cntxt = "brubru";
+		cntxt = "anonymcontext";
 	}
 	AddUDFError err = AddUDF(env, qq.clipsName, qq.returnTypes,
 			qq.minArgs, qq.maxArgs, qq.argTypes, qq.cfp,

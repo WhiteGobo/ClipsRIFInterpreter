@@ -57,4 +57,3 @@ function(compile_resources name outputfile)
 	return()
 
 endfunction()
-#compile_resources(targetfile brubru TARGETS asdf qwer yxcv fghj)

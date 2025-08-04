@@ -102,7 +102,7 @@ static RET_CRIFI_IMPORT test_import_function(crifi_graph *graph,
 	int *qq = (int*) context;
 
 	*qq = 1;
-	fprintf(stderr, "test_import_function brubru\n");
+	fprintf(stderr, "test_import_function\n");
 	return RET_CRIFI_IMPORT_NOERROR;
 }
 

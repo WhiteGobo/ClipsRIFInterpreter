@@ -53,7 +53,6 @@ int main(int argc, char* argv[]){
 		err = EXIT_FAILURE;
 	}
 	close_graph(graph);
-	//if (err != EXIT_SUCCESS) fprintf(stderr, "brubru7\n");
 	exit(err);
 }
 

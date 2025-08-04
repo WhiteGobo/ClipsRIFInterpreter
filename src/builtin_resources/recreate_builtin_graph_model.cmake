@@ -9,6 +9,3 @@ add_custom_command(OUTPUT ${MODELA}
 #install(FILES ${MODELA}
 #	TYPE DATA
 #)
-
-
-#message(FATAL_ERROR "brubru ${MODELA}")

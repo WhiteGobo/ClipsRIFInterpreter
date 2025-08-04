@@ -56,10 +56,7 @@ static int new_bnode_entry(raptor_avltree* bnode_lookup, raptor_term* id, CLIPSV
 
 static int retrieve_blanknode(crifi_graph *graph, raptor_term *term, raptor_avltree* bnode_lookup, CLIPSValue* retval){
 	int err;
-	//BNodeEntry searcher = {.id = term};
-	raptor_term *qq = term;//raptor_new_term_from_blank(term->world, "brubru");
-	raptor_term_compare(qq, qq);
-	BNodeEntry searcher = {.id = qq};
+	BNodeEntry searcher = {.id = term};
 	BNodeEntry* existing;
 
 	existing = (BNodeEntry*) raptor_avltree_search(bnode_lookup, &searcher);

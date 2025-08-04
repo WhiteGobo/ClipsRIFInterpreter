@@ -828,7 +828,10 @@ Document(
       (* self:rule55 *) Forall ?rifrule ?rifaction (
         If Or (
           ?rifrule[rif:then -> ?rifaction]
-          ?rifrule[rif:formula -> ?rifaction]
+          And (
+            ?rifrule # rif:Forall
+            ?rifrule[rif:formula -> ?rifaction]
+          )
         ) Then Do (
           Assert(?rifrule["add-as-action"^^rif:local -> ?rifaction])
         )

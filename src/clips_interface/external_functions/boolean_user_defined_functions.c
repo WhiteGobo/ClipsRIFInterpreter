@@ -43,7 +43,6 @@ void rif_cast_boolean(Environment *env, UDFContext *udfc, UDFValue *out){
 		RETURNFAIL("Argerror for xs:boolean");
 	}
 	clipsinput.value = udfinput.value;
-	fprintf(stderr, "brubru\n");
 	if(!clipsvalue_as_numeric_value(env, clipsinput, &val)){
 		RETURNFAIL("Missing guard for xs:boolean.");
 	}

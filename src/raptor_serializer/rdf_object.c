@@ -282,8 +282,6 @@ RDFContext* init_rdf_context(raptor_world *world){
 }
 
 void free_rdf_context(RDFContext* cntxt){
-	fprintf(stderr, "free in cntxt: %d, rdftype: %d\n", cntxt, cntxt->rdf_type);
-	fprintf(stderr, "brubru free_rdf_context\n");
 	raptor_free_term(cntxt->rdf_type);
 	raptor_free_term(cntxt->rdf_first);
 	raptor_free_term(cntxt->rdf_rest);
