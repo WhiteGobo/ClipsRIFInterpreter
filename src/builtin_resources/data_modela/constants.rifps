@@ -242,8 +242,11 @@ Document(
         )
         Forall ?rifforall ?varlist ?rifvar (
           If And (
-            ?rifforall # rif:Forall
             ?rifforall[rif:vars -> ?varlist]
+            Or (
+              ?rifforall # rif:Exists
+              ?rifforall # rif:Forall
+            )
             External(pred:is-list(?varlist))
             ?rifvar # rif:Var
             External(pred:list-contains(?varlist ?rifvar))
@@ -273,39 +276,6 @@ Document(
           ) Then Do (
             Assert(?clipsvar # cs:Variable)
             Assert(?clipsvar[cs:variable-name -> ?varname])
-          )
-        )
-        Forall ?rifforall ?varlist ?rifvar ?varname ?rifvarchild(
-          If And (
-            ?rifexists # rif:Exists
-            ?rifexists[rif:vars -> ?varlist]
-            External(pred:is-list(?varlist))
-            ?rifvar # rif:Var
-            External(pred:list-contains(?varlist ?rifvar))
-          ) Then Do (
-            (?clipsnode New())
-            Assert(?rifvar[ex:provides-expression -> ?clipsnode])
-          )
-        )
-        Forall ?rifforall ?varlist ?rifvar ?varname ?rifvarchild(
-          If And (
-            ?rifexists # rif:Exists
-            ?rifexists[rif:vars -> ?varlist]
-            External(pred:is-list(?varlist))
-            ?rifvar[rif:varname -> ?varname]
-            External(pred:list-contains(?varlist ?rifvar))
-            Not( Exists ?expr (?rifvar[ex:as-expression -> ?expr]))
-            ?rifvarchild[rif:varname -> ?varname]
-            ?rifvar[ex:inherits-data -> ?rifvarchild]
-            ?rifframe[rif:object -> ?rifvarchild]
-            ?rifframe[ex:as-expression -> ?factvar]
-            ex:always-wrong()
-          ) Then Do (
-            (?clipsnode New())
-            Assert(?rifvar[ex:provides-expression -> ?clipsnode])
-            Assert( ?clipsnode[cs:member-variable -> ?factvar] )
-            Assert( ?clipsnode[cs:member-slot-name -> "subject"] )
-            Assert( ?clipsnode[ex:as-constraint-needs-additional-conditionals -> External(func:make-list())])
           )
         )
         Forall ?rifforall ?varlist ?rifvar ?varname ?rifvarchild ?slotlist ?rifslot(
