@@ -43,10 +43,10 @@ while(${length} GREATER 0)
 	string(LENGTH "${bytes}" n_bytes2)
 	math(EXPR n_bytes "${n_bytes2} / 2")
 	if(n_bytes GREATER 4294967295)
-		message(FATAL_ERROR "Can only compile resources with "
-					"maximal size of uint32_t."
-					"Please dont compile resources in code "
-					"that are >1GB big :(")
+		message(FATAL_ERROR "\
+Can only compile resources with maximal size of uint32_t. \
+Please dont compile resources in code that are >1GB big :("
+		)
 	endif()
 	#math(EXPR remainder "${n_bytes} % 5") # <-- '5' is the grouping count from above
 	#set(cleanup_re "$")

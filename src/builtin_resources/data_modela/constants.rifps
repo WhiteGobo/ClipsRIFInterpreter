@@ -191,11 +191,11 @@ Document(
             Assert( ?parent[ex:inherits-data -> ?child] )
           )
         )
-        Forall ?rifdo ?actionvar ?rifvar ?varname ?rifframe(
+        Forall ?rifdo ?actionvar ?rifvar ?rifframe(
           If And (
             ?rifdo[rif:actionVar -> ?actionvar]
             External(pred:is-list(?actionvar))
-            ?rifvar[rif:varname -> ?varname]
+            ?rifvar # rif:Var
             ?rifframe # rif:Frame
             External(pred:list-contains(?actionvar ?rifvar))
             External(pred:list-contains(?actionvar ?rifframe))
@@ -230,22 +230,22 @@ Document(
             Assert( ?rifvar[ex:inherits-data -> ?rifdo] )
           )
         )
-        Forall ?rifforall ?varlist ?rifvar ?varname (
+        Forall ?rifforall ?varlist ?rifvar (
           If And (
             ?rifforall[rif:vars -> ?varlist]
             External(pred:is-list(?varlist))
-            ?rifvar[rif:varname -> ?varname]
+            ?rifvar # rif:Var
             External(pred:list-contains(?varlist ?rifvar))
           ) Then Do (
             Assert( ?rifvar[ex:inherits-data -> ?rifforall] )
           )
         )
-        Forall ?rifforall ?varlist ?rifvar ?varname (
+        Forall ?rifforall ?varlist ?rifvar (
           If And (
             ?rifforall # rif:Forall
             ?rifforall[rif:vars -> ?varlist]
             External(pred:is-list(?varlist))
-            ?rifvar[rif:varname -> ?varname]
+            ?rifvar # rif:Var
             External(pred:list-contains(?varlist ?rifvar))
           ) Then Do (
             (?clipsnode New())
