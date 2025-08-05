@@ -410,11 +410,14 @@ static void create_new_check(crifi_graph *create_check_graph, FILE *memory){
 	switch(err){
 		case CRIFI_SERIALIZE_SCRIPT_NOERROR:
 			return;
+		case CRIFI_SERIALIZE_MISSING_ROOT_FUNCTION:
+			FAIL() << "Graph not usable for "
+				"serialize_information_as_clips_function. "
+				"root function couldnt be found.";
 		case CRIFI_SERIALIZE_BROKEN_GRAPH:
 			FAIL() << "Graph not usable for "
 				"serialize_information_as_clips_function. "
-				"Either graph structure isnt as expected or "
-				"root function couldnt be found.";
+				"Graph structure isnt as expected.";
 		case CRIFI_SERIALIZE_MALLOC_ERROR:
 		case CRIFI_SERIALIZE_SCRIPT_CANT_CREATE_NODE:
 		case CRIFI_SERIALIZE_SCRIPT_CANT_CREATE_STRUCTS:

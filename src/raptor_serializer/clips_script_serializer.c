@@ -1237,7 +1237,7 @@ CRIFI_SERIALIZE_SCRIPT_RET serialize_information_as_clips_function(FILE* stream,
 					cntxt->ex_rootfunction);
 	if (rootfunction_n == NULL){
 		free_context(cntxt);
-		return CRIFI_SERIALIZE_MALLOC_ERROR;
+		return CRIFI_SERIALIZE_MISSING_ROOT_FUNCTION;
 	}
 	serialize_err = fprintf_function(cntxt, stream, rootfunction_n);
 

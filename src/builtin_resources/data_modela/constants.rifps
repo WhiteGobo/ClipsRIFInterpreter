@@ -280,6 +280,18 @@ Document(
             ?rifexists # rif:Exists
             ?rifexists[rif:vars -> ?varlist]
             External(pred:is-list(?varlist))
+            ?rifvar # rif:Var
+            External(pred:list-contains(?varlist ?rifvar))
+          ) Then Do (
+            (?clipsnode New())
+            Assert(?rifvar[ex:provides-expression -> ?clipsnode])
+          )
+        )
+        Forall ?rifforall ?varlist ?rifvar ?varname ?rifvarchild(
+          If And (
+            ?rifexists # rif:Exists
+            ?rifexists[rif:vars -> ?varlist]
+            External(pred:is-list(?varlist))
             ?rifvar[rif:varname -> ?varname]
             External(pred:list-contains(?varlist ?rifvar))
             Not( Exists ?expr (?rifvar[ex:as-expression -> ?expr]))
@@ -287,6 +299,7 @@ Document(
             ?rifvar[ex:inherits-data -> ?rifvarchild]
             ?rifframe[rif:object -> ?rifvarchild]
             ?rifframe[ex:as-expression -> ?factvar]
+            ex:always-wrong()
           ) Then Do (
             (?clipsnode New())
             Assert(?rifvar[ex:provides-expression -> ?clipsnode])
