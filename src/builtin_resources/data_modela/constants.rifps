@@ -48,12 +48,26 @@ Document(
         )
       )
       Group (
-        Forall ?factvar (
+        Forall ?rifvar ?factvar ?varname (
           If And (
-            ?factvar # ex:Unknown-Variable
+            ?factvar # ex:Variable
+            ?rifvar[ex:provides-expression -> ?factvar]
+            ?rifvar[rif:varname -> ?varname]
             ex:currentfactindex(?factindex)
             Not (Exists ?factname ( ?factvar[cs:variable-name -> ?factname] ))
           ) Then Do (
+            Assert(?factvar # cs:Variable)
+            Assert(?factvar[cs:variable-name -> ?varname])
+          )
+        )
+        Forall ?factvar (
+          If And (
+            ?factvar # ex:Variable
+            Not(Exists ?rifvar (?rifvar[ex:provides-expression -> ?factvar]))
+            ex:currentfactindex(?factindex)
+            Not (Exists ?factname ( ?factvar[cs:variable-name -> ?factname] ))
+          ) Then Do (
+            Assert(?factvar # cs:Variable)
             Retract( ex:currentfactindex(?factindex) )
 
             Assert( ex:currentfactindex(External(func:numeric-add(?factindex 1))))
@@ -255,16 +269,6 @@ Document(
             Assert(?clipsnode # cs:Variable)
             Assert(?rifvar[ex:provides-expression -> ?clipsnode])
             Assert(?clipsnode[ex:as-constraint-needs-additional-conditionals -> External(func:make-list())])
-          )
-        )
-        Forall ?rifvar ?varname ?clipsvar ?clipspattern (
-          If And (
-            ?rifvar[rif:varname -> ?varname]
-            ?rifvar[ex:provides-expression -> ?clipsvar]
-            ?clipspattern[cs:constraint -> ?clipsvar]
-          ) Then Do (
-            Assert(?clipsvar # cs:Variable)
-            Assert(?clipsvar[cs:variable-name -> ?varname])
           )
         )
         Forall ?rifvar ?varname ?clipsvar ?clipspattern (

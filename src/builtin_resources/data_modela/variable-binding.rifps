@@ -573,6 +573,14 @@ Document(
           )
         )
       )
+      Forall ?rifframe ?clipsvar (
+        If And (
+          ?rifframe # modelA:TripleTemplateGenerator
+          ?rifframe[modelA:binds-var -> ?clipsvar]
+        ) Then Do (
+          Assert( ?clipsvar # ex:Variable )
+        )
+      )
       (* self:rule41 *) Forall ?formula ?formulacontainer ?clipsvar (
         If And (
           ?formula["transfer-variable-binding"^^rif:local -> ?formulacontainer]

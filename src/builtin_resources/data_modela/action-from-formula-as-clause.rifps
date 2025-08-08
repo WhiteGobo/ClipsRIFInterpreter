@@ -91,7 +91,7 @@ Document(
           Assert( ?slotsubj[cs:member-variable -> ?tmpvar] )
           Assert( ?slotsubj[cs:member-slot-name -> "subject"] )
           Assert( ?tmpvar # cs:Variable )
-          Assert( ?tmpvar # ex:Unknown-Variable )
+          Assert( ?tmpvar # ex:Variable )
         )
       )
       Forall ?rifmodify ?clause ?rifobject ?subjterm (

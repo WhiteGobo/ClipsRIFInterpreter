@@ -25,7 +25,7 @@ Document(
           (?factquery New())
           (?slotsubj New())
           Assert( ?factvariable # cs:Variable )
-          Assert( ?factvariable # ex:Unknown-Variable )
+          Assert( ?factvariable # ex:Variable )
           Assert( ?rifretract[ex:as-action -> External(func:make-list(?clipsretract))] )
           Assert( ?clipsretract[cs:function-name -> "retract"] )
           Assert( ?clipsretract[cs:function-args -> External( func:make-list(?clipsexpand))] )

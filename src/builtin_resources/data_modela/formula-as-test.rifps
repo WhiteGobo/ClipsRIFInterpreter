@@ -143,7 +143,6 @@ Document(
           Assert( ?funccheck[cs:function-name -> "eq"] )
           Assert( ?funccheck[cs:function-args -> External(func:make-list(?slotsubj ?subj))] )
           Modify( ?query[cs:function-args -> External(func:append(?querylist ?funccheck))] )
-          Retract( ?checktriple[ex:checktriplesubject -> ?rifsubject] )
         )
       )
       Forall ?checktriple ?factvar ?checktriple (
@@ -161,7 +160,6 @@ Document(
           Assert( ?funccheck[cs:function-name -> "eq"] )
           Assert( ?funccheck[cs:function-args -> External(func:make-list(?slotpred ?pred))] )
           Modify( ?query[cs:function-args -> External(func:append(?querylist ?funccheck))] )
-          Retract( ?checktriple[ex:checktriplesubject -> ?rifpredicate] )
         )
       )
       Forall ?checktriple ?factvar ?checktriple (
@@ -255,7 +253,6 @@ Document(
           Assert( ?checktriple[ex:checktripleobject -> ?slotvalue] )
           Assert( ?checktriple[ex:triplevariable -> ?factvar] )
           Assert( ?checktriple[ex:addchecktoquery -> ?query] )
-          Assert( ?rifframe[ex:as-expression -> ?factvar])
 
         )
       )
@@ -267,6 +264,23 @@ Document(
           ?hastestaction[ex:as-test-action -> ?testaction]
         ) Then Do (
           Assert( ?rifexists[ex:as-test-action -> ?testaction] )
+        )
+      )
+      Forall ?rootformula ?rifvar ?clipsvar ?varlist (
+        If And (
+          ?rootformula # rif:Exists
+          ?rifvar # rif:Var
+          ?rifvar[ex:provides-expression -> ?clipsvar]
+          ?rootformula[rif:vars -> ?varlist]
+          External(pred:list-contains(?varlist ?rifvar))
+          ?checktriple[ex:checktriplesubject -> ?rifsubject]
+          ?checktriple[ex:triplevariable -> ?factvar]
+          ?rifsubject[ex:as-expression -> ?clipsvar]
+        ) Then Do (
+          (?qq New())
+          Assert( ?clipsvar[cs:var-as-const-expr -> ?qq] )
+          Assert( ?qq[cs:member-variable -> ?factvar] )
+          Assert( ?qq[cs:member-slot-name -> "subject"] )
         )
       )
 

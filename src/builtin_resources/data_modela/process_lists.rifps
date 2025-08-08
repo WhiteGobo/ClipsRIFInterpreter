@@ -66,7 +66,7 @@ Document(
           (?listasvar New())
           Assert( ?riflist[ex:as-constraint -> ?listasvar] )
           Assert( ?listasvar # cs:Variable )
-          Assert( ?listasvar # ex:Unknown-Variable )
+          Assert( ?listasvar # ex:Variable )
           Assert( ?riflist # modelA:ConstraintNeedsAdditionalPatterns )
         )
       )
@@ -245,7 +245,7 @@ Document(
               (?testvaraction New())
               (?oldpatternlist ?defrule[cs:conditional-element -> ?oldpatternlist])
               Assert( ?tmplistasvar # cs:Variable )
-              Assert( ?tmplistasvar # ex:Unknown-Variable )
+              Assert( ?tmplistasvar # ex:Variable )
 
               Assert( ?testvarpattern # cs:TestCE )
               Assert(?testvarpattern[cs:function-call -> ?testvaraction])
