@@ -12,6 +12,17 @@ Document(
     Prefix(entailment <http://www.w3.org/ns/entailment/>)
     Prefix(ex <http://example.com/>)
     Group (
+      Group -101 (
+        Forall ?rif ?arglist (
+          If And (
+            ?rif["add-atom-args-as-constraint"^^rif:local -> ?arglist]
+            External(pred:numeric-greater-than(External(func:count(?arglist)) 0))
+          ) Then Do (
+            Assert( ?rif # ex:couldnt-add-all-argument )
+            Execute(crifi:set-graph-in-errorstate("Missing argument for expression(ex:couldnt-add-all-argument)"))
+          )
+        )
+      )
       Forall ?rifatom (
         If And (
           ?rifatom # modelA:AtomPatternGenerator

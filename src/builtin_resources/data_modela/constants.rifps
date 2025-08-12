@@ -223,6 +223,10 @@ Document(
           If And (
             ?parent[ex:inherits-data -> ?child]
             ?child[ex:inherits-data -> ?grandchild]
+            Or (
+              ?grandchild # rif:Const
+              ?grandchild # rif:Var
+            )
           ) Then Do (
             Assert( ?parent[ex:inherits-data -> ?grandchild])
           )
@@ -252,6 +256,17 @@ Document(
             External(pred:list-contains(?varlist ?rifvar))
           ) Then Do (
             Assert( ?rifvar[ex:inherits-data -> ?rifforall] )
+          )
+        )
+        Forall ?rifforall ?varlist ?rifvar (
+          If And (
+            ?rifforall[rif:vars -> ?varlist]
+            ?rifforall # rif:Exists
+            External(pred:is-list(?varlist))
+            ?rifvar # rif:Var
+            External(pred:list-contains(?varlist ?rifvar))
+          ) Then Do (
+            Assert( ?rifvar # ex:brubru5 )
           )
         )
         Forall ?rifforall ?varlist ?rifvar (

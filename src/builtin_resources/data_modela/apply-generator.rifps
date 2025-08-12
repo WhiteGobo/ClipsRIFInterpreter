@@ -77,6 +77,19 @@ Document(
           Assert(?term # ex:ExpressionGenerator)
         )
       )
+      Forall ?riflist ?arglist ?term (
+        If And (
+          ?riflist # ex:ExpressionGenerator
+          ?riflist[rif:items -> ?arglist]
+          Or (
+            ?term # rif:List
+            ?term # rif:External
+          )
+          External(pred:list-contains(?arglist ?term))
+        ) Then Do (
+          Assert(?term # ex:ExpressionGenerator)
+        )
+      )
       Forall ?patterngen ?term (
         If And (
           ?patterngen # modelA:RHSPatternGenerator

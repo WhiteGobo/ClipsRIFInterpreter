@@ -1,0 +1,25 @@
+Document(
+    Prefix(ex <http://example.com/>)
+    Group (
+        Forall ?rifequal ?formulacontainer ?rifleft ?rifright ?formulalist (
+          If And (
+            ?formulacontainer["add-pattern-from"^^rif:local -> ?rifequal]
+            ?rifequal # rif:Equal
+            ?rifequal[rif:left -> ?rifleft]
+            ?rifequal[rif:right -> ?rifright]
+            Not(?formulacontainer["added-pattern-from"^^rif:local -> ?rifequal])
+            Not (Exists ?x ( And(
+              ?rifleft["expression-needs-var"^^rif:local -> ?x]
+              Not( ?rifequal["bound-variable"^^rif:local -> ?x] )
+            )))
+            Not (Exists ?x ( And(
+              ?rifright["expression-needs-var"^^rif:local -> ?x]
+              Not( ?rifequal["bound-variable"^^rif:local -> ?x] )
+            )))
+            ?formulacontainer["formulalist"^^rif:local -> ?formulalist]
+        ) Then Do (
+          Assert( ex:ok() )
+        )
+      )
+    )
+)

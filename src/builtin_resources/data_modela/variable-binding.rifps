@@ -250,7 +250,7 @@ Document(
       (* self:rule18 *) Forall ?x (
         If ?x # modelA:ConditionGenerator Then "check-binding"^^rif:local(?x)
       )
-      (* self:rule19 *) Forall ?parent ?x ?slotlist (
+      (* self:rule19 *) Forall ?parent ?x ?slotlist ?slot (
         If And (
           ?parent # modelA:ConditionGenerator
           ?parent[rif:slots -> ?slotlist]
@@ -611,7 +611,7 @@ Document(
         )
       )
       Group -10 (
-        (* self:rule44 *) Forall ?riflist (
+        (* self:rule44 *) Forall ?riflist ?rest (
           If And (
             ?riflist # rif:List
             ?riflist # modelA:ConstraintGenerator
@@ -636,7 +636,7 @@ Document(
             Assert( ?riflist # modelA:ListAsConstraint )
           )
         )
-        (* self:rule46 *) Forall ?formulacontainer ?rifframe ?frameobject ?slotlist ?slot ?slotkey ?slotvalue (
+        (* self:rule46 *) Forall ?formulacontainer ?rifframe ?frameobject ?slotlist ?slot ?slotkey ?slotvalue ?formulalist (
           If And (
             ?formulacontainer["add-pattern-from"^^rif:local -> ?rifframe]
             ?rifframe[rif:object -> ?frameobject]

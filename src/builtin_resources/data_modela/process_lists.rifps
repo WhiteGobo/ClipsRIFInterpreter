@@ -12,6 +12,17 @@ Document(
     Prefix(entailment <http://www.w3.org/ns/entailment/>)
     Prefix(modelA <http://white.gobo/modelA#>)
     Group 10 (
+      Group -101 (
+        Forall ?rif ?arglist (
+          If And (
+            ?rif["add-args-as-expression-from"^^rif:local -> ?arglist]
+            External(pred:numeric-greater-than(External(func:count(?arglist)) 0))
+          ) Then Do (
+            Assert( ?rif # ex:couldnt-add-all-items )
+            Execute(crifi:set-graph-in-errorstate("Missing items for list(ex:couldnt-add-all-items)"))
+          )
+        )
+      )
       Forall ?riflist ?rest (
         If And (
           ?riflist[rif:rest -> ?rest]
