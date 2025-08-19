@@ -11,15 +11,16 @@ Document(
     Prefix(rif <http://www.w3.org/2007/rif#>)
     Prefix(entailment <http://www.w3.org/ns/entailment/>)
     Prefix(modelA <http://white.gobo/modelA#>)
+    Prefix(self <http://example.com/process-external#>)
     Group (
-      Forall ?rifexternal (
+      (* self:rule01 *) Forall ?rifexternal (
         If And (
           ?rifexternal # modelA:TestPatternExternalGenerator
         ) Then Do (
           Assert(?rifexternal # modelA:ExpressionGenerator)
         )
       )
-      Forall ?rifexternal ?rifatom ?op ?arglist ?actionsymbol(
+      (* self:rule02 *) Forall ?rifexternal ?action (
         If And (
           ?rifexternal # modelA:TestPatternExternalGenerator
           ?rifexternal[ex:as-expression -> ?action]
@@ -32,7 +33,7 @@ Document(
       )
       Group 10 (
         Group 15 (
-          Forall ?function ?rifarglist ?firstarg (
+          (* self:rule03 *) Forall ?function ?rifarglist ?firstarg ?clipsexpression (
             If And (
               ?function[ex:add-args-from -> ?rifarglist]
               External(pred:is-list(?rifarglist))
@@ -45,7 +46,7 @@ Document(
             )
           )
         )
-        Forall ?content ?rifop ?rifarglist ?functionname ?functionsymbol (
+        (* self:rule04 *) Forall ?rifexternal ?content ?rifop ?functionsymbol ?functionname ?rifarglist (
           If And (
             ?rifexternal # rif:External
             ?rifexternal[rif:content -> ?content]

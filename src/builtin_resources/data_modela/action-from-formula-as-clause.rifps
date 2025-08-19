@@ -10,8 +10,9 @@ Document(
     Prefix(triplestordf <http://example.com/triples-to-rdf#>)
     Prefix(rif <http://www.w3.org/2007/rif#>)
     Prefix(entailment <http://www.w3.org/ns/entailment/>)
+    Prefix(self <http://example.com/action-from-formula-as-clause#>)
     Group (
-      Forall ?rifrule ?clause (
+      (* self:rule09 *) Forall ?rifrule ?clause (
         If And (
           Or (
             ?rifrule[rif:then -> ?clause]
@@ -29,7 +30,7 @@ Document(
           Assert( ?clipsaction[ex:assert-uses-pattern-from -> ?clause] )
         )
       )
-      Forall ?rifassert ?clause (
+      (* self:rule10 *) Forall ?rifassert ?clause (
         If And (
           ?rifassert # rif:Assert
           ?rifassert[rif:target -> ?clause]
@@ -45,7 +46,7 @@ Document(
           Assert( ?clipsaction[ex:assert-uses-pattern-from -> ?clause] )
         )
       )
-      Forall ?rifretract ?clause (
+      (* self:rule11 *) Forall ?rifretract ?clause (
         If And (
           ?rifretract # rif:Retract
           ?rifretract[rif:target -> ?clause]
@@ -63,7 +64,7 @@ Document(
           Assert( ?clipsaction[ex:retract-uses-pattern-from -> ?clause] )
         )
       )
-      Forall ?rifretract ?rifterm ?clipsterm(
+      (* self:rule12 *) Forall ?rifretract ?rifterm ?clipsterm(
         If And (
           ?rifretract # rif:Retract
           ?rifretract[rif:target -> ?rifterm]
@@ -94,7 +95,7 @@ Document(
           Assert( ?tmpvar # ex:Variable )
         )
       )
-      Forall ?rifmodify ?clause ?rifobject ?subjterm (
+      (* self:rule13 *) Forall ?rifmodify ?clause ?rifobject ?subjterm (
         If And (
           ?rifmodify # rif:Modify
           ?rifmodify[rif:target -> ?clause]
@@ -136,7 +137,7 @@ Document(
           Assert( ?clipsassert[ex:assert-uses-pattern-from -> ?clause] )
         )
       )
-      Forall ?comparepredicate ?tmpvar ?rifframe ?slotlist ?slot ?slotkey ?slotkeyterm (
+      (* self:rule14 *) Forall ?comparepredicate ?tmpvar ?rifframe ?slotlist ?slot ?slotkey ?slotkeyterm (
         If And (
           ?comparepredicate[ex:compare-slotkeys-varpredicate-rifframe -> ?rifframe]
           ?comparepredicate[ex:compare-slotkeys-varpredicate-tmpvar -> ?tmpvar]
@@ -155,7 +156,7 @@ Document(
         )
       )
 
-      Forall ?clipsassert ?rifformula ?rhspattern (
+      (* self:rule15 *) Forall ?clipsassert ?rifformula ?rhspattern (
         If And (
           ?clipsassert[ex:assert-uses-pattern-from -> ?rifformula]
           ?rifformula[ex:as-rhspattern -> ?rhspattern]
@@ -163,7 +164,7 @@ Document(
           Assert( ?clipsassert[cs:assert -> ?rhspattern] )
         )
       )
-      Forall ?clipsretract ?rifformula ?rhspattern (
+      (* self:rule16 *) Forall ?clipsretract ?rifformula ?rhspattern (
         If And (
           ?clipsretract[ex:retract-uses-pattern-from -> ?rifformula]
           ?rifformula[ex:as-rhspattern -> ?rhspattern]
@@ -175,7 +176,7 @@ Document(
         )
       )
 
-      Forall ?rifatom ?op ?expressionop ?arglist (
+      (* self:rule01 *) Forall ?rifatom ?op ?expressionop ?arglist (
         If And (
           ?rifatom # ex:RHSPatternGenerator
           ?rifatom[rif:op -> ?op]
@@ -196,7 +197,7 @@ Document(
           Assert( ?slotargs[ex:add-atom-args-rhspattern -> ?arglist] )
         )
       )
-      Forall ?rifatom ?op ?expressionop (
+      (* self:rule05 *) Forall ?rifatom ?op ?expressionop (
         If And (
           ?rifatom[rif:op -> ?op]
           ?op[ex:as-expression -> ?expressionop]
@@ -215,7 +216,7 @@ Document(
         )
       )
       Group 10 (
-        Forall ?slotargs ?arglist ?firstarg ?clipsexpr(
+        (* self:rule02 *) Forall ?slotargs ?arglist ?firstarg ?clipsexpr(
           If And (
             ?slotargs[ex:add-atom-args-rhspattern -> ?arglist]
             ?firstarg[ex:as-expression -> ?clipsexpr]
@@ -227,7 +228,7 @@ Document(
           )
         )
         Group -100 (
-          Forall ?clipsfunction ?rifrestargs (
+          (* self:rule03 *) Forall ?clipsfunction ?rifrestargs (
             If And (
               ?clipsfunction[ex:add-atom-args-rhspattern -> ?rifrestargs]
               External( pred:numeric-not-equal(0 External(func:count(?rifrestargs))) )
@@ -237,15 +238,17 @@ Document(
             )
           )
         )
-        Forall ?slotargs (
-          If ?slotargs[ex:add-atom-args-rhspattern -> List()]
-          Then Do(
-            Retract(?slotargs[ex:add-atom-args-rhspattern -> List()])
+        (* self:rule04 *) Forall ?slotargs ?list (
+          If And (
+            ?slotargs[ex:add-atom-args-rhspattern -> ?list]
+            External( pred:numeric-equal(0 External(func:count(?list))) )
+          ) Then Do(
+            Retract(?slotargs[ex:add-atom-args-rhspattern -> ?list])
           )
         )
       )
 
-      (* ex:as-expression-transform-rif-frame *) Forall ?rifnode ?slotlist ?slot ?currentconditionalelement ?clipsrestraint ?slotvalue ?slotkey ?constraintsubject (
+      (* ex:as-expression-transform-rif-frame *) Forall ?rifnode ?object ?slotlist ?slot ?slotkey ?slotvalue ?expressionsubject ?expressionpredicate ?expressionobject (
         If And (
           ?rifnode[rif:object -> ?object]
           ?rifnode[rif:slots -> ?slotlist]
@@ -272,7 +275,7 @@ Document(
           Assert( ?slotobject[cs:field -> External(func:make-list(?expressionobject))])
         )
       )
-      Forall ?rifmember ?instance ?cls ?expressioninstance ?expressioncls (
+      (* self:rule07 *) Forall ?rifmember ?instance ?cls ?expressioninstance ?expressioncls (
         If And (
           ?rifmember[rif:instance -> ?instance]
           ?instance[ex:as-expression -> ?expressioninstance]
@@ -291,7 +294,7 @@ Document(
           Assert( ?slotcls[cs:field -> External(func:make-list(?expressioncls))] )
         )
       )
-      Forall ?rifsubclass ?sub ?super ?expressionsub ?expressionsuper (
+      (* self:rule08 *) Forall ?rifsuperclass ?sub ?super ?expressionsub ?expressionsuper (
         If And (
           ?rifsuperclass[rif:sub -> ?sub]
           ?sub[ex:as-expression -> ?expressionsub]

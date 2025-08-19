@@ -11,9 +11,10 @@ Document(
     Prefix(rif <http://www.w3.org/2007/rif#>)
     Prefix(entailment <http://www.w3.org/ns/entailment/>)
     Prefix(xs <http://www.w3.org/2001/XMLSchema#>)
+    Prefix(self <http://example.com/special_pred_translations_for_pattern#>)
     Group (
       Group 50 (
-        Forall ?rifframe ?slot ?defrule ?slotkey ?slotvalue ?frameobject (
+        (* self:rule01 *) Forall ?rifframe ?slot ?defrule ?slotkey ?slotvalue ?frameobject ?slotlist ?constraintsubject ?constraintobject (
           If And (
             ?rifframe[ex:add-as-pattern -> ?defrule]
             ?rifframe[rif:object -> ?frameobject]
@@ -56,7 +57,7 @@ Document(
         )
       )
       Group -1 (
-        Forall ?rifexternal ?rifatom ?rifopiristring ?defrule ?arglist ?targetiri ?targetstring ?varname ?clipsvar ?clipsexpression (
+        (* self:rule02 *) Forall ?rifconstiristring ?rifatom ?rifexternal ?defrule ?arglist ?targetiri ?varname ?clipsvar ?clipsexpression ?targetstring (
           If And (
             ?rifconstiristring[rif:constIRI -> "http://www.w3.org/2007/rif-builtin-predicate#iri-string"^^xs:anyURI]
             ?rifatom[rif:op -> ?rifconstiristring]

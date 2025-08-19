@@ -35,7 +35,7 @@ Document(
                 )
             )
 
-          (* ex:iter-transform-do *) Forall ?rifnode ?in ?out ?nextactions (
+          (* ex:iter-transform-do *) Forall ?rifnode ?in ?out ?nextactions ?firstaction (
               If And (
                 ?rifnode[ex:in-transform-do -> ?in]
                 ?rifnode[ex:out-transform-do -> ?out]
@@ -49,7 +49,7 @@ Document(
             )
           )
         (* ex:create-deffacts-for-groups *) Group (
-          (* ex:init-deffacts *) Forall ?group (
+          (* ex:init-deffacts *) Forall ?group ?sentences ?factable (
             If And (
               ?group[rif:sentences -> ?sentences]
               External(pred:is-list(?sentences))
@@ -68,7 +68,7 @@ Document(
               Assert( ?deffacts[cs:rhs-pattern -> External(func:make-list())] )
             )
           )
-          (* ex:add-fact-to-deffacts *) Forall ?group ?deffacts ?factable ?newrhspattern(
+          (* ex:add-fact-to-deffacts *) Forall ?group ?deffacts ?factable ?newrhspattern ?sentences (
             If And (
               ?group[rif:sentences -> ?sentences]
               ?group[ex:combine-deffacts-in -> ?deffacts]

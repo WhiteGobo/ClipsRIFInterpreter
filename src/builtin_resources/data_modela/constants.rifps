@@ -11,9 +11,10 @@ Document(
     Prefix(rif <http://www.w3.org/2007/rif#>)
     Prefix(entailment <http://www.w3.org/ns/entailment/>)
     Prefix(modelA <http://white.gobo/modelA#>)
+    Prefix(self <http://example.com/constants#>)
     Group(
       Group -100 (
-        Forall ?rifvar ?varname (
+        (* self:rule01 *) Forall ?rifvar ?varname (
           If And (
             ?rifvar[rif:varname -> ?varname]
             Not( Exists ?clipsnode (?rifvar[ex:as-expression -> ?clipsnode]))
@@ -25,7 +26,7 @@ Document(
         )
       )
       Group -102 (
-        Forall ?clipsvar (
+        (* self:rule02 *) Forall ?clipsvar (
           If And (
             ?clipsvar # cs:Variable
             Not( Exists ?varname (?clipsvar[cs:variable-name -> ?varname]))
@@ -35,7 +36,7 @@ Document(
             Execute(crifi:set-graph-in-errorstate("A cs:Variable has no expression. missing cs:variable-name or cs:var-as-const-expr.(modelA:missing-var-expression)"))
           )
         )
-        Forall ?rifvar ?varname ?rifvarchild ?clipsvar(
+        (* self:rule03 *) Forall ?rifvar ?varname ?clipsvar (
           If And (
             ?rifvar[rif:varname -> ?varname]
             ?rifvar[ex:provides-expression -> ?clipsvar]
@@ -48,7 +49,7 @@ Document(
         )
       )
       Group (
-        Forall ?rifvar ?factvar ?varname (
+        (* self:rule04 *) Forall ?rifvar ?factvar ?varname ?factindex (
           If And (
             ?factvar # ex:Variable
             ?rifvar[ex:provides-expression -> ?factvar]
@@ -60,7 +61,7 @@ Document(
             Assert(?factvar[cs:variable-name -> ?varname])
           )
         )
-        Forall ?factvar (
+        (* self:rule05 *) Forall ?factvar ?factindex (
           If And (
             ?factvar # ex:Variable
             Not(Exists ?rifvar (?rifvar[ex:provides-expression -> ?factvar]))
@@ -75,7 +76,7 @@ Document(
 
           )
         )
-        Forall ?factvar ?rifformula (
+        (* self:rule06 *) Forall ?factvar ?rifformula ?factindex (
           If And (
             ?factvar # cs:Variable
             ex:currentfactindex(?factindex)
@@ -100,7 +101,7 @@ Document(
         ex:currentfactindex(1)
       )
       (* ex:rif-inheritance *) Group 100 (
-        Forall ?parent ?child ?x (
+        (* self:rule07 *) Forall ?parent ?child ?x (
           If And (
             Or (
               ?parent[rif:formula -> ?child]
@@ -123,7 +124,7 @@ Document(
             Assert( ?parent[ex:inherits-data -> ?child] )
           )
         )
-        Forall ?parent ?atom ?childlist ?child (
+        (* self:rule09 *) Forall ?parent ?atom ?childlist ?child ?x (
           If And (
             ?parent[rif:content -> ?atom]
             ?atom[rif:args -> ?childlist]
@@ -141,7 +142,7 @@ Document(
             Assert( ?parent[ex:inherits-data -> ?child] )
           )
         )
-        Forall ?parent ?slotlist ?slot ?childkey ?childvalue (
+        (* self:rule10 *) Forall ?parent ?slotlist ?slot ?childkey ?x (
           If And (
             ?parent[rif:slots -> ?slotlist]
             External(pred:is-list(?slotlist))
@@ -153,7 +154,7 @@ Document(
             Assert( ?parent[ex:inherits-data -> ?childkey] )
           )
         )
-        Forall ?parent ?slotlist ?slot ?childkey ?childvalue (
+        (* self:rule11 *) Forall ?parent ?slotlist ?slot ?childvalue ?x (
           If And (
             ?parent[rif:slots -> ?slotlist]
             External(pred:is-list(?slotlist))
@@ -165,7 +166,7 @@ Document(
             Assert( ?parent[ex:inherits-data -> ?childvalue] )
           )
         )
-        Forall ?parent ?childlist ?child (
+        (* self:rule12 *) Forall ?parent ?childlist ?child ?x (
           If And (
             Or (
               ?parent[rif:sentences -> ?childlist]
@@ -205,7 +206,7 @@ Document(
             Assert( ?parent[ex:inherits-data -> ?child] )
           )
         )
-        Forall ?rifdo ?actionvar ?rifvar ?rifframe(
+        (* self:rule13 *) Forall ?rifdo ?actionvar ?rifvar ?rifframe (
           If And (
             ?rifdo[rif:actionVar -> ?actionvar]
             External(pred:is-list(?actionvar))
@@ -219,7 +220,7 @@ Document(
           )
         )
 
-        Forall ?parent ?child ?grandchild (
+        (* self:rule14 *) Forall ?parent ?child ?grandchild (
           If And (
             ?parent[ex:inherits-data -> ?child]
             ?child[ex:inherits-data -> ?grandchild]
@@ -248,7 +249,7 @@ Document(
             Assert( ?rifvar[ex:inherits-data -> ?rifdo] )
           )
         )
-        Forall ?rifforall ?varlist ?rifvar (
+        (* self:rule16 *) Forall ?rifforall ?varlist ?rifvar (
           If And (
             ?rifforall[rif:vars -> ?varlist]
             External(pred:is-list(?varlist))
@@ -258,7 +259,7 @@ Document(
             Assert( ?rifvar[ex:inherits-data -> ?rifforall] )
           )
         )
-        Forall ?rifforall ?varlist ?rifvar (
+        (* self:rule17 *) Forall ?rifforall ?varlist ?rifvar (
           If And (
             ?rifforall[rif:vars -> ?varlist]
             ?rifforall # rif:Exists
@@ -269,13 +270,9 @@ Document(
             Assert( ?rifvar # ex:brubru5 )
           )
         )
-        Forall ?rifforall ?varlist ?rifvar (
+        (* self:rule18 *) Forall ?rifforall ?varlist ?rifvar (
           If And (
             ?rifforall[rif:vars -> ?varlist]
-            Or (
-              ?rifforall # rif:Exists
-              ?rifforall # rif:Forall
-            )
             External(pred:is-list(?varlist))
             ?rifvar # rif:Var
             External(pred:list-contains(?varlist ?rifvar))
@@ -286,7 +283,7 @@ Document(
             Assert(?clipsnode[ex:as-constraint-needs-additional-conditionals -> External(func:make-list())])
           )
         )
-        Forall ?rifvar ?varname ?clipsvar ?clipspattern (
+        (* self:rule20 *) Forall ?rifvar ?varname ?clipsvar ?clipspattern ?constraintlist (
           If And (
             ?rifvar[rif:varname -> ?varname]
             ?rifvar[ex:provides-expression -> ?clipsvar]
@@ -297,31 +294,7 @@ Document(
             Assert(?clipsvar[cs:variable-name -> ?varname])
           )
         )
-        Forall ?rifforall ?varlist ?rifvar ?varname ?rifvarchild ?slotlist ?rifslot(
-          If And (
-            ?rifexists # rif:Exists
-            ?rifexists[rif:vars -> ?varlist]
-            External(pred:is-list(?varlist))
-            ?rifvar[rif:varname -> ?varname]
-            External(pred:list-contains(?varlist ?rifvar))
-            Not( Exists ?expr (?rifvar[ex:as-expression -> ?expr]))
-            ?rifvarchild[rif:varname -> ?varname]
-            ?rifvar[ex:inherits-data -> ?rifvarchild]
-            ?rifframe[rif:slots -> ?slotlist]
-            External(pred:is-list(?slotlist))
-            ?rifslot[rif:slotvalue -> ?rifvarchild]
-            External(pred:list-contains(?slotlist ?rifslot))
-            ?rifframe[ex:as-expression -> ?factvar]
-          ) Then Do (
-            (?clipsnode New())
-            Assert(?rifvar[ex:as-constraint -> ?clipsnode])
-            Assert(?rifvar[ex:as-expression -> ?clipsnode])
-            Assert( ?clipsnode[cs:member-variable -> ?factvar] )
-            Assert( ?clipsnode[cs:member-slot-name -> "object"] )
-            Assert( ?clipsnode[ex:as-constraint-needs-additional-conditionals -> External(func:make-list())])
-          )
-        )
-        Forall ?varchild ?varparent ?varname ?clipsvar(
+        (* self:rule22 *) Forall ?varchild ?varparent ?varname ?clipsvar(
           If And (
             ?varparent[ex:inherits-data -> ?varchild]
             ?varparent[rif:varname -> ?varname]
@@ -355,7 +328,7 @@ Document(
             Assert(?clipsnode[ex:as-constraint-needs-additional-conditionals -> External(func:make-list())])
           )
         )
-        Forall ?riflocal ?name ?rifdocument(
+        (* self:rule26 *) Forall ?riflocal ?name ?rifdocument (
           If And(
             ?rifdocument # rif:Document
             ?rifdocument[ex:inherits-data -> ?riflocal]

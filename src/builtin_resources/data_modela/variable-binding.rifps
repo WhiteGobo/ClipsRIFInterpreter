@@ -493,7 +493,7 @@ Document(
         )
       )
 
-      (* self:rule37 *) Forall ?formulacontainer ?expression ?rifvar ?clipsvar (
+      (* self:rule37 *) Forall ?formulacontainer ?formula ?expression ?rifvar ?clipsvar (
         If And (
           ?formulacontainer # "patterncontainer"^^rif:local
           ?formulacontainer[ex:inherits-data -> ?formula]
@@ -508,7 +508,7 @@ Document(
       )
 
       Group -1 (
-        (* self:rule38 *) Forall ?superpattern ?formulacontainer ?formulalist ?subpattern ?formula ?patternlist (
+        (* self:rule38 *) Forall ?superpattern ?formulacontainer ?formulalist ?subpattern ?formula ?patternlist ?aftercondition (
           If And (
             Or (
               ?superpattern # cs:AndCE
@@ -686,7 +686,7 @@ Document(
             Assert(?rifatom # modelA:PatternGenerator)
           )
         )
-        (* self:rule48 *) Forall ?formulacontainer ?rifexternal ?rifexternal (
+        (* self:rule48 *) Forall ?formulacontainer ?rifexternal ?formulalist (
           If And (
             ?formulacontainer["add-pattern-from"^^rif:local -> ?rifexternal]
             ?rifexternal # rif:External
@@ -782,7 +782,7 @@ Document(
           )
         )
         )
-        (* self:rule53 *) Forall ?formulacontainer ?rifexternal ?defrule ?rifconstiristring ?rifexternal ?rifatom ?arglist ?targetiri ?clipsassign (
+        (* self:rule53 *) Forall ?formulacontainer ?rifexternal ?defrule ?rifconstiristring ?rifexternal ?rifatom ?arglist ?targetiri ?clipsassign ?targetstring ?formulalist (
           If And(
             ?formulacontainer["add-pattern-from"^^rif:local -> ?rifexternal]
             ?formulacontainer[modelA:as-defrule -> ?defrule]

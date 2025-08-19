@@ -11,9 +11,10 @@ Document(
     Prefix(rif <http://www.w3.org/2007/rif#>)
     Prefix(entailment <http://www.w3.org/ns/entailment/>)
     Prefix(ex <http://example.com/>)
+    Prefix(self <http://example.com/process_Atom#>)
     Group (
       Group -101 (
-        Forall ?rif ?arglist (
+        (* self:rule01 *) Forall ?rif ?arglist (
           If And (
             ?rif["add-atom-args-as-constraint"^^rif:local -> ?arglist]
             External(pred:numeric-greater-than(External(func:count(?arglist)) 0))
@@ -23,7 +24,7 @@ Document(
           )
         )
       )
-      Forall ?rifatom (
+      (* self:rule02 *) Forall ?rifatom ?op ?arglist ?constraintop (
         If And (
           ?rifatom # modelA:AtomPatternGenerator
           ?rifatom[rif:op -> ?op]
@@ -46,7 +47,7 @@ Document(
         )
       )
       Group 10 (
-        Forall ?slotargs ?arglist ?firstarg ?clipsexpr(
+        (* self:rule03 *) Forall ?slotargs ?arglist ?firstarg ?clipsexpr(
           If And (
             ?slotargs["add-atom-args-as-constraint"^^rif:local -> ?arglist]
             ?firstarg[ex:as-constraint -> ?clipsexpr]

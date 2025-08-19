@@ -10,8 +10,9 @@ Document(
     Prefix(triplestordf <http://example.com/triples-to-rdf#>)
     Prefix(rif <http://www.w3.org/2007/rif#>)
     Prefix(entailment <http://www.w3.org/ns/entailment/>)
-    (* ex:init-defrules *) Group 10 (
-      Forall ?rifrule ?defrule ?action ?rifaction (
+    Prefix(self <http://example.com/init-defrules#>)
+    Group 10 (
+      (* self:rule01 *) Forall ?rifrule ?defrule ?action ?rifaction (
         If And (
           ?rifrule[ex:add-rule-info -> ?defrule]
           Or (
@@ -23,7 +24,7 @@ Document(
           Assert( ?defrule[cs:action -> ?action] )
         )
       )
-      Forall ?rifrule ?defrule ?rifclause (
+      (* self:rule02 *) Forall ?rifrule ?defrule ?rifclause (
         If And (
           ?rifrule[ex:add-rule-info -> ?defrule]
           ?rifrule[rif:formula -> ?rifclause]
@@ -35,7 +36,7 @@ Document(
           Assert( ?rifclause[ex:add-rule-info -> ?defrule] )
         )
       )
-      Forall ?rifrule ?defrule ?rifcondition (
+      (* self:rule03 *) Forall ?rifrule ?defrule ?rifcondition (
         If And (
           ?rifrule[ex:add-rule-info -> ?defrule]
           ?rifrule[rif:if -> ?rifcondition]
@@ -43,7 +44,7 @@ Document(
           Assert( ?rifcondition[ex:add-as-pattern -> ?defrule] )
         )
       )
-      Forall ?rifcondition ?defrule ?formulalist ?formula (
+      (* self:rule04 *) Forall ?rifcondition ?defrule ?formulalist ?formula (
         If And (
           ?rifcondition[ex:add-as-pattern -> ?defrule]
           ?rifcondition # rif:And
@@ -68,7 +69,7 @@ Document(
         )
       )
 
-      Forall ?rifrule ?defrule ?rifclause (
+      (* self:rule05 *) Forall ?rifrule ?defrule ?rifclause (
         If And (
           ?rifrule[ex:add-rule-info -> ?defrule]
           ?rifrule[rif:then -> ?rifclause]
@@ -78,7 +79,7 @@ Document(
         )
       )
       Group (
-        Forall ?defrule ?defruleindex (
+        (* self:rule06 *) Forall ?defrule ?defruleindex (
           If And (
             ?factvar # cs:Defrule
             ex:currentdefruleindex(?defruleindex)
@@ -94,7 +95,7 @@ Document(
         ex:currentdefruleindex(0)
       )
 
-      Forall ?rifformula ?rifparent (
+      (* self:rule07 *) Forall ?rifformula ?rifparent (
         If And (
           Or (
             ?rifparent[rif:then -> ?rifformula]
@@ -108,7 +109,7 @@ Document(
           Assert(?rifformula # ex:RHSPatternGenerator)
         )
       )
-      Forall ?rifformula ?rifparent (
+      (* self:rule08 *) Forall ?rifformula ?rifparent ?sentencelist (
         If And (
           ?rifparent[rif:sentences -> ?sentencelist]
           Or (
@@ -121,7 +122,7 @@ Document(
         )
       )
 
-      Forall ?rifformula ?defrule ?constraintlist (
+      (* self:rule09 *) Forall ?rifformula ?defrule ?constraintlist (
         If And (
           ?rifformula[ex:add-as-pattern -> ?defrule]
           ?rifformula[rif:args -> ?constraintlist]
@@ -136,7 +137,7 @@ Document(
           Assert(?rifterm # ex:ConstraintGenerator)
         )
       )
-      Forall ?rifformula ?defrule ?slotlist ?slot(
+      (* self:rule10 *) Forall ?rifformula ?defrule ?slotlist ?slot ?rifterm (
         If And (
           ?rifformula[ex:add-as-pattern -> ?defrule]
           ?rifformula[rif:slots -> ?slotlist]
@@ -146,7 +147,7 @@ Document(
           Assert(?rifterm # ex:ConstraintGenerator)
         )
       )
-      Forall ?rifformula ?defrule ?slotlist ?slot(
+      (* self:rule11 *) Forall ?rifformula ?defrule ?slotlist ?slot ?rifterm (
         If And (
           ?rifformula[ex:add-as-pattern -> ?defrule]
           ?rifformula[rif:slots -> ?slotlist]
@@ -156,7 +157,7 @@ Document(
           Assert(?rifterm # ex:ConstraintGenerator)
         )
       )
-      Forall ?rifformula ?defrule (
+      (* self:rule12 *) Forall ?rifformula ?defrule ?rifterm (
         If And (
           ?rifformula[ex:add-as-pattern -> ?defrule]
           Or (

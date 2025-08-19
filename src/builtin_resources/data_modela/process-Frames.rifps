@@ -12,8 +12,9 @@ Document(
     Prefix(entailment <http://www.w3.org/ns/entailment/>)
     Prefix(ex <http://example.com/>)
     Prefix(xs <http://www.w3.org/2001/XMLSchema#>)
+    Prefix(self <http://example.com/process-Frames#>)
     Group (
-      Forall ?rifframe ?slotlist ?slot ?frameobject ?constraintsubj ?slotkey ?constraintpred ?slotvalue ?constraintobj (
+      (* self:rule01 *) Forall ?rifframe ?slotlist ?slot ?frameobject ?constraintsubj ?slotkey ?constraintpred ?slotvalue ?constraintobj (
         If And (
           ?rifframe[rif:slots -> ?slotlist]
           ?slot # modelA:TripleTemplateGenerator
@@ -48,7 +49,7 @@ Document(
         )
       )
 
-      Forall ?rifframe ?slotlist ?slot ?frameobject ?constraintsubj ?slotkey ?slotvalue ?constraintobj (
+      (* self:rule02 *) Forall ?rifframe ?slotlist ?slot ?frameobject ?constraintsubj ?slotkey ?slotvalue ?constraintobj (
         If And (
           ?rifframe[rif:slots -> ?slotlist]
           ?slot # modelA:TripleTemplateGenerator

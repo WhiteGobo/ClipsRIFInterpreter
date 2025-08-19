@@ -11,8 +11,9 @@ Document(
     Prefix(rif <http://www.w3.org/2007/rif#>)
     Prefix(entailment <http://www.w3.org/ns/entailment/>)
     Prefix(ex <http://example.com/>)
+    Prefix(self <http://example.com/process-equal#>)
     Group (
-      Forall ?rifequal ?rifleft (
+      (* self:rule01 *) Forall ?rifequal ?rifleft (
         If And (
           ?rifequal # modelA:TestPatternRightAssignGenerator
           ?rifequal[rif:left -> ?rifleft]
@@ -20,7 +21,7 @@ Document(
           Assert(?rifleft # modelA:ExpressionGenerator)
         )
       )
-      Forall ?rifequal ?rifleft ?assignvar ?rifright ?rightexpr (
+      (* self:rule02 *) Forall ?rifequal ?rifleft ?assignvar ?rifright ?rightexpr (
         If And (
           ?rifequal # modelA:TestPatternLeftAssignGenerator
           ?rifequal[rif:left -> ?rifleft]
@@ -31,7 +32,7 @@ Document(
           Assert( ?assignvar[cs:var-as-const-expr -> ?rightexpr] )
         )
       )
-      Forall ?rifequal ?rifleft ?assignvar ?rifright ?leftexpr (
+      (* self:rule03 *) Forall ?rifequal ?rifleft ?assignvar ?rifright ?leftexpr (
         If And (
           ?rifequal # modelA:TestPatternRightAssignGenerator
           ?rifequal[rif:right -> ?rifright]
@@ -42,7 +43,7 @@ Document(
           Assert( ?assignvar[cs:var-as-const-expr -> ?leftexpr] )
         )
       )
-      Forall ?rifequal ?rifleft ?rifright (
+      (* self:rule04 *) Forall ?rifequal ?rifleft ?rifright (
         If And (
           ?rifequal # modelA:TestPatternEqualGenerator
           ?rifequal[rif:left -> ?rifleft]
@@ -52,7 +53,7 @@ Document(
           Assert(?rifright # modelA:ExpressionGenerator)
         )
       )
-      Forall ?rifequal ?rifleft ?leftexpr ?rifright ?rightexpr (
+      (* self:rule05 *) Forall ?rifequal ?rifleft ?leftexpr ?rifright ?rightexpr (
         If And (
           ?rifequal # modelA:TestPatternEqualGenerator
           ?rifequal[rif:left -> ?rifleft]

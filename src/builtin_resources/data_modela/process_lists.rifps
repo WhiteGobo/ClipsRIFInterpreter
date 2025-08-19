@@ -11,9 +11,10 @@ Document(
     Prefix(rif <http://www.w3.org/2007/rif#>)
     Prefix(entailment <http://www.w3.org/ns/entailment/>)
     Prefix(modelA <http://white.gobo/modelA#>)
+    Prefix(self <http://example.com/process_lists#>)
     Group 10 (
       Group -101 (
-        Forall ?rif ?arglist (
+        (* self:rule01 *) Forall ?rif ?arglist (
           If And (
             ?rif["add-args-as-expression-from"^^rif:local -> ?arglist]
             External(pred:numeric-greater-than(External(func:count(?arglist)) 0))
@@ -23,7 +24,7 @@ Document(
           )
         )
       )
-      Forall ?riflist ?rest (
+      (* self:rule02 *) Forall ?riflist ?rest (
         If And (
           ?riflist[rif:rest -> ?rest]
           Not (?rest # rif:Var)
@@ -31,7 +32,7 @@ Document(
             Execute(crifi:set-graph-in-errorstate("rif:rest is only implemented for domain of type rif:Var"))
         )
       )
-      Forall ?riflist ?itemlist (
+      (* self:rule03 *) Forall ?riflist ?itemlist (
         If And (
           ?riflist # ex:ExpressionGenerator
           ?riflist[rif:items -> ?itemlist]
@@ -46,7 +47,7 @@ Document(
         )
       )
       (* ex:complete-add-args-as-expression-to-list *) Group (
-        Forall ?itemlist ?function ?rest(
+        (* self:rule04 *) Forall ?itemlist ?function ?currentexprlist ?firstasexpression ?firstarg (
           If And (
             ?function["add-args-as-expression-from"^^rif:local -> ?itemlist]
             ?function[cs:function-args -> ?currentexprlist]
@@ -58,7 +59,7 @@ Document(
             Modify(?function["add-args-as-expression-from"^^rif:local -> External(func:remove(?itemlist 0))])
           )
         )
-        Forall ?itemlist ?function ?rest ?currentexprlist(
+        (* self:rule05 *) Forall ?function  ?itemlist (
           If And (
             ?function["add-args-as-expression-from"^^rif:local -> ?itemlist]
             External(pred:is-list(?itemlist))
@@ -69,7 +70,7 @@ Document(
         )
       )
 
-      Forall ?riflist (
+      (* self:rule06 *) Forall ?riflist (
         If And (
           ?riflist # modelA:ConstraintGenerator
           ?riflist # rif:List
@@ -81,7 +82,7 @@ Document(
           Assert( ?riflist # modelA:ConstraintNeedsAdditionalPatterns )
         )
       )
-      Forall ?riflist ?formula ?assign ?listvar ?itemlist (
+      (* self:rule07 *) Forall ?riflist ?formula ?assign ?listvar ?itemlist ?rest (
         If And (
           ?riflist # modelA:ListAsConstraint
           ?formula[modelA:pattern-uses-constraint -> ?riflist]
@@ -102,7 +103,7 @@ Document(
 
         )
       )
-      Forall ?riflist ?formula ?assign ?listvar ?itemlist (
+      (* self:rule08 *) Forall ?riflist ?formula ?assign ?listvar ?itemlist ?rest (
         If And (
           ?formula[modelA:pattern-uses-constraint -> ?riflist]
           ?riflist # modelA:ConstraintGenerator
@@ -130,7 +131,7 @@ Document(
 
         )
       )
-      Forall ?riflist ?formula ?assign ?listvar ?itemlist (
+      (* self:rule09 *) Forall ?riflist ?formula ?assign ?listvar ?itemlist ?rifvar (
         If And (
           ?formula[modelA:pattern-uses-constraint -> ?riflist]
           ?riflist # modelA:ConstraintGenerator
@@ -150,7 +151,7 @@ Document(
 
         )
       )
-      Forall ?riflist ?formula ?assign ?listvar ?itemlist (
+      (* self:rule10 *) Forall ?riflist ?formula ?assign ?listvar ?itemlist ?rifvar (
         If And (
           ?formula[modelA:pattern-uses-constraint -> ?riflist]
           ?riflist # modelA:ConstraintGenerator
@@ -178,7 +179,7 @@ Document(
         )
       )
 
-        Forall ?itemlist ?slotitems ?firstarg (
+        (* self:rule11 *) Forall ?itemlist ?slotitems ?firstarg ?listconstraints ?clipsconstraint (
           If And (
             ?slotitems["add-args-as-constraints-from"^^rif:local -> ?itemlist]
             ?slotitems[cs:constraints -> ?listconstraints]
@@ -193,7 +194,7 @@ Document(
           )
         )
 
-        Forall ?aslist ?multifieldvar ?rest ?clipsrestvar (
+        (* self:rule12 *) Forall ?riflist ?defrule ?rest ?multifieldvar ?rest ?clipsrestvar (
           If And (
             ?riflist[rif:rest -> ?rest]
             ?riflist[ex:add-as-pattern -> ?defrule]
@@ -214,7 +215,7 @@ Document(
           )
         )
         Group -1 (
-          Forall ?defrule ?riflist ?pattern ?listasvar (
+          (* self:rule13 *) Forall ?defrule ?riflist ?pattern ?listasvar (
             If And (
               ?riflist # rif:List
               ?riflist[ex:add-as-pattern -> ?defrule]
@@ -237,7 +238,7 @@ Document(
               Assert( ?defrule[ex:transfer-bound-variables-from -> ?pattern] )
             )
           )
-          Forall ?defrule ?riflist ?pattern ?listasvar (
+          (* self:rule14 *) Forall ?defrule ?riflist ?pattern ?listasvar (
             If And (
               ?riflist # rif:List
               ?riflist[ex:add-as-pattern -> ?defrule]
