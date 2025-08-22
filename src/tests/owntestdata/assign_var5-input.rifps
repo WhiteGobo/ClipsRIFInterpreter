@@ -1,0 +1,8 @@
+Document(
+    Prefix(ex <http://example.com/>)
+    Group (
+      Forall ?node (
+        If ex:atom(?node) Then ex:ok()
+      )
+    )
+)

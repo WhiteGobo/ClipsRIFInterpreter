@@ -24,6 +24,11 @@ list(APPEND owntargets
 	assign_var1
 	assign_var2
 	assign_var3
+	assign_var5
+	assign_var6
+	assign_var7
+	Membership
+	Subclass
 )
 
 foreach(base ${owntargets})

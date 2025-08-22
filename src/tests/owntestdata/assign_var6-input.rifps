@@ -1,0 +1,8 @@
+Document(
+    Prefix(ex <http://example.com/>)
+    Group (
+      Forall ?sub (
+        If ex:super ## ?sub Then ex:ok()
+      )
+    )
+)

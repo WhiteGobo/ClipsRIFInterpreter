@@ -1,0 +1,10 @@
+Document(
+    Prefix(ex <http://example.org/example#>)
+    Prefix(xs <http://www.w3.org/2001/XMLSchema#>) 
+    Group ( 
+        Forall ?X ?rest (
+          ex:ok() :- ex:X # ex:C
+        )
+        ex:X # ex:C
+      )
+)
