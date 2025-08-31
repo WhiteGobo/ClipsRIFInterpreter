@@ -1,8 +1,8 @@
 Document(
     Prefix(ex <http://example.com/>)
     Group (
-      Forall ?super (
-        If ?super ## ex:Class Then ex:ok()
+      Forall ?class (
+        If ex:node # ?class Then ex:ok()
       )
     )
 )

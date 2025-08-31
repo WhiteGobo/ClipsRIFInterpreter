@@ -18,6 +18,8 @@ list(APPEND mytargets
 	process-external
 	special_pred_translations_for_pattern
 	process_lists
+	process_member
+	process_subclass
 
 	variable-binding
 	process_Atom

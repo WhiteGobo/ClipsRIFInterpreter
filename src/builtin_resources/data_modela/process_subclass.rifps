@@ -1,0 +1,40 @@
+Document(
+    Prefix(func <http://www.w3.org/2007/rif-builtin-function#>) 
+    Prefix(pred <http://www.w3.org/2007/rif-builtin-predicate#>) 
+    Prefix(owl <http://www.w3.org/2002/07/owl#>)
+    Prefix(deffact <http://white.gobo/crifi/resource-manager/deffacts#>)
+    Prefix(rema <http://white.gobo/crifi/resource-manager#>)
+    Prefix(cs <http://clips.script/>)
+    Prefix(crifi <http://white.gobo/>)
+    Prefix(modelA <http://white.gobo/modelA#>)
+    Prefix(triplestordf <http://example.com/triples-to-rdf#>)
+    Prefix(rif <http://www.w3.org/2007/rif#>)
+    Prefix(entailment <http://www.w3.org/ns/entailment/>)
+    Prefix(ex <http://example.com/>)
+    Prefix(xs <http://www.w3.org/2001/XMLSchema#>)
+    Prefix(self <http://example.com/process-subclass#>)
+    Group (
+      (* self:rule01 *) Forall ?rifmember ?rifsuper ?rifsub ?constraintsuper ?constraintsub (
+        If And (
+          ?rifmember # modelA:SubclassPatternGenerator
+          ?rifmember[rif:super -> ?rifsuper]
+          ?rifmember[rif:sub -> ?rifsub]
+          ?rifsuper[ex:as-constraint -> ?constraintsuper]
+          ?rifsub[ex:as-constraint -> ?constraintsub]
+          Not( Exists ?x ( ?rifmember[modelA:as-lhs-pattern -> ?x] ))
+        ) Then Do (
+          (?pattern New())
+          (?slotsuper New())
+          (?slotsub New())
+          Assert( ?rifmember[modelA:as-lhs-pattern -> ?pattern] )
+          Assert( ?pattern # cs:TemplatePatternCE )
+          Assert( ?pattern[cs:deftemplate-name -> "Subclass"] )
+          Assert( ?pattern[cs:slot -> External(func:make-list(?slotsuper ?slotsub))] )
+          Assert( ?slotsuper[cs:slot-name -> "super"] )
+          Assert( ?slotsuper[cs:constraint -> ?constraintsuper] )
+          Assert( ?slotsub[cs:slot-name -> "sub"] )
+          Assert( ?slotsub[cs:constraint -> ?constraintsub] )
+        )
+      )
+    )
+)

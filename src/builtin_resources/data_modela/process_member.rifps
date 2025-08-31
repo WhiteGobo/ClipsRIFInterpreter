@@ -1,0 +1,40 @@
+Document(
+    Prefix(func <http://www.w3.org/2007/rif-builtin-function#>) 
+    Prefix(pred <http://www.w3.org/2007/rif-builtin-predicate#>) 
+    Prefix(owl <http://www.w3.org/2002/07/owl#>)
+    Prefix(deffact <http://white.gobo/crifi/resource-manager/deffacts#>)
+    Prefix(rema <http://white.gobo/crifi/resource-manager#>)
+    Prefix(cs <http://clips.script/>)
+    Prefix(crifi <http://white.gobo/>)
+    Prefix(modelA <http://white.gobo/modelA#>)
+    Prefix(triplestordf <http://example.com/triples-to-rdf#>)
+    Prefix(rif <http://www.w3.org/2007/rif#>)
+    Prefix(entailment <http://www.w3.org/ns/entailment/>)
+    Prefix(ex <http://example.com/>)
+    Prefix(xs <http://www.w3.org/2001/XMLSchema#>)
+    Prefix(self <http://example.com/process-member#>)
+    Group (
+      (* self:rule01 *) Forall ?rifmember ?rifclass ?rifinstance ?constraintclass ?constraintinstance (
+        If And (
+          ?rifmember # modelA:MemberPatternGenerator
+          ?rifmember[rif:class -> ?rifclass]
+          ?rifmember[rif:instance -> ?rifinstance]
+          ?rifclass[ex:as-constraint -> ?constraintclass]
+          ?rifinstance[ex:as-constraint -> ?constraintinstance]
+          Not( Exists ?x ( ?rifmember[modelA:as-lhs-pattern -> ?x] ))
+        ) Then Do (
+          (?pattern New())
+          (?slotclass New())
+          (?slotinstance New())
+          Assert( ?rifmember[modelA:as-lhs-pattern -> ?pattern] )
+          Assert( ?pattern # cs:TemplatePatternCE )
+          Assert( ?pattern[cs:deftemplate-name -> "Member"] )
+          Assert( ?pattern[cs:slot -> External(func:make-list(?slotclass ?slotinstance))] )
+          Assert( ?slotclass[cs:slot-name -> "class"] )
+          Assert( ?slotclass[cs:constraint -> ?constraintclass] )
+          Assert( ?slotinstance[cs:slot-name -> "instance"] )
+          Assert( ?slotinstance[cs:constraint -> ?constraintinstance] )
+        )
+      )
+    )
+)

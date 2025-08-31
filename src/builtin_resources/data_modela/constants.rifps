@@ -49,12 +49,11 @@ Document(
         )
       )
       Group (
-        (* self:rule04 *) Forall ?rifvar ?factvar ?varname ?factindex (
+        (* self:rule04 *) Forall ?rifvar ?factvar ?varname (
           If And (
             ?factvar # ex:Variable
             ?rifvar[ex:provides-expression -> ?factvar]
             ?rifvar[rif:varname -> ?varname]
-            ex:currentfactindex(?factindex)
             Not (Exists ?factname ( ?factvar[cs:variable-name -> ?factname] ))
           ) Then Do (
             Assert(?factvar # cs:Variable)
@@ -117,6 +116,8 @@ Document(
               ?parent[rif:rest -> ?child]
               ?parent[rif:class -> ?child]
               ?parent[rif:instance -> ?child]
+              ?parent[rif:sub -> ?child]
+              ?parent[rif:super -> ?child]
             )
             Not(?child[rif:constIRI -> ?x])
             Not(?child[rif:value -> ?x])

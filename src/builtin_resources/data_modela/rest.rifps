@@ -58,6 +58,7 @@ Document(
                   ?factable # rif:Frame
                   ?factable # rif:Member
                   ?factable # rif:Atom
+                  ?factable # rif:Subclass
                 )
                 External(pred:list-contains(?sentences ?factable))
               ))
