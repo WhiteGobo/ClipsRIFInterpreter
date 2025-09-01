@@ -1,0 +1,18 @@
+Document(
+    Prefix(ex <http://example.com/>)
+    Group (
+      Forall ?list ?elem (
+        If And (
+          ex:mylist(?list)
+          Or (
+            ?elem # ex:ClassA
+            ?elem # ex:ClassB
+          )
+          External(pred:list-contains(?list ?elem))
+        ) Then ex:ok()
+      )
+
+      ex:mylist(List( ex:elem ))
+      ex:elem # ex:ClassA
+    )
+)

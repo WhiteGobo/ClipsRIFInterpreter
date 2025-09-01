@@ -439,7 +439,10 @@ Document(
 
       (* self:rule32 *) Forall ?formula ?rifand ?formulalist(
         If And (
-          ?formula # "rifformula"^^rif:local
+          Or (
+            ?formula # "rifformula"^^rif:local
+            ?formula # rif:Member
+          )
           Or (
             ?rifand # rif:And
             ?rifand # rif:Or
@@ -684,6 +687,13 @@ Document(
             Assert(?rifframe["transfer-variable-binding"^^rif:local -> ?formulacontainer])
           )
         )
+        Forall ?rifmember (
+          If And (
+            ?rifmember # rif:Member
+            ) Then Do (
+            Assert(?rifmember # ex:QQ1234)
+            )
+            )
         (* self:rule60 *) Forall ?rifmember ?formulacontainer ?formulalist (
           If And (
             ?formulacontainer["add-pattern-from"^^rif:local -> ?rifmember]
