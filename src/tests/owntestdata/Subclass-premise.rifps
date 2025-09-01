@@ -2,7 +2,9 @@ Document(
     Prefix(ex <http://example.org/example#>)
     Prefix(xs <http://www.w3.org/2001/XMLSchema#>) 
     Group ( 
-        ex:ok() :- ex:X ## ex:C
+        Forall ?x (
+          ex:ok() :- ?x ## ex:C
+        )
         ex:X ## ex:C
       )
 )

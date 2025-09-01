@@ -44,6 +44,7 @@ Document(
           ?formula # rif:INeg
           ?formula # rif:Frame
           ?formula # rif:Atom
+          ?formula # rif:Member
           ?formula # rif:SubClass
           ?formula # rif:Equal
         ) Then Do( Assert(?formula # "rifformula"^^rif:local) )
@@ -439,6 +440,10 @@ Document(
       (* self:rule32 *) Forall ?formula ?rifand ?formulalist(
         If And (
           ?formula # "rifformula"^^rif:local
+          Or (
+            ?rifand # rif:And
+            ?rifand # rif:Or
+          )
           ?rifand[rif:formulas -> ?formulalist]
           External(pred:list-contains(?formulalist ?formula))
         ) Then Do (
