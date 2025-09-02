@@ -80,6 +80,7 @@ Document(
       )
       Forall ?rifrule ?formulalist ?rifformula ?clipsconstraint (
         If And (
+          ?rifrule # rif:And
           ?rifrule[rif:formulas -> ?formulalist]
           Or (
             ?rifformula # rif:Frame
@@ -96,11 +97,19 @@ Document(
       )
       Forall ?rifobj ?rifvar ?clipsconstraint (
         If And (
-          ?rifobj # modelA:TripleTemplateGenerator
+          Or (
+            ?rifobj # modelA:TripleTemplateGenerator
+            ?rifobj # modelA:MemberPatternGenerator
+            ?rifobj # modelA:SubclassPatternGenerator
+          )
           Or (
             ?rifobj[rif:object -> ?rifvar]
             ?rifobj[rif:slotkey -> ?rifvar]
             ?rifobj[rif:slotvalue -> ?rifvar]
+            ?rifobj[rif:sub -> ?rifvar]
+            ?rifobj[rif:super -> ?rifvar]
+            ?rifobj[rif:class -> ?rifvar]
+            ?rifobj[rif:instance -> ?rifvar]
           )
           ?rifvar["constraint-binds-var"^^rif:local -> ?clipsconstraint]
           Not(?rifobj["bound-variable"^^rif:local -> ?clipsconstraint])
@@ -242,8 +251,8 @@ Document(
           ?firstsubformula = External(func:get(?formulalist 0))
           Not( Exists ?otherformula ( And(
             ?otherformula # "rifformula"^^rif:local
-            Not (?otherformula[modelA:binds-var -> ?clipsconstraint])
             External(pred:list-contains(?formulalist ?otherformula))
+            Not (?otherformula[modelA:binds-var -> ?clipsconstraint])
           )))
         ) Then ?rifor[modelA:binds-var -> ?clipsconstraint]
       )
@@ -610,9 +619,13 @@ Document(
         )
       )
 
-      
       (* self:rule42 *) Forall ?formulacontainer ?clipsvar ?formula (
         If And (
+          Or (
+            ?formulacontainer # rif:And
+            ?formulacontainer # rif:Forall
+            ?formulacontainer # rif:Implies
+          )
           ?formulacontainer["bound-variable"^^rif:local -> ?clipsvar]
           ?formulacontainer["add-pattern-from"^^rif:local -> ?formula]
           Not( ?formulacontainer["added-pattern-from"^^rif:local -> ?formula] )
@@ -687,13 +700,6 @@ Document(
             Assert(?rifframe["transfer-variable-binding"^^rif:local -> ?formulacontainer])
           )
         )
-        Forall ?rifmember (
-          If And (
-            ?rifmember # rif:Member
-            ) Then Do (
-            Assert(?rifmember # ex:QQ1234)
-            )
-            )
         (* self:rule60 *) Forall ?rifmember ?formulacontainer ?formulalist (
           If And (
             ?formulacontainer["add-pattern-from"^^rif:local -> ?rifmember]
