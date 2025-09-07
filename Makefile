@@ -52,7 +52,7 @@ endif
 
 
 
-CTEST_OPT =
+CTEST_OPT ?=
 ifdef TESTFILTER
 CTEST_OPT += -R ${TESTFILTER}
 endif
