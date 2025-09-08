@@ -24,11 +24,12 @@ if(FALSE)
 		$<BUILD_INTERFACE:${RAPTOR_INCLUDES}>
 	)
 else()
-	#make raptor somehow static instead
+	##make raptor somehow static instead
 	FetchContent_Declare(
 		raptor2
-		GIT_REPOSITORY https://github.com/dajobe/raptor.git
-		CMAKE_CACHE_ARGS -DBUILD_SHARED_LIBS=OFF
+		#GIT_REPOSITORY https://github.com/dajobe/raptor.git
+		GIT_REPOSITORY https://github.com/WhiteGobo/raptor.git
+		#CMAKE_CACHE_ARGS -DBUILD_SHARED_LIBS=OFF
 	)
 	FetchContent_MakeAvailable(raptor2)
 	target_include_directories(raptor2 PUBLIC

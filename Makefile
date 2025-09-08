@@ -93,7 +93,7 @@ build:
 .PHONY: test
 test: configure build ${BUILD}/${ASSETPATH}
 	echo "path to assets: $<"
-	cd ${BUILD} && env ASSETPATH_CLIPSSCRIPTS=$(realpath $<) ctest --output-on-failure ${CTEST_OPT}
+	cd ${BUILD}/tests && env ASSETPATH_CLIPSSCRIPTS=$(realpath $<) ctest --output-on-failure ${CTEST_OPT}
 
 .PHONY: memtest
 memtest: configure build ${BUILD}/${ASSETPATH}

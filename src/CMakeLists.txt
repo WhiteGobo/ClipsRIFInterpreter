@@ -21,6 +21,20 @@ set(installable_libs )
 
 include(FetchContent)
 
+FetchContent_Declare(
+	raptor2
+	GIT_REPOSITORY https://github.com/dajobe/raptor.git
+	CMAKE_CACHE_ARGS -DBUILD_SHARED_LIBS=OFF
+	OVERRIDE_FIND_PACKAGE
+)
+FetchContent_MakeAvailable(raptor2)
+#MESSAGE(FATAL_ERROR "brubru")
+target_include_directories(raptor2 PUBLIC
+	$<BUILD_INTERFACE:${raptor2_SOURCE_DIR}/src>
+	$<BUILD_INTERFACE:${raptor2_BINARY_DIR}/src>
+)
+
+
 #Patch adds CMakeLists.txt to clips
 if(LINKED_CLIPS_LIB)
 	set(INSTALL_CLIPS_FINDER ON)

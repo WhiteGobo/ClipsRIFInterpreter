@@ -21,7 +21,8 @@ set_target_properties(crifi_raptor PROPERTIES
 target_include_directories(crifi_raptor PUBLIC
 	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/>)
 
-include(include_raptor.cmake)
+#include(include_raptor.cmake)
+find_package(raptor2 REQUIRED)
 
 target_link_libraries(crifi_raptor PUBLIC
 	ffi_clips_interface
