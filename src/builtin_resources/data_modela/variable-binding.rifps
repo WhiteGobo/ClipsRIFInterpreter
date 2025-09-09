@@ -63,6 +63,13 @@ Document(
           External(pred:list-contains(?itemlist ?rifvar))
         ) Then ?rifvar["constraint-binds-var"^^rif:local -> ?clipsconstraint]
       )
+      Forall ?x ?y (
+        If And (
+          ?x["bound-variable"^^rif:local -> ?y]
+        ) Then Do (
+          Assert(?x[ex:qq654 -> ?y])
+        )
+      )
       Forall ?rifrule ?rifformula ?clipsconstraint (
         If And (
           ?rifrule[rif:formula -> ?rifformula]
@@ -631,6 +638,15 @@ Document(
           Not( ?formulacontainer["added-pattern-from"^^rif:local -> ?formula] )
         ) Then Do (
           Assert(?formula["bound-variable"^^rif:local -> ?clipsvar])
+        )
+      )
+      Forall ?rifnot ?rifformula ?clipsvar (
+        If And (
+          ?rifnot # rif:INeg
+          ?rifnot[rif:formula -> ?rifformula]
+          ?rifnot["bound-variable"^^rif:local -> ?clipsvar]
+        ) Then Do (
+          Assert(?rifformula["bound-variable"^^rif:local -> ?clipsvar])
         )
       )
 

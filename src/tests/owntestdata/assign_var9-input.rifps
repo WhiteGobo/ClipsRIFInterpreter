@@ -1,0 +1,13 @@
+Document(
+    Prefix(ex <http://example.com/>)
+    Prefix(pred <http://www.w3.org/2007/rif-builtin-predicate#>) 
+    Group (
+      Forall ?list ?item (
+        If And (
+          ?list # ex:List
+          ?item # ex:Item
+          Not( External(pred:list-contains(?list ?item)) )
+        ) Then ex:ok()
+      )
+    )
+)

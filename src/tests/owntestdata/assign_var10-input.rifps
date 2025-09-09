@@ -1,0 +1,14 @@
+Document(
+    Prefix(ex <http://example.com/>)
+    Group (
+      Forall ?item (
+        If And (
+          ?item # ex:item
+          Not (Exists ?x ?list ( And (
+            ?x[ex:target-list -> ?list]
+            External(pred:list-contains(?list ?item))
+          )))
+        ) Then ex:ok()
+      )
+    )
+)
