@@ -1,0 +1,18 @@
+Document(
+    Prefix(ex <http://example.com/>)
+    Prefix(pred <http://www.w3.org/2007/rif-builtin-predicate#>)
+    Group (
+      Forall ?rifand (
+        If And (
+          ?rifand # ex:X
+          Not (Exists ?superand ?formulalist( And (
+            ?superand[ex:formulas -> ?formulalist]
+            External(pred:list-contains(?formulalist ?rifand))
+          )))
+          Not (Exists ?superimply (
+            ?superimply[ex:if -> ?rifand]
+          ))
+        ) Then ex:ok()
+      )
+    )
+)

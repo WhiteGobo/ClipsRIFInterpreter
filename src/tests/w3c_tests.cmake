@@ -31,6 +31,7 @@ list(APPEND owntargets
 	assign_var8
 	assign_var9
 	assign_var10
+	assign_var11
 	Membership
 	Subclass
 )

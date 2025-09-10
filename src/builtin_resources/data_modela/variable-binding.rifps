@@ -63,13 +63,6 @@ Document(
           External(pred:list-contains(?itemlist ?rifvar))
         ) Then ?rifvar["constraint-binds-var"^^rif:local -> ?clipsconstraint]
       )
-      Forall ?x ?y (
-        If And (
-          ?x["bound-variable"^^rif:local -> ?y]
-        ) Then Do (
-          Assert(?x[ex:qq654 -> ?y])
-        )
-      )
       Forall ?rifrule ?rifformula ?clipsconstraint (
         If And (
           ?rifrule[rif:formula -> ?rifformula]
@@ -267,6 +260,7 @@ Document(
         If And (
           ?rifand # rif:And
           ?rifand[rif:formulas -> ?formulalist]
+          ?rifand["added-pattern-from"^^rif:loca -> ?subformula]
           ?subformula[modelA:binds-var -> ?clipsconstraint]
           External(pred:list-contains(?formulalist ?subformula))
         ) Then ?rifand[modelA:binds-var -> ?clipsconstraint]
@@ -605,6 +599,19 @@ Document(
           )
         )
       )
+
+        Forall ?superformula ?subformula ?clipsvar (
+          If And (
+            ?superformula # rif:And
+            ?superformula[rif:formulas -> ?formulalist]
+            ?superformula["add-pattern-from"^^rif:local -> ?subformula]
+            ?superformula[modelA:binds-var -> ?clipsvar]
+            Not( ?superformula["added-pattern-from"^^rif:loca -> ?subformula] )
+          ) Then Do (
+            Assert( ?subformula["bound-variable"^^rif:local -> ?clipsvar] )
+          )
+        )
+
       Forall ?rifframe ?clipsvar (
         If And (
           Or (
@@ -640,9 +647,12 @@ Document(
           Assert(?formula["bound-variable"^^rif:local -> ?clipsvar])
         )
       )
-      Forall ?rifnot ?rifformula ?clipsvar (
+      (* self:rule62 *) Forall ?rifnot ?rifformula ?clipsvar (
         If And (
-          ?rifnot # rif:INeg
+          Or (
+            ?rifnot # rif:INeg
+            ?rifnot # rif:Exists
+          )
           ?rifnot[rif:formula -> ?rifformula]
           ?rifnot["bound-variable"^^rif:local -> ?clipsvar]
         ) Then Do (
@@ -908,6 +918,10 @@ Document(
             Not (Exists ?x ( And(
               ?subpattern["constraints-needs-variable"^^rif:local -> ?x]
               Not( ?subpattern["bound-variable"^^rif:local -> ?x] )
+            )))
+            Not (Exists ?subsub ( And(
+              ?subpattern["add-pattern-from"^^rif:local -> ?subsub]
+              Not( ?subpattern["added-pattern-from"^^rif:local -> ?subsub] )
             )))
             ?superpattern["formulalist"^^rif:local -> ?formulalist]
           ) Then Do (

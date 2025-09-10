@@ -1,5 +1,6 @@
 Document(
     Prefix(ex <http://example.com/>)
+    Prefix(pred <http://www.w3.org/2007/rif-builtin-predicate#>)
     Group (
       Forall ?item (
         If And (
