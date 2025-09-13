@@ -14,7 +14,7 @@ Document(
     Prefix(self <http://example.com/process_Do#>)
     Group(
       Group -100 (
-        (* self:rule06 *) Forall ?rifnode ?in ?out ?nextactions ?firstaction (
+        (* self:rule06 *) Forall ?rifnode (
           If And (
             ?rifnode # rif:Do
             Exists ?actionvar ( And (

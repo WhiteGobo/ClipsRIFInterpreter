@@ -24,6 +24,18 @@ Document(
             Execute(crifi:set-graph-in-errorstate(External(func:concat("Missing binding for rif:Var with name " ?varname " (modelA:missing-var-binding). Might be missing mention of variable in rif:Forall or rif:Exists."))))
           )
         )
+        (* self:rule50 *) Forall ?riflocal ?name (
+          If And (
+            ?riflocal[rif:constname -> ?name]
+            Not ( Exists ?rifdocument ( And(
+              ?rifdocument[ex:inherits-data -> ?riflocal]
+              ?rifdocument # rif:Document
+            )))
+          ) Then Do (
+            Assert( ?riflocal # modelA:missing-localterm )
+            Execute(crifi:set-graph-in-errorstate("Missing connection of local constant to its document.(modelA:missing-localterm)"))
+          )
+        )
       )
       Group -102 (
         (* self:rule02 *) Forall ?clipsvar (
@@ -44,7 +56,8 @@ Document(
               ?rifvarchild[ex:as-expression -> ?clipsvar]
             ))
           ) Then Do (
-            Execute(crifi:set-graph-in-errorstate(External(func:concat("Missing use for variable with name " ?varname))))
+            Assert( ?rifvar # modelA:missing-use-of-var )
+            Execute(crifi:set-graph-in-errorstate(External(func:concat("Missing use for variable with name " ?varname "(modelA:missing-use-of-var)"))))
           )
         )
       )
@@ -118,6 +131,7 @@ Document(
               ?parent[rif:instance -> ?child]
               ?parent[rif:sub -> ?child]
               ?parent[rif:super -> ?child]
+              ?parent[rif:meta -> ?child]
             )
             Not(?child[rif:constIRI -> ?x])
             Not(?child[rif:value -> ?x])
