@@ -283,6 +283,23 @@ Document(
           Assert( ?qq[cs:member-slot-name -> "subject"] )
         )
       )
+      Forall ?rootformula ?rifvar ?clipsvar ?varlist (
+        If And (
+          ?rootformula # rif:Exists
+          ?rifvar # rif:Var
+          ?rifvar[ex:provides-expression -> ?clipsvar]
+          ?rootformula[rif:vars -> ?varlist]
+          External(pred:list-contains(?varlist ?rifvar))
+          ?checktriple[ex:checktripleobject -> ?rifsubject]
+          ?checktriple[ex:triplevariable -> ?factvar]
+          ?rifsubject[ex:as-expression -> ?clipsvar]
+        ) Then Do (
+          (?qq New())
+          Assert( ?clipsvar[cs:var-as-const-expr -> ?qq] )
+          Assert( ?qq[cs:member-variable -> ?factvar] )
+          Assert( ?qq[cs:member-slot-name -> "object"] )
+        )
+      )
 
     )
 )

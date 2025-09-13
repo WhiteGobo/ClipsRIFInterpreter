@@ -1616,6 +1616,9 @@
 	(if (eq ?t RIFMember) then
 		(return (str-cat "(not" (send ?self:formula create-pattern) ")"))
 	)
+	(if (eq ?t RIFAtom) then
+		(return (str-cat "(not" (send ?self:formula create-pattern) ")"))
+	)
 	(if (eq ?t RIFExternal) then
 		(return (str-cat "(not" (send ?self:formula create-pattern) ")"))
 	)

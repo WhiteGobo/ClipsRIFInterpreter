@@ -12,42 +12,6 @@ Document(
     Prefix(entailment <http://www.w3.org/ns/entailment/>)
     Group (
 
-      (* ex:transform-do *) Group (
-        (* ex:init-transform-do *) Forall ?rifnode ?actionlist (
-          If And(
-            ?rifnode[rif:actions -> ?actionlist]
-            External(pred:is-list(?actionlist))
-            ) Then Do (
-              Assert( ?rifnode[ex:in-transform-do -> ?actionlist] )
-              Assert( ?rifnode[ex:out-transform-do -> External(func:make-list())] )
-            )
-        )
-
-          (* ex:end-transform-do *) Forall ?rifnode ?in ?out (
-            If And (
-              ?rifnode[ex:in-transform-do -> ?in]
-              0 = External(func:count(?in))
-              ?rifnode[ex:out-transform-do -> ?out]
-              ) Then Do (
-                Assert(?rifnode[ex:as-action -> ?out])
-                Retract( ?rifnode[ex:in-transform-do -> ?in] )
-                Retract( ?rifnode[ex:out-transform-do -> ?out] )
-                )
-            )
-
-          (* ex:iter-transform-do *) Forall ?rifnode ?in ?out ?nextactions ?firstaction (
-              If And (
-                ?rifnode[ex:in-transform-do -> ?in]
-                ?rifnode[ex:out-transform-do -> ?out]
-                ?firstaction[ex:as-action -> ?nextactions]
-                External( pred:numeric-not-equal(0 External(func:count(?in))) )
-                ?firstaction = External(func:get(?in 0))
-              ) Then Do (
-                Modify( ?rifnode[ex:in-transform-do -> External(func:remove(?in 0))] )
-                Modify( ?rifnode[ex:out-transform-do -> External(func:concatenate(?out ?nextactions))] )
-              )
-            )
-          )
         (* ex:create-deffacts-for-groups *) Group (
           (* ex:init-deffacts *) Forall ?group ?sentences ?factable (
             If And (

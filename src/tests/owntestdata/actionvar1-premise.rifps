@@ -1,0 +1,14 @@
+Document(
+    Prefix(ex <http://example.com/>)
+    Group (
+      Forall ?x(
+        If And (
+          ex:input(?x)
+        ) Then Do (
+          (?y New())
+          Assert(?x[ex:output ->?y])
+        )
+      )
+      ex:input(ex:X)
+    )
+)

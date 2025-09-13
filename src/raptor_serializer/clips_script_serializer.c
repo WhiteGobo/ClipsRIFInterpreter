@@ -63,8 +63,10 @@ typedef struct {
 	raptor_term *clips_function_args;
 	raptor_term *clips_expression;
 	raptor_term *clips_assert;
+	raptor_term *clips_find_fact;
 	raptor_term *clips_find_all_facts;
 	raptor_term *clips_any_factp;
+	raptor_term *clips_do_for_fact;
 	raptor_term *clips_do_for_all_facts;
 	raptor_term *clips_fact_set_template;
 	raptor_term *clips_fact_set_member_variable;
@@ -160,8 +162,10 @@ static MyContext* init_context(){
 	cntxt->clips_function_args = URI(world, CLIPS("function-args"));
 
 	cntxt->clips_assert = URI(world, CLIPS("assert"));
+	cntxt->clips_find_fact = URI(world, CLIPS("FindFact"));
 	cntxt->clips_find_all_facts = URI(world, CLIPS("FindAllFacts"));
 	cntxt->clips_any_factp = URI(world, CLIPS("AnyFactP"));
+	cntxt->clips_do_for_fact = URI(world, CLIPS("DoForFact"));
 	cntxt->clips_do_for_all_facts = URI(world, CLIPS("DoForAllFacts"));
 	cntxt->clips_fact_set_template = URI(world, CLIPS("fact-set-template"));
 	cntxt->clips_fact_set_member_variable = URI(world, CLIPS("fact-set-member-variable"));
@@ -217,8 +221,10 @@ static void free_context(MyContext* cntxt){
 	raptor_free_term(cntxt->clips_function_name );
 	raptor_free_term(cntxt->clips_function_args );
 	raptor_free_term(cntxt->clips_assert );
+	raptor_free_term(cntxt->clips_find_fact );
 	raptor_free_term(cntxt->clips_find_all_facts );
 	raptor_free_term(cntxt->clips_any_factp );
+	raptor_free_term(cntxt->clips_do_for_fact );
 	raptor_free_term(cntxt->clips_do_for_all_facts );
 	raptor_free_term(cntxt->clips_fact_set_template );
 	raptor_free_term(cntxt->clips_fact_set_member_variable );
@@ -471,9 +477,13 @@ FUNC_DESC(fprintf_function){
 	if (assert != NULL){
 		return fprintf_assert(cntxt, stream, n);
 	} else if (check_property(n, cntxt->rdf_type, cntxt->clips_find_all_facts)
-		|| check_property(n, cntxt->rdf_type, cntxt->clips_any_factp)){
+		|| check_property(n, cntxt->rdf_type, cntxt->clips_find_fact)
+		|| check_property(n, cntxt->rdf_type, cntxt->clips_any_factp))
+	{
 		return fprintf_find_facts(cntxt, stream, n);
-	} else if (check_property(n, cntxt->rdf_type, cntxt->clips_do_for_all_facts)) {
+	} else if (check_property(n, cntxt->rdf_type, cntxt->clips_do_for_all_facts)
+		|| check_property(n, cntxt->rdf_type, cntxt->clips_do_for_fact))
+	{
 		return fprintf_find_facts(cntxt, stream, n);
 	}
 	name = get_object(n, cntxt->clips_function_name);
@@ -551,8 +561,12 @@ FUNC_DESC(fprintf_find_facts){
 	type = get_object(n, cntxt->rdf_type);
 	if (0 != raptor_term_equals(type, find_all_facts)){
 		fprintf(stream, " (find-all-facts ");
+	} else if (0 != raptor_term_equals(type, cntxt->clips_find_fact)){
+		fprintf(stream, " (find-fact ");
 	} else if (0 != raptor_term_equals(type, cntxt->clips_any_factp)){
 		fprintf(stream, " (any-factp ");
+	} else if (0 != raptor_term_equals(type, cntxt->clips_do_for_fact)){
+		fprintf(stream, " (do-for-fact ");
 	} else if (0 != raptor_term_equals(type, cntxt->clips_do_for_all_facts)) {
 		fprintf(stream, " (do-for-all-facts ");
 	} else {
@@ -619,7 +633,10 @@ FUNC_DESC(fprintf_find_facts){
 
 	NodeIterator* n_iter;
 	raptor_term *actions;
-	if (0 != raptor_term_equals(type, cntxt->clips_do_for_all_facts)) {
+	if (
+			0 != raptor_term_equals(type, cntxt->clips_do_for_all_facts)
+			|| 0 != raptor_term_equals(type, cntxt->clips_do_for_fact)
+	   ){
 		actions = get_object(n, cntxt->clips_action);
 		if(actions == NULL){
 			fprintf(stderr, "missing cs:action.\n");

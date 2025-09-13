@@ -15,7 +15,7 @@ Document(
     Prefix(self <http://example.com/variable-binding#>)
     Group (
       Group -100 (
-        Forall ?rif ?pattern (
+        (* self:rule75 *) Forall ?rif ?pattern (
           If And (
             ?rif["add-pattern-from"^^rif:local -> ?pattern]
             Not( ?rif["added-pattern-from"^^rif:local -> ?pattern] )
@@ -25,7 +25,7 @@ Document(
             Execute(crifi:set-graph-in-errorstate("Dont know where to add pattern for a formula(ex:misses-bound-variables)"))
           )
         )
-        Forall ?formulacontainer ?formulalist (
+        (* self:rule63 *) Forall ?formulacontainer ?formulalist (
           If And (
             ?formulacontainer["formulalist"^^rif:local -> ?formulalist]
             External(pred:numeric-greater-than(External(func:count(?formulalist)) 0))
@@ -35,7 +35,7 @@ Document(
           )
         )
       )
-      Forall ?formula (
+      (* self:rule64 *) Forall ?formula (
         If Or (
           ?formula # rif:And
           ?formula # rif:Or
@@ -49,13 +49,13 @@ Document(
           ?formula # rif:Equal
         ) Then Do( Assert(?formula # "rifformula"^^rif:local) )
       )
-      Forall ?rifvar ?clipsconstraint (
+      (* self:rule65 *) Forall ?rifvar ?clipsconstraint (
         If And (
           ?rifvar # rif:Var
           ?rifvar[ex:as-constraint -> ?clipsconstraint]
         ) Then ?rifvar["constraint-binds-var"^^rif:local -> ?clipsconstraint]
       )
-      Forall ?riflist ?itemlist ?rifvar ?clipsconstraint (
+      (* self:rule66 *) Forall ?riflist ?itemlist ?rifvar ?clipsconstraint (
         If And (
           ?riflist # ex:ConstraintGenerator
           ?riflist[rif:items -> ?itemlist]
@@ -63,7 +63,7 @@ Document(
           External(pred:list-contains(?itemlist ?rifvar))
         ) Then ?rifvar["constraint-binds-var"^^rif:local -> ?clipsconstraint]
       )
-      Forall ?rifrule ?rifformula ?clipsconstraint (
+      (* self:rule67 *) Forall ?rifrule ?rifformula ?clipsconstraint (
         If And (
           ?rifrule[rif:formula -> ?rifformula]
           Or (
@@ -78,7 +78,7 @@ Document(
           Assert( ?rifformula[modelA:bound-variable -> ?clipsconstraint] )
         )
       )
-      Forall ?rifrule ?formulalist ?rifformula ?clipsconstraint (
+      (* self:rule68 *) Forall ?rifrule ?formulalist ?rifformula ?clipsconstraint (
         If And (
           ?rifrule # rif:And
           ?rifrule[rif:formulas -> ?formulalist]
@@ -95,7 +95,7 @@ Document(
           Assert( ?rifformula[modelA:bound-variable -> ?clipsconstraint] )
         )
       )
-      Forall ?rifobj ?rifvar ?clipsconstraint (
+      (* self:rule69 *) Forall ?rifobj ?rifvar ?clipsconstraint (
         If And (
           Or (
             ?rifobj # modelA:TripleTemplateGenerator
@@ -115,7 +115,7 @@ Document(
           Not(?rifobj["bound-variable"^^rif:local -> ?clipsconstraint])
         ) Then ?rifobj[modelA:binds-var -> ?clipsconstraint]
       )
-      Forall ?rifobj ?rifvar ?clipsconstraint (
+      (* self:rule70 *) Forall ?rifobj ?rifvar ?clipsconstraint (
         If And (
           ?rifobj # modelA:AtomPatternGenerator
           ?rifobj[rif:op -> ?rifvar]
@@ -123,7 +123,7 @@ Document(
           Not(?rifobj["bound-variable"^^rif:local -> ?clipsconstraint])
         ) Then ?rifobj[modelA:binds-var -> ?clipsconstraint]
       )
-      Forall ?rifformula ?clipsconstraint ?rifvar (
+      (* self:rule71 *) Forall ?rifformula ?clipsconstraint ?rifvar (
         If And (
           ?rifformula # modelA:PatternGenerator
           Or (
@@ -139,7 +139,7 @@ Document(
           Not(?rifformula["bound-variable"^^rif:local -> ?clipsconstraint])
         ) Then ?rifformula[modelA:binds-var -> ?clipsconstraint]
       )
-      Forall ?riflist ?rifvar ?clipsconstraint (
+      (* self:rule72 *) Forall ?riflist ?rifvar ?clipsconstraint (
         If And (
           ?riflist[rif:rest -> ?rifvar]
           ?riflist # modelA:ConstraintGenerator
@@ -148,7 +148,7 @@ Document(
           Assert( ?riflist["constraint-binds-var"^^rif:local -> ?clipsconstraint] )
         )
       )
-      Forall ?riflist ?itemlist ?rifvar ?clipsconstraint (
+      (* self:rule73 *) Forall ?riflist ?itemlist ?rifvar ?clipsconstraint (
         If And (
           ?riflist[rif:items -> ?itemlist]
           ?riflist # modelA:ConstraintGenerator
@@ -158,7 +158,7 @@ Document(
           Assert( ?riflist["constraint-binds-var"^^rif:local -> ?clipsconstraint] )
         )
       )
-      Forall ?rifformula ?clipsvar ?rifvar (
+      (* self:rule74 *) Forall ?rifformula ?clipsvar ?rifvar (
         If And (
           Or (
             ?rifformula[rif:object -> ?rifvar]
@@ -600,19 +600,18 @@ Document(
         )
       )
 
-        Forall ?superformula ?subformula ?clipsvar (
+        (* self:rule76 *) Forall ?superformula ?subformula ?clipsvar (
           If And (
             ?superformula # rif:And
-            ?superformula[rif:formulas -> ?formulalist]
             ?superformula["add-pattern-from"^^rif:local -> ?subformula]
             ?superformula[modelA:binds-var -> ?clipsvar]
-            Not( ?superformula["added-pattern-from"^^rif:loca -> ?subformula] )
+            Not( ?superformula["added-pattern-from"^^rif:local -> ?subformula] )
           ) Then Do (
             Assert( ?subformula["bound-variable"^^rif:local -> ?clipsvar] )
           )
         )
 
-      Forall ?rifframe ?clipsvar (
+      (* self:rule77 *) Forall ?rifframe ?clipsvar (
         If And (
           Or (
             ?rifframe # modelA:TripleTemplateGenerator

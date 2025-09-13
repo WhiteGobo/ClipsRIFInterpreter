@@ -20,6 +20,7 @@ list(APPEND mytargets
 	process_lists
 	process_member
 	process_subclass
+	process_Do
 
 	variable-binding
 	process_Atom

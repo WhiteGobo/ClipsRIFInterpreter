@@ -34,6 +34,8 @@ list(APPEND owntargets
 	assign_var11
 	Membership
 	Subclass
+	actionvar1
+	actionvar2
 )
 
 foreach(base ${owntargets})

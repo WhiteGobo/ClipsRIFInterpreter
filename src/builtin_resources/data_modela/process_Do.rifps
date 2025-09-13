@@ -1,0 +1,156 @@
+Document(
+    Prefix(func <http://www.w3.org/2007/rif-builtin-function#>) 
+    Prefix(pred <http://www.w3.org/2007/rif-builtin-predicate#>) 
+    Prefix(owl <http://www.w3.org/2002/07/owl#>)
+    Prefix(deffact <http://white.gobo/crifi/resource-manager/deffacts#>)
+    Prefix(rema <http://white.gobo/crifi/resource-manager#>)
+    Prefix(cs <http://clips.script/>)
+    Prefix(crifi <http://white.gobo/>)
+    Prefix(ex <http://example.com/>)
+    Prefix(triplestordf <http://example.com/triples-to-rdf#>)
+    Prefix(rif <http://www.w3.org/2007/rif#>)
+    Prefix(entailment <http://www.w3.org/ns/entailment/>)
+    Prefix(modelA <http://white.gobo/modelA#>)
+    Prefix(self <http://example.com/process_Do#>)
+    Group(
+      Group -100 (
+        (* self:rule06 *) Forall ?rifnode ?in ?out ?nextactions ?firstaction (
+          If And (
+            ?rifnode # rif:Do
+            Exists ?actionvar ( And (
+              ?rifnode[rif:actionVar -> ?actionvar]
+              Not("processed-actionvar"^^rif:local(?rifnode ?actionvar))
+            ))
+          ) Then Do (
+            Assert( ?rifnode # ex:missing-actionvar )
+            Execute(crifi:set-graph-in-errorstate("Missing binding for rif:actionVar.(ex:missing-actionvar)"))
+          )
+        )
+      )
+      (* self:rule05 *) Forall ?rifdo ?actionvar ?rifvar ?rifnew ?actionlist ?clipsvar (
+        If And (
+          ?rifdo[rif:actionVar -> ?actionvar]
+          Not("processed-actionvar"^^rif:local(?rifdo ?actionvar))
+          ?rifvar # rif:Var
+          ?rifvar[ex:as-expression -> ?clipsvar]
+          ?rifnew # rif:New
+          External(pred:list-contains(?actionvar ?rifvar))
+          External(pred:list-contains(?actionvar ?rifnew))
+          ?rifdo[ex:out-transform-do -> ?actionlist]
+        ) Then Do (
+          (?function New())
+          (?binding New())
+          Assert("processed-actionvar"^^rif:local(?rifdo ?actionvar))
+          Modify(?rifdo[ex:out-transform-do -> External(func:append(?actionlist ?function))])
+          Assert( ?function[cs:function-name -> "bind"] )
+          Assert( ?function[cs:function-args -> External(func:make-list(?clipsvar ?binding))] )
+          Assert( ?binding[cs:function-name -> "<http://white.gobo/new-blanknode>"])
+          Assert( ?binding[cs:function-args -> External(func:make-list())] )
+        )
+      )
+      (* self:rule07 *) Forall ?rifdo ?actionvar ?rifvar ?rifframe ?actionlist ?clipsvar ?object ?slotlist ?slot ?slotkey ?slotvalue ?subj ?pred (
+        If And (
+          ?rifdo[rif:actionVar -> ?actionvar]
+          Not("processed-actionvar"^^rif:local(?rifdo ?actionvar))
+          ?rifvar # rif:Var
+          ?rifvar[ex:as-expression -> ?clipsvar]
+          ?rifframe # rif:Frame
+          External(pred:list-contains(?actionvar ?rifvar))
+          External(pred:list-contains(?actionvar ?rifframe))
+          ?rifdo[ex:out-transform-do -> ?actionlist]
+
+          ?rifframe[rif:object -> ?object]
+          ?rifframe[rif:slots -> ?slotlist]
+          ?slot[rif:slotkey -> ?slotkey]
+          ?slot[rif:slotvalue -> ?slotvalue]
+          ?object[ex:as-expression -> ?subj]
+          ?slotkey[ex:as-expression -> ?pred]
+          External(pred:is-list(?slotlist))
+          External(pred:list-contains(?slotlist ?slot))
+        ) Then Do (
+          (?function New())
+          (?binding New())
+          (?query New())
+          (?template New())
+          (?factvar New())
+          (?funcchecksubj New())
+          (?funccheckpred New())
+          (?slotsubj New())
+          (?slotpred New())
+          (?extractval New())
+          (?symbolsubject New())
+          Assert("processed-actionvar"^^rif:local(?rifdo ?actionvar))
+          Modify(?rifdo[ex:out-transform-do -> External(func:append(?actionlist ?function))])
+          Assert( ?function[cs:function-name -> "bind"] )
+          Assert( ?function[cs:function-args -> External(func:make-list(?clipsvar ?binding))] )
+          Assert( ?binding # cs:DoForFact )
+
+          Assert( ?binding[cs:fact-set-template -> ?template] )
+          Assert( ?template[cs:deftemplate-name -> "TripleTemplate"] )
+          Assert( ?template[cs:fact-set-member-variable -> ?factvar] )
+          Assert( ?factvar # cs:Variable )
+          Assert( ?factvar # ex:Variable )
+
+          Assert( ?binding[cs:query -> ?query])
+          Assert(?query[cs:function-name -> "and"] )
+          Assert(?query[cs:function-args -> External(func:make-list (?funcchecksubj ?funccheckpred))] )
+
+          Assert( ?slotsubj[cs:member-variable -> ?factvar] )
+          Assert( ?slotsubj[cs:member-slot-name -> "subject"] )
+          Assert( ?funcchecksubj[cs:function-name -> "eq"] )
+          Assert( ?funcchecksubj[cs:function-args -> External(func:make-list(?slotsubj ?subj))] )
+
+          Assert( ?slotpred[cs:member-variable -> ?factvar] )
+          Assert( ?slotpred[cs:member-slot-name -> "predicate"] )
+          Assert( ?funccheckpred[cs:function-name -> "eq"] )
+          Assert( ?funccheckpred[cs:function-args -> External(func:make-list(?slotpred ?pred))] )
+
+          Assert( ?binding[cs:action -> External(func:make-list(?extractval))])
+          Assert( ?extractval[cs:function-name -> "fact-slot-value"] )
+          Assert( ?extractval[cs:function-args -> External(func:make-list(?factvar ?symbolsubject))] )
+          Assert(?symbolsubject[cs:symbol -> "object"])
+        )
+      )
+      Group (
+        (* self:rule03 *) Forall ?rifnode ?actionlist (
+          If And(
+            ?rifnode[rif:actions -> ?actionlist]
+            External(pred:is-list(?actionlist))
+            ) Then Do (
+              Assert( ?rifnode[ex:in-transform-do -> ?actionlist] )
+              Assert( ?rifnode[ex:out-transform-do -> External(func:make-list())] )
+            )
+        )
+
+        (* self:rule02 *) Forall ?rifnode ?in ?out (
+          If And (
+            ?rifnode[ex:in-transform-do -> ?in]
+            0 = External(func:count(?in))
+            ?rifnode[ex:out-transform-do -> ?out]
+            ) Then Do (
+              Assert(?rifnode[ex:as-action -> ?out])
+              Retract( ?rifnode[ex:in-transform-do -> ?in] )
+              Retract( ?rifnode[ex:out-transform-do -> ?out] )
+              )
+          )
+
+        (* self:rule01 *) Forall ?rifnode ?in ?out ?nextactions ?firstaction (
+            If And (
+              ?rifnode # rif:Do
+              Not( Exists ?actionvar ( And (
+                ?rifnode[rif:actionVar -> ?actionvar]
+                Not("processed-actionvar"^^rif:local(?rifnode ?actionvar))
+              )))
+              ?rifnode[ex:in-transform-do -> ?in]
+              ?rifnode[ex:out-transform-do -> ?out]
+              ?firstaction[ex:as-action -> ?nextactions]
+              External( pred:numeric-not-equal(0 External(func:count(?in))) )
+              ?firstaction = External(func:get(?in 0))
+            ) Then Do (
+              Modify( ?rifnode[ex:in-transform-do -> External(func:remove(?in 0))] )
+              Modify( ?rifnode[ex:out-transform-do -> External(func:concatenate(?out ?nextactions))] )
+            )
+          )
+        )
+    )
+)

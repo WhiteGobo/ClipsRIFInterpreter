@@ -143,6 +143,16 @@ Document(
             Assert( ?parent[ex:inherits-data -> ?child] )
           )
         )
+        Forall ?rifdo ?actionvar ?binding (
+          If And (
+            ?rifdo[rif:actionVar -> ?actionvar]
+            External(pred:is-list(?actionvar))
+            ?binding # rif:Frame
+            External(pred:list-contains(?actionvar ?binding))
+          ) Then Do (
+            Assert( ?rifdo[ex:inherits-data -> ?binding] )
+          )
+        )
         (* self:rule10 *) Forall ?parent ?slotlist ?slot ?childkey ?x (
           If And (
             ?parent[rif:slots -> ?slotlist]
@@ -207,20 +217,6 @@ Document(
             Assert( ?parent[ex:inherits-data -> ?child] )
           )
         )
-        (* self:rule13 *) Forall ?rifdo ?actionvar ?rifvar ?rifframe (
-          If And (
-            ?rifdo[rif:actionVar -> ?actionvar]
-            External(pred:is-list(?actionvar))
-            ?rifvar # rif:Var
-            ?rifframe # rif:Frame
-            External(pred:list-contains(?actionvar ?rifvar))
-            External(pred:list-contains(?actionvar ?rifframe))
-          ) Then Do (
-            Assert( ?rifvar[ex:inherits-data -> ?rifframe] )
-            Assert( ?rifvar[ex:inherits-data -> ?rifdo] )
-          )
-        )
-
         (* self:rule14 *) Forall ?parent ?child ?grandchild (
           If And (
             ?parent[ex:inherits-data -> ?child]
@@ -245,9 +241,10 @@ Document(
             (?clipsnode New())
             Assert(?rifvar[ex:as-constraint -> ?clipsnode])
             Assert(?rifvar[ex:as-expression -> ?clipsnode])
+            Assert(?rifvar[ex:provides-expression -> ?clipsnode])
             Assert(?clipsnode[cs:variable-name -> ?varname])
-            Assert(?clipsnode[ex:as-constraint-needs-additional-conditionals -> External(func:make-list())])
             Assert( ?rifvar[ex:inherits-data -> ?rifdo] )
+            Assert( ?rifvar[ex:inherits-data -> External(func:get(?actionvar 1))] )
           )
         )
         (* self:rule16 *) Forall ?rifforall ?varlist ?rifvar (

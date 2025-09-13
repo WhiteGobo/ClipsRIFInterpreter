@@ -1,0 +1,1 @@
+Exists ?z ( <http://example.com/X>[<http://example.com/output> -> ?z] )
