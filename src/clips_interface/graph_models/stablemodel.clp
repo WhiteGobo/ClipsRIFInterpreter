@@ -413,7 +413,7 @@
 		=>
 	(assert 	(Member
 		(instance ?rifformula)
-		(class <http://example.com/RHSPatternGenerator>)))
+		(class <http://white.gobo/modelA#RHSPatternGenerator>)))
 
 )
 
@@ -433,7 +433,7 @@
 		=>
 	(assert 	(Member
 		(instance ?rifformula)
-		(class <http://example.com/RHSPatternGenerator>)))
+		(class <http://white.gobo/modelA#RHSPatternGenerator>)))
 
 )
 
@@ -3858,7 +3858,7 @@
 		(predicate <http://example.com/as-expression>)
 		(object ?clipsterm))
 		=>
-(bind ?tripletemplate (<http://white.gobo/new-blanknode>))(bind ?slotsubj (<http://white.gobo/new-blanknode>))(bind ?expandtriples (<http://white.gobo/new-blanknode>))(bind ?findtriples (<http://white.gobo/new-blanknode>))(bind ?tmpvar (<http://white.gobo/new-blanknode>))(bind ?triplequery (<http://white.gobo/new-blanknode>))(bind ?clipsretract (<http://white.gobo/new-blanknode>))	(assert 	(TripleTemplate
+(bind ?expandtriples (<http://white.gobo/new-blanknode>))(bind ?tripletemplate (<http://white.gobo/new-blanknode>))(bind ?clipsretract (<http://white.gobo/new-blanknode>))(bind ?triplequery (<http://white.gobo/new-blanknode>))(bind ?findtriples (<http://white.gobo/new-blanknode>))(bind ?slotsubj (<http://white.gobo/new-blanknode>))(bind ?tmpvar (<http://white.gobo/new-blanknode>))	(assert 	(TripleTemplate
 		(subject ?rifretract)
 		(predicate <http://example.com/as-action>)
 		(object (<http://www.w3.org/2007/rif-builtin-function#make-list> ?clipsretract ))))
@@ -3942,7 +3942,7 @@
 		(predicate <http://example.com/as-expression>)
 		(object ?subjterm))
 		=>
-(bind ?slotsubj (<http://white.gobo/new-blanknode>))(bind ?comparesubject (<http://white.gobo/new-blanknode>))(bind ?comparepredicate (<http://white.gobo/new-blanknode>))(bind ?tripletemplate (<http://white.gobo/new-blanknode>))(bind ?comparesubjectandpredicate (<http://white.gobo/new-blanknode>))(bind ?clipsassert (<http://white.gobo/new-blanknode>))(bind ?clipsretractvar (<http://white.gobo/new-blanknode>))(bind ?clipsretractall (<http://white.gobo/new-blanknode>))(bind ?tmpvar (<http://white.gobo/new-blanknode>))	(assert 	(Member
+(bind ?slotsubj (<http://white.gobo/new-blanknode>))(bind ?clipsassert (<http://white.gobo/new-blanknode>))(bind ?clipsretractall (<http://white.gobo/new-blanknode>))(bind ?comparepredicate (<http://white.gobo/new-blanknode>))(bind ?comparesubjectandpredicate (<http://white.gobo/new-blanknode>))(bind ?clipsretractvar (<http://white.gobo/new-blanknode>))(bind ?tripletemplate (<http://white.gobo/new-blanknode>))(bind ?comparesubject (<http://white.gobo/new-blanknode>))(bind ?tmpvar (<http://white.gobo/new-blanknode>))	(assert 	(Member
 		(instance ?tmpvar)
 		(class <http://clips.script/Variable>)))
 	(assert 	(TripleTemplate
@@ -4114,9 +4114,9 @@
 		(predicate <http://example.com/as-rhspattern>)
 		(object ?rhspattern))
 		=>
-(bind ?clipsassert (<http://white.gobo/new-blanknode>))(do-for-fact ((?trpl TripleTemplate))
+(do-for-fact ((?trpl TripleTemplate))
 		(and (eq ?trpl:subject ?clipsretract) (eq ?trpl:predicate <http://clips.script/function-args>))
-		(bind ?retracttargets ?trpl:object))	(do-for-all-facts ((?fct TripleTemplate)) 
+		(bind ?retracttargets ?trpl:object))(bind ?clipsassert (<http://white.gobo/new-blanknode>))	(do-for-all-facts ((?fct TripleTemplate)) 
 		(and 
 			(eq ?fct:subject ?clipsretract)
 			(eq ?fct:predicate <http://clips.script/function-args>))
@@ -4134,7 +4134,7 @@
 (defrule rule-gen15414 
 	(Member
 		(instance ?rifatom)
-		(class <http://example.com/RHSPatternGenerator>))
+		(class <http://white.gobo/modelA#RHSPatternGenerator>))
 		(TripleTemplate
 		(subject ?rifatom)
 		(predicate <http://www.w3.org/2007/rif#op>)
@@ -4149,7 +4149,7 @@
 		(object ?arglist))
 	(test (<http://www.w3.org/2007/rif-builtin-predicate#is-list> ?arglist ))
 		=>
-(bind ?slotop (<http://white.gobo/new-blanknode>))(bind ?rhspattern (<http://white.gobo/new-blanknode>))(bind ?slotargs (<http://white.gobo/new-blanknode>))	(assert 	(TripleTemplate
+(bind ?slotargs (<http://white.gobo/new-blanknode>))(bind ?slotop (<http://white.gobo/new-blanknode>))(bind ?rhspattern (<http://white.gobo/new-blanknode>))	(assert 	(TripleTemplate
 		(subject ?rifatom)
 		(predicate <http://example.com/as-rhspattern>)
 		(object ?rhspattern)))
@@ -4198,7 +4198,7 @@
 		(predicate <http://www.w3.org/2007/rif#args>)
 		(object ?arglist))))
 		=>
-(bind ?slotop (<http://white.gobo/new-blanknode>))(bind ?rhspattern (<http://white.gobo/new-blanknode>))(bind ?slotargs (<http://white.gobo/new-blanknode>))	(assert 	(TripleTemplate
+(bind ?rhspattern (<http://white.gobo/new-blanknode>))(bind ?slotargs (<http://white.gobo/new-blanknode>))(bind ?slotop (<http://white.gobo/new-blanknode>))	(assert 	(TripleTemplate
 		(subject ?rifatom)
 		(predicate <http://example.com/as-rhspattern>)
 		(object ?rhspattern)))
@@ -4319,7 +4319,7 @@
 		(predicate <http://example.com/as-expression>)
 		(object ?expressionobject))
 		=>
-(bind ?slotsubject (<http://white.gobo/new-blanknode>))(bind ?slotobject (<http://white.gobo/new-blanknode>))(bind ?rhspattern (<http://white.gobo/new-blanknode>))(bind ?slotpredicate (<http://white.gobo/new-blanknode>))	(assert 	(TripleTemplate
+(bind ?rhspattern (<http://white.gobo/new-blanknode>))(bind ?slotsubject (<http://white.gobo/new-blanknode>))(bind ?slotpredicate (<http://white.gobo/new-blanknode>))(bind ?slotobject (<http://white.gobo/new-blanknode>))	(assert 	(TripleTemplate
 		(subject ?rifnode)
 		(predicate <http://example.com/as-rhspattern>)
 		(object ?rhspattern)))
@@ -4425,7 +4425,7 @@
 		(predicate <http://example.com/as-expression>)
 		(object ?expressionsuper))
 		=>
-(bind ?slotsub (<http://white.gobo/new-blanknode>))(bind ?rhspattern (<http://white.gobo/new-blanknode>))(bind ?slotsuper (<http://white.gobo/new-blanknode>))	(assert 	(TripleTemplate
+(bind ?slotsuper (<http://white.gobo/new-blanknode>))(bind ?rhspattern (<http://white.gobo/new-blanknode>))(bind ?slotsub (<http://white.gobo/new-blanknode>))	(assert 	(TripleTemplate
 		(subject ?rifsuperclass)
 		(predicate <http://example.com/as-rhspattern>)
 		(object ?rhspattern)))

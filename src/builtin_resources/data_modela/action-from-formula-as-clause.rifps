@@ -7,6 +7,7 @@ Document(
     Prefix(cs <http://clips.script/>)
     Prefix(crifi <http://white.gobo/>)
     Prefix(ex <http://example.com/>)
+    Prefix(modelA <http://white.gobo/modelA#>)
     Prefix(triplestordf <http://example.com/triples-to-rdf#>)
     Prefix(rif <http://www.w3.org/2007/rif#>)
     Prefix(entailment <http://www.w3.org/ns/entailment/>)
@@ -178,7 +179,7 @@ Document(
 
       (* self:rule01 *) Forall ?rifatom ?op ?expressionop ?arglist (
         If And (
-          ?rifatom # ex:RHSPatternGenerator
+          ?rifatom # modelA:RHSPatternGenerator
           ?rifatom[rif:op -> ?op]
           ?op[ex:as-expression -> ?expressionop]
           ?rifatom[rif:args -> ?arglist]

@@ -7,6 +7,7 @@ Document(
     Prefix(cs <http://clips.script/>)
     Prefix(crifi <http://white.gobo/>)
     Prefix(ex <http://example.com/>)
+    Prefix(modelA <http://white.gobo/modelA#>)
     Prefix(triplestordf <http://example.com/triples-to-rdf#>)
     Prefix(rif <http://www.w3.org/2007/rif#>)
     Prefix(entailment <http://www.w3.org/ns/entailment/>)
@@ -106,7 +107,7 @@ Document(
             ?rifformula # rif:Frame
           )
         ) Then Do (
-          Assert(?rifformula # ex:RHSPatternGenerator)
+          Assert(?rifformula # modelA:RHSPatternGenerator)
         )
       )
       (* self:rule08 *) Forall ?rifformula ?rifparent ?sentencelist (
@@ -118,7 +119,7 @@ Document(
           )
           External(pred:list-contains(?sentencelist ?rifformula))
         ) Then Do (
-          Assert(?rifformula # ex:RHSPatternGenerator)
+          Assert(?rifformula # modelA:RHSPatternGenerator)
         )
       )
 
