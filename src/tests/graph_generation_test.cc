@@ -70,6 +70,9 @@ class officialw3cSyntaxTestCases_Test : public testing::TestWithParam<TestdataSy
 };
 
 static auto syntaxTestdata = testing::Values(
+		TestdataSyntax("compile_execute",
+			SC_NoCondition,
+			OWN_INPUT("compile_execute")),
 		TestdataSyntax("assign_var1",
 			SC_NoCondition,
 			OWN_INPUT("assign_var1")),

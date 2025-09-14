@@ -21,6 +21,7 @@ list(APPEND owntargets
 	stacked_conditionals1
 	circular_patterns1
 	circular_patterns2
+	compile_execute
 	assign_var1
 	assign_var2
 	assign_var3

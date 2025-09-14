@@ -17,4 +17,5 @@ Document(
   Import(<http://white.gobo/crifi/built_resources/data_modela#process_member> <http://www.w3.org/ns/entailment/RIF>)
   Import(<http://white.gobo/crifi/built_resources/data_modela#process_subclass> <http://www.w3.org/ns/entailment/RIF>)
   Import(<http://white.gobo/crifi/built_resources/data_modela#process_Do> <http://www.w3.org/ns/entailment/RIF>)
+  Import(<http://white.gobo/crifi/built_resources/data_modela#process_execute> <http://www.w3.org/ns/entailment/RIF>)
 )

@@ -26,6 +26,7 @@ list(APPEND mytargets
 	process_Atom
 	process-Frames
 	process-equal
+	process_execute
 	apply-generator
 )
 

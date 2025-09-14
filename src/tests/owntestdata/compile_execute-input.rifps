@@ -1,0 +1,12 @@
+Document(
+    Prefix(ex <http://example.com/>)
+    Prefix(act <https://www.w3.org/2007/rif-builtin-action#>)
+    Group (
+      Forall ?text (
+        If ex:text(?text)
+        Then Do (
+          Execute(act:print(?text))
+        )
+      )
+    )
+)

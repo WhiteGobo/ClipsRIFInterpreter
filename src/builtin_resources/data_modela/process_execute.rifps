@@ -1,0 +1,48 @@
+Document(
+    Prefix(func <http://www.w3.org/2007/rif-builtin-function#>) 
+    Prefix(pred <http://www.w3.org/2007/rif-builtin-predicate#>) 
+    Prefix(owl <http://www.w3.org/2002/07/owl#>)
+    Prefix(deffact <http://white.gobo/crifi/resource-manager/deffacts#>)
+    Prefix(rema <http://white.gobo/crifi/resource-manager#>)
+    Prefix(cs <http://clips.script/>)
+    Prefix(crifi <http://white.gobo/>)
+    Prefix(ex <http://example.com/>)
+    Prefix(triplestordf <http://example.com/triples-to-rdf#>)
+    Prefix(rif <http://www.w3.org/2007/rif#>)
+    Prefix(entailment <http://www.w3.org/ns/entailment/>)
+    Prefix(modelA <http://white.gobo/modelA#>)
+    Prefix(self <http://example.com/process_execute#>)
+    Group (
+      (* self:rule01 *) Forall ?rifexecute ?target(
+        If And (
+          ?rifexecute # rif:Execute
+          ?rifexecute[rif:target -> ?target]
+          ?target[rif:op -> ?rifop]
+          ?rifop[ex:as-expression -> ?functionsymbol]
+          ?functionsymbol[cs:symbol -> ?functionname]
+          ?target[rif:args -> ?rifarglist]
+          External(pred:is-list(?rifarglist))
+        ) Then Do (
+          (?function New())
+          Assert( ?rifexecute[ex:as-action -> External(func:make-list(?function))] )
+          Assert( ?function[cs:function-name -> ?functionname] )
+          Assert( ?function[cs:function-args -> External(func:make-list())] )
+          Assert( ?function["add-args-from"^^rif:local -> ?rifarglist] )
+        )
+      )
+      Group 15 (
+        (* self:rule02 *) Forall ?function ?rifarglist ?firstarg ?clipsexpression (
+          If And (
+            ?function["add-args-from"^^rif:local -> ?rifarglist]
+            External(pred:is-list(?rifarglist))
+            ?firstarg[ex:as-expression -> ?clipsexpression]
+            ?firstarg = External(func:get(?rifarglist 0))
+          ) Then Do (
+            (?functionargs ?function[cs:function-args -> ?functionargs])
+            Modify(?function[cs:function-args -> External(func:append(?functionargs ?clipsexpression))])
+            Modify(?function["add-args-from"^^rif:local -> External(func:remove(?rifarglist 0))])
+          )
+        )
+      )
+    )
+)

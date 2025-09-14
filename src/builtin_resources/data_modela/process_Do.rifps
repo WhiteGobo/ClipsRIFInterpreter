@@ -26,6 +26,14 @@ Document(
             Execute(crifi:set-graph-in-errorstate("Missing binding for rif:actionVar.(ex:missing-actionvar)"))
           )
         )
+        Forall ?rifnode (
+          If And (
+            ?rifnode[ex:out-transform-do -> ?out]
+          ) Then Do (
+            Assert( ?rifnode # ex:not-completed-actions )
+            Execute(crifi:set-graph-in-errorstate("Actions for rif:Do werent translated.(ex:not-completed-actions)"))
+          )
+        )
       )
       (* self:rule05 *) Forall ?rifdo ?actionvar ?rifvar ?rifnew ?actionlist ?clipsvar (
         If And (
