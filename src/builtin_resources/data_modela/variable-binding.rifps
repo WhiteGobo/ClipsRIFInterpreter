@@ -406,7 +406,7 @@ Document(
         )
       )
       Group 11 (
-        Forall ?rifineg (
+        (* self:rule80 *) Forall ?rifineg ?rifvarprovider ?clipsvar ?rifvarconsumer (
           If And (
             ?rifineg # rif:INeg
             ?rifvarprovider[ex:inherits-data -> ?rifineg]
@@ -417,7 +417,7 @@ Document(
             Assert(?rifineg["constraints-needs-variable"^^rif:local -> ?clipsvar])
           )
         )
-        Forall ?formula ?varlist(
+        (* self:rule81 *) Forall ?formula ?varlist ?rifvar ?clipsvar (
           If And (
             ?formula # rif:Exists
             ?formula[ex:inherits-data -> ?rifvar]

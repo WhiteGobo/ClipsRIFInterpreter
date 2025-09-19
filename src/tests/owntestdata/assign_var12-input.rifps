@@ -1,0 +1,16 @@
+Document(
+    Prefix(ex <http://example.com/>)
+    Prefix(pred <http://www.w3.org/2007/rif-builtin-predicate#>)
+    Group (
+      Forall ?rifframe ?frameobject ?slot (
+        If And (
+          ?rifframe[ex:object -> ?frameobject]
+          ?rifframe[ex:slot -> ?slot]
+          Not (Exists ?x ( And(
+            ?frameobject["constraint-needs-variable"^^rif:local -> ?x]
+            Not( ?slot["bound-variable"^^rif:local -> ?x] )
+          )))
+        ) Then ex:ok()
+      )
+    )
+)
