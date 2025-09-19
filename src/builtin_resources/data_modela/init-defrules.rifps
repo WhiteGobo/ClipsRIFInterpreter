@@ -171,5 +171,53 @@ Document(
           Assert(?rifterm # ex:ConstraintGenerator)
         )
       )
+      (* self:rule13 *) Forall ?rifgroup ?behavior ?priority (
+        If And (
+          ?rifgroup[rif:behavior -> ?behavior]
+          ?behavior[rif:Priority -> ?priority]
+        ) Then Do (
+          Assert( ?rifgroup["priority"^^rif:local -> ?priority] )
+        )
+      )
+      (* self:rule14 *) Forall ?rifdocument ?rifgroup (
+        If And (
+          ?rifdocument[rif:payload -> ?rifgroup]
+          Not(Exists ?x ?behavior (And(
+            ?rifgroup[rif:behavior -> ?behavior]
+            ?behavior[rif:Priority -> ?x]
+          )))
+        ) Then Do (
+          Assert( ?rifgroup["priority"^^rif:local -> 0] )
+        )
+      )
+      (* self:rule15 *) Forall ?supergroup ?priority ?sentences ?subgroup (
+        If And (
+          ?supergroup["priority"^^rif:local -> ?priority]
+          ?supergroup[rif:sentences -> ?sentences]
+          ?subgroup # rif:Group
+          External(pred:list-contains(?sentences ?subgroup))
+          Not(Exists ?x ?behavior (And(
+            ?subgroup[rif:behavior -> ?behavior]
+            ?behavior[rif:Priority -> ?x]
+          )))
+        ) Then Do (
+          Assert( ?subgroup["priority"^^rif:local -> ?priority] )
+        )
+      )
+      (* self:rule16 *) Forall ?rifgroup ?priority ?sentences ?rifrule ?clipsrule (
+        If And (
+          ?rifgroup["priority"^^rif:local -> ?priority]
+          ?rifgroup[rif:sentences -> ?sentences]
+          Or (
+            ?rifrule # rif:Forall
+            ?rifrule # rif:Implies
+          )
+          External(pred:list-contains(?sentences ?rifrule))
+          ?rifrule[modelA:as-defrule -> ?clipsrule]
+          External(pred:numeric-not-equal(?priority 0))
+        ) Then Do (
+          Assert( ?clipsrule[cs:salience -> ?priority] )
+        )
+      )
     )
 )

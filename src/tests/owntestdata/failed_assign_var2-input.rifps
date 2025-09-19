@@ -1,0 +1,8 @@
+Document(
+    Prefix(ex <http://example.com/>)
+    Group (
+      Forall ?x (
+        If Exists ?y ( ex:prop(?x ?y) ) Then ex:ok()
+      )
+    )
+)

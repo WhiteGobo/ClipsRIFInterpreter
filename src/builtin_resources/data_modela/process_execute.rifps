@@ -13,7 +13,7 @@ Document(
     Prefix(modelA <http://white.gobo/modelA#>)
     Prefix(self <http://example.com/process_execute#>)
     Group (
-      (* self:rule01 *) Forall ?rifexecute ?target(
+      (* self:rule01 *) Forall ?rifexecute ?target ?rifop ?functionsymbol ?functionname ?rifarglist (
         If And (
           ?rifexecute # rif:Execute
           ?rifexecute[rif:target -> ?target]

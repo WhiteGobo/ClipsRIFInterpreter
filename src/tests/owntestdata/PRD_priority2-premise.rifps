@@ -1,0 +1,31 @@
+Document(
+    Prefix(func <http://www.w3.org/2007/rif-builtin-function#>) 
+    Prefix(ex <http://example.org/example#>)
+    Group (
+      Group 2 (
+        Forall ?x (
+          If And (
+            ex:X(?x)
+            Not (Exists ?y (ex:Y(?x ?y)))
+          ) Then ex:Y(?x 0)
+        )
+      )
+      Group 1 (
+        Forall ?x ?y ?xprev ?yprev (
+          If And (
+            ex:X(?x)
+            ex:Y(?xprev ?yprev)
+            Not (Exists ?any (ex:Y(?x ?any)))
+            ?y = External(func:numeric-add(?yprev 1))
+            ?x = External(func:numeric-add(?xprev 1))
+          ) Then ex:Y(?x ?y)
+        )
+      )
+      ex:X(0)
+      ex:X(1)
+      ex:X(2)
+      ex:X(3)
+      ex:X(4)
+      ex:Y(0 0)
+    )
+)

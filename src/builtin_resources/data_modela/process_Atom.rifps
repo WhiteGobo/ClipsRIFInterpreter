@@ -46,6 +46,26 @@ Document(
           Assert( ?slotargs["add-atom-args-as-constraint"^^rif:local -> ?arglist] )
         )
       )
+      (* self:rule22 *) Forall ?rifatom ?op ?constraintop (
+        If And (
+          ?rifatom # modelA:AtomPatternGenerator
+          ?rifatom[rif:op -> ?op]
+          Not( Exists ?arglist (?rifatom[rif:args -> ?arglist]))
+          ?op[ex:as-constraint -> ?constraintop]
+        ) Then Do (
+          (?pattern New())
+          (?slotop New())
+          (?slotargs New())
+          Assert( ?rifatom[modelA:as-lhs-pattern -> ?pattern] )
+          Assert( ?pattern # cs:TemplatePatternCE )
+          Assert( ?pattern[cs:deftemplate-name -> "Atom"] )
+          Assert( ?pattern[cs:slot -> External(func:make-list(?slotop ?slotargs))] )
+          Assert( ?slotop[cs:slot-name -> "op"] )
+          Assert( ?slotop[cs:constraint -> ?constraintop] )
+          Assert( ?slotargs[cs:slot-name -> "args"] )
+          Assert( ?slotargs[cs:constraints -> External(func:make-list())] )
+        )
+      )
       Group 10 (
         (* self:rule03 *) Forall ?slotargs ?arglist ?firstarg ?clipsexpr(
           If And (

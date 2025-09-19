@@ -1,0 +1,8 @@
+Document(
+    Prefix(ex <http://example.com/>)
+    Group (
+      Forall ?x (
+        If Not ( ex:prop(?x) ) Then ex:ok()
+      )
+    )
+)

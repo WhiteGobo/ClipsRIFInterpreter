@@ -26,7 +26,7 @@ Document(
             Execute(crifi:set-graph-in-errorstate("Missing binding for rif:actionVar.(ex:missing-actionvar)"))
           )
         )
-        Forall ?rifnode (
+        (* self:rule08 *) Forall ?rifnode ?out (
           If And (
             ?rifnode[ex:out-transform-do -> ?out]
           ) Then Do (

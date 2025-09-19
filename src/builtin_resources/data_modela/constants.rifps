@@ -238,6 +238,8 @@ Document(
             Or (
               ?grandchild # rif:Const
               ?grandchild # rif:Var
+              ?grandchild # rif:INeg
+              ?grandchild # rif:Exists
             )
           ) Then Do (
             Assert( ?parent[ex:inherits-data -> ?grandchild])

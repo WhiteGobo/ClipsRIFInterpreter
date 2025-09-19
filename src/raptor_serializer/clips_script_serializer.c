@@ -41,6 +41,7 @@ typedef struct {
 
 	raptor_term *clips_Defrule;
 	raptor_term *clips_rule_name;
+	raptor_term *clips_salience;
 	raptor_term *clips_conditional_element;
 	raptor_term *clips_action;
 	//raptor_term *clips_Pattern_CE
@@ -130,6 +131,7 @@ static MyContext* init_context(){
 
 	cntxt->clips_Defrule = URI(world, CLIPS("Defrule"));
 	cntxt->clips_rule_name = URI(world, CLIPS("rule-name"));
+	cntxt->clips_salience = URI(world, CLIPS("salience"));
 
 	cntxt->clips_Deffacts = URI(world, CLIPS("Deffacts"));
 	cntxt->clips_deffacts_name = URI(world, CLIPS("deffacts-name"));
@@ -195,6 +197,7 @@ static void free_context(MyContext* cntxt){
 	raptor_free_term(cntxt->ex_rootfunction);
 	raptor_free_term(cntxt->clips_Defrule);
 	raptor_free_term(cntxt->clips_rule_name);
+	raptor_free_term(cntxt->clips_salience);
 	raptor_free_term(cntxt->clips_Deffacts);
 	raptor_free_term(cntxt->clips_deffacts_name );
 	raptor_free_term(cntxt->clips_rhs_pattern );
@@ -1106,7 +1109,7 @@ static CRIFI_SERIALIZE_SCRIPT_RET fprintf_defrule(MyContext *cntxt, FILE* stream
 	CRIFI_SERIALIZE_SCRIPT_RET err;
 	NodeIterator* n_iter;
 	TermIterator* iter;
-	raptor_term *name, *condition, *action, *entry;
+	raptor_term *name, *condition, *action, *entry, *salience;
 	Node *tmpnode = NULL;
 
 	fprintf(stream, "(defrule ");
@@ -1115,6 +1118,12 @@ static CRIFI_SERIALIZE_SCRIPT_RET fprintf_defrule(MyContext *cntxt, FILE* stream
 		fprintf_raptor_term(stream, name);
 	} else {
 		fprintf(stream, "rule%x", n);
+	}
+	salience = get_object(n, cntxt->clips_salience);
+	if (salience != NULL){
+		fprintf(stream, " (declare (salience ");
+		fprintf_raptor_term(stream, salience);
+		fprintf(stream, "))");
 	}
 	fprintf(stream, "\n");
 	condition = get_object(n, cntxt->clips_conditional_element);
