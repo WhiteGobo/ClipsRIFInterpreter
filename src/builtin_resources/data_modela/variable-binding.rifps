@@ -421,6 +421,7 @@ Document(
           If And (
             ?formula # rif:Exists
             ?formula[ex:inherits-data -> ?rifvar]
+            ?rifvar # rif:Var
             ?rifvar[ex:as-expression -> ?clipsvar]
             ?formula[rif:vars -> ?varlist]
             Not( Exists ?ownvar (And(
