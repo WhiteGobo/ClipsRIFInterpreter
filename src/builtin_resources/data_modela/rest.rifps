@@ -10,10 +10,11 @@ Document(
     Prefix(triplestordf <http://example.com/triples-to-rdf#>)
     Prefix(rif <http://www.w3.org/2007/rif#>)
     Prefix(entailment <http://www.w3.org/ns/entailment/>)
+    Prefix(self <http://example.com/rest#>)
     Group (
 
-        (* ex:create-deffacts-for-groups *) Group (
-          (* ex:init-deffacts *) Forall ?group ?sentences ?factable (
+        (* self:create-deffacts-for-groups *) Group (
+          (* self:init-deffacts *) Forall ?group ?sentences (
             If And (
               ?group[rif:sentences -> ?sentences]
               External(pred:is-list(?sentences))
