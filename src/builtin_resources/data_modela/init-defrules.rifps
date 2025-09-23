@@ -80,16 +80,16 @@ Document(
         )
       )
       Group (
-        (* self:rule06 *) Forall ?factvar ?defrule ?defruleindex (
+        (* self:rule06 *) Forall ?defrule ?defruleindex (
           If And (
-            ?factvar # cs:Defrule
+            ?defrule # cs:Defrule
             ex:currentdefruleindex(?defruleindex)
             Not (Exists ?defrulename ( ?defrule[cs:rule-name -> ?defrulename] ))
           ) Then Do (
             Retract( ex:currentdefruleindex(?defruleindex) )
 
             Assert( ex:currentdefruleindex(External(func:numeric-add(?defruleindex 1))))
-            Assert( ?factvar[cs:rule-name -> External(func:concat("rule" ?defruleindex))] )
+            Assert( ?defrule[cs:rule-name -> External(func:concat("rule" ?defruleindex))] )
 
           )
         )
