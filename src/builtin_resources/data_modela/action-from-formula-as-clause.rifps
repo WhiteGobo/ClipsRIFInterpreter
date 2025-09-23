@@ -200,6 +200,7 @@ Document(
       )
       (* self:rule05 *) Forall ?rifatom ?op ?expressionop (
         If And (
+          ?rifatom # modelA:RHSPatternGenerator
           ?rifatom[rif:op -> ?op]
           ?op[ex:as-expression -> ?expressionop]
           Not( Exists ?arglist (?rifatom[rif:args -> ?arglist]))
@@ -251,6 +252,7 @@ Document(
 
       (* ex:as-expression-transform-rif-frame *) Forall ?rifnode ?object ?slotlist ?slot ?slotkey ?slotvalue ?expressionsubject ?expressionpredicate ?expressionobject (
         If And (
+          ?rifnode # modelA:RHSPatternGenerator
           ?rifnode[rif:object -> ?object]
           ?rifnode[rif:slots -> ?slotlist]
           ?slot[rif:slotkey -> ?slotkey]
@@ -278,6 +280,7 @@ Document(
       )
       (* self:rule07 *) Forall ?rifmember ?instance ?cls ?expressioninstance ?expressioncls (
         If And (
+          ?rifmember # modelA:RHSPatternGenerator
           ?rifmember[rif:instance -> ?instance]
           ?instance[ex:as-expression -> ?expressioninstance]
           ?rifmember[rif:class -> ?cls]
@@ -297,6 +300,7 @@ Document(
       )
       (* self:rule08 *) Forall ?rifsuperclass ?sub ?super ?expressionsub ?expressionsuper (
         If And (
+          ?rifsuperclass # modelA:RHSPatternGenerator
           ?rifsuperclass[rif:sub -> ?sub]
           ?sub[ex:as-expression -> ?expressionsub]
           ?rifsuperclass[rif:super -> ?super]
