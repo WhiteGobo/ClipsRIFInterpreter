@@ -143,7 +143,7 @@
 (defrule rule-gen5351 (declare (salience -101))
 	(TripleTemplate
 		(subject ?rif)
-		(predicate _:qqadd-args-as-expression-from)
+		(predicate %3Chttp%3A%2F%2Fwhite.gobo%2Flocal%2Fu%2Fa%23add-args-as-expression-from%3E)
 		(object ?arglist))
 	(test (<http://www.w3.org/2007/rif-builtin-predicate#numeric-greater-than> (<http://www.w3.org/2007/rif-builtin-function#count> ?arglist ) "0^^http://www.w3.org/2001/XMLSchema#integer" ))
 		=>
@@ -193,7 +193,7 @@
 		(object (<http://www.w3.org/2007/rif-builtin-function#make-list> ))))
 	(assert 	(TripleTemplate
 		(subject ?function)
-		(predicate _:qqadd-args-as-expression-from)
+		(predicate %3Chttp%3A%2F%2Fwhite.gobo%2Flocal%2Fu%2Fa%23add-args-as-expression-from%3E)
 		(object ?itemlist)))
 
 )
@@ -202,7 +202,7 @@
 (defrule rule-gen5370 
 	(TripleTemplate
 		(subject ?function)
-		(predicate _:qqadd-args-as-expression-from)
+		(predicate %3Chttp%3A%2F%2Fwhite.gobo%2Flocal%2Fu%2Fa%23add-args-as-expression-from%3E)
 		(object ?itemlist))
 		(TripleTemplate
 		(subject ?function)
@@ -226,10 +226,10 @@
 	(do-for-all-facts ((?fct TripleTemplate)) 
 		(and 
 			(eq ?fct:subject ?function)
-			(eq ?fct:predicate _:qqadd-args-as-expression-from))
+			(eq ?fct:predicate %3Chttp%3A%2F%2Fwhite.gobo%2Flocal%2Fu%2Fa%23add-args-as-expression-from%3E))
 		(retract ?fct))	(assert 	(TripleTemplate
 		(subject ?function)
-		(predicate _:qqadd-args-as-expression-from)
+		(predicate %3Chttp%3A%2F%2Fwhite.gobo%2Flocal%2Fu%2Fa%23add-args-as-expression-from%3E)
 		(object (<http://www.w3.org/2007/rif-builtin-function#remove> ?itemlist "0^^http://www.w3.org/2001/XMLSchema#integer" ))))
 
 )
@@ -237,12 +237,12 @@
 (defrule rule-gen5380 
 	(TripleTemplate
 		(subject ?function)
-		(predicate _:qqadd-args-as-expression-from)
+		(predicate %3Chttp%3A%2F%2Fwhite.gobo%2Flocal%2Fu%2Fa%23add-args-as-expression-from%3E)
 		(object ?itemlist))
 	(test (<http://www.w3.org/2007/rif-builtin-predicate#is-list> ?itemlist ))
 	(test (eq "0^^http://www.w3.org/2001/XMLSchema#integer"(<http://www.w3.org/2007/rif-builtin-function#count> ?itemlist )))
 		=>
-	(do-for-all-facts ((?fct TripleTemplate)) (and (eq ?fct:subject ?function) (and (eq ?fct:predicate _:qqadd-args-as-expression-from)(eq ?fct:object ?itemlist)))
+	(do-for-all-facts ((?fct TripleTemplate)) (and (eq ?fct:subject ?function) (and (eq ?fct:predicate %3Chttp%3A%2F%2Fwhite.gobo%2Flocal%2Fu%2Fa%23add-args-as-expression-from%3E)(eq ?fct:object ?itemlist)))
 		(retract ?fct))
 )
 
@@ -504,7 +504,7 @@
 (defrule rule-gen5471 (declare (salience 10))
 	(TripleTemplate
 		(subject ?slotitems)
-		(predicate _:qqadd-args-as-constraints-from)
+		(predicate %3Chttp%3A%2F%2Fwhite.gobo%2Flocal%2Fu%2Fa%23add-args-as-constraints-from%3E)
 		(object ?itemlist))
 		(TripleTemplate
 		(subject ?slotitems)
@@ -529,10 +529,10 @@
 	(do-for-all-facts ((?fct TripleTemplate)) 
 		(and 
 			(eq ?fct:subject ?slotitems)
-			(eq ?fct:predicate _:qqadd-args-as-constraints-from))
+			(eq ?fct:predicate %3Chttp%3A%2F%2Fwhite.gobo%2Flocal%2Fu%2Fa%23add-args-as-constraints-from%3E))
 		(retract ?fct))	(assert 	(TripleTemplate
 		(subject ?slotitems)
-		(predicate _:qqadd-args-as-constraints-from)
+		(predicate %3Chttp%3A%2F%2Fwhite.gobo%2Flocal%2Fu%2Fa%23add-args-as-constraints-from%3E)
 		(object (<http://www.w3.org/2007/rif-builtin-function#remove> ?itemlist "0^^http://www.w3.org/2001/XMLSchema#integer" ))))
 
 )
@@ -559,7 +559,7 @@
 		(predicate <http://example.com/as-expression>)
 		(object ?clipsrestvar))
 		(Atom
-		(op _:qqcombine-multifield-as-list)
+		(op %3Chttp%3A%2F%2Fwhite.gobo%2Flocal%2Fu%2Fa%23combine-multifield-as-list%3E)
 		(args ?rest ?multifieldvar ))
 		(Member
 		(instance ?rest)

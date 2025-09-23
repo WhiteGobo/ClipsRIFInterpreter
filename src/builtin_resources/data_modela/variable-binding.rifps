@@ -204,15 +204,6 @@ Document(
           Assert(?rifexternal["constraints-needs-variable"^^rif:local -> ?clipsvar])
         )
       )
-      (* self:rule12 *) Forall ?rifexternal ?rifvar ?clipsvar (
-        If And (
-          ?rifexternal # rif:External
-          ?rifexternal # modelA:PatternGenerator
-          ?rifexternal[ex:inherits-data -> ?rifvar]
-          ?rifvar # rif:Var
-          ?rifvar[ex:as-expression -> ?clipsvar]
-        ) Then ?rifexternal["expressions-needs-var"^^rif:local -> ?clipsvar]
-      )
       (* self:rule13 *) Forall ?rifatom ?arglist ?rifvar ?clipsvar (
         If And (
           ?rifatom[rif:args -> ?arglist]
@@ -434,6 +425,27 @@ Document(
             Assert(?formula["constraints-needs-variable"^^rif:local -> ?clipsvar])
           )
         )
+        (* self:rule36 *) Forall ?pattern ?term ?clipsvar (
+          If And (
+            ?pattern # modelA:PatternGenerator
+            ?pattern # rif:External
+            ?pattern[ex:inherits-data -> ?term]
+            ?term # modelA:ConstraintGenerator
+            ?term # rif:Var
+            ?term[ex:as-constraint -> ?clipsvar]
+          ) Then Do (
+            Assert( ?term["expression-needs-var"^^rif:local -> ?clipsvar] )
+          )
+        )
+        (* self:rule12 *) Forall ?rifexternal ?rifvar ?clipsvar (
+          If And (
+            ?rifexternal # rif:External
+            ?rifexternal # modelA:ConditionGenerator
+            ?rifexternal[ex:inherits-data -> ?rifvar]
+            ?rifvar # rif:Var
+            ?rifvar[ex:as-expression -> ?clipsvar]
+          ) Then ?rifexternal["expressions-needs-var"^^rif:local -> ?clipsvar]
+        )
       )
       (* self:rule30 *) Forall ?formula (
         If And (
@@ -531,20 +543,10 @@ Document(
         )
       )
 
-      (* self:rule36 *) Forall ?pattern ?term ?clipsvar (
-        If And (
-          ?pattern # modelA:PatternGenerator
-          ?pattern[ex:inherits-data -> ?term]
-          ?term # modelA:ConstraintGenerator
-          ?term # rif:Var
-          ?term[ex:as-constraint -> ?clipsvar]
-        ) Then Do (
-          Assert( ?term["expression-needs-var"^^rif:local -> ?clipsvar] )
-        )
-      )
 
       (* self:rule37 *) Forall ?expression ?rifvar ?clipsvar (
         If And (
+          "always-wrong"^^rif:local()
           ?expression # ex:ExpressionGenerator
           ?expression[ex:inherits-data -> ?rifvar]
           ?rifvar[ex:as-expression -> ?clipsvar]

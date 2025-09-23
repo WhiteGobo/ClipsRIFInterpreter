@@ -1087,6 +1087,7 @@
 	(return (str-cat "\"" ?self:represents "\"")))
 
 (defmessage-handler RIFLocalValue as_term ()
+	(return (<http://white.gobo/local-to-clipsconstant> <a> ?self:represents))
 	(return (sym-cat "_:qq" ?self:represents)))
 
 (defmessage-handler RIFVar as_term () (return (str-cat "?" ?self:varname)))
