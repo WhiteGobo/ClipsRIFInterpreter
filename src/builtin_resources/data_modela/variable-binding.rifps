@@ -204,12 +204,13 @@ Document(
           Assert(?rifexternal["constraints-needs-variable"^^rif:local -> ?clipsvar])
         )
       )
-      (* self:rule12 *) Forall ?rifexternal ?rifatom ?arglist ?rifvar ?clipsvar (
+      (* self:rule12 *) Forall ?rifexternal ?rifvar ?clipsvar (
         If And (
-          ?rifexternal[rif:content -> ?rifatom]
-          ?rifatom[rif:args -> ?arglist]
-          ?rifvar["expression-needs-var"^^rif:local -> ?clipsvar]
-          External(pred:list-contains(?arglist ?rifvar))
+          ?rifexternal # rif:External
+          ?rifexternal # modelA:PatternGenerator
+          ?rifexternal[ex:inherits-data -> ?rifvar]
+          ?rifvar # rif:Var
+          ?rifvar[ex:as-expression -> ?clipsvar]
         ) Then ?rifexternal["expressions-needs-var"^^rif:local -> ?clipsvar]
       )
       (* self:rule13 *) Forall ?rifatom ?arglist ?rifvar ?clipsvar (
@@ -542,7 +543,7 @@ Document(
         )
       )
 
-      (* self:rule37 *) Forall ?formulacontainer ?formula ?expression ?rifvar ?clipsvar (
+      (* self:rule37 *) Forall ?expression ?rifvar ?clipsvar (
         If And (
           ?expression # ex:ExpressionGenerator
           ?expression[ex:inherits-data -> ?rifvar]
@@ -555,7 +556,7 @@ Document(
       )
 
       Group -1 (
-        (* self:rule38 *) Forall ?superpattern ?formulacontainer ?formulalist ?subpattern ?formula ?patternlist ?aftercondition (
+        (* self:rule38 *) Forall ?superpattern ?formulacontainer ?formulalist ?subpattern ?formula ?patternlist (
           If And (
             Or (
               ?superpattern # cs:AndCE
@@ -572,7 +573,7 @@ Document(
             ?formula[modelA:as-lhs-pattern -> ?subpattern]
             ?formula = External(func:get(?formulalist 0))
             ?superpattern[cs:conditional-element -> ?patternlist]
-            Not (?formula[modelA:lhs-pattern-after-conditions -> ?aftercondition])
+            Not (Exists ?aftercondition (?formula[modelA:lhs-pattern-after-conditions -> ?aftercondition]))
           ) Then Do (
             Modify(?formulacontainer["formulalist"^^rif:local -> External(func:remove(?formulalist 0))])
             Modify(?superpattern[cs:conditional-element -> External(func:append(?patternlist ?subpattern))])
@@ -690,7 +691,7 @@ Document(
         )
       )
       Group -10 (
-        (* self:rule44 *) Forall ?riflist ?rest (
+        (* self:rule44 *) Forall ?riflist (
           If And (
             ?riflist # rif:List
             ?riflist # modelA:ConstraintGenerator
@@ -912,10 +913,10 @@ Document(
             External(pred:is-list(?arglist))
 
             ?targetiri # rif:Var
-            Not( ?rifexternal["bound-variable"^^rif:local -> ?clipsassign] )
             ?targetiri = External(func:get(?arglist 0))
             ?targetstring[ex:as-expression -> ?clipsassign]
             ?targetstring = External(func:get(?arglist 1))
+            Not( ?rifexternal["bound-variable"^^rif:local -> ?clipsassign] )
             Not (Exists ?x ( And(
               ?targetstring["expression-needs-var"^^rif:local -> ?x]
               Not( ?rifexternal["bound-variable"^^rif:local -> ?x] )
