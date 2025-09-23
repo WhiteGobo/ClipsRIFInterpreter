@@ -12,9 +12,11 @@ Document(
     Prefix(entailment <http://www.w3.org/ns/entailment/>)
     Prefix(ex <http://example.com/>)
     Prefix(exa <http://example.com/a#>)
+    Prefix(self <http://example.com/apply-generator#>)
     Group (
-      Forall ?group ?rifrule ?sentences (
-        If And (
+      (* self:rule01 *) Forall ?group ?rifrule ?sentences (
+        ?rifrule # modelA:RuleGenerator :-
+        And (
           ?group[rif:sentences -> ?sentences]
           Or (
             ?rifrule # rif:Implies
@@ -22,11 +24,9 @@ Document(
           )
           External(pred:is-list(?sentences))
           External(pred:list-contains(?sentences ?rifrule))
-        ) Then Do(
-          Assert(?rifrule # modelA:RuleGenerator)
         )
       )
-      Forall ?group ?sentences ?rifclause (
+      (* self:rule02 *) Forall ?group ?sentences ?rifclause (
         If And (
           ?group[rif:sentences -> ?sentences]
           Or (
@@ -39,8 +39,20 @@ Document(
           Execute(crifi:set-graph-in-errorstate("modelA cant process rif:Equal as clause(ex:equal-not-implemented-as-clause)"))
         )
       )
-      Forall ?group ?sentences ?rifclause (
-        If And (
+      Forall ?clause ?assert (
+        ?assert # modelA:RHSPatternGenerator :-
+        And (
+          ?clause[rif:then -> ?assert]
+          Or (
+            ?assert # rif:Frame
+            ?assert # rif:Atom
+            ?assert # rif:Member
+          )
+        )
+      )
+      (* self:rule03 *) Forall ?group ?sentences ?rifclause (
+        ?rifclause # modelA:RHSPatternGenerator :-
+        And (
           ?group[rif:sentences -> ?sentences]
           Or (
             ?rifclause # rif:Frame
@@ -50,22 +62,20 @@ Document(
           )
           External(pred:is-list(?sentences))
           External(pred:list-contains(?sentences ?rifclause))
-        ) Then Do(
-          Assert(?rifclause # modelA:RHSPatternGenerator)
         )
       )
-      Forall ?rifframe ?slot ?slotlist (
-        If And (
+      (* self:rule04 *) Forall ?rifframe ?slot ?slotlist (
+        ?slot # modelA:RHSPatternGenerator :-
+        And (
           ?rifframe # modelA:RHSPatternGenerator
           ?rifframe[rif:slots -> ?slotlist]
           ?slot # rif:Slot
           External(pred:list-contains(?slotlist ?slot))
-        ) Then Do (
-          Assert( ?slot # modelA:RHSPatternGenerator )
         )
       )
-      Forall ?patterngen ?arglist ?term (
-        If And (
+      (* self:rule05 *) Forall ?patterngen ?arglist ?term (
+        ?term # ex:ExpressionGenerator :-
+        And (
           ?patterngen # modelA:RHSPatternGenerator
           ?patterngen[rif:args -> ?arglist]
           Or (
@@ -73,12 +83,11 @@ Document(
             ?term # rif:External
           )
           External(pred:list-contains(?arglist ?term))
-        ) Then Do (
-          Assert(?term # ex:ExpressionGenerator)
         )
       )
-      Forall ?riflist ?arglist ?term (
-        If And (
+      (* self:rule06 *) Forall ?riflist ?arglist ?term (
+        ?term # ex:ExpressionGenerator :- 
+        And (
           ?riflist # ex:ExpressionGenerator
           ?riflist[rif:items -> ?arglist]
           Or (
@@ -86,12 +95,11 @@ Document(
             ?term # rif:External
           )
           External(pred:list-contains(?arglist ?term))
-        ) Then Do (
-          Assert(?term # ex:ExpressionGenerator)
         )
       )
-      Forall ?patterngen ?term (
-        If And (
+      (* self:rule07 *) Forall ?patterngen ?term (
+        ?term # ex:ExpressionGenerator :-
+        And (
           ?patterngen # modelA:RHSPatternGenerator
           Or (
             ?patterngen[rif:op -> ?term]
@@ -105,46 +113,41 @@ Document(
             ?patterngen[rif:sub -> ?term]
             ?patterngen[rif:super -> ?term]
           )
-        ) Then Do (
-          Assert(?term # ex:ExpressionGenerator)
         )
       )
-      Forall ?rifimply ?formula (
-        If And(
+      (* self:rule08 *) Forall ?rifimply ?formula (
+        ?formula # modelA:ConditionGenerator :-
         Or(
           ?rifimply[rif:if -> ?formula]
           ?rifimply[rif:pattern -> ?formula]
-        )) Then Do (Assert( ?formula # modelA:ConditionGenerator))
+        )
       )
-      Forall ?formula ?child ?formulalist (
-        If And (
+      (* self:rule09 *) Forall ?formula ?child ?formulalist (
+        ?child # modelA:ConditionGenerator :-
+        And (
           ?formula # modelA:ConditionGenerator
           ?formula[ex:inherits-data -> ?child]
           ?formula[rif:formulas -> ?formulalist]
           External(pred:list-contains(?formulalist ?child))
-        ) Then Do (
-          Assert( ?child # modelA:ConditionGenerator )
         )
       )
-      Forall ?formula ?child (
-        If And (
+      (* self:rule10 *) Forall ?formula ?child (
+        ?child # modelA:ConditionGenerator :-
+        And (
           ?formula # modelA:ConditionGenerator
           ?formula[rif:formula -> ?child]
-        ) Then Do (
-          Assert( ?child # modelA:ConditionGenerator )
         )
       )
-      Forall ?rifformula ?slotlist ?slot (
-        If And (
+      (* self:rule11 *) Forall ?rifformula ?slotlist ?slot (
+        ?slot # modelA:ConditionGenerator :-
+        And (
           ?rifformula # modelA:ConditionGenerator
           ?rifformula[rif:slots -> ?slotlist]
           ?slot # rif:Slot
           External(pred:list-contains(?slotlist ?slot))
-        ) Then Do (
-          Assert( ?slot # modelA:ConditionGenerator )
         )
       )
-      Forall ?rifformula ?child (
+      (* self:rule12 *) Forall ?rifformula ?child (
         If And (
           ?rifformula # modelA:PatternGenerator
           Or (
@@ -164,18 +167,17 @@ Document(
           Assert( ?rifformula[modelA:pattern-uses-constraint -> ?child] )
         )
       )
-      Forall ?rifformula (
-        If And (
+      (* self:rule13 *) Forall ?rifformula (
+        ?rifformula # modelA:PatternGenerator :-
+        And (
           Or (
             ?rifformula # rif:Atom
             ?rifformula # rif:Frame
           )
           ?rifformula # modelA:ConditionGenerator
-        ) Then Do (
-          Assert(?rifformula # modelA:PatternGenerator )
         )
       )
-      Forall ?rifformula ?child ?arglist(
+      (* self:rule14 *) Forall ?rifformula ?child ?arglist(
         If And (
           ?rifformula # modelA:PatternGenerator
           ?rifformula[rif:args -> ?arglist]
@@ -190,7 +192,7 @@ Document(
           Assert( ?rifformula[modelA:pattern-uses-constraint -> ?child] )
         )
       )
-      Forall ?rifformula ?superlist ?itemlist ?child (
+      (* self:rule15 *) Forall ?rifformula ?superlist ?itemlist ?child (
         If And (
           ?rifformula # modelA:PatternGenerator
           ?rifformula[modelA:pattern-uses-constraint -> ?superlist]
@@ -206,45 +208,53 @@ Document(
           Assert( ?rifformula[modelA:pattern-uses-constraint -> ?child] )
         )
       )
-      Forall ?rifformula ?child (
-        If And (
+      (* self:rule16 *) Forall ?rifformula ?child (
+        ?rifformula # modelA:MultiPatternGenerator :-
+        And (
           ?rifformula[modelA:pattern-uses-constraint -> ?child]
           ?child # rif:List
-        ) Then Do (
-          Assert( ?rifformula # modelA:MultiPatternGenerator )
         )
       )
-      Forall ?rifimply ?action (
-        If ?rifimply[rif:then -> ?action]
-        Then Do (Assert( ?action # modelA:ActionGenerator))
+      (* self:rule17 *) Forall ?rifimply ?action (
+        ?action # modelA:ActionGenerator :-
+        ?rifimply[rif:then -> ?action]
       )
-      Forall ?action (
-        If Or (
+      (* self:rule18 *) Forall ?action ?target (
+        ?target # modelA:RHSPatternGenerator :-
+        And (
+          Or (
+            ?action # rif:Assert
+            ?action # rif:Retract
+            ?action # rif:Modify
+          )
+          ?action[rif:target -> ?target]
+        )
+      )
+      (* self:rule19 *) Forall ?action (
+        ?action # modelA:ActionGenerator :-
+        Or (
             ?action # rif:Assert
             ?action # rif:Retract
             ?action # rif:Modify
             ?action # rif:Execute
-        ) Then Do (
-          Assert( ?action # modelA:ActionGenerator)
         )
       )
-      Forall ?rifforall ?action (
-        If And(
+      (* self:rule20 *) Forall ?rifforall ?action (
+        ?action # modelA:ActionGenerator :-
+        And(
           ?rifforall # rif:Forall
           ?rifforall[rif:formula -> ?action]
           Not(?action # rif:Implies)
           Not(?action # rif:Forall)
         )
-        Then Do (Assert( ?action # modelA:ActionGenerator))
       )
-      Forall ?rifexternal ?rifatom ?child (
-        If And (
+      (* self:rule21 *) Forall ?rifexternal ?rifatom ?child (
+        ?child # ex:ExpressionGenerator :-
+        And (
           ?rifexternal # rif:External
           ?rifexternal[rif:content -> ?rifatom]
           ?rifexternal[ex:inherits-data -> ?child]
           Not(?child # rif:Var)
-        ) Then Do (
-          Assert(?child # ex:ExpressionGenerator)
         )
       )
     )
