@@ -79,6 +79,22 @@ class officialw3cPETTestCases_Test : public testing::TestWithParam<TestdataPET> 
 };
 
 static auto petTestdata = testing::Values(
+		TestdataPET("Own_PET_Assert2",
+			SC_NoCondition | SC_ModelFirst,
+			OWN_PREMISE("Assert2"),
+			OWN_CONCLUSION("Assert2")),
+		TestdataPET("Own_PET_Assert3",
+			SC_NoCondition | SC_ModelFirst,
+			OWN_PREMISE("Assert3"),
+			OWN_CONCLUSION("Assert3")),
+		TestdataPET("Own_PET_Assert4",
+			SC_NoCondition | SC_ModelFirst,
+			OWN_PREMISE("Assert4"),
+			OWN_CONCLUSION("Assert4")),
+		TestdataPET("Own_PET_Assert5",
+			SC_NoCondition | SC_ModelFirst,
+			OWN_PREMISE("Assert5"),
+			OWN_CONCLUSION("Assert5")),
 		TestdataPET("Own_BLD_PET_openlist_as_pattern",
 			SC_NoCondition | SC_ModelFirst,
 			OWN_PREMISE("openlist_as_pattern"),
