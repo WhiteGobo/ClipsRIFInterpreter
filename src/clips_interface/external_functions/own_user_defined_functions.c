@@ -193,6 +193,7 @@ void clipsudf_local_to_clipsconstant(Environment *env, UDFContext *udfc, UDFValu
 		RETURNFAIL("argument error for crifi:local-to-clipsconstant");
 	}
 	result = genclipscode_local(env, cntxt_cv, value);
+	free(value);
 	if (result == NULL){
 		RETURNFAIL("internal error for crifi:local-to-clipsconstant");
 	}

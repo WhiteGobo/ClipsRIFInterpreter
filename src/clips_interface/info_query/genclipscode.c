@@ -109,9 +109,10 @@ char* genclipscode_local(Environment *env, CLIPSValue context, const char *value
 		free(cntxt_str);
 		return NULL;
 	}
-	result = malloc(l_value + l_cntxt + 10);
+	result = malloc(l_value + l_cntxt + 30);
 	if (result != NULL) {
-		sprintf(result, "_:l%c%sn%s", cntxt_id, cntxt_str, value);
+		//sprintf(result, "_:l%c%sn%s", cntxt_id, cntxt_str, value);
+		sprintf(result, "<http://white.gobo/local/%c/%s#%s>", cntxt_id, cntxt_str, value);
 	}
 	free(cntxt_str);
 	return result;
