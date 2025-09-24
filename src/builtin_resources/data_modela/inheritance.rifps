@@ -1,0 +1,168 @@
+Document(
+    Prefix(func <http://www.w3.org/2007/rif-builtin-function#>) 
+    Prefix(pred <http://www.w3.org/2007/rif-builtin-predicate#>) 
+    Prefix(owl <http://www.w3.org/2002/07/owl#>)
+    Prefix(deffact <http://white.gobo/crifi/resource-manager/deffacts#>)
+    Prefix(rema <http://white.gobo/crifi/resource-manager#>)
+    Prefix(cs <http://clips.script/>)
+    Prefix(crifi <http://white.gobo/>)
+    Prefix(ex <http://example.com/>)
+    Prefix(triplestordf <http://example.com/triples-to-rdf#>)
+    Prefix(rif <http://www.w3.org/2007/rif#>)
+    Prefix(entailment <http://www.w3.org/ns/entailment/>)
+    Prefix(modelA <http://white.gobo/modelA#>)
+    Prefix(self <http://example.com/inheritance#>)
+    Group 100 (
+      (* self:rule16 *) Forall ?rifforall ?varlist ?rifvar (
+        If And (
+          ?rifforall[rif:vars -> ?varlist]
+          External(pred:is-list(?varlist))
+          ?rifvar # rif:Var
+          External(pred:list-contains(?varlist ?rifvar))
+        ) Then Do (
+          Assert( ?rifvar[ex:inherits-data -> ?rifforall] )
+        )
+      )
+      (* self:rule07 *) Forall ?parent ?child (
+        If And (
+          Or (
+            ?parent[rif:formula -> ?child]
+            ?parent[rif:object -> ?child]
+            ?parent[rif:if -> ?child]
+            ?parent[rif:then -> ?child]
+            ?parent[rif:target -> ?child]
+            ?parent[rif:op -> ?child]
+            ?parent[rif:payload -> ?child]
+            ?parent[rif:pattern -> ?child]
+            ?parent[rif:left -> ?child]
+            ?parent[rif:right -> ?child]
+            ?parent[rif:rest -> ?child]
+            ?parent[rif:class -> ?child]
+            ?parent[rif:instance -> ?child]
+            ?parent[rif:sub -> ?child]
+            ?parent[rif:super -> ?child]
+            ?parent[rif:meta -> ?child]
+          )
+          Not( Exists ?x ( Or (
+            ?child[rif:constIRI -> ?x]
+            ?child[rif:value -> ?x]
+          )))
+        ) Then Do (
+          Assert( ?parent[ex:inherits-data -> ?child] )
+        )
+      )
+      (* self:rule09 *) Forall ?parent ?atom ?childlist ?child (
+        If And (
+          ?parent[rif:content -> ?atom]
+          ?atom[rif:args -> ?childlist]
+          External(pred:is-list(?childlist))
+          Or (
+            ?child # rif:Var
+            ?child # rif:Const
+            ?child # rif:List
+            ?child # rif:External
+          )
+          Not(Exists ?x ( Or(
+            ?child[rif:constIRI -> ?x]
+            ?child[rif:value -> ?x]
+          )))
+          External(pred:list-contains(?childlist ?child))
+        ) Then Do (
+          Assert( ?parent[ex:inherits-data -> ?child] )
+        )
+      )
+      Forall ?rifdo ?actionvar ?binding (
+        If And (
+          ?rifdo[rif:actionVar -> ?actionvar]
+          External(pred:is-list(?actionvar))
+          ?binding # rif:Frame
+          External(pred:list-contains(?actionvar ?binding))
+        ) Then Do (
+          Assert( ?rifdo[ex:inherits-data -> ?binding] )
+        )
+      )
+      (* self:rule10 *) Forall ?parent ?slotlist ?slot ?childkey (
+        If And (
+          ?parent[rif:slots -> ?slotlist]
+          External(pred:is-list(?slotlist))
+          ?slot[rif:slotkey -> ?childkey]
+          Not( Exists ?x ( Or (
+            ?childkey[rif:constIRI -> ?x]
+            ?childkey[rif:value -> ?x]
+          )))
+          External(pred:list-contains(?slotlist ?slot))
+        ) Then Do (
+          Assert( ?parent[ex:inherits-data -> ?childkey] )
+        )
+      )
+      (* self:rule11 *) Forall ?parent ?slotlist ?slot ?childvalue (
+        If And (
+          ?parent[rif:slots -> ?slotlist]
+          External(pred:is-list(?slotlist))
+          ?slot[rif:slotvalue -> ?childvalue]
+          Not( Exists ?x ( Or (
+            ?childvalue[rif:constIRI -> ?x]
+            ?childvalue[rif:value -> ?x]
+          )))
+          External(pred:list-contains(?slotlist ?slot))
+        ) Then Do (
+          Assert( ?parent[ex:inherits-data -> ?childvalue] )
+        )
+      )
+      (* self:rule12 *) Forall ?parent ?childlist ?child (
+        If And (
+          Or (
+            ?parent[rif:sentences -> ?childlist]
+            ?parent[rif:formulas -> ?childlist]
+            ?parent[rif:actions -> ?childlist]
+            ?parent[rif:args -> ?childlist]
+            ?parent[rif:items -> ?childlist]
+          )
+          External(pred:is-list(?childlist))
+          Or (
+            ?child # rif:Group
+            ?child # rif:Forall
+            ?child # rif:Frame
+            ?child # rif:Atom
+            ?child # rif:Assert
+            ?child # rif:Retract
+            ?child # rif:Do
+            ?child # rif:Modify
+            ?child # rif:Subclass
+            ?child # rif:Equal
+            ?child # rif:Member
+            ?child # rif:Var
+            ?child # rif:Const
+            ?child # rif:List
+            ?child # rif:And
+            ?child # rif:INeg
+            ?child # rif:Or
+            ?child # rif:Not
+            ?child # rif:Exists
+            ?child # rif:External
+            ?child # rif:Execute
+          )
+          Not( Exists ?x ( Or (
+            ?child[rif:constIRI -> ?x]
+            ?child[rif:value -> ?x]
+          )))
+          External(pred:list-contains(?childlist ?child))
+        ) Then Do (
+          Assert( ?parent[ex:inherits-data -> ?child] )
+        )
+      )
+      (* self:rule14 *) Forall ?parent ?child ?grandchild (
+        If And (
+          ?parent[ex:inherits-data -> ?child]
+          ?child[ex:inherits-data -> ?grandchild]
+          Or (
+            ?grandchild # rif:Const
+            ?grandchild # rif:Var
+            ?grandchild # rif:INeg
+          )
+        ) Then Do (
+          Assert( ?parent[ex:inherits-data -> ?grandchild])
+        )
+      )
+    )
+)

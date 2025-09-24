@@ -5,4 +5,5 @@ Document(
   Import(<http://white.gobo/crifi/built_resources/data_modela#constants> <http://www.w3.org/ns/entailment/RIF>)
   Import(<http://white.gobo/crifi/built_resources/data_modela#process-external> <http://www.w3.org/ns/entailment/RIF>)
   Import(<http://white.gobo/crifi/built_resources/data_modela#process_lists> <http://www.w3.org/ns/entailment/RIF>)
+  Import(<http://white.gobo/crifi/built_resources/data_modela#inheritance> <http://www.w3.org/ns/entailment/RIF>)
 )

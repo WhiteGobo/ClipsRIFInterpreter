@@ -21,6 +21,7 @@ list(APPEND mytargets
 	process_member
 	process_subclass
 	process_Do
+	inheritance
 
 	variable-binding
 	process_Atom

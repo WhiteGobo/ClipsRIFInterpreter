@@ -634,8 +634,6 @@ Document(
             Not( ?superformula["added-pattern-from"^^rif:local -> ?subformula] )
           ) Then Do (
             Assert( ?subformula["bound-variable"^^rif:local -> ?clipsvar] )
-            Assert( ?subformula["bound-variable-through-and"^^rif:local -> ?clipsvar] )
-            Execute(crifi:set-graph-in-errorstate("brubru"))
           )
         )
 
