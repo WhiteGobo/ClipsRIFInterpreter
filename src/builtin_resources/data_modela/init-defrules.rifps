@@ -80,17 +80,33 @@ Document(
         )
       )
       Group (
+        Forall ?defrule ?defruleindex ?existing (
+          If And (
+            ?defrule # cs:Defrule
+            ex:currentdefruleindex(?defruleindex)
+            ?defrule[cs:rule-name -> ?existing]
+            ?existing = External(func:concat("rule" ?defruleindex))
+          ) Then Do (
+            Retract( ex:currentdefruleindex(?defruleindex) )
+
+            Assert( ex:currentdefruleindex(External(func:numeric-add(?defruleindex 1))))
+
+          )
+        )
         (* self:rule06 *) Forall ?defrule ?defruleindex (
           If And (
             ?defrule # cs:Defrule
             ex:currentdefruleindex(?defruleindex)
             Not (Exists ?defrulename ( ?defrule[cs:rule-name -> ?defrulename] ))
+            Not (Exists ?x ?y ( And(
+              ?x[cs:rule-name -> ?y]
+              ?y = External(func:concat("rule" ?defruleindex))
+            )))
           ) Then Do (
             Retract( ex:currentdefruleindex(?defruleindex) )
 
             Assert( ex:currentdefruleindex(External(func:numeric-add(?defruleindex 1))))
             Assert( ?defrule[cs:rule-name -> External(func:concat("rule" ?defruleindex))] )
-
           )
         )
         ex:currentdefruleindex(0)
