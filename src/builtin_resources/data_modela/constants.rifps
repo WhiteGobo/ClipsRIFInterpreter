@@ -73,44 +73,67 @@ Document(
             Assert(?factvar[cs:variable-name -> ?varname])
           )
         )
-        (* self:rule05 *) Forall ?factvar ?factindex (
-          If And (
-            ?factvar # ex:Variable
-            Not(Exists ?rifvar (?rifvar[ex:provides-expression -> ?factvar]))
-            ex:currentfactindex(?factindex)
-            Not (Exists ?factname ( ?factvar[cs:variable-name -> ?factname] ))
-          ) Then Do (
-            Assert(?factvar # cs:Variable)
-            Retract( ex:currentfactindex(?factindex) )
+        Group -1 (
+          Forall ?factindex (
+            If And (
+              ex:currentfactindex(?factindex)
+              Exists ?othervar ?tmpname (And(
+                ?othervar[cs:variable-name -> ?tmpname]
+                ?tmpname = External(func:concat("fct" ?factindex))
+              ))
+            ) Then Do (
+              Retract( ex:currentfactindex(?factindex) )
 
-            Assert( ex:currentfactindex(External(func:numeric-add(?factindex 1))))
-            Assert( ?factvar[cs:variable-name -> External(func:concat("fcct" ?factindex))] )
-
-          )
-        )
-        (* self:rule06 *) Forall ?factvar ?rifformula ?factindex (
-          If And (
-            ?factvar # cs:Variable
-            ex:currentfactindex(?factindex)
-            Not (Exists ?factname ( ?factvar[cs:variable-name -> ?factname] ))
-            Or (
-              ?rifformula # rif:Frame
-              ?rifformula # rif:Atom
-              ?rifformula # rif:Member
-              ?rifformula # rif:Subclass
-              ?rifformula # rif:Equal
+              Assert( ex:currentfactindex(External(func:numeric-add(?factindex 1))))
             )
-            ?rifformula[ex:as-expression -> ?factvar]
-          ) Then Do (
-            Retract( ex:currentfactindex(?factindex) )
-
-            Assert( ex:currentfactindex(External(func:numeric-add(?factindex 1))))
-            Assert( ?factvar # cs:Variable )
-            Assert( ?factvar[cs:variable-name -> External(func:concat("fct" ?factindex))] )
-
           )
+          (* self:rule05 *) Forall ?factvar ?factindex (
+            If And (
+              ?factvar # ex:Variable
+              Not(Exists ?rifvar (?rifvar[ex:provides-expression -> ?factvar]))
+              ex:currentfactindex(?factindex)
+              Not (Exists ?factname ( ?factvar[cs:variable-name -> ?factname] ))
+              Not (Exists ?othervar ?tmpname (And(
+                ?othervar[cs:variable-name -> ?tmpname]
+                ?tmpname = External(func:concat("fct" ?factindex))
+              )))
+            ) Then Do (
+              Assert(?factvar # cs:Variable)
+              Retract( ex:currentfactindex(?factindex) )
+
+              Assert( ex:currentfactindex(External(func:numeric-add(?factindex 1))))
+              Assert( ?factvar[cs:variable-name -> External(func:concat("fct" ?factindex))] )
+
+            )
+          )
+          (* self:rule06 *) Forall ?factvar ?rifformula ?factindex (
+            If And (
+              ?factvar # cs:Variable
+              ex:currentfactindex(?factindex)
+              Not (Exists ?factname ( ?factvar[cs:variable-name -> ?factname] ))
+              Not (Exists ?othervar ?tmpname (And(
+                ?othervar[cs:variable-name -> ?tmpname]
+                ?tmpname = External(func:concat("fct" ?factindex))
+              )))
+              Or (
+                ?rifformula # rif:Frame
+                ?rifformula # rif:Atom
+                ?rifformula # rif:Member
+                ?rifformula # rif:Subclass
+                ?rifformula # rif:Equal
+              )
+              ?rifformula[ex:as-expression -> ?factvar]
+            ) Then Do (
+              Retract( ex:currentfactindex(?factindex) )
+
+              Assert( ex:currentfactindex(External(func:numeric-add(?factindex 1))))
+              Assert( ?factvar # cs:Variable )
+              Assert( ?factvar[cs:variable-name -> External(func:concat("fct" ?factindex))] )
+
+            )
+          )
+          ex:currentfactindex(1)
         )
-        ex:currentfactindex(1)
       )
       (* ex:rif-inheritance *) Group 100 (
         (* self:rule07 *) Forall ?parent ?child (
