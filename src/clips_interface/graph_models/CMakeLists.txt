@@ -29,6 +29,7 @@ crifi_implement_clips_program_in_build(
 add_library(crifi_graph_models STATIC
 	crifi_graph_models.c
 	crifi_graph_models.h
+	crifi_graph_models_debug.c
 	${STABLE_MODEL_HEADER}
 	${MODEL_A_HEADER}
 	${MODEL_CHECK_A_HEADER}

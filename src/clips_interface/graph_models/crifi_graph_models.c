@@ -25,6 +25,7 @@ crifi_graph *init_graph_stable_model(){
 crifi_graph *init_graph_modelA(){
 	int err;
 	crifi_graph *graph = init_graph_modelA_internal(NULL);
+
 	if (graph == NULL){
 		return NULL;
 	}

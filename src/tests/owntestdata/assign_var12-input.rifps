@@ -1,0 +1,12 @@
+Document(
+    Prefix(ex <http://example.com/>)
+    Prefix(pred <http://www.w3.org/2007/rif-builtin-predicate#>)
+    Group (
+      Forall ?item ?prop(
+        If And (
+          ?item[ex:predA -> ?prop]
+          Not(?item[ex:predB -> ?prop])
+        ) Then ex:ok()
+      )
+    )
+)
