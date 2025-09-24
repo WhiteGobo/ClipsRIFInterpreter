@@ -13,7 +13,7 @@ Document(
     Prefix(ex <http://example.com/>)
     Prefix(exa <http://example.com/a#>)
     Prefix(self <http://example.com/variable-binding#>)
-    Group (
+    Group 5 (
       Group -100 (
         (* self:rule75 *) Forall ?rif ?pattern (
           If And (
@@ -508,38 +508,40 @@ Document(
           Assert( ?rifobj["add-pattern-from"^^rif:local -> ?formula] )
         )
       )
-      (* self:rule34 *) Forall ?rifand ?otherrifand ?rifformula (
-        If And (
-          ?rifand["add-pattern-from"^^rif:local -> ?otherrifand]
-          Or (
-            ?rifand # rif:And
-            ?rifand # rif:Not
+      Group 20 (
+        (* self:rule34 *) Forall ?rifand ?otherrifand ?rifformula (
+          If And (
+            ?rifand["add-pattern-from"^^rif:local -> ?otherrifand]
+            Or (
+              ?rifand # rif:And
+              ?rifand # rif:Not
+            )
+            ?otherrifand # rif:And
+            ?otherrifand["add-pattern-from"^^rif:local -> ?rifformula]
+          ) Then Do (
+            Assert( ?otherrifand["added-pattern-from"^^rif:local -> ?rifformula] )
+            Assert( ?rifand["added-pattern-from"^^rif:local -> ?otherrifand] )
+            Assert( ?rifand["add-pattern-from"^^rif:local -> ?rifformula] )
           )
-          ?otherrifand # rif:And
-          ?otherrifand["add-pattern-from"^^rif:local -> ?rifformula]
-        ) Then Do (
-          Assert( ?otherrifand["added-pattern-from"^^rif:local -> ?rifformula] )
-          Assert( ?rifand["added-pattern-from"^^rif:local -> ?otherrifand] )
-          Assert( ?rifand["add-pattern-from"^^rif:local -> ?rifformula] )
         )
-      )
-      (* self:rule35 *) Forall ?rifforall ?rifrule ?rifformula (
-        If And (
-          ?rifforall["add-pattern-from"^^rif:local -> ?rifrule]
-          Or (
-            ?rifforall # rif:Forall
-            ?rifforall # rif:Implies
+        (* self:rule35 *) Forall ?rifforall ?rifrule ?rifformula (
+          If And (
+            ?rifforall["add-pattern-from"^^rif:local -> ?rifrule]
+            Or (
+              ?rifforall # rif:Forall
+              ?rifforall # rif:Implies
+            )
+            Or (
+              ?rifrule # rif:Forall
+              ?rifrule # rif:Implies
+              ?rifrule # rif:And
+            )
+            ?rifrule["add-pattern-from"^^rif:local -> ?rifformula]
+          ) Then Do (
+            Assert( ?rifrule["added-pattern-from"^^rif:local -> ?rifformula] )
+            Assert( ?rifforall["added-pattern-from"^^rif:local -> ?rifrule] )
+            Assert( ?rifforall["add-pattern-from"^^rif:local -> ?rifformula] )
           )
-          Or (
-            ?rifrule # rif:Forall
-            ?rifrule # rif:Implies
-            ?rifrule # rif:And
-          )
-          ?rifrule["add-pattern-from"^^rif:local -> ?rifformula]
-        ) Then Do (
-          Assert( ?rifrule["added-pattern-from"^^rif:local -> ?rifformula] )
-          Assert( ?rifforall["added-pattern-from"^^rif:local -> ?rifrule] )
-          Assert( ?rifforall["add-pattern-from"^^rif:local -> ?rifformula] )
         )
       )
 
@@ -632,6 +634,8 @@ Document(
             Not( ?superformula["added-pattern-from"^^rif:local -> ?subformula] )
           ) Then Do (
             Assert( ?subformula["bound-variable"^^rif:local -> ?clipsvar] )
+            Assert( ?subformula["bound-variable-through-and"^^rif:local -> ?clipsvar] )
+            Execute(crifi:set-graph-in-errorstate("brubru"))
           )
         )
 
@@ -678,6 +682,9 @@ Document(
           )
           ?rifnot[rif:formula -> ?rifformula]
           ?rifnot["bound-variable"^^rif:local -> ?clipsvar]
+          Not(Exists ?subpattern (
+            ?rifnot["added-pattern-from"^^rif:local -> ?subpattern]
+          ))
         ) Then Do (
           Assert(?rifformula["bound-variable"^^rif:local -> ?clipsvar])
         )
@@ -810,6 +817,7 @@ Document(
           If And (
             ?formulacontainer["add-pattern-from"^^rif:local -> ?rifexternal]
             ?rifexternal # rif:External
+            ?rifexternal # modelA:ConditionGenerator
             Not(?formulacontainer["added-pattern-from"^^rif:local -> ?rifexternal])
             Not (Exists ?x ( And(
               ?rifexternal["expressions-needs-var"^^rif:local -> ?x]
