@@ -13,6 +13,17 @@ Document(
     Prefix(modelA <http://white.gobo/modelA#>)
     Prefix(self <http://example.com/process-external#>)
     Group (
+      Group -50 (
+        Forall ?function ?rifarglist (
+          If And (
+            ?function[ex:add-args-from -> ?rifarglist]
+            Not(0 = External(func:count(?rifarglist)))
+          ) Then Do (
+            Assert(?function # ex:didnt-translate-all-args)
+            Execute(crifi:set-graph-in-errorstate("Didnt translate all arguments for function(ex:didnt-translate-all-args)"))
+          )
+        )
+      )
       (* self:rule01 *) Forall ?rifexternal (
         If And (
           ?rifexternal # modelA:TestPatternExternalGenerator
