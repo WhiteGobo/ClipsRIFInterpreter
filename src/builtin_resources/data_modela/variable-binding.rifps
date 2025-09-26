@@ -537,7 +537,20 @@ Document(
         )
       )
 
-
+      Forall ?rifformula ?term ?rifvar ?clipsvar (
+        If And (
+          ?rifformula # modelA:ConditionGenerator
+          Or (
+            ?rifformula[rif:left -> ?term]
+            ?rifformula[rif:right -> ?term]
+          )
+          ?term[ex:inherits-data -> ?rifvar]
+          ?rifvar # rif:Var
+          ?rifvar[ex:as-expression -> ?clipsvar]
+        ) Then Do (
+          Assert( ?term["expression-needs-var"^^rif:local -> ?clipsvar] )
+        )
+      )
       (* self:rule37 *) Forall ?expression ?rifvar ?clipsvar (
         If And (
           "always-wrong"^^rif:local()
@@ -851,6 +864,7 @@ Document(
         (* self:rule49 *) Forall ?rifequal ?formulacontainer ?rifleft ?rifright ?formulalist (
           If And (
             ?formulacontainer["add-pattern-from"^^rif:local -> ?rifequal]
+            ?rifequal # modelA:ConditionGenerator
             ?rifequal # rif:Equal
             ?rifequal[rif:left -> ?rifleft]
             ?rifequal[rif:right -> ?rifright]

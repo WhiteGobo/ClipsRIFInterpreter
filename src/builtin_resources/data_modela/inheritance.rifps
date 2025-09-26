@@ -89,6 +89,19 @@ Document(
         )
       )
       (* self:finalpropagate *) Group (
+        Forall ?rifformula ?term ?target (
+          ?term[ex:inherits-data -> ?target] :-
+          And(
+            ?rifformula # modelA:ConditionGenerator
+            Or (
+              ?rifformula[rif:left -> ?term]
+              ?rifformula[rif:right -> ?term]
+            )
+            ?term["give-inheritance"^^rif:local -> ?target]
+            ?target # rif:Var
+          )
+        )
+
         Forall ?rifnot ?target (
           ?rifnot[ex:inherits-data -> ?target] :-
           And (
