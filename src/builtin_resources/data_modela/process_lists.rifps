@@ -34,7 +34,7 @@ Document(
       )
       (* self:rule03 *) Forall ?riflist ?itemlist (
         If And (
-          ?riflist # ex:ExpressionGenerator
+          ?riflist # modelA:ExpressionGenerator
           ?riflist[rif:items -> ?itemlist]
           External(pred:is-list(?itemlist))
           Not( Exists ?rest (?riflist[rif:rest -> ?rest]))

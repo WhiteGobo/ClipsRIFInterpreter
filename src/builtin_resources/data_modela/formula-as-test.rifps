@@ -6,6 +6,7 @@ Document(
     Prefix(rema <http://white.gobo/crifi/resource-manager#>)
     Prefix(cs <http://clips.script/>)
     Prefix(crifi <http://white.gobo/>)
+    Prefix(modelA <http://white.gobo/modelA#>)
     Prefix(ex <http://example.com/>)
     Prefix(triplestordf <http://example.com/triples-to-rdf#>)
     Prefix(rif <http://www.w3.org/2007/rif#>)
@@ -16,7 +17,7 @@ Document(
           ?term # rif:External
           ?term # rif:List
         ) Then Do (
-          Assert(?term # ex:ExpressionGenerator )
+          Assert(?term # modelA:ExpressionGenerator )
         )
       )
 

@@ -13,7 +13,7 @@ Document(
     Prefix(ex <http://example.com/>)
     Prefix(exa <http://example.com/a#>)
     Prefix(self <http://example.com/apply-generator#>)
-    Group (
+    Group 100 (
       (* self:rule01 *) Forall ?group ?rifrule ?sentences (
         ?rifrule # modelA:RuleGenerator :-
         And (
@@ -74,7 +74,7 @@ Document(
         )
       )
       (* self:rule05 *) Forall ?patterngen ?arglist ?term (
-        ?term # ex:ExpressionGenerator :-
+        ?term # modelA:ExpressionGenerator :-
         And (
           ?patterngen # modelA:RHSPatternGenerator
           ?patterngen[rif:args -> ?arglist]
@@ -86,9 +86,9 @@ Document(
         )
       )
       (* self:rule06 *) Forall ?riflist ?arglist ?term (
-        ?term # ex:ExpressionGenerator :- 
+        ?term # modelA:ExpressionGenerator :- 
         And (
-          ?riflist # ex:ExpressionGenerator
+          ?riflist # modelA:ExpressionGenerator
           ?riflist[rif:items -> ?arglist]
           Or (
             ?term # rif:List
@@ -98,7 +98,7 @@ Document(
         )
       )
       (* self:rule07 *) Forall ?patterngen ?term (
-        ?term # ex:ExpressionGenerator :-
+        ?term # modelA:ExpressionGenerator :-
         And (
           ?patterngen # modelA:RHSPatternGenerator
           Or (
@@ -126,8 +126,19 @@ Document(
         ?child # modelA:ConditionGenerator :-
         And (
           ?formula # modelA:ConditionGenerator
-          ?formula[ex:inherits-data -> ?child]
           ?formula[rif:formulas -> ?formulalist]
+          Or (
+            ?child # rif:And
+            ?child # rif:Or
+            ?child # rif:Exists
+            ?child # rif:INeg
+            ?child # rif:Frame
+            ?child # rif:Atom
+            ?child # rif:Member
+            ?child # rif:SubClass
+            ?child # rif:Equal
+            ?child # rif:External
+          )
           External(pred:list-contains(?formulalist ?child))
         )
       )
@@ -208,10 +219,31 @@ Document(
           Assert( ?rifformula[modelA:pattern-uses-constraint -> ?child] )
         )
       )
+      Forall ?rifformula ?child ?slotlist ?slot (
+        ?slot # modelA:MultiPatternGenerator :-
+        And (
+          ?rifformula # modelA:TripleTemplateGenerator
+          ?rifformula[rif:slots -> ?slotlist]
+          ?slot # rif:Slot
+          External(pred:list-contains(?slotlist ?slot))
+          ?slot[rif:slotvalue -> ?child]
+          ?child # rif:List
+        )
+      )
+      Forall ?rifformula ?child ?arglist (
+        ?rifformula # modelA:MultiPatternGenerator :-
+        And (
+          ?rifformula # modelA:AtomPatternGenerator
+          ?rifformula[rif:args -> ?arglist]
+          ?child # rif:List
+          External(pred:list-contains(?arglist ?child))
+        )
+      )
       (* self:rule16 *) Forall ?rifformula ?child (
         ?rifformula # modelA:MultiPatternGenerator :-
         And (
-          ?rifformula[modelA:pattern-uses-constraint -> ?child]
+          ?rifformula # modelA:AtomPatternGenerator
+          ?rifformula[rif:object -> ?child]
           ?child # rif:List
         )
       )
@@ -249,12 +281,17 @@ Document(
         )
       )
       (* self:rule21 *) Forall ?rifexternal ?rifatom ?child (
-        ?child # ex:ExpressionGenerator :-
+        ?child # modelA:ExpressionGenerator :-
         And (
           ?rifexternal # rif:External
+          ?rifexternal # modelA:ExpressionGenerator
           ?rifexternal[rif:content -> ?rifatom]
-          ?rifexternal[ex:inherits-data -> ?child]
-          Not(?child # rif:Var)
+          ?rifatom[rif:args -> ?arglist]
+          Or (
+            ?child # rif:List
+            ?child # rif:External
+          )
+          External(pred:list-contains(?arglist ?child))
         )
       )
     )

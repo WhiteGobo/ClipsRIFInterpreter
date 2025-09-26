@@ -19,4 +19,5 @@ Document(
   Import(<http://white.gobo/crifi/built_resources/data_modela#process_Do> <http://www.w3.org/ns/entailment/RIF>)
   Import(<http://white.gobo/crifi/built_resources/data_modela#process_execute> <http://www.w3.org/ns/entailment/RIF>)
   Import(<http://white.gobo/crifi/built_resources/data_modela#inheritance> <http://www.w3.org/ns/entailment/RIF>)
+  Import(<http://white.gobo/crifi/built_resources/data_modela#create_multipattern_lists> <http://www.w3.org/ns/entailment/RIF>)
 )

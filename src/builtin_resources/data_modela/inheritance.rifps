@@ -13,8 +13,230 @@ Document(
     Prefix(modelA <http://white.gobo/modelA#>)
     Prefix(self <http://example.com/inheritance#>)
     Group 100 (
+      (* self:sharedinfo *) Group (
+        Forall ?target ?rifdo ?child ?childlist (
+          ?target["rifdoinheritance"^^rif:local -> ?rifdo] :-
+          And (
+            ?rifdo[rif:actions -> ?childlist]
+            ?child["give-inheritance"^^rif:local -> ?target]
+            External(pred:list-contains(?childlist ?child))
+          )
+        )
+        Forall ?target ?rifdo ?child ?actionvar (
+          ?target["rifdoinheritance"^^rif:local -> ?rifdo] :-
+          And (
+            ?rifdo[rif:actionVar -> ?actionvar]
+            ?child["give-inheritance"^^rif:local -> ?target]
+            ?child = External(func:get(?actionvar 1))
+          )
+        )
+      )
+      (* self:init *) Group (
+        Forall ?parent ?slotlist ?child ?slot (
+          ?parent["give-inheritance"^^rif:local -> ?child] :- 
+          And (
+            ?parent[rif:slots -> ?slotlist]
+            External(pred:is-list(?slotlist))
+            Or (
+              ?slot[rif:slotkey -> ?child]
+              ?slot[rif:slotvalue -> ?child]
+            )
+            External(pred:list-contains(?slotlist ?slot))
+            Or (
+              ?child # rif:Var
+              Exists ?x (?child[rif:constname -> ?x])
+            )
+          )
+        )
+        Forall ?parent ?arglist ?child (
+          ?parent["give-inheritance"^^rif:local -> ?child] :-
+          And (
+            Or (
+              ?parent[rif:items -> ?arglist]
+              ?parent[rif:args -> ?arglist]
+            )
+            External(pred:is-list(?arglist))
+            Or (
+              ?child # rif:Var
+              And (
+                ?child # rif:Const
+                Exists ?x (?child[rif:constname -> ?x])
+              )
+            )
+            External(pred:list-contains(?arglist ?child))
+          )
+        )
+        Forall ?parent ?child (
+          ?parent["give-inheritance"^^rif:local -> ?child] :-
+          And (
+            Or (
+              ?parent[rif:op -> ?child]
+              ?parent[rif:object -> ?child]
+              ?parent[rif:left -> ?child]
+              ?parent[rif:right -> ?child]
+              ?parent[rif:sub -> ?child]
+              ?parent[rif:super -> ?child]
+              ?parent[rif:class -> ?child]
+              ?parent[rif:instance -> ?child]
+              ?parent[rif:target -> ?child]
+              ?parent[rif:rest -> ?child]
+            )
+            Or (
+              ?child # rif:Var
+              Exists ?x (?child[rif:constname -> ?x])
+            )
+          )
+        )
+      )
+      (* self:finalpropagate *) Group (
+        Forall ?rifnot ?target (
+          ?rifnot[ex:inherits-data -> ?target] :-
+          And (
+            ?rifnot["give-inheritance"^^rif:local -> ?target]
+            ?target # rif:Var
+            Or (
+              ?rifnot # rif:Or
+              ?rifnot # rif:INeg
+              ?rifnot # rif:Exists
+            )
+          )
+        )
+        Forall ?rifconstraint ?target (
+          ?rifconstraint[ex:inherits-data -> ?target] :-
+          And (
+            ?rifconstraint["give-inheritance"^^rif:local -> ?target]
+            ?rifconstraint # rif:External
+            Or (
+              ?rifconstraint # modelA:ConstraintGenerator
+              ?rifconstraint # modelA:ConditionGenerator
+            )
+          )
+        )
+        Forall ?parent ?target ?child ?var ?name ?varlist (
+          ?var[ex:inherits-data -> ?target] :-
+          And (
+            ?parent[rif:formula -> ?child]
+            ?child["give-inheritance"^^rif:local -> ?target]
+            ?target[rif:varname -> ?name]
+            ?parent[rif:vars -> ?varlist]
+            ?var[rif:varname -> ?name]
+            External(pred:list-contains(?varlist ?var))
+          )
+        )
+        Forall ?document ?localconst (
+          ?document[ex:inherits-data -> ?localconst] :-
+          And (
+            ?document # rif:Document
+            ?document["give-inheritance"^^rif:local -> ?localconst]
+          )
+        )
+        Forall ?document ?localconst ?group (
+          ?document[ex:inherits-data -> ?localconst] :-
+          And (
+            ?document[rif:payload -> ?group]
+            ?group["give-inheritance"^^rif:local -> ?localconst]
+          )
+        )
+        Forall ?var ?rifdo ?actionvar ?assign (
+          ?var # modelA:NewVar :-
+          And (
+            ?rifdo[rif:actionVar -> ?actionvar]
+            ?var # rif:Var
+            ?var = External(func:get(?actionvar 0))
+            ?assign # rif:New
+            ?assign = External(func:get(?actionvar 1))
+          )
+        )
+        Forall ?parent ?target ?child ?var ?name ?actionvar(
+          ?var[ex:inherits-data -> ?target] :-
+          And (
+            ?target["rifdoinheritance"^^rif:local -> ?parent]
+            ?target[rif:varname -> ?name]
+            ?parent[rif:actionVar -> ?actionvar]
+            ?var[rif:varname -> ?name]
+            ?var = External(func:get(?actionvar 0))
+          )
+        )
+      )
+      (* self:normalpropagate *) Group (
+        Forall ?parent ?slotlist ?child ?slot ?target (
+          ?parent["give-inheritance"^^rif:local -> ?target] :- 
+          And (
+            ?parent[rif:slots -> ?slotlist]
+            External(pred:is-list(?slotlist))
+            Or (
+              ?slot[rif:slotkey -> ?child]
+              ?slot[rif:slotvalue -> ?child]
+            )
+            External(pred:list-contains(?slotlist ?slot))
+            ?child["give-inheritance"^^rif:local -> ?target]
+          )
+        )
+        Forall ?parent ?childlist ?child ?target(
+          ?parent["give-inheritance"^^rif:local -> ?target] :- 
+          And (
+            Or (
+              ?parent[rif:args -> ?childlist]
+              ?parent[rif:formulas -> ?childlist]
+              ?parent[rif:sentences -> ?childlist]
+            )
+            External(pred:is-list(?childlist))
+            ?child["give-inheritance"^^rif:local -> ?target]
+            External(pred:list-contains(?childlist ?child))
+          )
+        )
+        Forall ?parent ?child ?target (
+          ?parent["give-inheritance"^^rif:local -> ?target] :-
+          And (
+            Or (
+              ?parent[rif:object -> ?child]
+              ?parent[rif:if -> ?child]
+              ?parent[rif:then -> ?child]
+              ?parent[rif:target -> ?child]
+              ?parent[rif:op -> ?child]
+              ?parent[rif:pattern -> ?child]
+              ?parent[rif:left -> ?child]
+              ?parent[rif:right -> ?child]
+              ?parent[rif:rest -> ?child]
+              ?parent[rif:class -> ?child]
+              ?parent[rif:instance -> ?child]
+              ?parent[rif:sub -> ?child]
+              ?parent[rif:super -> ?child]
+              ?parent[rif:meta -> ?child]
+              ?parent[rif:content -> ?child]
+            )
+            ?child["give-inheritance"^^rif:local -> ?target]
+          )
+        )
+        Forall ?parent ?target ?child (
+          ?parent["give-inheritance"^^rif:local -> ?target] :-
+          And (
+            ?parent[rif:formula -> ?child]
+            ?child["give-inheritance"^^rif:local -> ?target]
+            Not ( Exists ?var ?name ?varlist ( And (
+              ?target[rif:varname -> ?name]
+              ?parent[rif:vars -> ?varlist]
+              ?var[rif:varname -> ?name]
+              External(pred:list-contains(?varlist ?var))
+            )))
+          )
+        )
+        Forall ?parent ?target (
+          ?parent["give-inheritance"^^rif:local -> ?target] :-
+          And (
+            ?target["rifdoinheritance"^^rif:local -> ?parent]
+            Not ( Exists ?var ?name ?actionvar ( And (
+              ?target[rif:varname -> ?name]
+              ?parent[rif:actionVar -> ?actionvar]
+              ?var[rif:varname -> ?name]
+              ?var = External(func:get(?actionvar 0))
+            )))
+          )
+        )
+      )
       (* self:rule16 *) Forall ?rifforall ?varlist ?rifvar (
         If And (
+          "always-wrong"^^rif:local()
           ?rifforall[rif:vars -> ?varlist]
           External(pred:is-list(?varlist))
           ?rifvar # rif:Var
@@ -25,6 +247,7 @@ Document(
       )
       (* self:rule07 *) Forall ?parent ?child (
         If And (
+          "always-wrong"^^rif:local()
           Or (
             ?parent[rif:formula -> ?child]
             ?parent[rif:object -> ?child]
@@ -53,6 +276,7 @@ Document(
       )
       (* self:rule09 *) Forall ?parent ?atom ?childlist ?child (
         If And (
+          "always-wrong"^^rif:local()
           ?parent[rif:content -> ?atom]
           ?atom[rif:args -> ?childlist]
           External(pred:is-list(?childlist))
@@ -73,6 +297,7 @@ Document(
       )
       Forall ?rifdo ?actionvar ?binding (
         If And (
+          "always-wrong"^^rif:local()
           ?rifdo[rif:actionVar -> ?actionvar]
           External(pred:is-list(?actionvar))
           ?binding # rif:Frame
@@ -83,6 +308,7 @@ Document(
       )
       (* self:rule10 *) Forall ?parent ?slotlist ?slot ?childkey (
         If And (
+          "always-wrong"^^rif:local()
           ?parent[rif:slots -> ?slotlist]
           External(pred:is-list(?slotlist))
           ?slot[rif:slotkey -> ?childkey]
@@ -97,6 +323,7 @@ Document(
       )
       (* self:rule11 *) Forall ?parent ?slotlist ?slot ?childvalue (
         If And (
+          "always-wrong"^^rif:local()
           ?parent[rif:slots -> ?slotlist]
           External(pred:is-list(?slotlist))
           ?slot[rif:slotvalue -> ?childvalue]
@@ -111,6 +338,7 @@ Document(
       )
       (* self:rule12 *) Forall ?parent ?childlist ?child (
         If And (
+          "always-wrong"^^rif:local()
           Or (
             ?parent[rif:sentences -> ?childlist]
             ?parent[rif:formulas -> ?childlist]
@@ -153,6 +381,7 @@ Document(
       )
       (* self:rule14 *) Forall ?parent ?child ?grandchild (
         If And (
+          "always-wrong"^^rif:local()
           ?parent[ex:inherits-data -> ?child]
           ?child[ex:inherits-data -> ?grandchild]
           Or (

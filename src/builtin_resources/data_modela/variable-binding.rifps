@@ -349,7 +349,7 @@ Document(
       )
       (* self:rule26 *) Forall ?riflist ?rifvar ?clipsexpression ?itemlist (
         If And (
-          ?riflist # ex:ExpressionGenerator
+          ?riflist # modelA:ExpressionGenerator
           ?riflist[rif:items -> ?itemlist]
           ?rifvar["expression-needs-var"^^rif:local -> ?clipsexpression]
           External(pred:list-contains(?itemlist ?rifvar))
@@ -398,11 +398,9 @@ Document(
         )
       )
       Group 11 (
-        (* self:rule80 *) Forall ?rifineg ?rifvarprovider ?clipsvar ?rifvarconsumer (
+        (* self:rule80 *) Forall ?rifineg ?clipsvar ?rifvarconsumer (
           If And (
             ?rifineg # rif:INeg
-            ?rifvarprovider[ex:inherits-data -> ?rifineg]
-            ?rifvarprovider[ex:provides-expression -> ?clipsvar]
             ?rifineg[ex:inherits-data -> ?rifvarconsumer]
             ?rifvarconsumer[ex:as-expression -> ?clipsvar]
           ) Then Do (
@@ -416,11 +414,6 @@ Document(
             ?rifvar # rif:Var
             ?rifvar[ex:as-expression -> ?clipsvar]
             ?formula[rif:vars -> ?varlist]
-            Not( Exists ?ownvar (And(
-              ?ownvar # rif:Var
-              External(pred:list-contains(?varlist ?ownvar))
-              ?ownvar[ex:provides-expression -> ?clipsvar]
-            )))
           ) Then Do (
             Assert(?formula["constraints-needs-variable"^^rif:local -> ?clipsvar])
           )
@@ -430,7 +423,6 @@ Document(
             ?pattern # modelA:PatternGenerator
             ?pattern # rif:External
             ?pattern[ex:inherits-data -> ?term]
-            ?term # modelA:ConstraintGenerator
             ?term # rif:Var
             ?term[ex:as-constraint -> ?clipsvar]
           ) Then Do (
@@ -549,7 +541,7 @@ Document(
       (* self:rule37 *) Forall ?expression ?rifvar ?clipsvar (
         If And (
           "always-wrong"^^rif:local()
-          ?expression # ex:ExpressionGenerator
+          ?expression # modelA:ExpressionGenerator
           ?expression[ex:inherits-data -> ?rifvar]
           ?rifvar[ex:as-expression -> ?clipsvar]
           ?clipsvar # cs:Variable
@@ -560,6 +552,30 @@ Document(
       )
 
       Group -1 (
+        Forall ?superpattern ?formulacontainer ?formulalist ?subpattern ?formula ?patternlist (
+          If And (
+            Or (
+              ?superpattern # cs:AndCE
+              ?superpattern # cs:OrCE
+              ?superpattern # cs:NotCE
+              ?superpattern # cs:ExistsCE
+              ?superpattern # cs:Defrule
+            )
+            Or (
+              ?formulacontainer[modelA:as-defrule -> ?superpattern]
+              ?formulacontainer[modelA:as-lhs-pattern -> ?superpattern]
+            )
+            ?formulacontainer["formulalist"^^rif:local -> ?formulalist]
+            ?formula # modelA:MultiPatternGenerator
+            ?formula[modelA:as-multi-lhs-pattern -> ?subpattern]
+            ?formula = External(func:get(?formulalist 0))
+            ?superpattern[cs:conditional-element -> ?patternlist]
+          ) Then Do (
+            Modify(?formulacontainer["formulalist"^^rif:local -> External(func:remove(?formulalist 0))])
+            Modify(?superpattern[cs:conditional-element -> External(func:append(?patternlist ?subpattern))])
+            Assert(?formula["transfer-variable-binding"^^rif:local -> ?formulacontainer])
+          )
+        )
         (* self:rule38 *) Forall ?superpattern ?formulacontainer ?formulalist ?subpattern ?formula ?patternlist (
           If And (
             Or (
@@ -574,6 +590,7 @@ Document(
               ?formulacontainer[modelA:as-lhs-pattern -> ?superpattern]
             )
             ?formulacontainer["formulalist"^^rif:local -> ?formulalist]
+            Not(?formula # modelA:MultiPatternGenerator)
             ?formula[modelA:as-lhs-pattern -> ?subpattern]
             ?formula = External(func:get(?formulalist 0))
             ?superpattern[cs:conditional-element -> ?patternlist]
@@ -709,14 +726,14 @@ Document(
               Not( ?riflist["bound-variable"^^rif:local -> ?x] )
             )))
           ) Then Do (
-            Assert( ?riflist # ex:ExpressionGenerator )
+            Assert( ?riflist # modelA:ExpressionGenerator )
           )
         )
         (* self:rule45 *) Forall ?riflist ?unboundvar (
           If And (
             ?riflist # rif:List
             ?riflist # modelA:ConstraintGenerator
-            Not( ?riflist # ex:ExpressionGenerator )
+            Not( ?riflist # modelA:ExpressionGenerator )
             ?riflist["expression-needs-var"^^rif:local -> ?unboundvar]
             Not( ?riflist["bound-variable"^^rif:local -> ?unboundvar] )
           ) Then Do (
@@ -854,6 +871,8 @@ Document(
             )
             Assert(?rifequal # modelA:TestPatternEqualGenerator)
             Assert(?rifequal # modelA:PatternGenerator)
+            Assert(?rifleft # modelA:ExpressionGenerator)
+            Assert(?rifright # modelA:ExpressionGenerator)
           )
         )
         Group -12 (

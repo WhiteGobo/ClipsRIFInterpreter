@@ -22,6 +22,7 @@ list(APPEND mytargets
 	process_subclass
 	process_Do
 	inheritance
+	create_multipattern_lists
 
 	variable-binding
 	process_Atom
