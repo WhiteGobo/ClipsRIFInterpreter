@@ -31,7 +31,8 @@ Document(
             External(pred:numeric-greater-than(External(func:count(?formulalist)) 0))
           ) Then Do (
             Assert(External(func:get(?formulalist 0)) # ex:couldnt-translate-to-pattern)
-            Execute(crifi:set-graph-in-errorstate("Couldnt translate formula to pattern.(ex:couldnt-translate-to-pattern)"))
+            Assert(?formulacontainer # ex:missing-translated-pattern)
+            Execute(crifi:set-graph-in-errorstate("Couldnt translate formula to pattern.(ex:couldnt-translate-to-pattern ex:missing-translated-pattern)"))
           )
         )
       )
@@ -667,16 +668,57 @@ Document(
           )
         )
 
-      (* self:rule77 *) Forall ?rifframe ?clipsvar (
-        If And (
-          Or (
-            ?rifframe # modelA:TripleTemplateGenerator
-            ?rifframe # modelA:MemberPatternGenerator
-            ?rifframe # modelA:SubclassPatternGenerator
+      Group (
+        Forall ?rifatom ?rifvar ?clipsvar (
+          If And (
+            ?rifatom # modelA:AtomPatternGenerator
+            ?rifatom[rif:args -> ?arglist]
+            ?rifvar # rif:Var
+            External(pred:list-contains(?arglist ?rifvar))
+            ?rifvar[ex:as-constraint -> ?clipsvar]
+          ) Then Do (
+            Assert( ?clipsvar # ex:Variable )
           )
-          ?rifframe[modelA:binds-var -> ?clipsvar]
-        ) Then Do (
-          Assert( ?clipsvar # ex:Variable )
+        )
+        Forall ?rifmember ?rifvar ?clipsvar (
+          If And (
+            ?rifmember # modelA:MemberPatternGenerator
+            Or (
+              ?rifmember[rif:instance -> ?rifvar]
+              ?rifmember[rif:class -> ?rifvar]
+            )
+            ?rifvar # rif:Var
+            ?rifvar[ex:as-constraint -> ?clipsvar]
+          ) Then Do (
+            Assert( ?clipsvar # ex:Variable )
+          )
+        )
+        Forall ?rifsubclass ?rifvar ?clipsvar (
+          If And (
+            ?rifsubclass # modelA:SubclassPatternGenerator
+            Or (
+              ?rifsubclass[rif:sub -> ?rifvar]
+              ?rifsubclass[rif:super -> ?rifvar]
+            )
+            ?rifvar # rif:Var
+            ?rifvar[ex:as-constraint -> ?clipsvar]
+          ) Then Do (
+            Assert( ?clipsvar # ex:Variable )
+          )
+        )
+        Forall ?rifframe ?rifvar ?clipsvar (
+          If And (
+            ?rifframe # modelA:TripleTemplateGenerator
+            Or (
+              ?rifframe[rif:object -> ?rifvar]
+              ?rifframe[rif:slotkey -> ?rifvar]
+              ?rifframe[rif:slotvalue -> ?rifvar]
+            )
+            ?rifvar # rif:Var
+            ?rifvar[ex:as-constraint -> ?clipsvar]
+          ) Then Do (
+            Assert( ?clipsvar # ex:Variable )
+          )
         )
       )
       (* self:rule41 *) Forall ?formula ?formulacontainer ?clipsvar (

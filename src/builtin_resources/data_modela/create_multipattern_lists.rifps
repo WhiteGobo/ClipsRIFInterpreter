@@ -11,17 +11,184 @@ Document(
     Prefix(rif <http://www.w3.org/2007/rif#>)
     Prefix(entailment <http://www.w3.org/ns/entailment/>)
     Prefix(ex <http://example.com/>)
-    Prefix(exa <http://example.com/a#>)
     Prefix(self <http://example.com/create_multipattern_lists#>)
     Group (
-      Forall ?formula (
-        If And (
-          Or (
-            ?formula # modelA:TripleTemplateGenerator
-            ?formula # modelA:AtomPatternGenerator
+      Group (
+        Forall ?multipattern ?list ?listvar ?rifitems (
+          If And (
+            ?multipattern["add-list"^^rif:local -> ?list]
+            ?list[rif:items -> ?rifitems]
+            ?list[ex:as-constraint -> ?listvar]
+            Not(?multipattern["added-list"^^rif:local -> ?list])
+          ) Then Do (
+            (?checkvar New())
+            (?assign New())
+            (?pattern New())
+            (?items New())
+            (?check New())
+            (?checkfunction New())
+            (?oldlist ?multipattern[cs:conditional-element -> ?oldlist])
+            Assert( ?checkvar # ex:Variable )
+            Assert( ?checkvar # cs:Variable )
+            Assert( ?assign # cs:AssignedPatternCE )
+            Assert( ?assign[cs:fact-var-symbol -> ?checkvar] )
+            Assert( ?assign[cs:pattern-ce -> ?pattern] )
+            Assert( ?pattern # cs:TemplatePatternCE )
+            Assert( ?pattern[cs:deftemplate-name -> "AtomList"] )
+            Assert( ?pattern[cs:slot -> External(func:make-list(?items))] )
+            Assert( ?items["add-additional-patterns-to"^^rif:local -> ?multipattern])
+            Assert( ?items[cs:slot-name -> "items"] )
+            Assert( ?items[cs:constraints -> List()] )
+            Assert( ?items["add-item-from"^^rif:local -> ?rifitems])
+            Assert( ?items["use-items-from"^^rif:local -> ?list] )
+
+            Assert( ?check # cs:TestCE )
+            Assert( ?check[cs:function-call -> ?checkfunction] )
+            Assert( ?checkfunction[cs:function-name -> "eq"] )
+            Assert( ?checkfunction[cs:function-args -> External(func:make-list(?checkvar ?listvar))] )
+            Modify(?multipattern[cs:conditional-element -> External(func:append(?oldlist ?assign ?check))])
+            Assert(?multipattern["added-list"^^rif:local -> ?list])
           )
-        ) Then Do (
-          Assert(?formula[modelA:qqas-multi-lhs-pattern -> List()])
+        )
+        Forall ?items ?item ?term ?oldlist (
+          If And (
+            ?items["add-item-from"^^rif:local -> ?rifitems]
+            ?items[cs:constraints -> ?oldlist]
+            Or (
+              ?item # rif:Var
+              ?item # rif:Const
+              ?item # rif:External
+            )
+            ?item = External(func:get(?rifitems 0))
+            ?item[ex:as-constraint -> ?term]
+          ) Then Do (
+            Modify(?items["add-item-from"^^rif:local -> External(func:remove(?rifitems 0))])
+            Modify( ?items[cs:constraints -> External(func:append(?oldlist ?term))] )
+          )
+        )
+        Forall ?items ?term ?oldlist ?rest ?list (
+          If And (
+            ?items["add-item-from"^^rif:local -> ?rifitems]
+            ?items[cs:constraints -> ?oldlist]
+            0 = External(func:count(?rifitems))
+            ?items["use-items-from"^^rif:local -> ?list]
+            ?list[rif:rest -> ?rest]
+            Not(?rest = List())
+            Not(?items # "OpenList"^^rif:local)
+          ) Then Do (
+            (?anyslots New())
+            Assert( ?items["added-rest"^^rif:local -> ?rest] )
+            Assert( ?anyslots # cs:MultifieldVariable )
+            Assert( ?anyslots[cs:variable-name -> ""] )
+            Modify( ?items[cs:constraints -> External(func:append(?oldlist ?anyslots))] )
+            Assert(?items # "OpenList"^^rif:local)
+          )
+        )
+        Forall ?items ?item ?term ?multipattern ?oldlist (
+          If And (
+            ?items["add-additional-patterns-to"^^rif:local -> ?multipattern]
+            ?items["add-item-from"^^rif:local -> ?rifitems]
+            ?items[cs:constraints -> ?oldlist]
+            ?item # rif:List
+            ?item = External(func:get(?rifitems 0))
+            ?item[ex:as-constraint -> ?term]
+          ) Then Do (
+            Modify(?items["add-item-from"^^rif:local -> External(func:remove(?rifitems 0))])
+            Modify( ?items[cs:constraints -> External(func:append(?oldlist ?term))] )
+            Assert(?multipattern["add-list"^^rif:local -> ?item])
+          )
+        )
+      )
+      Group (
+        Forall ?x (
+          If And (
+            ?multipattern["add-list"^^rif:local -> ?riflist]
+            ?riflist[ex:as-constraint -> ?listvar]
+            ?riflist[rif:items -> ?itemlist]
+            ?riflist[rif:rest -> ?rest]
+            ?rest # rif:Var
+            ?rest[ex:as-constraint -> ?clipsvar]
+            Not (?clipsvar # ex:Variable)
+            Not (?clipsvar # modelA:VarAsConstExpr)
+          ) Then Do (
+            (?function New())
+            (?position New())
+            Assert( ?clipsvar # modelA:VarAsConstExpr )
+            Assert( ?clipsvar[cs:var-as-const-expr -> ?function] )
+            Assert( ?function[cs:function-name -> "<http://www.w3.org/2007/rif-builtin-function#sublist>"] )
+            Assert( ?function[cs:function-args -> External(func:make-list(?listvar ?position))] )
+            Assert( ?position[cs:string -> External(crifi:literal-to-clipsconstant(External(func:count(?itemlist))))])
+          )
+        )
+        Forall ?x (
+          If And (
+            ?multipattern["add-list"^^rif:local -> ?list]
+            ?formula[modelA:as-multi-lhs-pattern -> ?multipattern]
+            ?formula[modelA:binds-var -> ?clipsvar]
+            ?riflist[ex:as-expression -> ?listvar]
+            ?riflist[rif:items -> ?itemlist]
+            ?list[rif:rest -> ?rest]
+            ?rest # rif:Var
+            ?rest[ex:as-constraint -> ?clipsvar]
+            Or (
+              ?clipsvar # ex:Variable
+              ?clipsvar # modelA:VarAsConstExpr
+            )
+          ) Then Do (
+            (?testpattern New())
+            (?eq New())
+            (?leftexpr New())
+            (?rightexpr New())
+            (?position New())
+            Assert( ?testpattern # cs:TestCE )
+            Assert( ?testpattern[cs:function-call -> ?eq] )
+            Assert( ?eq[cs:function-name -> "eq"] )
+            Assert( ?eq[cs:function-args -> External(func:make-list(?clipsvar ?rightexpr))] )
+            Assert( ?rightexpr[cs:function-name -> "<http://www.w3.org/2007/rif-builtin-function#sublist>"] )
+            Assert( ?rightexpr[cs:function-args -> External(func:make-list(?listvar ?position))] )
+            Assert( ?position[cs:string -> External(crifi:literal-to-clipsconstant(External(func:count(?itemlist))))])
+          )
+        )
+      )
+      Group (
+        Forall ?formula ?list ?formulapattern (
+          If And (
+            ?formula # modelA:MultiPatternGenerator
+            ?formula # modelA:TripleTemplateGenerator
+            ?formula[rif:slotvalue -> ?list]
+            ?list # rif:List
+            ?formula[modelA:as-lhs-pattern -> ?formulapattern]
+          ) Then Do (
+            (?andpattern New())
+            Assert(?formula[modelA:as-multi-lhs-pattern -> ?andpattern])
+            Assert(?andpattern # cs:AndCE)
+            Assert(?andpattern[cs:conditional-element -> List(?formulapattern)])
+            Assert(?andpattern["add-list"^^rif:local -> ?list])
+          )
+        )
+        Forall ?formula ?formulapattern (
+          If And (
+            ?formula # modelA:MultiPatternGenerator
+            ?formula # modelA:AtomPatternGenerator
+            ?formula[modelA:as-lhs-pattern -> ?formulapattern]
+          ) Then Do (
+            (?andpattern New())
+            Assert(?formula[modelA:as-multi-lhs-pattern -> ?andpattern])
+            Assert(?andpattern # cs:AndCE)
+            Assert(?andpattern[cs:conditional-element -> List(?formulapattern)])
+          )
+        )
+        Forall ?formula ?andpattern (
+          If And (
+            ?formula # modelA:MultiPatternGenerator
+            ?formula # modelA:AtomPatternGenerator
+            ?formula[modelA:as-multi-lhs-pattern -> ?andpattern]
+            ?formula[rif:args -> ?arglist]
+            ?list # rif:List
+            External(pred:list-contains(?arglist ?list))
+          ) Then Do (
+            Assert(?andpattern["add-list"^^rif:local -> ?list])
+          )
         )
       )
     )

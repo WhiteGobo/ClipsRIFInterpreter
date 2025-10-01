@@ -726,9 +726,10 @@ TEST_P(officialw3cPETTestCases_Test, CreateAndTestModelWithModelA) {
 	ASSERT_NE(tmpmem_f, nullptr) << "Couldnt open memory. broken test.";
 	create_logic_into_memory(tmpmem_f, testdata, init_graph_modelA);
 	fclose(tmpmem_f);
-	if (HasFatalFailure()) return;
-	if (HasFailure()) return;
 	fprintf(stderr, "<created script>:\n%s\n</created script>\n", tmpmem);
+	if (HasFatalFailure() || HasFailure()){
+		return;
+	}
 	ASSERT_NE(strlen(tmpmem), 0) << "no logic script created";
 
 	tmpcheckmem_f = fmemopen(tmpcheckmem, memory_size-1, "w");

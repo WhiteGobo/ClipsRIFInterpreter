@@ -84,6 +84,7 @@ Document(
       )
       (* self:rule07 *) Forall ?riflist ?formula ?assign ?listvar ?itemlist ?rest (
         If And (
+          "always-wrong"^^rif:local()
           ?riflist # modelA:ListAsConstraint
           ?formula[modelA:pattern-uses-constraint -> ?riflist]
           ?riflist # modelA:ConstraintGenerator
@@ -133,6 +134,7 @@ Document(
       )
       (* self:rule09 *) Forall ?riflist ?formula ?assign ?listvar ?itemlist ?rifvar (
         If And (
+          "always-wrong"^^rif:local()
           ?formula[modelA:pattern-uses-constraint -> ?riflist]
           ?riflist # modelA:ConstraintGenerator
           ?riflist # rif:List
@@ -153,6 +155,7 @@ Document(
       )
       (* self:rule10 *) Forall ?riflist ?formula ?assign ?listvar ?itemlist ?rifvar (
         If And (
+          "always-wrong"^^rif:local()
           ?formula[modelA:pattern-uses-constraint -> ?riflist]
           ?riflist # modelA:ConstraintGenerator
           ?riflist # rif:List

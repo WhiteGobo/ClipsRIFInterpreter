@@ -29,6 +29,7 @@ Document(
           ?rifequal[rif:right -> ?rifright]
           ?rifright[ex:as-expression -> ?rightexpr]
         ) Then Do (
+          Assert( ?assignvar # modelA:VarAsConstExpr )
           Assert( ?assignvar[cs:var-as-const-expr -> ?rightexpr] )
         )
       )
@@ -40,6 +41,7 @@ Document(
           ?rifequal[rif:left -> ?rifleft]
           ?rifleft[ex:as-expression -> ?leftexpr]
         ) Then Do (
+          Assert( ?assignvar # modelA:VarAsConstExpr )
           Assert( ?assignvar[cs:var-as-const-expr -> ?leftexpr] )
         )
       )
