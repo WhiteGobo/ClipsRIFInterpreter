@@ -2,15 +2,14 @@
 
 ## TODO
 
-* assert_fact might generate memory leak, if failing to assert. ("a" "b" "c")
+* create_multipatter_lists.rifps is definitly not working completly.
+    Have to add further tests.
 * generate_crifi_script does strange things if empty input is provided.
 * Rework is_literal_PRED. See also `https://www.w3.org/TR/2013/REC-rif-dtb-20130205/#Datatypes`_ 
-* Replace ntriples parser with external library
 * because clips.h is included over ffi_clips_interface dont need to patch 
     clips headers anymore.
 * rename ffi_clips_interface
 * casting isnt implemented as described in `https://www.w3.org/TR/xpath-functions/#casting-from-primitive-to-primitive`_
-* in testcases2 crifimodela builtins_list, the program first removes 20 unneeded lists which shouldnt be there.
 
 ## Basic usage.
 
