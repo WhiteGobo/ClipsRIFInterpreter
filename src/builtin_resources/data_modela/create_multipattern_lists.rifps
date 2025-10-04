@@ -14,7 +14,7 @@ Document(
     Prefix(self <http://example.com/create_multipattern_lists#>)
     Group (
       Group (
-        Forall ?multipattern ?list ?listvar ?rifitems (
+        (* self:rule01 *) Forall ?multipattern ?list ?listvar ?rifitems (
           If And (
             ?multipattern["add-list"^^rif:local -> ?list]
             ?list[rif:items -> ?rifitems]
@@ -50,7 +50,7 @@ Document(
             Assert(?multipattern["added-list"^^rif:local -> ?list])
           )
         )
-        Forall ?items ?item ?term ?oldlist (
+        (* self:rule02 *) Forall ?items ?rifitems ?item ?term ?oldlist (
           If And (
             ?items["add-item-from"^^rif:local -> ?rifitems]
             ?items[cs:constraints -> ?oldlist]
@@ -66,7 +66,7 @@ Document(
             Modify( ?items[cs:constraints -> External(func:append(?oldlist ?term))] )
           )
         )
-        Forall ?items ?term ?oldlist ?rest ?list (
+        (* self:rule03 *) Forall ?items ?rifitems ?oldlist ?rest ?list (
           If And (
             ?items["add-item-from"^^rif:local -> ?rifitems]
             ?items[cs:constraints -> ?oldlist]
@@ -84,7 +84,7 @@ Document(
             Assert(?items # "OpenList"^^rif:local)
           )
         )
-        Forall ?items ?item ?term ?multipattern ?oldlist (
+        (* self:rule04 *) Forall ?items ?item ?term ?multipattern ?oldlist ?rifitems (
           If And (
             ?items["add-additional-patterns-to"^^rif:local -> ?multipattern]
             ?items["add-item-from"^^rif:local -> ?rifitems]
@@ -100,7 +100,7 @@ Document(
         )
       )
       Group (
-        Forall ?x (
+        (* self:rule05 *) Forall ?multipattern ?riflist ?listvar ?itemlist ?rest ?clipsvar (
           If And (
             ?multipattern["add-list"^^rif:local -> ?riflist]
             ?riflist[ex:as-constraint -> ?listvar]
@@ -120,7 +120,7 @@ Document(
             Assert( ?position[cs:string -> External(crifi:literal-to-clipsconstant(External(func:count(?itemlist))))])
           )
         )
-        Forall ?x (
+        (* self:rule06 *) Forall ?multipattern ?list ?formula ?clipsvar ?riflist ?listvar ?itemlist ?rest (
           If And (
             ?multipattern["add-list"^^rif:local -> ?list]
             ?formula[modelA:as-multi-lhs-pattern -> ?multipattern]
@@ -151,7 +151,7 @@ Document(
         )
       )
       Group (
-        Forall ?formula ?list ?formulapattern (
+        (* self:rule07 *) Forall ?formula ?list ?formulapattern (
           If And (
             ?formula # modelA:MultiPatternGenerator
             ?formula # modelA:TripleTemplateGenerator
@@ -166,7 +166,7 @@ Document(
             Assert(?andpattern["add-list"^^rif:local -> ?list])
           )
         )
-        Forall ?formula ?formulapattern (
+        (* self:rule08 *) Forall ?formula ?formulapattern (
           If And (
             ?formula # modelA:MultiPatternGenerator
             ?formula # modelA:AtomPatternGenerator
@@ -178,7 +178,7 @@ Document(
             Assert(?andpattern[cs:conditional-element -> List(?formulapattern)])
           )
         )
-        Forall ?formula ?andpattern (
+        (* self:rule09 *) Forall ?formula ?andpattern ?list ?arglist (
           If And (
             ?formula # modelA:MultiPatternGenerator
             ?formula # modelA:AtomPatternGenerator

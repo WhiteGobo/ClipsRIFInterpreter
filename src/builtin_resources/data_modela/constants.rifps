@@ -74,7 +74,7 @@ Document(
           )
         )
         Group -1 (
-          Forall ?factindex (
+          (* self:ruleSkipVarname *) Forall ?factindex (
             If And (
               ex:currentfactindex(?factindex)
               Exists ?othervar ?tmpname (And(

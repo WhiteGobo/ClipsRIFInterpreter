@@ -538,7 +538,7 @@ Document(
         )
       )
 
-      Forall ?rifformula ?term ?rifvar ?clipsvar (
+      (* self:rule90 *) Forall ?rifformula ?term ?rifvar ?clipsvar (
         If And (
           ?rifformula # modelA:ConditionGenerator
           Or (
@@ -566,7 +566,7 @@ Document(
       )
 
       Group -1 (
-        Forall ?superpattern ?formulacontainer ?formulalist ?subpattern ?formula ?patternlist (
+        (* self:rule91 *) Forall ?superpattern ?formulacontainer ?formulalist ?subpattern ?formula ?patternlist (
           If And (
             Or (
               ?superpattern # cs:AndCE
@@ -669,7 +669,7 @@ Document(
         )
 
       Group (
-        Forall ?rifatom ?rifvar ?clipsvar (
+        (* self:rule92 *) Forall ?rifatom ?arglist ?rifvar ?clipsvar (
           If And (
             ?rifatom # modelA:AtomPatternGenerator
             ?rifatom[rif:args -> ?arglist]
@@ -680,7 +680,7 @@ Document(
             Assert( ?clipsvar # ex:Variable )
           )
         )
-        Forall ?rifmember ?rifvar ?clipsvar (
+        (* self:rule93 *) Forall ?rifmember ?rifvar ?clipsvar (
           If And (
             ?rifmember # modelA:MemberPatternGenerator
             Or (
@@ -693,7 +693,7 @@ Document(
             Assert( ?clipsvar # ex:Variable )
           )
         )
-        Forall ?rifsubclass ?rifvar ?clipsvar (
+        (* self:rule94 *) Forall ?rifsubclass ?rifvar ?clipsvar (
           If And (
             ?rifsubclass # modelA:SubclassPatternGenerator
             Or (
@@ -706,7 +706,7 @@ Document(
             Assert( ?clipsvar # ex:Variable )
           )
         )
-        Forall ?rifframe ?rifvar ?clipsvar (
+        (* self:rule95 *) Forall ?rifframe ?rifvar ?clipsvar (
           If And (
             ?rifframe # modelA:TripleTemplateGenerator
             Or (
@@ -1014,7 +1014,7 @@ Document(
           )
         )
 
-        Forall ?superpattern ?subpattern ?formulalist (
+        (* self:rule96 *) Forall ?superpattern ?subpattern ?formulalist (
           If And (
             ?superpattern["add-pattern-from"^^rif:local -> ?subpattern]
             Or (

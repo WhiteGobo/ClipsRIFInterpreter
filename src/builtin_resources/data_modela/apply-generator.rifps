@@ -39,7 +39,7 @@ Document(
           Execute(crifi:set-graph-in-errorstate("modelA cant process rif:Equal as clause(ex:equal-not-implemented-as-clause)"))
         )
       )
-      Forall ?clause ?assert (
+      (* self:rule22 *) Forall ?clause ?assert (
         ?assert # modelA:RHSPatternGenerator :-
         And (
           ?clause[rif:then -> ?assert]
@@ -219,7 +219,7 @@ Document(
           Assert( ?rifformula[modelA:pattern-uses-constraint -> ?child] )
         )
       )
-      Forall ?rifformula ?child ?slotlist ?slot (
+      (* self:rule23 *) Forall ?rifformula ?child ?slotlist ?slot (
         ?slot # modelA:MultiPatternGenerator :-
         And (
           ?rifformula # modelA:TripleTemplateGenerator
@@ -230,7 +230,7 @@ Document(
           ?child # rif:List
         )
       )
-      Forall ?rifformula ?child ?arglist (
+      (* self:rule24 *) Forall ?rifformula ?child ?arglist (
         ?rifformula # modelA:MultiPatternGenerator :-
         And (
           ?rifformula # modelA:AtomPatternGenerator
@@ -280,7 +280,7 @@ Document(
           Not(?action # rif:Forall)
         )
       )
-      (* self:rule21 *) Forall ?rifexternal ?rifatom ?child (
+      (* self:rule21 *) Forall ?rifexternal ?rifatom ?child ?arglist (
         ?child # modelA:ExpressionGenerator :-
         And (
           ?rifexternal # rif:External

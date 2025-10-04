@@ -14,7 +14,7 @@ Document(
     Prefix(self <http://example.com/inheritance#>)
     Group 100 (
       (* self:sharedinfo *) Group (
-        Forall ?target ?rifdo ?child ?childlist (
+        (* self:rule20 *) Forall ?target ?rifdo ?child ?childlist (
           ?target["rifdoinheritance"^^rif:local -> ?rifdo] :-
           And (
             ?rifdo[rif:actions -> ?childlist]
@@ -22,7 +22,7 @@ Document(
             External(pred:list-contains(?childlist ?child))
           )
         )
-        Forall ?target ?rifdo ?child ?actionvar (
+        (* self:rule21 *) Forall ?target ?rifdo ?child ?actionvar (
           ?target["rifdoinheritance"^^rif:local -> ?rifdo] :-
           And (
             ?rifdo[rif:actionVar -> ?actionvar]
@@ -32,7 +32,7 @@ Document(
         )
       )
       (* self:init *) Group (
-        Forall ?parent ?slotlist ?child ?slot (
+        (* self:rule22 *) Forall ?parent ?slotlist ?child ?slot (
           ?parent["give-inheritance"^^rif:local -> ?child] :- 
           And (
             ?parent[rif:slots -> ?slotlist]
@@ -48,7 +48,7 @@ Document(
             )
           )
         )
-        Forall ?parent ?arglist ?child (
+        (* self:rule23 *) Forall ?parent ?arglist ?child (
           ?parent["give-inheritance"^^rif:local -> ?child] :-
           And (
             Or (
@@ -66,7 +66,7 @@ Document(
             External(pred:list-contains(?arglist ?child))
           )
         )
-        Forall ?parent ?child (
+        (* self:rule24 *) Forall ?parent ?child (
           ?parent["give-inheritance"^^rif:local -> ?child] :-
           And (
             Or (
@@ -89,7 +89,7 @@ Document(
         )
       )
       (* self:finalpropagate *) Group (
-        Forall ?rifformula ?term ?target (
+        (* self:rule25 *) Forall ?rifformula ?term ?target (
           ?term[ex:inherits-data -> ?target] :-
           And(
             ?rifformula # modelA:ConditionGenerator
@@ -102,7 +102,7 @@ Document(
           )
         )
 
-        Forall ?rifnot ?target (
+        (* self:rule26 *) Forall ?rifnot ?target (
           ?rifnot[ex:inherits-data -> ?target] :-
           And (
             ?rifnot["give-inheritance"^^rif:local -> ?target]
@@ -114,7 +114,7 @@ Document(
             )
           )
         )
-        Forall ?rifconstraint ?target (
+        (* self:rule27 *) Forall ?rifconstraint ?target (
           ?rifconstraint[ex:inherits-data -> ?target] :-
           And (
             ?rifconstraint["give-inheritance"^^rif:local -> ?target]
@@ -125,7 +125,7 @@ Document(
             )
           )
         )
-        Forall ?parent ?target ?child ?var ?name ?varlist (
+        (* self:rule28 *) Forall ?parent ?target ?child ?var ?name ?varlist (
           ?var[ex:inherits-data -> ?target] :-
           And (
             ?parent[rif:formula -> ?child]
@@ -136,21 +136,21 @@ Document(
             External(pred:list-contains(?varlist ?var))
           )
         )
-        Forall ?document ?localconst (
+        (* self:rule29 *) Forall ?document ?localconst (
           ?document[ex:inherits-data -> ?localconst] :-
           And (
             ?document # rif:Document
             ?document["give-inheritance"^^rif:local -> ?localconst]
           )
         )
-        Forall ?document ?localconst ?group (
+        (* self:rule30 *) Forall ?document ?localconst ?group (
           ?document[ex:inherits-data -> ?localconst] :-
           And (
             ?document[rif:payload -> ?group]
             ?group["give-inheritance"^^rif:local -> ?localconst]
           )
         )
-        Forall ?var ?rifdo ?actionvar ?assign (
+        (* self:rule31 *) Forall ?var ?rifdo ?actionvar ?assign (
           ?var # modelA:NewVar :-
           And (
             ?rifdo[rif:actionVar -> ?actionvar]
@@ -160,7 +160,7 @@ Document(
             ?assign = External(func:get(?actionvar 1))
           )
         )
-        Forall ?parent ?target ?child ?var ?name ?actionvar(
+        (* self:rule32 *) Forall ?parent ?target ?var ?name ?actionvar(
           ?var[ex:inherits-data -> ?target] :-
           And (
             ?target["rifdoinheritance"^^rif:local -> ?parent]
@@ -172,7 +172,7 @@ Document(
         )
       )
       (* self:normalpropagate *) Group (
-        Forall ?parent ?slotlist ?child ?slot ?target (
+        (* self:rule33 *) Forall ?parent ?slotlist ?child ?slot ?target (
           ?parent["give-inheritance"^^rif:local -> ?target] :- 
           And (
             ?parent[rif:slots -> ?slotlist]
@@ -185,7 +185,7 @@ Document(
             ?child["give-inheritance"^^rif:local -> ?target]
           )
         )
-        Forall ?parent ?childlist ?child ?target(
+        (* self:rule34 *) Forall ?parent ?childlist ?child ?target(
           ?parent["give-inheritance"^^rif:local -> ?target] :- 
           And (
             Or (
@@ -198,7 +198,7 @@ Document(
             External(pred:list-contains(?childlist ?child))
           )
         )
-        Forall ?parent ?child ?target (
+        (* self:rule35 *) Forall ?parent ?child ?target (
           ?parent["give-inheritance"^^rif:local -> ?target] :-
           And (
             Or (
@@ -221,7 +221,7 @@ Document(
             ?child["give-inheritance"^^rif:local -> ?target]
           )
         )
-        Forall ?parent ?target ?child (
+        (* self:rule36 *) Forall ?parent ?target ?child (
           ?parent["give-inheritance"^^rif:local -> ?target] :-
           And (
             ?parent[rif:formula -> ?child]
@@ -234,7 +234,7 @@ Document(
             )))
           )
         )
-        Forall ?parent ?target (
+        (* self:rule37 *) Forall ?parent ?target (
           ?parent["give-inheritance"^^rif:local -> ?target] :-
           And (
             ?target["rifdoinheritance"^^rif:local -> ?parent]
@@ -308,7 +308,7 @@ Document(
           Assert( ?parent[ex:inherits-data -> ?child] )
         )
       )
-      Forall ?rifdo ?actionvar ?binding (
+      (* self:rule38 *) Forall ?rifdo ?actionvar ?binding (
         If And (
           "always-wrong"^^rif:local()
           ?rifdo[rif:actionVar -> ?actionvar]
