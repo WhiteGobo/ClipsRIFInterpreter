@@ -82,28 +82,6 @@ Document(
           Assert( ?riflist # modelA:ConstraintNeedsAdditionalPatterns )
         )
       )
-      (* self:rule07 *) Forall ?riflist ?formula ?assign ?listvar ?itemlist ?rest (
-        If And (
-          "always-wrong"^^rif:local()
-          ?riflist # modelA:ListAsConstraint
-          ?formula[modelA:pattern-uses-constraint -> ?riflist]
-          ?riflist # modelA:ConstraintGenerator
-          ?riflist # rif:List
-          ?riflist[rif:rest -> ?rest]
-          ?riflist[ex:as-constraint -> ?listvar]
-          ?rest[ex:as-constraint -> ?assign]
-          ?riflist[rif:items -> ?itemlist]
-          Not(?formula[modelA:bound-variable -> ?assign])
-        ) Then Do (
-          (?function New())
-          (?position New())
-          Assert( ?assign[cs:var-as-const-expr -> ?function] )
-          Assert( ?function[cs:function-name -> "<http://www.w3.org/2007/rif-builtin-function#sublist>"] )
-          Assert( ?function[cs:function-args -> External(func:make-list(?listvar ?position))] )
-          Assert( ?position[cs:string -> External(crifi:literal-to-clipsconstant(External(func:count(?itemlist))))])
-
-        )
-      )
       (* self:rule08 *) Forall ?riflist ?formula ?assign ?listvar ?itemlist ?rest (
         If And (
           ?formula[modelA:pattern-uses-constraint -> ?riflist]
@@ -129,55 +107,6 @@ Document(
           Assert( ?function[cs:function-name -> "<http://www.w3.org/2007/rif-builtin-function#sublist>"] )
           Assert( ?function[cs:function-args -> External(func:make-list(?listvar ?position))] )
           Assert( ?position[cs:string -> External(crifi:literal-to-clipsconstant(External(func:count(?itemlist))))])
-
-        )
-      )
-      (* self:rule09 *) Forall ?riflist ?formula ?assign ?listvar ?itemlist ?rifvar (
-        If And (
-          "always-wrong"^^rif:local()
-          ?formula[modelA:pattern-uses-constraint -> ?riflist]
-          ?riflist # modelA:ConstraintGenerator
-          ?riflist # rif:List
-          ?riflist[ex:as-constraint -> ?listvar]
-          ?rifvar[ex:as-constraint -> ?assign]
-          ?riflist[rif:items -> ?itemlist]
-          External(pred:list-contains(?itemlist ?rifvar))
-          Not(?formula[modelA:bound-variable -> ?assign])
-        ) Then Do (
-          (?function New())
-          (?position New())
-          Assert( ?assign[cs:var-as-const-expr -> ?function] )
-          Assert( ?function[cs:function-name -> "<http://www.w3.org/2007/rif-builtin-function#get>"] )
-          Assert( ?function[cs:function-args -> External(func:make-list(?listvar ?position))] )
-          Assert( ?position[cs:string -> External(crifi:literal-to-clipsconstant(External(func:get(External(func:index-of(?itemlist ?rifvar)) 0))))])
-
-        )
-      )
-      (* self:rule10 *) Forall ?riflist ?formula ?assign ?listvar ?itemlist ?rifvar (
-        If And (
-          "always-wrong"^^rif:local()
-          ?formula[modelA:pattern-uses-constraint -> ?riflist]
-          ?riflist # modelA:ConstraintGenerator
-          ?riflist # rif:List
-          ?riflist[ex:as-constraint -> ?listvar]
-          ?rifvar[ex:as-constraint -> ?assign]
-          ?riflist[rif:items -> ?itemlist]
-          External(pred:list-contains(?itemlist ?rifvar))
-          ?formula[modelA:bound-variable -> ?assign]
-        ) Then Do (
-          (?testpattern New())
-          (?eq New())
-          (?function New())
-          (?position New())
-          Assert( ?testpattern # cs:TestCE )
-          Assert( ?testpattern[cs:function-call -> ?eq] )
-          Assert( ?formula[modelA:lhs-pattern-after-conditions -> ?testpattern])
-
-          Assert( ?eq[cs:function-name -> "eq"] )
-          Assert( ?eq[cs:function-args -> External(func:make-list(?assign ?function))] )
-          Assert( ?function[cs:function-name -> "<http://www.w3.org/2007/rif-builtin-function#get>"] )
-          Assert( ?function[cs:function-args -> External(func:make-list(?listvar ?position))] )
-          Assert( ?position[cs:string -> External(crifi:literal-to-clipsconstant(External(func:get(External(func:index-of(?itemlist ?rifvar)) 0))))])
 
         )
       )

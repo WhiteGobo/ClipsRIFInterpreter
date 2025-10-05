@@ -26,7 +26,7 @@ crifi_graph* graph = NULL;
 FILE *out_f;
 char *out_filename_after_run_info = NULL;
 int verbosity = 0;
-long long cycle_size = 100000;
+long long cycle_size = 10000;
 long long maximal_number_rules_run = 0;
 bool use_alternative_building_model = false;
 

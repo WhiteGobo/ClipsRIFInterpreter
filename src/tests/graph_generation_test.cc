@@ -257,6 +257,7 @@ static void create_logic_into_memory(FILE* tmpmem_f, TestdataSyntax testdata,
 	if (create_logic_graph == NULL){
 		GTEST_SKIP() << "couldnt craete modelA graph";
 	}
+	crifi_graph_debug_set_random_strategy(create_logic_graph, 44);
 	w3ctestcases_add_importlocations(create_logic_graph);
 	fprintf(stderr, "loading logic info from: %s\n",
 					testdata.input_uri.c_str());

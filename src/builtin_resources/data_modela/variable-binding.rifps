@@ -552,18 +552,6 @@ Document(
           Assert( ?term["expression-needs-var"^^rif:local -> ?clipsvar] )
         )
       )
-      (* self:rule37 *) Forall ?expression ?rifvar ?clipsvar (
-        If And (
-          "always-wrong"^^rif:local()
-          ?expression # modelA:ExpressionGenerator
-          ?expression[ex:inherits-data -> ?rifvar]
-          ?rifvar[ex:as-expression -> ?clipsvar]
-          ?clipsvar # cs:Variable
-          Not(?clipsvar # ex:ConstraintGenerator)
-        ) Then Do (
-          Assert( ?expression["expression-needs-var"^^rif:local -> ?clipsvar] )
-        )
-      )
 
       Group -1 (
         (* self:rule91 *) Forall ?superpattern ?formulacontainer ?formulalist ?subpattern ?formula ?patternlist (

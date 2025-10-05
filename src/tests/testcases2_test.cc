@@ -572,7 +572,7 @@ static void create_logic_into_memory(FILE* tmpmem_f, TestdataPET testdata,
 	 * For debugging reasons. Rules of the same salience should always run
 	 * in random order.
 	 */
-	crifi_graph_debug_set_random_strategy(create_logic_graph, 42);
+	crifi_graph_debug_set_random_strategy(create_logic_graph, 44);
 	if (create_logic_graph == NULL){
 		GTEST_SKIP() << "couldnt craete modelA graph";
 	}
