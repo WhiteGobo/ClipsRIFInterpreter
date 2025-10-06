@@ -129,6 +129,7 @@ static int run_imported_rules(){
 	time_t now;
 	time(&now);
 	fprintf(stderr, "Starting rules at %s", ctime(&now));
+	//eval(graph, "(watch rules)");
 	while (number_rules_run > 0){
 		fprintf(stderr, "next run\n");
 		if (verbosity > 3){

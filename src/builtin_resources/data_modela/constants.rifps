@@ -189,7 +189,7 @@ Document(
         )
       )
 
-      (* ex:transform-rif-consts *) Group (
+      (* ex:transform-rif-consts *) Group 60 (
         (* ex:value-to-constraint *) Forall ?rifnode ?value (
           If And(
             ?rifnode[rif:value -> ?value]

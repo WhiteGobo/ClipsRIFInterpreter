@@ -920,7 +920,7 @@ Document(
           )
         )
         Group -12 (
-        (* self:rule50 *) Forall ?rifequal ?formulacontainer ?rifleft ?rifright ?clipsassign ?defrule ?formulalist (
+        (* self:rule50 *) Forall ?rifequal ?formulacontainer ?rifleft ?rifright ?clipsassign ?defrule (
           If And (
             ?formulacontainer["add-pattern-from"^^rif:local -> ?rifequal]
             Not(?formulacontainer["added-pattern-from"^^rif:local -> ?rifequal])
@@ -935,7 +935,6 @@ Document(
               ?rifright["expression-needs-var"^^rif:local -> ?x]
               Not( ?rifequal["bound-variable"^^rif:local -> ?x] )
             )))
-            ?formulacontainer["formulalist"^^rif:local -> ?formulalist]
           ) Then Do (
             Assert( ?rifequal[modelA:binds-var -> ?clipsassign] )
             Assert( ?formulacontainer["added-pattern-from"^^rif:local -> ?rifequal] )
@@ -946,7 +945,7 @@ Document(
             Assert(?formulacontainer["bound-variable"^^rif:local -> ?clipsassign ])
           )
         )
-        (* self:rule52 *) Forall ?rifequal ?formulacontainer ?rifleft ?rifright ?clipsassign ?defrule ?formulalist (
+        (* self:rule52 *) Forall ?rifequal ?formulacontainer ?rifleft ?rifright ?clipsassign ?defrule (
           If And (
             ?formulacontainer["add-pattern-from"^^rif:local -> ?rifequal]
             ?formulacontainer[modelA:as-defrule -> ?defrule]
@@ -961,7 +960,6 @@ Document(
               ?rifleft["expression-needs-var"^^rif:local -> ?x]
               Not( ?rifequal["bound-variable"^^rif:local -> ?x] )
             )))
-            ?formulacontainer["formulalist"^^rif:local -> ?formulalist]
           ) Then Do (
             Assert( ?rifequal[modelA:binds-var -> ?clipsassign] )
             Assert( ?formulacontainer["added-pattern-from"^^rif:local -> ?rifequal] )
@@ -971,7 +969,7 @@ Document(
           )
         )
         )
-        (* self:rule53 *) Forall ?formulacontainer ?rifexternal ?defrule ?rifconstiristring ?rifexternal ?rifatom ?arglist ?targetiri ?clipsassign ?targetstring ?formulalist (
+        (* self:rule53 *) Forall ?formulacontainer ?rifexternal ?defrule ?rifconstiristring ?rifexternal ?rifatom ?arglist ?targetiri ?clipsassign ?targetstring (
           If And(
             ?formulacontainer["add-pattern-from"^^rif:local -> ?rifexternal]
             ?formulacontainer[modelA:as-defrule -> ?defrule]
@@ -992,7 +990,6 @@ Document(
               ?targetstring["expression-needs-var"^^rif:local -> ?x]
               Not( ?rifexternal["bound-variable"^^rif:local -> ?x] )
             )))
-            ?formulacontainer["formulalist"^^rif:local -> ?formulalist]
           ) Then Do (
             Assert(?rifexternal # modelA:AssignGenerator)
             Assert(?targetiri["use-expression-from"^^rif:local -> ?targetstring])

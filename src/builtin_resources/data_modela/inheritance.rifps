@@ -13,11 +13,26 @@ Document(
     Prefix(modelA <http://white.gobo/modelA#>)
     Prefix(self <http://example.com/inheritance#>)
     Group 100 (
+      Group 80 (
+        Forall ?child ?target (
+          If And (
+            ?child["give-inheritance"^^rif:local -> ?target]
+          ) Then Do (
+            Retract(?child["give-inheritance"^^rif:local -> ?target])
+          )
+        )
+      )
       (* self:sharedinfo *) Group (
         (* self:rule20 *) Forall ?target ?rifdo ?child ?childlist (
           ?target["rifdoinheritance"^^rif:local -> ?rifdo] :-
           And (
             ?rifdo[rif:actions -> ?childlist]
+            Or (
+              ?child # rif:Assert
+              ?child # rif:Execute
+              ?child # rif:Modify
+              ?child # rif:Retract
+            )
             ?child["give-inheritance"^^rif:local -> ?target]
             External(pred:list-contains(?childlist ?child))
           )
