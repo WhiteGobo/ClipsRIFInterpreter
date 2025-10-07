@@ -265,6 +265,7 @@ Document(
       (* self:rule19 *) Forall ?action (
         ?action # modelA:ActionGenerator :-
         Or (
+            ?action # rif:Do
             ?action # rif:Assert
             ?action # rif:Retract
             ?action # rif:Modify

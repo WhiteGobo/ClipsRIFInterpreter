@@ -36,356 +36,358 @@ Document(
           )
         )
       )
-      (* self:rule64 *) Forall ?formula (
-        If Or (
-          ?formula # rif:And
-          ?formula # rif:Or
-          ?formula # rif:Exists
-          ?formula # rif:External
-          ?formula # rif:INeg
-          ?formula # rif:Frame
-          ?formula # rif:Atom
-          ?formula # rif:Member
-          ?formula # rif:SubClass
-          ?formula # rif:Equal
-        ) Then Do( Assert(?formula # "rifformula"^^rif:local) )
-      )
-      (* self:rule65 *) Forall ?rifvar ?clipsconstraint (
-        If And (
-          ?rifvar # rif:Var
-          ?rifvar[ex:as-constraint -> ?clipsconstraint]
-        ) Then ?rifvar["constraint-binds-var"^^rif:local -> ?clipsconstraint]
-      )
-      (* self:rule66 *) Forall ?riflist ?itemlist ?rifvar ?clipsconstraint (
-        If And (
-          ?riflist # ex:ConstraintGenerator
-          ?riflist[rif:items -> ?itemlist]
-          ?rifvar["constraint-binds-var"^^rif:local -> ?clipsconstraint]
-          External(pred:list-contains(?itemlist ?rifvar))
-        ) Then ?rifvar["constraint-binds-var"^^rif:local -> ?clipsconstraint]
-      )
-      (* self:rule67 *) Forall ?rifrule ?rifformula ?clipsconstraint (
-        If And (
-          ?rifrule[rif:formula -> ?rifformula]
-          Or (
-            ?rifformula # rif:Frame
-            ?rifformula # rif:Atom
-            ?rifformula # rif:External
-            ?rifformula # rif:Equal
-            ?rifformula # rif:Member
-          )
-          ?rifformula["bound-variable"^^rif:local -> ?clipsconstraint]
-        ) Then Do (
-          Assert( ?rifformula[modelA:bound-variable -> ?clipsconstraint] )
+      Group (
+        (* self:rule64 *) Forall ?formula (
+          If Or (
+            ?formula # rif:And
+            ?formula # rif:Or
+            ?formula # rif:Exists
+            ?formula # rif:External
+            ?formula # rif:INeg
+            ?formula # rif:Frame
+            ?formula # rif:Atom
+            ?formula # rif:Member
+            ?formula # rif:SubClass
+            ?formula # rif:Equal
+          ) Then Do( Assert(?formula # "rifformula"^^rif:local) )
         )
-      )
-      (* self:rule68 *) Forall ?rifrule ?formulalist ?rifformula ?clipsconstraint (
-        If And (
-          ?rifrule # rif:And
-          ?rifrule[rif:formulas -> ?formulalist]
-          Or (
-            ?rifformula # rif:Frame
-            ?rifformula # rif:Atom
-            ?rifformula # rif:External
-            ?rifformula # rif:Equal
-            ?rifformula # rif:Member
-          )
-          External(pred:list-contains(?formulalist ?rifformula))
-          ?rifformula["bound-variable"^^rif:local -> ?clipsconstraint]
-        ) Then Do (
-          Assert( ?rifformula[modelA:bound-variable -> ?clipsconstraint] )
+        (* self:rule65 *) Forall ?rifvar ?clipsconstraint (
+          If And (
+            ?rifvar # rif:Var
+            ?rifvar[ex:as-constraint -> ?clipsconstraint]
+          ) Then ?rifvar["constraint-binds-var"^^rif:local -> ?clipsconstraint]
         )
-      )
-      (* self:rule69 *) Forall ?rifobj ?rifvar ?clipsconstraint (
-        If And (
-          Or (
-            ?rifobj # modelA:TripleTemplateGenerator
-            ?rifobj # modelA:MemberPatternGenerator
-            ?rifobj # modelA:SubclassPatternGenerator
-          )
-          Or (
-            ?rifobj[rif:object -> ?rifvar]
-            ?rifobj[rif:slotkey -> ?rifvar]
-            ?rifobj[rif:slotvalue -> ?rifvar]
-            ?rifobj[rif:sub -> ?rifvar]
-            ?rifobj[rif:super -> ?rifvar]
-            ?rifobj[rif:class -> ?rifvar]
-            ?rifobj[rif:instance -> ?rifvar]
-          )
-          ?rifvar["constraint-binds-var"^^rif:local -> ?clipsconstraint]
-          Not(?rifobj["bound-variable"^^rif:local -> ?clipsconstraint])
-        ) Then ?rifobj[modelA:binds-var -> ?clipsconstraint]
-      )
-      (* self:rule70 *) Forall ?rifobj ?rifvar ?clipsconstraint (
-        If And (
-          ?rifobj # modelA:AtomPatternGenerator
-          ?rifobj[rif:op -> ?rifvar]
-          ?rifvar["constraint-binds-var"^^rif:local -> ?clipsconstraint]
-          Not(?rifobj["bound-variable"^^rif:local -> ?clipsconstraint])
-        ) Then ?rifobj[modelA:binds-var -> ?clipsconstraint]
-      )
-      (* self:rule71 *) Forall ?rifformula ?clipsconstraint ?rifvar (
-        If And (
-          ?rifformula # modelA:PatternGenerator
-          Or (
-            ?rifformula[rif:left -> ?rifvar]
-            ?rifformula[rif:right -> ?rifvar]
-            ?rifformula[rif:op -> ?rifvar]
-            ?rifformula[rif:instance -> ?rifvar]
-            ?rifformula[rif:class -> ?rifvar]
-            ?rifformula[rif:sub -> ?rifvar]
-            ?rifformula[rif:super -> ?rifvar]
-          )
-          ?rifvar["constraint-binds-var"^^rif:local -> ?clipsconstraint]
-          Not(?rifformula["bound-variable"^^rif:local -> ?clipsconstraint])
-        ) Then ?rifformula[modelA:binds-var -> ?clipsconstraint]
-      )
-      (* self:rule72 *) Forall ?riflist ?rifvar ?clipsconstraint (
-        If And (
-          ?riflist[rif:rest -> ?rifvar]
-          ?riflist # modelA:ConstraintGenerator
-          ?rifvar["constraint-binds-var"^^rif:local -> ?clipsconstraint]
-        ) Then Do (
-          Assert( ?riflist["constraint-binds-var"^^rif:local -> ?clipsconstraint] )
+        (* self:rule66 *) Forall ?riflist ?itemlist ?rifvar ?clipsconstraint (
+          If And (
+            ?riflist # ex:ConstraintGenerator
+            ?riflist[rif:items -> ?itemlist]
+            ?rifvar["constraint-binds-var"^^rif:local -> ?clipsconstraint]
+            External(pred:list-contains(?itemlist ?rifvar))
+          ) Then ?rifvar["constraint-binds-var"^^rif:local -> ?clipsconstraint]
         )
-      )
-      (* self:rule73 *) Forall ?riflist ?itemlist ?rifvar ?clipsconstraint (
-        If And (
-          ?riflist[rif:items -> ?itemlist]
-          ?riflist # modelA:ConstraintGenerator
-          ?rifvar["constraint-binds-var"^^rif:local -> ?clipsconstraint]
-          External(pred:list-contains(?itemlist ?rifvar))
-        ) Then Do (
-          Assert( ?riflist["constraint-binds-var"^^rif:local -> ?clipsconstraint] )
-        )
-      )
-      (* self:rule74 *) Forall ?rifformula ?clipsvar ?rifvar (
-        If And (
-          Or (
-            ?rifformula[rif:object -> ?rifvar]
-            ?rifformula[rif:left -> ?rifvar]
-            ?rifformula[rif:right -> ?rifvar]
-            ?rifformula[rif:op -> ?rifvar]
-            ?rifformula[rif:content -> ?rifvar]
-            ?rifformula[rif:instance -> ?rifvar]
-            ?rifformula[rif:class -> ?rifvar]
-            ?rifformula[rif:sub -> ?rifvar]
-            ?rifformula[rif:super -> ?rifvar]
-            ?rifformula[rif:slotkey -> ?rifvar]
-            ?rifformula[rif:slotvalue -> ?rifvar]
+        (* self:rule67 *) Forall ?rifrule ?rifformula ?clipsconstraint (
+          If And (
+            ?rifrule[rif:formula -> ?rifformula]
+            Or (
+              ?rifformula # rif:Frame
+              ?rifformula # rif:Atom
+              ?rifformula # rif:External
+              ?rifformula # rif:Equal
+              ?rifformula # rif:Member
+            )
+            ?rifformula["bound-variable"^^rif:local -> ?clipsconstraint]
+          ) Then Do (
+            Assert( ?rifformula[modelA:bound-variable -> ?clipsconstraint] )
           )
-          ?rifvar["constraint-needs-var"^^rif:local -> ?clipsvar]
-        ) Then ?rifformula["constraints-needs-variable"^^rif:local -> ?clipsvar]
-      )
-      (* self:rule10 *) Forall ?rifexternal ?rifatom ?arglist ?arg ?clipsvar (
-        If And (
-          ?rifexternal # rif:External
-          ?rifexternal # modelA:PatternGenerator
-          ?rifexternal[rif:content -> ?rifatom]
-          ?rifatom[rif:args -> ?arglist]
-          ?arg # rif:Var
-          ?arg[ex:as-expression -> ?clipsvar]
-          External(pred:list-contains(?arglist ?arg))
-        ) Then Do (
-          Assert(?rifexternal["constraints-needs-variable"^^rif:local -> ?clipsvar])
         )
-      )
-      (* self:rule11 *) Forall ?rifexternal ?rifatom ?arglist ?arg ?clipsvar (
-        If And (
-          ?rifexternal # rif:External
-          ?rifexternal # modelA:PatternGenerator
-          ?rifexternal[rif:content -> ?rifatom]
-          ?rifatom[rif:args -> ?arglist]
-          Or (
-            ?arg # rif:External
-            ?arg # rif:List
+        (* self:rule68 *) Forall ?rifrule ?formulalist ?rifformula ?clipsconstraint (
+          If And (
+            ?rifrule # rif:And
+            ?rifrule[rif:formulas -> ?formulalist]
+            Or (
+              ?rifformula # rif:Frame
+              ?rifformula # rif:Atom
+              ?rifformula # rif:External
+              ?rifformula # rif:Equal
+              ?rifformula # rif:Member
+            )
+            External(pred:list-contains(?formulalist ?rifformula))
+            ?rifformula["bound-variable"^^rif:local -> ?clipsconstraint]
+          ) Then Do (
+            Assert( ?rifformula[modelA:bound-variable -> ?clipsconstraint] )
           )
-          ?arg["expression-needs-var"^^rif:local -> ?clipsvar]
-        ) Then Do (
-          Assert(?rifexternal["constraints-needs-variable"^^rif:local -> ?clipsvar])
         )
-      )
-      (* self:rule13 *) Forall ?rifatom ?arglist ?rifvar ?clipsvar (
-        If And (
-          ?rifatom[rif:args -> ?arglist]
-          ?rifvar["constraint-needs-var"^^rif:local -> ?clipsvar]
-          External(pred:list-contains(?arglist ?rifvar))
-        ) Then ?rifatom["constraints-needs-variable"^^rif:local -> ?clipsvar]
-      )
-      (* self:rule14 *) Forall ?rifframe ?clipsconstraint ?slotlist ?rifvar ?slot (
-        If And (
-          ?rifframe[rif:slots -> ?slotlist]
-          ?rifframe # modelA:PatternGenerator
-          ?slot # rif:Slot
-          External(pred:list-contains(?slotlist ?slot))
-          Or (
-            ?slot[rif:slotkey -> ?rifvar]
-            ?slot[rif:slotvalue -> ?rifvar]
+        (* self:rule69 *) Forall ?rifobj ?rifvar ?clipsconstraint (
+          If And (
+            Or (
+              ?rifobj # modelA:TripleTemplateGenerator
+              ?rifobj # modelA:MemberPatternGenerator
+              ?rifobj # modelA:SubclassPatternGenerator
+            )
+            Or (
+              ?rifobj[rif:object -> ?rifvar]
+              ?rifobj[rif:slotkey -> ?rifvar]
+              ?rifobj[rif:slotvalue -> ?rifvar]
+              ?rifobj[rif:sub -> ?rifvar]
+              ?rifobj[rif:super -> ?rifvar]
+              ?rifobj[rif:class -> ?rifvar]
+              ?rifobj[rif:instance -> ?rifvar]
+            )
+            ?rifvar["constraint-binds-var"^^rif:local -> ?clipsconstraint]
+            Not(?rifobj["bound-variable"^^rif:local -> ?clipsconstraint])
+          ) Then ?rifobj[modelA:binds-var -> ?clipsconstraint]
+        )
+        (* self:rule70 *) Forall ?rifobj ?rifvar ?clipsconstraint (
+          If And (
+            ?rifobj # modelA:AtomPatternGenerator
+            ?rifobj[rif:op -> ?rifvar]
+            ?rifvar["constraint-binds-var"^^rif:local -> ?clipsconstraint]
+            Not(?rifobj["bound-variable"^^rif:local -> ?clipsconstraint])
+          ) Then ?rifobj[modelA:binds-var -> ?clipsconstraint]
+        )
+        (* self:rule71 *) Forall ?rifformula ?clipsconstraint ?rifvar (
+          If And (
+            ?rifformula # modelA:PatternGenerator
+            Or (
+              ?rifformula[rif:left -> ?rifvar]
+              ?rifformula[rif:right -> ?rifvar]
+              ?rifformula[rif:op -> ?rifvar]
+              ?rifformula[rif:instance -> ?rifvar]
+              ?rifformula[rif:class -> ?rifvar]
+              ?rifformula[rif:sub -> ?rifvar]
+              ?rifformula[rif:super -> ?rifvar]
+            )
+            ?rifvar["constraint-binds-var"^^rif:local -> ?clipsconstraint]
+            Not(?rifformula["bound-variable"^^rif:local -> ?clipsconstraint])
+          ) Then ?rifformula[modelA:binds-var -> ?clipsconstraint]
+        )
+        (* self:rule72 *) Forall ?riflist ?rifvar ?clipsconstraint (
+          If And (
+            ?riflist[rif:rest -> ?rifvar]
+            ?riflist # modelA:ConstraintGenerator
+            ?rifvar["constraint-binds-var"^^rif:local -> ?clipsconstraint]
+          ) Then Do (
+            Assert( ?riflist["constraint-binds-var"^^rif:local -> ?clipsconstraint] )
           )
-          ?rifvar["constraint-binds-var"^^rif:local -> ?clipsconstraint]
-          Not(?rifframe["bound-variable"^^rif:local -> ?clipsconstraint])
-        ) Then ?rifframe[modelA:binds-var -> ?clipsconstraint]
-      )
-      (* self:rule15 *) Forall ?rifatom ?clipsconstraint ?arglist ?rifvar (
-        If And (
-          ?rifatom # modelA:PatternGenerator
-          ?rifatom[rif:args -> ?arglist]
-          ?rifvar["constraint-binds-var"^^rif:local -> ?clipsconstraint]
-          External(pred:list-contains(?arglist ?rifvar))
-          Not(?rifatom["bound-variable"^^rif:local -> ?clipsconstraint])
-        ) Then ?rifatom[modelA:binds-var -> ?clipsconstraint]
-      )
+        )
+        (* self:rule73 *) Forall ?riflist ?itemlist ?rifvar ?clipsconstraint (
+          If And (
+            ?riflist[rif:items -> ?itemlist]
+            ?riflist # modelA:ConstraintGenerator
+            ?rifvar["constraint-binds-var"^^rif:local -> ?clipsconstraint]
+            External(pred:list-contains(?itemlist ?rifvar))
+          ) Then Do (
+            Assert( ?riflist["constraint-binds-var"^^rif:local -> ?clipsconstraint] )
+          )
+        )
+        (* self:rule74 *) Forall ?rifformula ?clipsvar ?rifvar (
+          If And (
+            Or (
+              ?rifformula[rif:object -> ?rifvar]
+              ?rifformula[rif:left -> ?rifvar]
+              ?rifformula[rif:right -> ?rifvar]
+              ?rifformula[rif:op -> ?rifvar]
+              ?rifformula[rif:content -> ?rifvar]
+              ?rifformula[rif:instance -> ?rifvar]
+              ?rifformula[rif:class -> ?rifvar]
+              ?rifformula[rif:sub -> ?rifvar]
+              ?rifformula[rif:super -> ?rifvar]
+              ?rifformula[rif:slotkey -> ?rifvar]
+              ?rifformula[rif:slotvalue -> ?rifvar]
+            )
+            ?rifvar["constraint-needs-var"^^rif:local -> ?clipsvar]
+          ) Then ?rifformula["constraints-needs-variable"^^rif:local -> ?clipsvar]
+        )
+        (* self:rule10 *) Forall ?rifexternal ?rifatom ?arglist ?arg ?clipsvar (
+          If And (
+            ?rifexternal # rif:External
+            ?rifexternal # modelA:PatternGenerator
+            ?rifexternal[rif:content -> ?rifatom]
+            ?rifatom[rif:args -> ?arglist]
+            ?arg # rif:Var
+            ?arg[ex:as-expression -> ?clipsvar]
+            External(pred:list-contains(?arglist ?arg))
+          ) Then Do (
+            Assert(?rifexternal["constraints-needs-variable"^^rif:local -> ?clipsvar])
+          )
+        )
+        (* self:rule11 *) Forall ?rifexternal ?rifatom ?arglist ?arg ?clipsvar (
+          If And (
+            ?rifexternal # rif:External
+            ?rifexternal # modelA:PatternGenerator
+            ?rifexternal[rif:content -> ?rifatom]
+            ?rifatom[rif:args -> ?arglist]
+            Or (
+              ?arg # rif:External
+              ?arg # rif:List
+            )
+            ?arg["expression-needs-var"^^rif:local -> ?clipsvar]
+          ) Then Do (
+            Assert(?rifexternal["constraints-needs-variable"^^rif:local -> ?clipsvar])
+          )
+        )
+        (* self:rule13 *) Forall ?rifatom ?arglist ?rifvar ?clipsvar (
+          If And (
+            ?rifatom[rif:args -> ?arglist]
+            ?rifvar["constraint-needs-var"^^rif:local -> ?clipsvar]
+            External(pred:list-contains(?arglist ?rifvar))
+          ) Then ?rifatom["constraints-needs-variable"^^rif:local -> ?clipsvar]
+        )
+        (* self:rule14 *) Forall ?rifframe ?clipsconstraint ?slotlist ?rifvar ?slot (
+          If And (
+            ?rifframe[rif:slots -> ?slotlist]
+            ?rifframe # modelA:PatternGenerator
+            ?slot # rif:Slot
+            External(pred:list-contains(?slotlist ?slot))
+            Or (
+              ?slot[rif:slotkey -> ?rifvar]
+              ?slot[rif:slotvalue -> ?rifvar]
+            )
+            ?rifvar["constraint-binds-var"^^rif:local -> ?clipsconstraint]
+            Not(?rifframe["bound-variable"^^rif:local -> ?clipsconstraint])
+          ) Then ?rifframe[modelA:binds-var -> ?clipsconstraint]
+        )
+        (* self:rule15 *) Forall ?rifatom ?clipsconstraint ?arglist ?rifvar (
+          If And (
+            ?rifatom # modelA:PatternGenerator
+            ?rifatom[rif:args -> ?arglist]
+            ?rifvar["constraint-binds-var"^^rif:local -> ?clipsconstraint]
+            External(pred:list-contains(?arglist ?rifvar))
+            Not(?rifatom["bound-variable"^^rif:local -> ?clipsconstraint])
+          ) Then ?rifatom[modelA:binds-var -> ?clipsconstraint]
+        )
 
-      (* self:rule16 *) Forall ?rifor ?formulalist ?firstsubformula ?clipsconstraint (
-        If And (
-          ?rifor # rif:Or
-          ?rifor[rif:formulas -> ?formulalist]
-          ?firstsubformula[modelA:binds-var -> ?clipsconstraint]
-          ?firstsubformula = External(func:get(?formulalist 0))
-          Not( Exists ?otherformula ( And(
-            ?otherformula # "rifformula"^^rif:local
-            External(pred:list-contains(?formulalist ?otherformula))
-            Not (?otherformula[modelA:binds-var -> ?clipsconstraint])
-          )))
-        ) Then ?rifor[modelA:binds-var -> ?clipsconstraint]
-      )
-      (* self:rule17 *) Forall ?rifand ?formulalist ?subformula ?clipsconstraint (
-        If And (
-          ?rifand # rif:And
-          ?rifand[rif:formulas -> ?formulalist]
-          ?rifand["added-pattern-from"^^rif:local -> ?subformula]
-          ?subformula[modelA:binds-var -> ?clipsconstraint]
-          External(pred:list-contains(?formulalist ?subformula))
-        ) Then ?rifand[modelA:binds-var -> ?clipsconstraint]
-      )
+        (* self:rule16 *) Forall ?rifor ?formulalist ?firstsubformula ?clipsconstraint (
+          If And (
+            ?rifor # rif:Or
+            ?rifor[rif:formulas -> ?formulalist]
+            ?firstsubformula[modelA:binds-var -> ?clipsconstraint]
+            ?firstsubformula = External(func:get(?formulalist 0))
+            Not( Exists ?otherformula ( And(
+              ?otherformula # "rifformula"^^rif:local
+              External(pred:list-contains(?formulalist ?otherformula))
+              Not (?otherformula[modelA:binds-var -> ?clipsconstraint])
+            )))
+          ) Then ?rifor[modelA:binds-var -> ?clipsconstraint]
+        )
+        (* self:rule17 *) Forall ?rifand ?formulalist ?subformula ?clipsconstraint (
+          If And (
+            ?rifand # rif:And
+            ?rifand[rif:formulas -> ?formulalist]
+            ?rifand["added-pattern-from"^^rif:local -> ?subformula]
+            ?subformula[modelA:binds-var -> ?clipsconstraint]
+            External(pred:list-contains(?formulalist ?subformula))
+          ) Then ?rifand[modelA:binds-var -> ?clipsconstraint]
+        )
 
-      Forall ?rifequal ?left ?right (
-        If And (
-          ?rifequal # modelA:ConditionGenerator
-          ?rifequal[rif:left -> ?left]
-          ?rifequal[rif:right -> ?right]
-        ) Then Do (
-          Assert( ?left # "check-expression-needs-var"^^rif:local )
-          Assert( ?right # "check-expression-needs-var"^^rif:local )
-        )
-      )
-      Forall ?formulacontainer ?rifatom ?rifexternal ?arglist (
-        If And (
-          ?formulacontainer["add-pattern-from"^^rif:local -> ?rifatom]
-          ?rifatom[rif:args -> ?arglist]
-          ?rifexternal # rif:External
-          External(pred:list-contains(?arglist ?rifexternal))
-        ) Then Do (
-          Assert(?rifexternal # "check-constraint-needs-var"^^rif:local)
-        )
-      )
-      Forall ?formulacontainer ?rifpattern ?rifexternal (
-        If And (
-          ?formulacontainer["add-pattern-from"^^rif:local -> ?rifpattern]
-          Or (
-            ?rifpattern[rif:sub -> ?rifexternal]
-            ?rifpattern[rif:super -> ?rifexternal]
-            ?rifpattern[rif:class -> ?rifexternal]
-            ?rifpattern[rif:instance -> ?rifexternal]
-            ?rifpattern[rif:object -> ?rifexternal]
-            ?rifpattern[rif:slotkey -> ?rifexternal]
-            ?rifpattern[rif:slotvalue -> ?rifexternal]
+        Forall ?rifequal ?left ?right (
+          If And (
+            ?rifequal # modelA:ConditionGenerator
+            ?rifequal[rif:left -> ?left]
+            ?rifequal[rif:right -> ?right]
+          ) Then Do (
+            Assert( ?left # "check-expression-needs-var"^^rif:local )
+            Assert( ?right # "check-expression-needs-var"^^rif:local )
           )
-          ?rifexternal # rif:External
-        ) Then Do (
-          Assert(?rifexternal # "check-constraint-needs-var"^^rif:local)
         )
-      )
-      Forall ?rifexternal ?rifatom ?rifconstiristring ?rifatom ?arglist ?targetiri ?targetstring (
-        If And (
-          ?rifexternal[rif:content -> ?rifatom]
-          ?rifconstiristring[rif:constIRI -> "http://www.w3.org/2007/rif-builtin-predicate#iri-string"^^xs:anyURI]
-          ?rifatom[rif:op -> ?rifconstiristring]
-          ?rifatom[rif:args -> ?arglist]
-          Or (
-            ?targetiri # rif:Var
-            ?targetiri # rif:External
+        Forall ?formulacontainer ?rifatom ?rifexternal ?arglist (
+          If And (
+            ?formulacontainer["add-pattern-from"^^rif:local -> ?rifatom]
+            ?rifatom[rif:args -> ?arglist]
+            ?rifexternal # rif:External
+            External(pred:list-contains(?arglist ?rifexternal))
+          ) Then Do (
+            Assert(?rifexternal # "check-constraint-needs-var"^^rif:local)
           )
-          ?targetiri = External(func:get(?arglist 0))
-          Or (
-            ?targetstring # rif:Var
-            ?targetstring # rif:External
+        )
+        Forall ?formulacontainer ?rifpattern ?rifexternal (
+          If And (
+            ?formulacontainer["add-pattern-from"^^rif:local -> ?rifpattern]
+            Or (
+              ?rifpattern[rif:sub -> ?rifexternal]
+              ?rifpattern[rif:super -> ?rifexternal]
+              ?rifpattern[rif:class -> ?rifexternal]
+              ?rifpattern[rif:instance -> ?rifexternal]
+              ?rifpattern[rif:object -> ?rifexternal]
+              ?rifpattern[rif:slotkey -> ?rifexternal]
+              ?rifpattern[rif:slotvalue -> ?rifexternal]
+            )
+            ?rifexternal # rif:External
+          ) Then Do (
+            Assert(?rifexternal # "check-constraint-needs-var"^^rif:local)
           )
-          ?targetstring = External(func:get(?arglist 1))
-        ) Then Do (
-          Assert( ?targetiri # "check-expression-needs-var"^^rif:local )
-          Assert( ?targetstring # "check-expression-needs-var"^^rif:local )
         )
-      )
-      Forall ?rifterm ?rifvar ?clipsvar(
-        If And (
-          ?rifterm # "check-constraint-needs-var"^^rif:local
-          ?rifterm[ex:inherits-data -> ?rifvar]
-          ?rifvar # rif:Var
-          ?rifvar[ex:as-expression -> ?clipsvar]
-        ) Then Do (
-          Assert( ?rifterm["constraint-needs-var"^^rif:local -> ?clipsvar] )
+        Forall ?rifexternal ?rifatom ?rifconstiristring ?rifatom ?arglist ?targetiri ?targetstring (
+          If And (
+            ?rifexternal[rif:content -> ?rifatom]
+            ?rifconstiristring[rif:constIRI -> "http://www.w3.org/2007/rif-builtin-predicate#iri-string"^^xs:anyURI]
+            ?rifatom[rif:op -> ?rifconstiristring]
+            ?rifatom[rif:args -> ?arglist]
+            Or (
+              ?targetiri # rif:Var
+              ?targetiri # rif:External
+            )
+            ?targetiri = External(func:get(?arglist 0))
+            Or (
+              ?targetstring # rif:Var
+              ?targetstring # rif:External
+            )
+            ?targetstring = External(func:get(?arglist 1))
+          ) Then Do (
+            Assert( ?targetiri # "check-expression-needs-var"^^rif:local )
+            Assert( ?targetstring # "check-expression-needs-var"^^rif:local )
+          )
         )
-      )
-      Forall ?rifterm ?rifvar ?clipsvar(
-        If And (
-          ?rifterm # "check-expression-needs-var"^^rif:local
-          ?rifterm[ex:inherits-data -> ?rifvar]
-          ?rifvar # rif:Var
-          ?rifvar[ex:as-expression -> ?clipsvar]
-        ) Then Do (
-          Assert( ?rifterm["expression-needs-var"^^rif:local -> ?clipsvar] )
+        Forall ?rifterm ?rifvar ?clipsvar(
+          If And (
+            ?rifterm # "check-constraint-needs-var"^^rif:local
+            ?rifterm[ex:inherits-data -> ?rifvar]
+            ?rifvar # rif:Var
+            ?rifvar[ex:as-expression -> ?clipsvar]
+          ) Then Do (
+            Assert( ?rifterm["constraint-needs-var"^^rif:local -> ?clipsvar] )
+          )
         )
-      )
-      Forall ?rifterm ?clipsvar(
-        If And (
-          ?rifterm # "check-expression-needs-var"^^rif:local
-          ?rifterm # rif:Var
-          ?rifterm[ex:as-expression -> ?clipsvar]
-        ) Then Do (
-          Assert( ?rifterm["expression-needs-var"^^rif:local -> ?clipsvar] )
+        Forall ?rifterm ?rifvar ?clipsvar(
+          If And (
+            ?rifterm # "check-expression-needs-var"^^rif:local
+            ?rifterm[ex:inherits-data -> ?rifvar]
+            ?rifvar # rif:Var
+            ?rifvar[ex:as-expression -> ?clipsvar]
+          ) Then Do (
+            Assert( ?rifterm["expression-needs-var"^^rif:local -> ?clipsvar] )
+          )
         )
-      )
+        Forall ?rifterm ?clipsvar(
+          If And (
+            ?rifterm # "check-expression-needs-var"^^rif:local
+            ?rifterm # rif:Var
+            ?rifterm[ex:as-expression -> ?clipsvar]
+          ) Then Do (
+            Assert( ?rifterm["expression-needs-var"^^rif:local -> ?clipsvar] )
+          )
+        )
 
-      (* self:rule27 *) Forall ?group ?sentences ?rifrule (
-        If And (
-          ?group[rif:sentences -> ?sentences]
-          Or (
-            ?rifrule # rif:Implies
-            ?rifrule # rif:Forall
+        (* self:rule27 *) Forall ?group ?sentences ?rifrule (
+          If And (
+            ?group[rif:sentences -> ?sentences]
+            Or (
+              ?rifrule # rif:Implies
+              ?rifrule # rif:Forall
+            )
+            External(pred:is-list(?sentences))
+            External(pred:list-contains(?sentences ?rifrule))
+          ) Then Do(
+            (?defrule New())
+            Assert(?rifrule["formulalist"^^rif:local -> List()])
+
+            Assert(?rifrule[modelA:as-defrule -> ?defrule])
+            Assert(?defrule # cs:Defrule)
+            Assert(?defrule[cs:conditional-element -> List()])
           )
-          External(pred:is-list(?sentences))
-          External(pred:list-contains(?sentences ?rifrule))
-        ) Then Do(
-          (?defrule New())
-          Assert(?rifrule["formulalist"^^rif:local -> List()])
-
-          Assert(?rifrule[modelA:as-defrule -> ?defrule])
-          Assert(?defrule # cs:Defrule)
-          Assert(?defrule[cs:conditional-element -> List()])
         )
-      )
-      (* self:rule28 *) Forall ?formula (
-        If And (
-          ?formula # rif:Or
-        ) Then Do(
-          (?clipsor New())
-          Assert(?formula["formulalist"^^rif:local -> List()])
+        (* self:rule28 *) Forall ?formula (
+          If And (
+            ?formula # rif:Or
+          ) Then Do(
+            (?clipsor New())
+            Assert(?formula["formulalist"^^rif:local -> List()])
 
-          Assert(?formula[modelA:as-lhs-pattern -> ?clipsor])
-          Assert(?clipsor # cs:OrCE)
-          Assert(?clipsor[cs:conditional-element -> List()])
+            Assert(?formula[modelA:as-lhs-pattern -> ?clipsor])
+            Assert(?clipsor # cs:OrCE)
+            Assert(?clipsor[cs:conditional-element -> List()])
+          )
         )
-      )
-      (* self:rule29 *) Forall ?formula (
-        If And (
-          ?formula # rif:INeg
-        ) Then Do(
-          (?clipsnot New())
-          Assert(?formula["formulalist"^^rif:local -> List()])
-          Assert(?formula[modelA:as-lhs-pattern -> ?clipsnot])
-          Assert(?clipsnot # cs:NotCE)
-          Assert(?clipsnot[cs:conditional-element -> List()])
+        (* self:rule29 *) Forall ?formula (
+          If And (
+            ?formula # rif:INeg
+          ) Then Do(
+            (?clipsnot New())
+            Assert(?formula["formulalist"^^rif:local -> List()])
+            Assert(?formula[modelA:as-lhs-pattern -> ?clipsnot])
+            Assert(?clipsnot # cs:NotCE)
+            Assert(?clipsnot[cs:conditional-element -> List()])
+          )
         )
       )
       Group 11 (
@@ -431,65 +433,67 @@ Document(
           ) Then ?rifexternal["expressions-needs-var"^^rif:local -> ?clipsvar]
         )
       )
-      (* self:rule30 *) Forall ?formula (
-        If And (
-          ?formula # rif:Exists
-        ) Then Do(
-          (?clipsexists New())
-          Assert(?formula["formulalist"^^rif:local -> List()])
+      Group (
+        (* self:rule30 *) Forall ?formula (
+          If And (
+            ?formula # rif:Exists
+          ) Then Do(
+            (?clipsexists New())
+            Assert(?formula["formulalist"^^rif:local -> List()])
 
-          Assert(?formula[modelA:as-lhs-pattern -> ?clipsexists])
-          Assert(?clipsexists # cs:ExistsCE)
-          Assert(?clipsexists[cs:conditional-element -> List()])
-        )
-      )
-      (* self:rule31 *) Forall ?rifand (
-        If And (
-          ?rifand # rif:And
-          Not (Exists ?superand ?formulalist( And (
-            ?superand[rif:formulas -> ?formulalist]
-            ?superand # rif:And
-            External(pred:list-contains(?formulalist ?rifand))
-          )))
-          Not (Exists ?superimply (
-            ?superimply[rif:if -> ?rifand]
-          ))
-          Not ( Exists ?superrule (
-            ?superrule[rif:pattern -> ?rifand]
-          ))
-        ) Then Do(
-          (?clipsand New())
-          Assert(?rifand["formulalist"^^rif:local -> List()])
-
-          Assert(?rifand[modelA:as-lhs-pattern -> ?clipsand])
-          Assert(?clipsand # cs:AndCE)
-          Assert(?clipsand[cs:conditional-element -> List()])
-        )
-      )
-
-      (* self:rule32 *) Forall ?formula ?rifand ?formulalist(
-        If And (
-          Or (
-            ?formula # "rifformula"^^rif:local
-            ?formula # rif:Member
+            Assert(?formula[modelA:as-lhs-pattern -> ?clipsexists])
+            Assert(?clipsexists # cs:ExistsCE)
+            Assert(?clipsexists[cs:conditional-element -> List()])
           )
-          Or (
+        )
+        (* self:rule31 *) Forall ?rifand (
+          If And (
             ?rifand # rif:And
-            ?rifand # rif:Or
+            Not (Exists ?superand ?formulalist( And (
+              ?superand[rif:formulas -> ?formulalist]
+              ?superand # rif:And
+              External(pred:list-contains(?formulalist ?rifand))
+            )))
+            Not (Exists ?superimply (
+              ?superimply[rif:if -> ?rifand]
+            ))
+            Not ( Exists ?superrule (
+              ?superrule[rif:pattern -> ?rifand]
+            ))
+          ) Then Do(
+            (?clipsand New())
+            Assert(?rifand["formulalist"^^rif:local -> List()])
+
+            Assert(?rifand[modelA:as-lhs-pattern -> ?clipsand])
+            Assert(?clipsand # cs:AndCE)
+            Assert(?clipsand[cs:conditional-element -> List()])
           )
-          ?rifand[rif:formulas -> ?formulalist]
-          External(pred:list-contains(?formulalist ?formula))
-        ) Then Do (
-          Assert( ?rifand["add-pattern-from"^^rif:local -> ?formula] )
         )
-      )
-      (* self:rule33 *) Forall ?rifobj ?formula (
-        If Or (
-          ?rifobj[rif:if -> ?formula]
-          ?rifobj[rif:pattern -> ?formula]
-          ?rifobj[rif:formula -> ?formula]
-        ) Then Do (
-          Assert( ?rifobj["add-pattern-from"^^rif:local -> ?formula] )
+
+        (* self:rule32 *) Forall ?formula ?rifand ?formulalist(
+          If And (
+            Or (
+              ?formula # "rifformula"^^rif:local
+              ?formula # rif:Member
+            )
+            Or (
+              ?rifand # rif:And
+              ?rifand # rif:Or
+            )
+            ?rifand[rif:formulas -> ?formulalist]
+            External(pred:list-contains(?formulalist ?formula))
+          ) Then Do (
+            Assert( ?rifand["add-pattern-from"^^rif:local -> ?formula] )
+          )
+        )
+        (* self:rule33 *) Forall ?rifobj ?formula (
+          If Or (
+            ?rifobj[rif:if -> ?formula]
+            ?rifobj[rif:pattern -> ?formula]
+            ?rifobj[rif:formula -> ?formula]
+          ) Then Do (
+            Assert( ?rifobj["add-pattern-from"^^rif:local -> ?formula] )
+          )
         )
       )
       Group 20 (
@@ -526,22 +530,6 @@ Document(
             Assert( ?rifforall["added-pattern-from"^^rif:local -> ?rifrule] )
             Assert( ?rifforall["add-pattern-from"^^rif:local -> ?rifformula] )
           )
-        )
-      )
-
-      (* self:rule90 *) Forall ?rifformula ?term ?rifvar ?clipsvar (
-        If And (
-          "always-false"^^rif:local()
-          ?rifformula # modelA:ConditionGenerator
-          Or (
-            ?rifformula[rif:left -> ?term]
-            ?rifformula[rif:right -> ?term]
-          )
-          ?term[ex:inherits-data -> ?rifvar]
-          ?rifvar # rif:Var
-          ?rifvar[ex:as-expression -> ?clipsvar]
-        ) Then Do (
-          Assert( ?term["expression-needs-var"^^rif:local -> ?clipsvar] )
         )
       )
 
@@ -637,6 +625,7 @@ Document(
         )
       )
 
+      Group (
         (* self:rule76 *) Forall ?superformula ?subformula ?clipsvar (
           If And (
             ?superformula # rif:And
@@ -647,6 +636,55 @@ Document(
             Assert( ?subformula["bound-variable"^^rif:local -> ?clipsvar] )
           )
         )
+        (* self:rule41 *) Forall ?formula ?formulacontainer ?clipsvar (
+          If And (
+            ?formula["transfer-variable-binding"^^rif:local -> ?formulacontainer]
+            ?formula[modelA:binds-var -> ?clipsvar]
+          ) Then Do (
+            Assert( ?formulacontainer["bound-variable"^^rif:local -> ?clipsvar] )
+          )
+        )
+
+        (* self:rule42 *) Forall ?formulacontainer ?clipsvar ?formula (
+          If And (
+            Or (
+              ?formulacontainer # rif:And
+              ?formulacontainer # rif:Forall
+              ?formulacontainer # rif:Implies
+            )
+            ?formulacontainer["bound-variable"^^rif:local -> ?clipsvar]
+            ?formulacontainer["add-pattern-from"^^rif:local -> ?formula]
+            Not( ?formulacontainer["added-pattern-from"^^rif:local -> ?formula] )
+          ) Then Do (
+            Assert(?formula["bound-variable"^^rif:local -> ?clipsvar])
+          )
+        )
+        (* self:rule62 *) Forall ?rifnot ?rifformula ?clipsvar (
+          If And (
+            Or (
+              ?rifnot # rif:INeg
+              ?rifnot # rif:Exists
+            )
+            ?rifnot[rif:formula -> ?rifformula]
+            ?rifnot["bound-variable"^^rif:local -> ?clipsvar]
+            Not(Exists ?subpattern (
+              ?rifnot["added-pattern-from"^^rif:local -> ?subpattern]
+            ))
+          ) Then Do (
+            Assert(?rifformula["bound-variable"^^rif:local -> ?clipsvar])
+          )
+        )
+
+        (* self:rule43 *) Forall ?riflist ?unboundvar (
+          If And (
+            ?riflist # modelA:ListAsConstraint
+            ?riflist["expression-needs-var"^^rif:local -> ?unboundvar]
+            Not( ?riflist["bound-variable"^^rif:local -> ?unboundvar] )
+          ) Then Do (
+            Assert( ?riflist[modelA:binds-var -> ?unboundvar] )
+          )
+        )
+      )
 
       Group (
         (* self:rule92 *) Forall ?rifatom ?arglist ?rifvar ?clipsvar (
@@ -699,54 +737,6 @@ Document(
           ) Then Do (
             Assert( ?clipsvar # ex:Variable )
           )
-        )
-      )
-      (* self:rule41 *) Forall ?formula ?formulacontainer ?clipsvar (
-        If And (
-          ?formula["transfer-variable-binding"^^rif:local -> ?formulacontainer]
-          ?formula[modelA:binds-var -> ?clipsvar]
-        ) Then Do (
-          Assert( ?formulacontainer["bound-variable"^^rif:local -> ?clipsvar] )
-        )
-      )
-
-      (* self:rule42 *) Forall ?formulacontainer ?clipsvar ?formula (
-        If And (
-          Or (
-            ?formulacontainer # rif:And
-            ?formulacontainer # rif:Forall
-            ?formulacontainer # rif:Implies
-          )
-          ?formulacontainer["bound-variable"^^rif:local -> ?clipsvar]
-          ?formulacontainer["add-pattern-from"^^rif:local -> ?formula]
-          Not( ?formulacontainer["added-pattern-from"^^rif:local -> ?formula] )
-        ) Then Do (
-          Assert(?formula["bound-variable"^^rif:local -> ?clipsvar])
-        )
-      )
-      (* self:rule62 *) Forall ?rifnot ?rifformula ?clipsvar (
-        If And (
-          Or (
-            ?rifnot # rif:INeg
-            ?rifnot # rif:Exists
-          )
-          ?rifnot[rif:formula -> ?rifformula]
-          ?rifnot["bound-variable"^^rif:local -> ?clipsvar]
-          Not(Exists ?subpattern (
-            ?rifnot["added-pattern-from"^^rif:local -> ?subpattern]
-          ))
-        ) Then Do (
-          Assert(?rifformula["bound-variable"^^rif:local -> ?clipsvar])
-        )
-      )
-
-      (* self:rule43 *) Forall ?riflist ?unboundvar (
-        If And (
-          ?riflist # modelA:ListAsConstraint
-          ?riflist["expression-needs-var"^^rif:local -> ?unboundvar]
-          Not( ?riflist["bound-variable"^^rif:local -> ?unboundvar] )
-        ) Then Do (
-          Assert( ?riflist[modelA:binds-var -> ?unboundvar] )
         )
       )
       Group -10 (
@@ -1042,7 +1032,6 @@ Document(
             )
           )
         )
-
       )
 
       (* self:rule55 *) Forall ?rifrule ?rifaction (
