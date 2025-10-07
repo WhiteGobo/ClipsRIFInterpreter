@@ -277,8 +277,29 @@ Document(
         And(
           ?rifforall # rif:Forall
           ?rifforall[rif:formula -> ?action]
-          Not(?action # rif:Implies)
-          Not(?action # rif:Forall)
+          Or (
+            ?action # rif:And
+            ?action # rif:Frame
+            ?action # rif:Atom
+            ?action # rif:Member
+            ?action # rif:Subclass
+          )
+        )
+      )
+      Forall ?rifand ?subaction ?actionlist (
+        ?subaction # modelA:ActionGenerator :- 
+        And (
+          ?rifand # modelA:ActionGenerator
+          ?rifand # rif:And
+          ?rifand[rif:formulas -> ?actionlist ]
+          Or (
+            ?subaction # rif:And
+            ?subaction # rif:Frame
+            ?subaction # rif:Atom
+            ?subaction # rif:Member
+            ?subaction # rif:Subclass
+          )
+          External(pred:list-contains(?actionlist ?subaction))
         )
       )
       (* self:rule21 *) Forall ?rifexternal ?rifatom ?child ?arglist (

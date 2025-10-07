@@ -1034,46 +1034,6 @@ Document(
         )
       )
 
-      (* self:rule55 *) Forall ?rifrule ?rifaction (
-        If Or (
-          ?rifrule[rif:then -> ?rifaction]
-          And (
-            ?rifrule # rif:Forall
-            ?rifrule[rif:formula -> ?rifaction]
-          )
-        ) Then Do (
-          Assert(?rifrule["add-as-action"^^rif:local -> ?rifaction])
-        )
-      )
-      (* self:rule56 *) Forall ?super ?sub ?rifaction (
-        If And (
-          ?super["add-as-action"^^rif:local -> ?sub]
-          ?sub["add-as-action"^^rif:local -> ?rifaction]
-        ) Then Do (
-          Assert(?super["add-as-action"^^rif:local -> ?rifaction])
-        )
-      )
-      (* self:rule57 *) Forall ?rifrule ?rifaction (
-        If And (
-          ?rifrule["add-as-action"^^rif:local -> ?rifaction]
-          Not(?rifaction # rif:Forall)
-          Not(?rifaction # rif:Implies)
-        ) Then Do (
-          Assert(?rifaction # modelA:ActionGenerator)
-        )
-      )
-      (* self:rule58 *) Forall ?rifrule ?defrule ?rifaction ?clipsaction (
-        If And (
-          ?rifrule[modelA:as-defrule -> ?defrule]
-          ?rifrule["add-as-action"^^rif:local -> ?rifaction]
-          Or (
-            ?rifaction[modelA:as-action -> ?clipsaction]
-            ?rifaction[ex:as-action -> ?clipsaction]
-          )
-        ) Then Do (
-          Assert(?defrule[cs:action -> ?clipsaction])
-        )
-      )
       (* self:rule59 *) Forall ?rifvar ?rifexpression ?clipsvar ?clipsexpression (
         If And (
           ?rifvar["use-expression-from"^^rif:local -> ?rifexpression]

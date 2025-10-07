@@ -13,18 +13,41 @@ Document(
     Prefix(entailment <http://www.w3.org/ns/entailment/>)
     Prefix(self <http://example.com/init-defrules#>)
     Group 10 (
-      (* self:rule01 *) Forall ?rifrule ?defrule ?action ?rifaction (
-        If And (
-          ?rifrule[ex:add-rule-info -> ?defrule]
-          Or (
-            ?rifrule[rif:then -> ?rifaction]
+      Forall ?rifrule ?rifaction (
+        If Or (
+          ?rifrule[rif:then -> ?rifaction]
+          And (
+            ?rifrule # rif:Forall
             ?rifrule[rif:formula -> ?rifaction]
           )
-          ?rifaction[ex:as-action -> ?action]
         ) Then Do (
-          Assert( ?defrule[cs:action -> ?action] )
+          Assert(?rifrule["add-as-action"^^rif:local -> ?rifaction])
         )
       )
+      Forall ?super ?sub ?rifaction (
+        If And (
+          ?super["add-as-action"^^rif:local -> ?sub]
+          ?sub["add-as-action"^^rif:local -> ?rifaction]
+        ) Then Do (
+          Assert(?super["add-as-action"^^rif:local -> ?rifaction])
+        )
+      )
+      Forall ?rifrule ?defrule ?rifaction ?clipsaction (
+        If And (
+          ?rifrule[modelA:as-defrule -> ?defrule]
+          ?rifrule["add-as-action"^^rif:local -> ?rifaction]
+          Or (
+            ?rifaction[modelA:as-action -> ?clipsaction]
+            ?rifaction[ex:as-action -> ?clipsaction]
+          )
+        ) Then Do (
+          Assert(?defrule[cs:action -> ?clipsaction])
+        )
+      )
+
+
+
+
       (* self:rule02 *) Forall ?rifrule ?defrule ?rifclause (
         If And (
           ?rifrule[ex:add-rule-info -> ?defrule]
