@@ -767,6 +767,46 @@ Document(
         )
       )
       Group -10 (
+        Group -8 (
+          (* self:rule46fast *) Forall ?formulacontainer ?rifframe ?frameobject ?slotlist ?slot ?slotkey ?slotvalue ?formulalist (
+            If And (
+              ?formulacontainer["add-pattern-from"^^rif:local -> ?rifframe]
+              ?rifframe[rif:object -> ?frameobject]
+              ?rifframe[rif:slots -> ?slotlist]
+              External(pred:is-list(?slotlist))
+              ?slot[rif:slotkey -> ?slotkey]
+              ?slot[rif:slotvalue -> ?slotvalue]
+              External(pred:list-contains(?slotlist ?slot))
+              Not( ?formulacontainer["added-pattern-from"^^rif:local -> ?slot] )
+              Exists ?x ( And(
+                Or (
+                  ?slot["constraints-needs-variable"^^rif:local -> ?x]
+                  ?frameobject["constraint-needs-variable"^^rif:local -> ?x]
+                )
+                ?slot["bound-variable"^^rif:local -> ?x]
+              ))
+              Not (Exists ?x ( And(
+                ?slot["constraints-needs-variable"^^rif:local -> ?x]
+                Not( ?slot["bound-variable"^^rif:local -> ?x] )
+              )))
+              Not (Exists ?x ( And(
+                ?frameobject["constraint-needs-variable"^^rif:local -> ?x]
+                Not( ?slot["bound-variable"^^rif:local -> ?x] )
+              )))
+              ?formulacontainer["formulalist"^^rif:local -> ?formulalist]
+            ) Then Do (
+              Assert( ?formulacontainer["added-pattern-from"^^rif:local -> ?slot])
+              Assert( ?formulacontainer["added-pattern-from"^^rif:local -> ?rifframe] )
+              Modify(
+                ?formulacontainer["formulalist"^^rif:local -> External(func:append(?formulalist ?slot))]
+              )
+              Assert(?slot # modelA:TripleTemplateGenerator)
+              Assert(?slot["transfer-variable-binding"^^rif:local -> ?formulacontainer])
+              Assert(?rifframe # modelA:TripleTemplateGenerator)
+              Assert(?rifframe["transfer-variable-binding"^^rif:local -> ?formulacontainer])
+            )
+          )
+        )
         Group (
           (* self:rule46 *) Forall ?formulacontainer ?rifframe ?frameobject ?slotlist ?slot ?slotkey ?slotvalue ?formulalist (
             If And (
