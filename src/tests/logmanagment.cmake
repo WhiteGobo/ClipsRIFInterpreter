@@ -23,9 +23,7 @@ FILE(WRITE ${LOGDATA_HEADER} "/**
 FOREACH(X IN ITEMS ${logfiles})
 	set(log_path "${logfolder}/${X}.log")
 	set(log_path_name "logmanagment_${X}")
-	list(APPEND old_logfiles "${log_path}")
+	FILE(REMOVE ${log_path})
 	FILE(APPEND ${LOGDATA_HEADER} "
 const char *${log_path_name} = \"${log_path}\";")
 ENDFOREACH()
-
-file(REMOVE ${olg_logfiles})

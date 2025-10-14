@@ -34,6 +34,6 @@ void fprint_activities_per_rule(FILE* out, crifi_graph* graph){
 		total_activations += activations;
 		fprintf(out, "%s: %lld\n", rulename, activations);
 	}
-	fprintf(out, "total: %lld\n", rulename, total_activations);
+	fprintf(out, "total: %lld\n", total_activations);
 
 }
