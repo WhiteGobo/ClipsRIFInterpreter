@@ -6,7 +6,7 @@
 extern "C" {
 #endif
 
-void print_activities_per_rule(crifi_graph* graph);
+void fprint_activities_per_rule(FILE* out, crifi_graph* graph);
 
 #ifdef __cplusplus
 } //extern "C"

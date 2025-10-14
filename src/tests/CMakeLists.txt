@@ -48,5 +48,8 @@ include(w3c_tests.cmake)
 include(GoogleTest)
 gtest_discover_tests(hello_test)
 
+set(LOGDATA_HEADER "${CMAKE_CURRENT_BINARY_DIR}/logmanagment.h")
+include(logmanagment.cmake)
+
 add_subdirectory(info_query)
 add_subdirectory(external_functions)
