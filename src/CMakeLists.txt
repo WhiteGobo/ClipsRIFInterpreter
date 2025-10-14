@@ -23,10 +23,12 @@ include(FetchContent)
 
 FetchContent_Declare(
 	raptor2
-	GIT_REPOSITORY https://github.com/dajobe/raptor.git
+	#GIT_REPOSITORY https://github.com/dajobe/raptor.git
+	GIT_REPOSITORY https://github.com/WhiteGobo/raptor.git
 	CMAKE_CACHE_ARGS -DBUILD_SHARED_LIBS=OFF
 	OVERRIDE_FIND_PACKAGE
 )
+
 FetchContent_MakeAvailable(raptor2)
 #MESSAGE(FATAL_ERROR "brubru")
 target_include_directories(raptor2 PUBLIC

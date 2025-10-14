@@ -68,7 +68,19 @@ cmake cache variables:
 
 ## Testing
 
-see \ref BasicFactTest for more information
+build uses normal cmake pipeline. To test use:
+```
+make test
+```
+
+or for individual tests:
+```
+make test ARGS="--output-on-failure -R individual_test_name"
+```
+
+veraltet: see \ref BasicFactTest for more information
+
+
 
 ### using make
 

@@ -186,6 +186,7 @@ target_link_libraries(w3c_tests PRIVATE
 	crifi_import_implementations
 	crifi_graph_models
 	crifi_raptor
+	crifi_utilities
 )
 
 target_include_directories(w3c_tests PRIVATE "${CMAKE_CURRENT_BINARY_DIR}")

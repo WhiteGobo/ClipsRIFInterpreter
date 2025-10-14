@@ -34,6 +34,7 @@ add_subdirectory(tools)
 add_subdirectory(info_query)
 add_subdirectory(importdirective)
 add_subdirectory(graph_models)
+add_subdirectory(utilities)
 
 target_link_libraries(ffi_clips_interface PUBLIC
 	clips
