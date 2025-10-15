@@ -473,24 +473,36 @@ Document(
         (* self:rule32 *) Forall ?formula ?rifand ?formulalist(
           If And (
             Or (
-              ?formula # "rifformula"^^rif:local
+              ?formula # rif:And
+              ?formula # rif:Or
+              ?formula # rif:Exists
+              ?formula # rif:External
+              ?formula # rif:INeg
+              ?formula # rif:Frame
+              ?formula # rif:Atom
               ?formula # rif:Member
+              ?formula # rif:SubClass
+              ?formula # rif:Equal
             )
             Or (
               ?rifand # rif:And
               ?rifand # rif:Or
             )
             ?rifand[rif:formulas -> ?formulalist]
+            Exists ?x(?rifand["formulalist"^^rif:local -> ?x])
             External(pred:list-contains(?formulalist ?formula))
           ) Then Do (
             Assert( ?rifand["add-pattern-from"^^rif:local -> ?formula] )
           )
         )
         (* self:rule33 *) Forall ?rifobj ?formula (
-          If Or (
-            ?rifobj[rif:if -> ?formula]
-            ?rifobj[rif:pattern -> ?formula]
-            ?rifobj[rif:formula -> ?formula]
+          If And(
+            Or (
+              ?rifobj[rif:if -> ?formula]
+              ?rifobj[rif:pattern -> ?formula]
+              ?rifobj[rif:formula -> ?formula]
+            )
+            Exists ?x(?rifobj["formulalist"^^rif:local -> ?x])
           ) Then Do (
             Assert( ?rifobj["add-pattern-from"^^rif:local -> ?formula] )
           )
@@ -503,9 +515,13 @@ Document(
             Or (
               ?rifand # rif:And
               ?rifand # rif:Not
+              ?rifand # rif:Forall
+              ?rifand # rif:Implies
             )
             ?otherrifand # rif:And
-            ?otherrifand["add-pattern-from"^^rif:local -> ?rifformula]
+            ?rifformula # modelA:ConditionGenerator
+            ?otherrifand[rif:formulas -> ?formulalist]
+            External(pred:list-contains(?formulalist ?rifformula))
           ) Then Do (
             Assert( ?otherrifand["added-pattern-from"^^rif:local -> ?rifformula] )
             Assert( ?rifand["added-pattern-from"^^rif:local -> ?otherrifand] )
@@ -522,9 +538,11 @@ Document(
             Or (
               ?rifrule # rif:Forall
               ?rifrule # rif:Implies
-              ?rifrule # rif:And
             )
-            ?rifrule["add-pattern-from"^^rif:local -> ?rifformula]
+            Or (
+              ?rifrule[rif:formula -> ?rifformula]
+              ?rifrule[rif:if -> ?rifformula]
+            )
           ) Then Do (
             Assert( ?rifrule["added-pattern-from"^^rif:local -> ?rifformula] )
             Assert( ?rifforall["added-pattern-from"^^rif:local -> ?rifrule] )
@@ -1117,6 +1135,7 @@ Document(
                 ?subpattern # rif:Implies
                 ?subpattern # rif:Or
               )
+              Exists ?x(?subpattern["formulalist"^^rif:local -> ?x])
               Not(?superpattern["added-pattern-from"^^rif:local -> ?subpattern])
               Not (Exists ?x ( And(
                 ?subpattern["constraints-needs-variable"^^rif:local -> ?x]
