@@ -1035,15 +1035,31 @@ FUNC_DESC(fprintf_variableslot){
  */
 FUNC_DESC(fprintf_constraint){
 	CRIFI_SERIALIZE_SCRIPT_RET err;
+	Node *replacement_n;
+	raptor_term *replacement;
 	if (check_id(n, cntxt->clips_SingleWildcard)){
 		fprintf(stream, " ? ");
+		return CRIFI_SERIALIZE_SCRIPT_NOERROR;
 	} else if (check_id(n, cntxt->clips_MultiWildcard)){
 		fprintf(stream, " $? ");
-	} else {
-		//no connected constraint implemented
-		return fprintf_term(cntxt, stream, n);
+		return CRIFI_SERIALIZE_SCRIPT_NOERROR;
+	} else if (NULL != get_object(n, cntxt->clips_function_name)){
+		fprintf(stream, " =");
+		return fprintf_function(cntxt, stream, n);
 	}
-	return CRIFI_SERIALIZE_SCRIPT_NOERROR;
+	replacement = get_object(n, cntxt->clips_var_as_const_expr);
+	if (replacement != NULL){
+		replacement_n = retrieve_node(cntxt->nodes, replacement);
+		if (replacement_n == NULL){
+			return CRIFI_SERIALIZE_SCRIPT_UNKNOWN;
+		}
+		return fprintf_constraint(cntxt, stream, replacement_n);
+	}
+	//no connected constraint implemented
+	//return fprintf_term(cntxt, stream, n);
+	err = fprintf_constant(cntxt, stream, n);
+	if (err != CRIFI_SERIALIZE_BROKEN_GRAPH) return err;
+	return fprintf_variable(cntxt, stream, n);
 }
 
 /**
