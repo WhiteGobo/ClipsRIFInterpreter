@@ -1,0 +1,15 @@
+Document(
+    Prefix(ex <http://example.com/>)
+    Group (
+        Forall ?source ?target ?x(
+          If And (
+            ?source[ex:a -> ?target]
+            Or (
+              ?target[ex:b -> ?x]
+              ?target[ex:c -> ?x]
+            )
+            ?x # ex:X
+          ) Then ex:ok()
+        )
+    )
+)

@@ -38,6 +38,7 @@ list(APPEND owntargets
 	assign_var10
 	assign_var11
 	assign_var12
+	assign_var13
 	failed_assign_var1
 	failed_assign_var2
 	PRD_priority1

@@ -73,6 +73,9 @@ static auto syntaxTestdata = testing::Values(
 		TestdataSyntax("compile_execute",
 			SC_NoCondition,
 			OWN_INPUT("compile_execute")),
+		TestdataSyntax("assign_var13",
+			SC_NoCondition,
+			OWN_INPUT("assign_var13")),
 		TestdataSyntax("assign_var01",
 			SC_NoCondition,
 			OWN_INPUT("assign_var1")),
@@ -192,6 +195,7 @@ TEST_P(officialw3cSyntaxTestCases_Test, CreateModelWithModelA) {
 
 	size_t memory_size = 1000000;
 	int number_rules_run;
+	int memory_written;
 	char tmpmem[memory_size]; //script size maximal a megabyte
 	char tmpcheckmem[memory_size]; //check command size maximal a megabyte
 	tmpmem[memory_size-1] = '\0';
@@ -205,10 +209,10 @@ TEST_P(officialw3cSyntaxTestCases_Test, CreateModelWithModelA) {
 	ASSERT_NE(tmpmem_f, nullptr) << "Couldnt open memory. broken test.";
 	create_logic_into_memory(tmpmem_f, testdata, init_graph_modelA, &logicerror);
 	fclose(tmpmem_f);
-	if (strlen(tmpmem) == 0){
+	if (strlen(tmpmem) != 0){
 		fprintf(stderr, "<created script>:\n%s\n</created script>\n", tmpmem);
 	} else {
-		fprintf(stderr, "No model was created.\n");
+		fprintf(stderr, "No modell was created. %d\n", strlen(tmpmem));
 	}
 	switch(logicerror){
 		case CREATELOGIC_NOERROR:
