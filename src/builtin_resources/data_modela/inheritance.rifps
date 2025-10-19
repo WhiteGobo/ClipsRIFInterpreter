@@ -63,6 +63,19 @@ Document(
             )
           )
         )
+        Forall ?parent ?arglist ?child ?target(
+          ?parent["give-inheritance"^^rif:local -> ?grandchild] :-
+          And (
+            Or (
+              ?parent[rif:items -> ?arglist]
+              ?parent[rif:args -> ?arglist]
+            )
+            External(pred:is-list(?arglist))
+            ?child # rif:List
+            External(pred:list-contains(?arglist ?child))
+            ?child["give-inheritance"^^rif:local -> ?grandchild]
+          )
+        )
         (* self:rule23 *) Forall ?parent ?arglist ?child (
           ?parent["give-inheritance"^^rif:local -> ?child] :-
           And (
@@ -73,12 +86,13 @@ Document(
             External(pred:is-list(?arglist))
             Or (
               ?child # rif:Var
-              And (
-                ?child # rif:Const
-                Exists ?x (?child[rif:constname -> ?x])
-              )
+              ?child # rif:Const
             )
             External(pred:list-contains(?arglist ?child))
+            Or (
+              ?child # rif:Var
+              Exists ?x (?child[rif:constname -> ?x])
+            )
           )
         )
         (* self:rule24 *) Forall ?parent ?child (

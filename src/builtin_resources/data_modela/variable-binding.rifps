@@ -951,6 +951,34 @@ Document(
           )
         )
         Group -9 (
+          (* self:rule54 *) Forall ?superpattern ?subpattern ?formulalist (
+            If And (
+              ?superpattern["add-pattern-from"^^rif:local -> ?subpattern]
+              Or (
+                ?subpattern # rif:And
+                ?subpattern # rif:Implies
+                ?subpattern # rif:Or
+              )
+              Exists ?x(?subpattern["formulalist"^^rif:local -> ?x])
+              Not(?superpattern["added-pattern-from"^^rif:local -> ?subpattern])
+              Not (Exists ?x ( And(
+                ?subpattern["constraints-needs-variable"^^rif:local -> ?x]
+                Not( ?subpattern["bound-variable"^^rif:local -> ?x] )
+              )))
+              Not (Exists ?subsub ( And(
+                ?subpattern["add-pattern-from"^^rif:local -> ?subsub]
+                Not( ?subpattern["added-pattern-from"^^rif:local -> ?subsub] )
+              )))
+              ?superpattern["formulalist"^^rif:local -> ?formulalist]
+            ) Then Do (
+              Assert( ?superpattern["added-pattern-from"^^rif:local -> ?subpattern] )
+              Modify(
+                ?superpattern["formulalist"^^rif:local -> External(func:append(?formulalist ?subpattern))]
+              )
+            )
+          )
+        )
+        Group -10 (
           (* self:rule60 *) Forall ?rifmember ?formulacontainer ?formulalist (
             If And (
               ?formulacontainer["add-pattern-from"^^rif:local -> ?rifmember]
@@ -1125,7 +1153,7 @@ Document(
           )
         )
 
-        Group -10 (
+        Group -11 (
           (* self:rule96 *) Forall ?superpattern ?subpattern ?formulalist (
             If And (
               ?superpattern["add-pattern-from"^^rif:local -> ?subpattern]
@@ -1137,32 +1165,6 @@ Document(
               Not (Exists ?x ( And(
                 ?subpattern["subpattern-needs-variable"^^rif:local -> ?x]
                 Not( ?superpattern["bound-variable"^^rif:local -> ?x] )
-              )))
-              Not (Exists ?subsub ( And(
-                ?subpattern["add-pattern-from"^^rif:local -> ?subsub]
-                Not( ?subpattern["added-pattern-from"^^rif:local -> ?subsub] )
-              )))
-              ?superpattern["formulalist"^^rif:local -> ?formulalist]
-            ) Then Do (
-              Assert( ?superpattern["added-pattern-from"^^rif:local -> ?subpattern] )
-              Modify(
-                ?superpattern["formulalist"^^rif:local -> External(func:append(?formulalist ?subpattern))]
-              )
-            )
-          )
-          (* self:rule54 *) Forall ?superpattern ?subpattern ?formulalist (
-            If And (
-              ?superpattern["add-pattern-from"^^rif:local -> ?subpattern]
-              Or (
-                ?subpattern # rif:And
-                ?subpattern # rif:Implies
-                ?subpattern # rif:Or
-              )
-              Exists ?x(?subpattern["formulalist"^^rif:local -> ?x])
-              Not(?superpattern["added-pattern-from"^^rif:local -> ?subpattern])
-              Not (Exists ?x ( And(
-                ?subpattern["constraints-needs-variable"^^rif:local -> ?x]
-                Not( ?subpattern["bound-variable"^^rif:local -> ?x] )
               )))
               Not (Exists ?subsub ( And(
                 ?subpattern["add-pattern-from"^^rif:local -> ?subsub]

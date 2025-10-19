@@ -1,0 +1,10 @@
+Document(
+    Prefix(ex <http://example.com/>)
+    Group (
+        Forall ?x ?y (
+          If And (
+            ?x[ex:prop -> List(List(?y))]
+          ) Then ex:ok()
+        )
+    )
+)
