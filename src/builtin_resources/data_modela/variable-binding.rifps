@@ -281,7 +281,7 @@ Document(
             Assert(?rifexternal # "check-constraint-needs-var"^^rif:local)
           )
         )
-        Forall ?formulacontainer ?rifpattern ?rifexternal (
+        (* self:rulesomething *) Forall ?formulacontainer ?rifpattern ?rifexternal (
           If And (
             ?formulacontainer["add-pattern-from"^^rif:local -> ?rifpattern]
             Or (
@@ -298,7 +298,7 @@ Document(
             Assert(?rifexternal # "check-constraint-needs-var"^^rif:local)
           )
         )
-        Forall ?rifexternal ?rifatom ?rifconstiristring ?rifatom ?arglist ?targetiri ?targetstring (
+        (* self:rulesomething2 *) Forall ?rifexternal ?rifatom ?rifconstiristring ?rifatom ?arglist ?targetiri ?targetstring (
           If And (
             ?rifexternal[rif:content -> ?rifatom]
             ?rifconstiristring[rif:constIRI -> "http://www.w3.org/2007/rif-builtin-predicate#iri-string"^^xs:anyURI]
@@ -395,6 +395,7 @@ Document(
         Forall ?formulacontainer ?rifframe ?rifvar ?clipsvar (
           If And (
             ?formulacontainer["add-pattern-from"^^rif:local -> ?rifframe]
+            Not( ?formulacontainer["added-pattern-from"^^rif:local -> ?rifframe] )
             ?rifframe[rif:object -> ?rifvar]
             ?rifvar # rif:Var
             ?rifvar[ex:as-constraint -> ?clipsvar]
@@ -405,6 +406,7 @@ Document(
         Forall ?formulacontainer ?rifframe ?slotlist ?rifslot ?rifvar ?clipsvar (
           If And (
             ?formulacontainer["add-pattern-from"^^rif:local -> ?rifframe]
+            Not( ?formulacontainer["added-pattern-from"^^rif:local -> ?rifframe] )
             ?rifframe[rif:slots -> ?slotlist]
             ?rifslot # rif:Slot
             External(pred:list-contains(?slotlist ?rifslot))
@@ -675,7 +677,10 @@ Document(
       Group (
         (* self:rule76 *) Forall ?superformula ?subformula ?clipsvar (
           If And (
-            ?superformula # rif:And
+            Or (
+              ?superformula # rif:Or
+              ?superformula # rif:And
+            )
             ?superformula["add-pattern-from"^^rif:local -> ?subformula]
             ?superformula[modelA:binds-var -> ?clipsvar]
             Not( ?superformula["added-pattern-from"^^rif:local -> ?subformula] )
@@ -906,7 +911,9 @@ Document(
           (* self:rule46fast *) Forall ?formulacontainer ?rifframe ?frameobject ?slotlist ?slot ?slotkey ?slotvalue ?formulalist (
             If And (
               ?formulacontainer["add-pattern-from"^^rif:local -> ?rifframe]
+              ?rifframe # rif:Frame
               ?formulacontainer["add-pattern-from"^^rif:local -> ?slot]
+              ?slot # rif:Slot
               ?rifframe[rif:object -> ?frameobject]
               ?rifframe[rif:slots -> ?slotlist]
               External(pred:is-list(?slotlist))
@@ -968,7 +975,9 @@ Document(
           (* self:rule46 *) Forall ?formulacontainer ?rifframe ?frameobject ?slotlist ?slot ?slotkey ?slotvalue ?formulalist (
             If And (
               ?formulacontainer["add-pattern-from"^^rif:local -> ?rifframe]
+              ?rifframe # rif:Frame
               ?formulacontainer["add-pattern-from"^^rif:local -> ?slot]
+              ?slot # rif:Slot
               ?rifframe[rif:object -> ?frameobject]
               ?rifframe[rif:slots -> ?slotlist]
               External(pred:is-list(?slotlist))
