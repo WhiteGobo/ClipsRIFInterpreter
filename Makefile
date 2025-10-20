@@ -62,7 +62,7 @@ ifdef DESTDIR
 #MAKE_INSTALL_OPT += --prefix $(realpath ${DESTDIR})
 endif
 
-default: configure build test
+default: configure build
 
 .PHONY: recreate_builtin_model_data
 recreate_builtin_model_data:
