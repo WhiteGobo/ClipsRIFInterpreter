@@ -137,6 +137,7 @@ ${TMPDIR}/clips.patch: ${CLIPSPATHDIRECTORY} ${CLIPSPATCHFILES}
 .PHONY: overwrite_builtin_models
 overwrite_builtin_models: build/overwrite_builtin_models.cmake configure build
 	cmake -P $<
+	${CMAKE} --build ${BUILD} ${CMAKE_BUILD_OPT}
 
 .PHONY: opendoc
 opendoc:
