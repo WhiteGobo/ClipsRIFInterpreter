@@ -739,7 +739,7 @@ Document(
 
         (* self:rule43 *) Forall ?riflist ?unboundvar (
           If And (
-            ?riflist # modelA:ListAsConstraint
+            ?riflist # modelA:ConstraintGenerator
             ?riflist["expression-needs-var"^^rif:local -> ?unboundvar]
             Not( ?riflist["bound-variable"^^rif:local -> ?unboundvar] )
           ) Then Do (
@@ -798,33 +798,6 @@ Document(
             ?rifvar[ex:as-constraint -> ?clipsvar]
           ) Then Do (
             Assert( ?clipsvar # ex:Variable )
-          )
-        )
-      )
-      Group -10 (
-        (* self:rule44 *) Forall ?riflist (
-          If And (
-            ?riflist # rif:List
-            ?riflist # modelA:ConstraintGenerator
-            Not( ?riflist # modelA:ListAsConstraint )
-            Not (Exists ?rest (?riflist[rif:rest -> ?rest]))
-            Not (Exists ?x ( And(
-              ?riflist["expression-needs-var"^^rif:local -> ?x]
-              Not( ?riflist["bound-variable"^^rif:local -> ?x] )
-            )))
-          ) Then Do (
-            Assert( ?riflist # modelA:ExpressionGenerator )
-          )
-        )
-        (* self:rule45 *) Forall ?riflist ?unboundvar (
-          If And (
-            ?riflist # rif:List
-            ?riflist # modelA:ConstraintGenerator
-            Not( ?riflist # modelA:ExpressionGenerator )
-            ?riflist["expression-needs-var"^^rif:local -> ?unboundvar]
-            Not( ?riflist["bound-variable"^^rif:local -> ?unboundvar] )
-          ) Then Do (
-            Assert( ?riflist # modelA:ListAsConstraint )
           )
         )
       )

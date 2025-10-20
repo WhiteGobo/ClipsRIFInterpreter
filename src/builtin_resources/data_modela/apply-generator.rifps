@@ -158,9 +158,22 @@ Document(
           External(pred:list-contains(?slotlist ?slot))
         )
       )
+      Forall ?riflist ?itemlist ?childlist (
+        ?childlist # modelA:ConstraintGenerator :-
+        And (
+          ?riflist # modelA:ConstraintGenerator
+          ?riflist # rif:List
+          ?riflist[rif:items -> ?itemlist]
+          ?childlist # rif:List
+          External(pred:list-contains(?itemlist ?childlist))
+        )
+      )
       (* self:rule12 *) Forall ?rifformula ?child (
         If And (
-          ?rifformula # modelA:PatternGenerator
+          Or (
+            ?rifformula # modelA:PatternGenerator
+            ?rifformula # modelA:MultiPatternGenerator
+          )
           Or (
             ?rifformula[rif:object -> ?child]
             ?rifformula[rif:left -> ?child]
