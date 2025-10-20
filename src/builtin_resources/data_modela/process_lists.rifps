@@ -32,6 +32,54 @@ Document(
             Execute(crifi:set-graph-in-errorstate("rif:rest is only implemented for domain of type rif:Var"))
         )
       )
+      Forall ?slotitems ?spacing ?oldlist (
+        If And (
+          ?slotitems["add-left-spacing"^^rif:local -> ?spacing]
+          External(pred:numeric-greater-than(?spacing 0))
+          ?slotitems[cs:constraints -> ?oldlist]
+        ) Then Do (
+          (?leftspace New())
+          Modify(?slotitems["add-left-spacing"^^rif:local -> External(func:numeric-subtract(?spacing 1))])
+          Modify( ?slotitems[cs:constraints -> External(func:insert-before(?oldlist 0 ?leftspace))] )
+          Assert( ?leftspace # cs:SingleWildcard )
+        )
+      )
+      Forall ?rifequal ?rifexternal ?rifatom ?arglist ?targetlist ?listvar ?targetitem ?itemvar ?index ?rifindex (
+        If And (
+          ?rifequal # modelA:ListRightGetPatternGenerator
+          ?rifequal[rif:left -> ?targetitem]
+          ?rifequal[rif:right -> ?rifexternal]
+          ?rifexternal[rif:content -> ?rifatom]
+          ?rifatom[rif:args -> ?arglist]
+          External(pred:is-list(?arglist))
+          ?targetlist # rif:Var
+          ?targetlist = External(func:get(?arglist 0))
+          ?targetlist[ex:as-expression -> ?listvar]
+          ?targetitem # rif:Var
+          ?targetitem[ex:as-expression -> ?itemvar]
+          ?rifindex # rif:Const
+          ?rifindex = External(func:get(?arglist 1))
+          ?rifindex[rif:value -> ?index]
+        ) Then Do (
+          (?assign New())
+          (?pattern New())
+          (?slotitems New())
+          (?rightspace New())
+          Assert( ?rifequal[modelA:as-lhs-pattern -> ?assign] )
+          Assert( ?assign # cs:AssignedPatternCE )
+          Assert( ?assign[cs:fact-var-symbol -> ?listvar] )
+          Assert( ?assign[cs:pattern-ce -> ?pattern] )
+          Assert( ?pattern # cs:TemplatePatternCE )
+          Assert( ?pattern[cs:deftemplate-name -> "AtomList"] )
+          Assert( ?pattern[cs:slot -> External(func:make-list(?slotitems))] )
+          Assert( ?slotitems[cs:slot-name -> "items"] )
+          Assert( ?slotitems[cs:constraints -> External(func:make-list(?itemvar ?rightspace))] )
+          Assert( ?slotitems["add-left-spacing"^^rif:local -> ?index])
+          Assert(?rightspace # cs:MultiWildcard)
+          Assert(?listvar # ex:Variable)
+          Assert(?listvar # cs:Variable)
+        )
+      )
       Forall ?rifexternal ?rifatom ?arglist ?targetlist ?listvar ?targetitem ?itemvar (
         If And (
           ?rifexternal # modelA:ListcontainerPatternGenerator

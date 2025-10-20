@@ -1,0 +1,15 @@
+Document(
+    Prefix(ex <http://example.com/>)
+    Prefix(pred <http://www.w3.org/2007/rif-builtin-predicate#>) 
+    Group (
+        Forall ?x ?y ?thing ?list (
+          If And (
+            ?x # ex:ClassA
+            ?y # ex:ClassB
+            ?thing[ex:prop -> ?list]
+            ?x = External(func:get(?list 0))
+            ?y = External(func:get(?list 1))
+          ) Then ex:ok()
+        )
+    )
+)

@@ -826,7 +826,7 @@ void rif_numeric_less_than_or_equal(Environment *env, UDFContext *udfc, UDFValue
 }
 
 void rif_numeric_greater_than(Environment *env, UDFContext *udfc, UDFValue *out){
-	NUMERICCOMPARER(numeric_greater_than, "numeric_greather_than");
+	NUMERICCOMPARER(numeric_greater_than, "numeric_greater_than");
 }
 
 void rif_numeric_greater_than_or_equal(Environment *env, UDFContext *udfc, UDFValue *out){

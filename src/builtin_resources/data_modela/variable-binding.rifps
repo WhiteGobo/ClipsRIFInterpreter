@@ -14,7 +14,7 @@ Document(
     Prefix(exa <http://example.com/a#>)
     Prefix(self <http://example.com/variable-binding#>)
     Group 5 (
-      Group -100 (
+      Group -101 (
         (* self:rule75 *) Forall ?rif ?pattern (
           If And (
             ?rif["add-pattern-from"^^rif:local -> ?pattern]
@@ -979,6 +979,41 @@ Document(
               Assert(?formulacontainer["bound-variable"^^rif:local -> ?listvar])
               Modify(
                 ?formulacontainer["formulalist"^^rif:local -> External(func:append(?formulalist ?rifexternal))]
+              )
+            )
+          )
+          Forall ?rifequal ?formulacontainer ?targetitem ?rifexternal ?rifatom ?rifconstiristring ?arglist ?targetlist ?listvar ?index ?targetitem ?itemvar ?formulalist (
+            If And (
+              ?formulacontainer["add-pattern-from"^^rif:local -> ?rifequal]
+              Not(?formulacontainer["added-pattern-from"^^rif:local -> ?rifequal])
+              Not( ?rifequal # modelA:BindLock )
+              ?rifequal # modelA:ConditionGenerator
+              ?rifequal # rif:Equal
+              ?rifequal[rif:left -> ?targetitem]
+              ?rifequal[rif:right -> ?rifexternal]
+              ?rifexternal # rif:External
+              ?rifexternal[rif:content -> ?rifatom]
+              ?rifatom[rif:op -> ?rifconstiristring]
+              ?rifconstiristring[rif:constIRI -> "http://www.w3.org/2007/rif-builtin-function#get"^^xs:anyURI]
+              ?rifatom[rif:args -> ?arglist]
+              External(pred:is-list(?arglist))
+
+              ?targetlist # rif:Var
+              ?targetlist = External(func:get(?arglist 0))
+              ?targetlist[ex:as-expression -> ?listvar]
+              ?index # rif:Const
+              ?index = External(func:get(?arglist 1))
+              ?targetitem # rif:Var
+              ?targetitem[ex:as-expression -> ?itemvar]
+              ?rifequal["bound-variable"^^rif:local -> ?itemvar]
+              Not( ?rifequal["bound-variable"^^rif:local -> ?listvar] )
+              ?formulacontainer["formulalist"^^rif:local -> ?formulalist]
+            ) Then Do (
+              Assert(?rifequal # modelA:ListRightGetPatternGenerator)
+              Assert( ?formulacontainer["added-pattern-from"^^rif:local -> ?rifequal] )
+              Assert(?formulacontainer["bound-variable"^^rif:local -> ?listvar])
+              Modify(
+                ?formulacontainer["formulalist"^^rif:local -> External(func:append(?formulalist ?rifequal))]
               )
             )
           )
