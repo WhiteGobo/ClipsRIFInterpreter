@@ -13,7 +13,7 @@ Document(
     Prefix(modelA <http://white.gobo/modelA#>)
     Prefix(self <http://example.com/process_lists#>)
     Group 10 (
-      Group -101 (
+      Group -100 (
         (* self:rule01 *) Forall ?rif ?arglist (
           If And (
             ?rif["add-args-as-expression-from"^^rif:local -> ?arglist]
@@ -32,6 +32,40 @@ Document(
             Execute(crifi:set-graph-in-errorstate("rif:rest is only implemented for domain of type rif:Var"))
         )
       )
+      Forall ?rifexternal ?rifatom ?arglist ?targetlist ?listvar ?targetitem ?itemvar (
+        If And (
+          ?rifexternal # modelA:ListcontainerPatternGenerator
+          ?rifexternal[rif:content -> ?rifatom]
+          ?rifatom[rif:args -> ?arglist]
+          External(pred:is-list(?arglist))
+          ?targetlist # rif:Var
+          ?targetlist = External(func:get(?arglist 0))
+          ?targetlist[ex:as-expression -> ?listvar]
+          ?targetitem # rif:Var
+          ?targetitem = External(func:get(?arglist 1))
+          ?targetitem[ex:as-expression -> ?itemvar]
+        ) Then Do (
+          (?assign New())
+          (?pattern New())
+          (?slotitems New())
+          (?leftspace New())
+          (?rightspace New())
+          Assert( ?rifexternal[modelA:as-lhs-pattern -> ?assign] )
+          Assert( ?assign # cs:AssignedPatternCE )
+          Assert( ?assign[cs:fact-var-symbol -> ?listvar] )
+          Assert( ?assign[cs:pattern-ce -> ?pattern] )
+          Assert( ?pattern # cs:TemplatePatternCE )
+          Assert( ?pattern[cs:deftemplate-name -> "AtomList"] )
+          Assert( ?pattern[cs:slot -> External(func:make-list(?slotitems))] )
+          Assert( ?slotitems[cs:slot-name -> "items"] )
+          Assert( ?slotitems[cs:constraints -> External(func:make-list(?leftspace ?itemvar ?rightspace))] )
+          Assert(?leftspace # cs:MultiWildcard)
+          Assert(?rightspace # cs:MultiWildcard)
+          Assert(?listvar # ex:Variable)
+          Assert(?listvar # cs:Variable)
+        )
+      )
+
       (* self:rule03 *) Forall ?riflist ?itemlist (
         If And (
           ?riflist # modelA:ExpressionGenerator

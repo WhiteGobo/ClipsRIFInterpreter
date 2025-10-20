@@ -1037,10 +1037,10 @@ FUNC_DESC(fprintf_constraint){
 	CRIFI_SERIALIZE_SCRIPT_RET err;
 	Node *replacement_n;
 	raptor_term *replacement;
-	if (check_id(n, cntxt->clips_SingleWildcard)){
+	if (check_property(n, cntxt->rdf_type, cntxt->clips_SingleWildcard)){
 		fprintf(stream, " ? ");
 		return CRIFI_SERIALIZE_SCRIPT_NOERROR;
-	} else if (check_id(n, cntxt->clips_MultiWildcard)){
+	} else if (check_property(n, cntxt->rdf_type, cntxt->clips_MultiWildcard)){
 		fprintf(stream, " $? ");
 		return CRIFI_SERIALIZE_SCRIPT_NOERROR;
 	} else if (NULL != get_object(n, cntxt->clips_function_name)){

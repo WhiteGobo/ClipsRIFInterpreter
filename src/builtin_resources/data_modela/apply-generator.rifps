@@ -122,6 +122,40 @@ Document(
           ?rifimply[rif:pattern -> ?formula]
         )
       )
+      Forall ?bindlock ?child (
+        ?child # modelA:BindLock :-
+        And (
+          Or (
+            ?bindlock # rif:Exists
+            ?bindlock # rif:INeg
+          )
+          ?bindlock[rif:formula -> ?child]
+        )
+      )
+      Forall ?bindlock ?childlist ?child (
+        ?child # modelA:BindLock :-
+        And (
+          ?bindlock # modelA:BindLock
+          Or (
+            ?bindlock # rif:And
+            ?bindlock # rif:Or
+          )
+          ?bindlock[rif:formulas -> ?childlist]
+          Or (
+            ?child # rif:And
+            ?child # rif:Or
+            ?child # rif:Exists
+            ?child # rif:INeg
+            ?child # rif:Frame
+            ?child # rif:Atom
+            ?child # rif:Member
+            ?child # rif:SubClass
+            ?child # rif:Equal
+            ?child # rif:External
+          )
+          External(pred:list-contains(?childlist ?child))
+        )
+      )
       (* self:rule09 *) Forall ?formula ?child ?formulalist (
         ?child # modelA:ConditionGenerator :-
         And (

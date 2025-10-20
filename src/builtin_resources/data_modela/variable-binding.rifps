@@ -802,7 +802,7 @@ Document(
         )
       )
       Group -10 (
-        Group -7 (
+        Group -5 (
           (* self:rule48 *) Forall ?formulacontainer ?rifexternal ?formulalist (
             If And (
               ?formulacontainer["add-pattern-from"^^rif:local -> ?rifexternal]
@@ -880,7 +880,7 @@ Document(
             )
           )
         )
-        Group -8 (
+        Group -11 (
           (* self:rule46fast *) Forall ?formulacontainer ?rifframe ?frameobject ?slotlist ?slot ?slotkey ?slotvalue ?formulalist (
             If And (
               ?formulacontainer["add-pattern-from"^^rif:local -> ?rifframe]
@@ -923,7 +923,7 @@ Document(
             )
           )
         )
-        Group -9 (
+        Group -7 (
           (* self:rule54 *) Forall ?superpattern ?subpattern ?formulalist (
             If And (
               ?superpattern["add-pattern-from"^^rif:local -> ?subpattern]
@@ -951,7 +951,39 @@ Document(
             )
           )
         )
-        Group -10 (
+        Group -14 (
+          Forall ?formulacontainer ?rifexternal ?rifatom ?rifconstiristring ?arglist ?targetlist ?targetitem ?formulalist ?listvar ?itemvar (
+            If And (
+              ?formulacontainer["add-pattern-from"^^rif:local -> ?rifexternal]
+              ?rifexternal # rif:External
+              Not( ?rifexternal # modelA:BindLock )
+              Not(?formulacontainer["added-pattern-from"^^rif:local -> ?rifexternal])
+              ?rifexternal[rif:content -> ?rifatom]
+              ?rifatom[rif:op -> ?rifconstiristring]
+              ?rifconstiristring[rif:constIRI -> "http://www.w3.org/2007/rif-builtin-predicate#list-contains"^^xs:anyURI]
+              ?rifatom[rif:args -> ?arglist]
+              External(pred:is-list(?arglist))
+
+              ?targetlist # rif:Var
+              ?targetlist = External(func:get(?arglist 0))
+              ?targetlist[ex:as-expression -> ?listvar]
+              ?targetitem # rif:Var
+              ?targetitem = External(func:get(?arglist 1))
+              ?targetitem[ex:as-expression -> ?itemvar]
+              ?rifexternal["bound-variable"^^rif:local -> ?itemvar]
+              Not( ?rifexternal["bound-variable"^^rif:local -> ?listvar] )
+              ?formulacontainer["formulalist"^^rif:local -> ?formulalist]
+            ) Then Do (
+              Assert(?rifexternal # modelA:ListcontainerPatternGenerator)
+              Assert( ?formulacontainer["added-pattern-from"^^rif:local -> ?rifexternal] )
+              Assert(?formulacontainer["bound-variable"^^rif:local -> ?listvar])
+              Modify(
+                ?formulacontainer["formulalist"^^rif:local -> External(func:append(?formulalist ?rifexternal))]
+              )
+            )
+          )
+        )
+        Group -15 (
           (* self:rule60 *) Forall ?rifmember ?formulacontainer ?formulalist (
             If And (
               ?formulacontainer["add-pattern-from"^^rif:local -> ?rifmember]
@@ -972,7 +1004,7 @@ Document(
             )
           )
         )
-        Group -13 (
+        Group -21 (
           (* self:rule46 *) Forall ?formulacontainer ?rifframe ?frameobject ?slotlist ?slot ?slotkey ?slotvalue ?formulalist (
             If And (
               ?formulacontainer["add-pattern-from"^^rif:local -> ?rifframe]
@@ -1075,7 +1107,7 @@ Document(
             )
           )
         )
-        Group -12 (
+        Group -23 (
           (* self:rule50 *) Forall ?rifequal ?formulacontainer ?rifleft ?rifright ?clipsassign ?defrule (
             If And (
               ?formulacontainer["add-pattern-from"^^rif:local -> ?rifequal]
@@ -1126,7 +1158,7 @@ Document(
           )
         )
 
-        Group -11 (
+        Group -7 (
           (* self:rule96 *) Forall ?superpattern ?subpattern ?formulalist (
             If And (
               ?superpattern["add-pattern-from"^^rif:local -> ?subpattern]
