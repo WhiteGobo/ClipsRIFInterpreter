@@ -63,7 +63,7 @@ Document(
             )
           )
         )
-        Forall ?parent ?arglist ?child ?target(
+        Forall ?parent ?arglist ?child ?grandchild(
           ?parent["give-inheritance"^^rif:local -> ?grandchild] :-
           And (
             Or (
