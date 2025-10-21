@@ -1,3 +1,7 @@
+This project imports source code
+from Raptor RDF Syntax Library (https://librdf.org/raptor/) via FetchContent.
+It is used here under its apache 2.0 license:
+
 This product includes Redland software (http://librdf.org/)
 developed at the Institute for Learning and Research Technology,
 University of Bristol, UK (http://www.bristol.ac.uk/).
