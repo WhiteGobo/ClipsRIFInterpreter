@@ -14,8 +14,6 @@ target_include_directories(external_functions_test PRIVATE "${CMAKE_CURRENT_BINA
 target_link_libraries(external_functions_test PRIVATE
 	GTest::gtest_main
 	ffi_clips_interface
-	ntriplesParser
-	clipsrif_resource_manager
 	crifi_raptor
 	crifi_import
 	crifi_import_implementations

@@ -21,32 +21,7 @@ compile_resources(testdata ${TESTDATA_OUTPUT} TARGETS
 )
 
 
-add_executable(hello_test
-	hello_test.cc
-	#testcases_test.cc
-	raptor_test.cc
-	import_test.cc
-	${TESTDATA_OUTPUT}
-)
-
-target_include_directories(hello_test PRIVATE "${CMAKE_CURRENT_BINARY_DIR}")
-
-target_link_libraries(hello_test PRIVATE
-	GTest::gtest_main
-	ffi_clips_interface
-	ntriplesParser
-	clipsrif_resource_manager
-	#crifi_test::rc
-	crifi_raptor
-	crifi_import
-	crifi_import_implementations
-	info_query
-)
-
 include(w3c_tests.cmake)
-
-include(GoogleTest)
-gtest_discover_tests(hello_test)
 
 set(LOGDATA_HEADER "${CMAKE_CURRENT_BINARY_DIR}/logmanagment.h")
 include(logmanagment.cmake)

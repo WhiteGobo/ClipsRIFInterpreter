@@ -2,6 +2,7 @@
 #include <unistd.h>
 #include <linux/limits.h>
 #include "ffi_constants.h"
+#include <ffi_clips_interface.h>
 
 #include "helper.h"
 

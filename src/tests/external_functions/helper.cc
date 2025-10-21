@@ -1,5 +1,15 @@
 #include "helper.h"
 
+#include <gtest/gtest.h>
+#include <unistd.h>
+#include <linux/limits.h>
+
+#include <ffi_clips_interface.h>
+#include "crifi_import.h"
+#include "ffi_constants.h"
+
+#include "info_query.h"
+
 
 void check_command_true(const char* command){
 	crifi_graph* graph = init_graph();

@@ -102,16 +102,12 @@ The datatype will be in anglebrack-notation.
 with `@@` and 
 
 
-# Notes on function
-
-Apparently test in rules will accept a void pointer as truth value.
-Need an educated way to use test in rules with this in mind.
-
-
-
-
-
 
 # notes
 
 add time date library maybe? `https://github.com/TimSC/iso8601lib/tree/master`_
+
+# dependencies
+
+Thanks to all contributors and maintainers of packages, that are used here.
+Clips RIF Interpreter is including [Raptor RDF Syntax Library](https://librdf.org/raptor/) via FetchContent.

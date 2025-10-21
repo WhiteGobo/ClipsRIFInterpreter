@@ -30,7 +30,6 @@ FetchContent_Declare(
 )
 
 FetchContent_MakeAvailable(raptor2)
-#MESSAGE(FATAL_ERROR "brubru")
 target_include_directories(raptor2 PUBLIC
 	$<BUILD_INTERFACE:${raptor2_SOURCE_DIR}/src>
 	$<BUILD_INTERFACE:${raptor2_BINARY_DIR}/src>
@@ -57,10 +56,7 @@ endif()
 
 
 add_subdirectory(import_implementations)
-add_subdirectory(ntriples_parser)
 add_subdirectory(clips_interface)
-add_subdirectory(resource_manager)
-add_subdirectory(generate_crifi_script)
 add_subdirectory(raptor_serializer)
 add_subdirectory(builtin_resources)
 
@@ -69,22 +65,5 @@ if(BUILD_TESTING)
 	set(INSTALL_GTEST OFF)
 	add_subdirectory(tests)
 endif()
-
-#Copying assets
-set(REL_ASSETPATH_CLIPSSCRIPTS ./
-	CACHE STRING "relative Path where to scripts. wont override ASSETPATH_CLIPSSCRIPTS.")
-set(ASSETPATH_CLIPSSCRIPTS ${PROJECT_BINARY_DIR}/${REL_ASSETPATH_CLIPSSCRIPTS}
-	CACHE PATH "absolute path where to put scripts. will be created from REL_ASSETPATH_CLIPSSCRIPTS")
-message(VERBOSE "Copying clips scripts to:${ASSETPATH_CLIPSSCRIPTS}")
-message(STATUS "${PROJECT_BINARY_DIR}\n${ASSETPATH_CLIPSSCRIPTS}\n${REL_ASSETPATH_CLIPSSCRIPTS}")
-
-file(COPY assets DESTINATION ${ASSETPATH_CLIPSSCRIPTS})
-#add_custom_command(TARGET ffi_clips_interface POST_BUILD
-#                   COMMAND ${CMAKE_COMMAND} -E copy_directory
-#		   ${CMAKE_CURRENT_SOURCE_DIR}/assets/ ${ASSETPATH_CLIPSSCRIPTS})
-
-#option(BUILD_SHARED_LIBS "Build using shared libraries" ON)
-
-#include(generate_cmake_module.cmake)
 
 include(install_helper.cmake)
